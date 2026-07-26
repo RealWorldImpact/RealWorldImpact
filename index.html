@@ -1918,12 +1918,20 @@ function t(key, vars){
 function applyI18n(root){
   (root||document).querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
 }
+// Extra i18n roots (e.g. the whitepaper mounted in a Shadow DOM, which document-level
+// querySelectorAll cannot see). setLang re-applies translations to each on every change.
+window.__i18nRoots = window.__i18nRoots || [];
+function registerI18nRoot(root){
+  if(root && window.__i18nRoots.indexOf(root)===-1){ window.__i18nRoots.push(root); applyI18n(root); }
+}
 function setLang(l){
   if(!TRANSLATIONS[l]) l = 'en';
   LANG = l;
   try{ localStorage.setItem('rwi_lang', l); }catch(e){}
   document.documentElement.setAttribute('lang', l);
   applyI18n();
+  // Re-translate any extra roots (shadow DOM whitepaper, etc.)
+  try{ window.__i18nRoots.forEach(r=>{ try{ applyI18n(r); }catch(e){} }); }catch(e){}
   document.querySelectorAll('#langSel button').forEach(b=>b.classList.toggle('on', b.dataset.lang===l));
   syncHead(l);
   // dashboard-specific: re-render dynamic UI that has already been drawn
@@ -2849,6 +2857,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
         <style>${paper.styles}</style>
         ${paper.body}
       `;
+      // The whitepaper lives in a Shadow DOM, invisible to document-level applyI18n.
+      // Register it so it's translated now (in the current language) and on every switch.
+      try{ if(typeof registerI18nRoot === 'function') registerI18nRoot(shadow); }catch(e){}
       // In shadow-DOM mode, both the wp-brand (desktop) and wp-ticker (mobile) act as back-to-site.
       // Intercept clicks so we return to the site in-place instead of navigating to /.
       // (On standalone whitepaper.html the href="/" is honored naturally.)
