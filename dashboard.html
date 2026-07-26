@@ -2138,16 +2138,18 @@ function syncHead(l){
     // og:locale
     var ol = document.querySelector('meta[property="og:locale"]');
     if(ol) ol.setAttribute('content', OG_LOCALE[l] || 'en_US');
-    // Canonical + URL param sync (don't add ?lang=en for default, keep canonical clean)
-    var base = location.origin + location.pathname;
+    // Canonical + URL param sync. Only rewrite the address bar on real http(s) origins —
+    // on file:// (origin === "null") replaceState with an absolute URL throws in real browsers,
+    // so we skip it there. Language switching never depends on this block succeeding.
+    var httpOrigin = (location.protocol === 'http:' || location.protocol === 'https:');
+    var canonBase = httpOrigin ? (location.origin + location.pathname) : location.pathname;
     var canon = document.querySelector('link[rel="canonical"]');
     if(l === 'en'){
-      if(canon) canon.setAttribute('href', base);
-      try{ history.replaceState(null, '', base + location.hash); }catch(e){}
+      if(canon) canon.setAttribute('href', canonBase);
+      if(httpOrigin){ try{ history.replaceState(null, '', location.pathname + location.hash); }catch(e){} }
     } else {
-      var url = base + '?lang=' + l;
-      if(canon) canon.setAttribute('href', url);
-      try{ history.replaceState(null, '', url + location.hash); }catch(e){}
+      if(canon) canon.setAttribute('href', canonBase + '?lang=' + l);
+      if(httpOrigin){ try{ history.replaceState(null, '', location.pathname + '?lang=' + l + location.hash); }catch(e){} }
     }
   }catch(e){}
 }
@@ -2195,9 +2197,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.documentElement.setAttribute('lang', LANG);
   applyI18n();
   syncHead(LANG);
+  // Mark the active language button. (Switching is handled by the delegated click
+  // listener in the floating-widget script — a single, always-bound source of truth.)
   document.querySelectorAll('#langSel button').forEach(b=>{
     if(b.dataset.lang===LANG) b.classList.add('on'); else b.classList.remove('on');
-    b.addEventListener('click', ()=>setLang(b.dataset.lang));
   });
 });
 </script>
@@ -2206,12 +2209,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
   #langBtn{position:fixed;bottom:16px;right:16px;z-index:9999;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border:1px solid var(--lime, #CCFE06);border-radius:999px;padding:8px 14px;font-family:var(--mono, "IBM Plex Mono", ui-monospace, monospace);font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18);transition:transform .15s ease,box-shadow .15s ease;line-height:1}
   #langBtn:hover,#langBtn:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}
   #langBtn .caret{margin-left:6px;opacity:.7}
-  #langPanel{position:fixed;bottom:64px;right:16px;z-index:9999;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border:1px solid var(--lime, #CCFE06);border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.28);display:none;grid-template-columns:repeat(3, minmax(0, 1fr));gap:2px;min-width:200px;max-width:calc(100vw - 32px)}
-  #langPanel.open{display:grid}
-  #langPanel button{background:transparent;color:inherit;border:0;padding:8px 10px;font-family:var(--mono, "IBM Plex Mono", ui-monospace, monospace);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:8px;text-align:left;transition:background .12s ease}
-  #langPanel button:hover,#langPanel button:focus-visible{background:rgba(204,254,6,.12);outline:none}
-  #langPanel button.on{background:var(--lime, #CCFE06);color:var(--ink, #0B0B09)}
-  @media (max-width: 480px){ #langPanel{grid-template-columns:repeat(2, minmax(0, 1fr));min-width:170px} }
+  #langSel{position:fixed;bottom:64px;right:16px;z-index:9999;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border:1px solid var(--lime, #CCFE06);border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.28);display:none;grid-template-columns:repeat(3, minmax(0, 1fr));gap:2px;min-width:200px;max-width:calc(100vw - 32px)}
+  #langSel.open{display:grid}
+  #langSel button{background:transparent;color:inherit;border:0;padding:8px 10px;font-family:var(--mono, "IBM Plex Mono", ui-monospace, monospace);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:8px;text-align:left;transition:background .12s ease}
+  #langSel button:hover,#langSel button:focus-visible{background:rgba(204,254,6,.12);outline:none}
+  #langSel button.on{background:var(--lime, #CCFE06);color:var(--ink, #0B0B09)}
+  @media (max-width: 480px){ #langSel{grid-template-columns:repeat(2, minmax(0, 1fr));min-width:170px} }
 </style>
 <script>
 /* ==========================================================================
@@ -3772,8 +3775,18 @@ setInterval(()=>{
   btn.addEventListener('click', e => { e.stopPropagation(); panel.classList.contains('open') ? close() : open(); });
   document.addEventListener('click', e => { if(!panel.contains(e.target) && e.target!==btn) close(); });
   document.addEventListener('keydown', e => { if(e.key==='Escape') close(); });
-  // update label when a language button is clicked (the shared runtime toggles the .on class)
-  panel.addEventListener('click', e => { if(e.target.matches('button[data-lang]')){ setTimeout(()=>{syncLabel(); close();}, 0); } });
+  // Authoritative language-switch via event delegation — one handler on the panel catches
+  // every button click, calls setLang directly (doesn't depend on per-button listeners being
+  // bound), updates the label, and closes. This is the single source of truth for switching.
+  panel.addEventListener('click', e => {
+    const b = e.target.closest('button[data-lang]');
+    if(!b) return;
+    e.preventDefault();
+    e.stopPropagation();
+    try{ if(typeof setLang === 'function') setLang(b.dataset.lang); }catch(err){}
+    syncLabel();
+    close();
+  });
   // initial label — the shared runtime's DOMContentLoaded sets the .on class
   document.addEventListener('DOMContentLoaded', syncLabel);
   if(document.readyState !== 'loading') syncLabel();
