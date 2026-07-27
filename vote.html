@@ -2464,7 +2464,11 @@ async function loadRound(txs){
     const slugs = body.slice(sep+1).split(',').map(s => s.trim().toLowerCase()).filter(s => ORG_POOL[s]);
     if(!slugs.length) continue;
     const bn = Number(t.block_number || t.block || 0);
-    if(!best || n > best.n || (n === best.n && bn >= best.bn)) best = {n, slugs, bn};
+    const ix = Number(t.index !== undefined ? t.index
+              : t.position !== undefined ? t.position
+              : t.transaction_index !== undefined ? t.transaction_index : 0);
+    const newer = !best || n > best.n || (n === best.n && (bn > best.bn || (bn === best.bn && ix >= best.ix)));
+    if(newer) best = {n, slugs, bn, ix};
   }
   staleSlugs = [];
   if(best){
@@ -2611,9 +2615,16 @@ async function loadTally(cached){
     if(!from || !text.startsWith(pfx)) continue;
     const slug = text.slice(pfx.length).trim().toLowerCase();
     if(!valid.has(slug)) continue;
+    // Two votes from one wallet in the SAME block need the transaction index to
+    // order them. Comparing block numbers alone let the older of the pair win,
+    // because Blockscout returns newest-first and >= allowed an overwrite.
     const bn = Number(t.block_number || t.block || 0);
+    const ix = Number(t.index !== undefined ? t.index
+              : t.position !== undefined ? t.position
+              : t.transaction_index !== undefined ? t.transaction_index : 0);
     const prev = latest.get(from);
-    if(!prev || bn >= prev.block) latest.set(from, {slug, block:bn});
+    const newer = !prev || bn > prev.block || (bn === prev.block && ix >= prev.index);
+    if(newer) latest.set(from, {slug, block:bn, index:ix});
   }
 
   // weight each voter by live $RWI balance
@@ -2654,22 +2665,41 @@ async function loadTally(cached){
 function paintTally(){
   if(!lastTally){ return; }
   const {byslug, total, counted} = lastTally;
-  $('ballot').querySelectorAll('.cand').forEach(el => {
-    const slug = el.dataset.slug;
-    const w = byslug.get(slug) || 0n;
-    const pct = total > 0n ? Number(w * 10000n / total)/100 : 0;
-    el.querySelector('[data-pct]').textContent = total > 0n ? pct.toFixed(1)+'%' : '—';
-    el.querySelector('[data-wt]').textContent = total > 0n ? fmtToken(w)+' $RWI' : '';
-    el.querySelector('[data-bar]').style.width = (total > 0n ? pct : 0) + '%';
-  });
   const warn = $('slateWarn');
   if(warn){
     if(slateRecovered) warn.textContent = t('vote.st.slateRecovered');
     else if(staleSlugs.length) warn.textContent = t('vote.st.slateStale', {n:staleSlugs.length});
-    else if(lastTally && lastTally.unreadable) warn.textContent = t('vote.st.tallyPartial', {n:lastTally.unreadable});
-    else if(lastTally && lastTally.truncated) warn.textContent = t('vote.st.tallyTruncated');
+    else if(lastTally.unreadable) warn.textContent = t('vote.st.tallyPartial', {n:lastTally.unreadable});
+    else if(lastTally.truncated) warn.textContent = t('vote.st.tallyTruncated');
     else warn.textContent = '';
   }
+  // Largest-remainder allocation to one decimal. Independent rounding made three
+  // equal shares read 33.3 / 33.3 / 33.3 — a ballot whose parts do not add up
+  // invites exactly the doubt this page exists to remove.
+  const slugs = [...byslug.keys()];
+  const tenths = new Map();
+  if(total > 0n){
+    let allocated = 0;
+    const rema = [];
+    slugs.forEach(function(s){
+      const scaled = (byslug.get(s) || 0n) * 1000n;      // tenths of a percent
+      const base = scaled / total;
+      tenths.set(s, Number(base));
+      allocated += Number(base);
+      rema.push({ s: s, r: Number(scaled % total) / Number(total) });
+    });
+    rema.sort(function(a,b){ return b.r - a.r; });
+    let left = 1000 - allocated;                          // hand out the shortfall
+    for(let i = 0; i < rema.length && left > 0; i++, left--) tenths.set(rema[i].s, tenths.get(rema[i].s) + 1);
+  }
+  $('ballot').querySelectorAll('.cand').forEach(function(el){
+    const slug = el.dataset.slug;
+    const w = byslug.get(slug) || 0n;
+    const pct = total > 0n ? (tenths.get(slug) || 0) / 10 : 0;
+    el.querySelector('[data-pct]').textContent = total > 0n ? pct.toFixed(1)+'%' : '—';
+    el.querySelector('[data-wt]').textContent  = total > 0n ? fmtToken(w)+' $RWI' : '';
+    el.querySelector('[data-bar]').style.width = (total > 0n ? pct : 0) + '%';
+  });
   $('tallyTotals').textContent = counted
     ? t(counted===1 ? 'vote.st.wallet1' : 'vote.st.wallets', {n:counted, w:fmtToken(total)})
     : t('vote.st.noVotes');
