@@ -111,6 +111,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'Your vote',
     'vote.st.yoursPending':'Your vote · confirming'
+  ,
+    'vote.st.writeInBtn':'Write in',
+    'vote.st.writeInTitle':'Write in an organisation',
+    'vote.st.writeInLede':'Three of the six ballot slots are reserved for organisations nominated by holders. Pick any organisation from The Giving Block.',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — ${dev} to the dev wallet, ${burn} burned.',
+    'vote.st.writeInSearch':'Search organisations',
+    'vote.st.writeInNone':'No match in the verified directory.',
+    'vote.st.writeInDup':'That organisation is already a standing candidate.',
+    'vote.st.writeInSubmit':'Submit write-in',
+    'vote.st.writeInBy':'Written in by a holder',
+    'vote.st.wiStep1':'Nominate onchain',
+    'vote.st.wiStep2':'Pay the dev share',
+    'vote.st.wiStep3':'Burn the rest',
+    'vote.st.wiSigning':'Confirm transaction {n} of 3 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once all three transactions are indexed.',
+    'vote.st.writeInCancel':'Cancelled. Any completed steps still stand.',
+    'vote.st.writeInFail':'Something failed. Completed steps stand; re-open to finish the rest.',
+    'vote.st.writeInConnect':'Connect a wallet first.',
+    'vote.st.writeInNoPrice':'Cannot read the $RWI price right now, so the fee cannot be quoted.',
+    'vote.st.writeInNote':'Three separate transactions: a token transfer carries no message, so the nomination and each payment are signed individually. The directory is a verified subset of The Giving Block, not its full listing.'
+  ,
+    'vote.st.openSlot':'Open slot',
+    'vote.st.openSlotHint':'Reserved for a holder write-in',
+    'vote.st.writeInTag':'3 slots for holders · $5 in $RWI'
+  ,
+    'vote.st.boxDelegated':'The ballot box address is a smart-account wallet (EIP-7702). Calldata sent to it runs the delegated contract and reverts, so votes cannot be logged there. It needs a plain address with no code.'
+  ,
+    'vote.st.writeInAll':'All {n} organisations · type to filter',
+    'vote.st.writeInMatches':'{n} matching'
+  ,
+    'cause.hunger':'Hunger & food access',
+    'cause.homeless':'Homelessness & housing',
+    'cause.animals':'Animals & wildlife',
+    'cause.health':'Health & medicine',
+    'cause.children':'Children & youth',
+    'cause.education':'Education & training',
+    'cause.water':'Water & hygiene',
+    'cause.environment':'Environment & climate',
+    'cause.veterans':'Veterans & service members',
+    'cause.refugees':'Refugees & displacement',
+    'cause.disaster':'Disaster response',
+    'cause.mental':'Mental health',
+    'cause.rights':'Human rights & justice',
+    'cause.faith':'Faith-based',
+    'cause.arts':'Arts & culture',
+    'cause.community':'Community foundations',
+    'cause.other':'General charitable work',
+    'vote.st.pvNote':'Cause area inferred from the name. This site cannot fetch descriptions from The Giving Block, so open their page for what the organisation actually does.',
+    'vote.st.pvOpen':'Open their page ↗',
+    'vote.st.pvChoose':'Choose this one'
   },
   es: {
     'nav.home.arrow':'← rwihood.org',
@@ -204,6 +254,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'Tu voto',
     'vote.st.yoursPending':'Tu voto · confirmando'
+  ,
+    'vote.st.writeInBtn':'Proponer',
+    'vote.st.writeInTitle':'Proponer una organizacion',
+    'vote.st.writeInLede':'Tres de los seis lugares estan reservados para organizaciones propuestas por los holders. Elige cualquiera de The Giving Block.',
+    'vote.st.writeInCost':'Cuesta ${usd} en $RWI (~{rwi}): ${dev} a la billetera dev, ${burn} quemados.',
+    'vote.st.writeInSearch':'Buscar organizaciones',
+    'vote.st.writeInNone':'Sin coincidencias en el directorio verificado.',
+    'vote.st.writeInDup':'Esa organizacion ya es candidata fija.',
+    'vote.st.writeInSubmit':'Enviar propuesta',
+    'vote.st.writeInBy':'Propuesta por un holder',
+    'vote.st.wiStep1':'Proponer onchain',
+    'vote.st.wiStep2':'Pagar la parte dev',
+    'vote.st.wiStep3':'Quemar el resto',
+    'vote.st.wiSigning':'Confirma la transaccion {n} de 3 en tu billetera…',
+    'vote.st.writeInDone':'Propuesta enviada. Aparecera cuando las tres transacciones esten indexadas.',
+    'vote.st.writeInCancel':'Cancelado. Los pasos completados siguen validos.',
+    'vote.st.writeInFail':'Algo fallo. Los pasos completados siguen; vuelve a abrir para terminar.',
+    'vote.st.writeInConnect':'Conecta una billetera primero.',
+    'vote.st.writeInNoPrice':'No se puede leer el precio de $RWI ahora, asi que no se puede cotizar la tarifa.',
+    'vote.st.writeInNote':'Tres transacciones separadas: una transferencia de tokens no lleva mensaje, asi que la propuesta y cada pago se firman por separado. El directorio es un subconjunto verificado de The Giving Block, no su listado completo.'
+  ,
+    'vote.st.openSlot':'Lugar libre',
+    'vote.st.openSlotHint':'Reservado para una propuesta de holder',
+    'vote.st.writeInTag':'3 lugares para holders · $5 en $RWI'
+  ,
+    'vote.st.boxDelegated':'La direccion de la urna es una billetera de cuenta inteligente (EIP-7702). Los datos enviados alli ejecutan el contrato delegado y revierten, asi que los votos no pueden registrarse. Se necesita una direccion simple sin codigo.'
+  ,
+    'vote.st.writeInAll':'Las {n} organizaciones · escribe para filtrar',
+    'vote.st.writeInMatches':'{n} coincidencias'
+  ,
+    'cause.hunger':'Hambre y acceso a alimentos',
+    'cause.homeless':'Sinhogarismo y vivienda',
+    'cause.animals':'Animales y vida silvestre',
+    'cause.health':'Salud y medicina',
+    'cause.children':'Ninos y juventud',
+    'cause.education':'Educacion y formacion',
+    'cause.water':'Agua e higiene',
+    'cause.environment':'Medio ambiente y clima',
+    'cause.veterans':'Veteranos y militares',
+    'cause.refugees':'Refugiados y desplazamiento',
+    'cause.disaster':'Respuesta ante desastres',
+    'cause.mental':'Salud mental',
+    'cause.rights':'Derechos humanos y justicia',
+    'cause.faith':'De base religiosa',
+    'cause.arts':'Arte y cultura',
+    'cause.community':'Fundaciones comunitarias',
+    'cause.other':'Labor benefica general',
+    'vote.st.pvNote':'Area de causa inferida del nombre. Este sitio no puede obtener descripciones de The Giving Block; abre su pagina para saber que hace la organizacion.',
+    'vote.st.pvOpen':'Abrir su pagina ↗',
+    'vote.st.pvChoose':'Elegir esta'
   },
   zh: {
     'nav.home.arrow':'← rwihood.org',
@@ -297,6 +397,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'你的投票',
     'vote.st.yoursPending':'你的投票 · 确认中'
+  ,
+    'vote.st.writeInBtn':'写入提名',
+    'vote.st.writeInTitle':'提名一个组织',
+    'vote.st.writeInLede':'六个投票席位中有三个保留给持有者提名的组织。可从 The Giving Block 中任选。',
+    'vote.st.writeInCost':'费用为 {usd} 美元的 $RWI(约 {rwi})— {dev} 美元给开发钱包,{burn} 美元销毁。',
+    'vote.st.writeInSearch':'搜索组织',
+    'vote.st.writeInNone':'已验证目录中无匹配项。',
+    'vote.st.writeInDup':'该组织已是常设候选。',
+    'vote.st.writeInSubmit':'提交提名',
+    'vote.st.writeInBy':'由持有者提名',
+    'vote.st.wiStep1':'链上提名',
+    'vote.st.wiStep2':'支付开发份额',
+    'vote.st.wiStep3':'销毁其余部分',
+    'vote.st.wiSigning':'请在钱包中确认第 {n}/3 笔交易…',
+    'vote.st.writeInDone':'提名已提交。三笔交易均被索引后即会显示。',
+    'vote.st.writeInCancel':'已取消。已完成的步骤仍然有效。',
+    'vote.st.writeInFail':'出现失败。已完成步骤仍有效;重新打开以完成其余部分。',
+    'vote.st.writeInConnect':'请先连接钱包。',
+    'vote.st.writeInNoPrice':'当前无法读取 $RWI 价格,无法报价。',
+    'vote.st.writeInNote':'三笔独立交易:代币转账无法携带信息,因此提名与每笔付款需分别签名。该目录是 The Giving Block 的已验证子集,并非完整名录。'
+  ,
+    'vote.st.openSlot':'空缺席位',
+    'vote.st.openSlotHint':'保留给持有者提名',
+    'vote.st.writeInTag':'3 个持有者席位 · 5 美元 $RWI'
+  ,
+    'vote.st.boxDelegated':'投票箱地址是智能账户钱包(EIP-7702)。发送到该地址的 calldata 会执行委托合约并回滚,因此无法记录投票。需要一个没有代码的普通地址。'
+  ,
+    'vote.st.writeInAll':'全部 {n} 个组织 · 输入以筛选',
+    'vote.st.writeInMatches':'{n} 个匹配'
+  ,
+    'cause.hunger':'饥饿与食物获取',
+    'cause.homeless':'无家可归与住房',
+    'cause.animals':'动物与野生动植物',
+    'cause.health':'健康与医疗',
+    'cause.children':'儿童与青少年',
+    'cause.education':'教育与培训',
+    'cause.water':'水与卫生',
+    'cause.environment':'环境与气候',
+    'cause.veterans':'退伍军人与现役人员',
+    'cause.refugees':'难民与流离失所',
+    'cause.disaster':'灾害应对',
+    'cause.mental':'心理健康',
+    'cause.rights':'人权与司法',
+    'cause.faith':'信仰组织',
+    'cause.arts':'艺术与文化',
+    'cause.community':'社区基金会',
+    'cause.other':'一般慈善工作',
+    'vote.st.pvNote':'此分类根据名称推断。本站无法从 The Giving Block 获取简介,请打开其页面了解该组织的实际工作。',
+    'vote.st.pvOpen':'打开其页面 ↗',
+    'vote.st.pvChoose':'选择该组织'
   },
   ja: {
     'nav.home.arrow':'← rwihood.org',
@@ -390,6 +540,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'あなたの投票',
     'vote.st.yoursPending':'あなたの投票 · 確認中'
+  ,
+    'vote.st.writeInBtn':'書き込み推薦',
+    'vote.st.writeInTitle':'団体を推薦する',
+    'vote.st.writeInLede':'6 つの投票枠のうち 3 つは保有者の推薦に充てられます。The Giving Block からどの団体でも選べます。',
+    'vote.st.writeInCost':'費用は $RWI で {usd} ドル相当(約 {rwi})— {dev} ドルを開発ウォレットへ、{burn} ドルをバーン。',
+    'vote.st.writeInSearch':'団体を検索',
+    'vote.st.writeInNone':'検証済みディレクトリに一致はありません。',
+    'vote.st.writeInDup':'その団体はすでに常設候補です。',
+    'vote.st.writeInSubmit':'推薦を送信',
+    'vote.st.writeInBy':'保有者による推薦',
+    'vote.st.wiStep1':'オンチェーンで推薦',
+    'vote.st.wiStep2':'開発分を支払う',
+    'vote.st.wiStep3':'残りをバーン',
+    'vote.st.wiSigning':'ウォレットで 3 件中 {n} 件目を承認してください…',
+    'vote.st.writeInDone':'推薦を送信しました。3 件すべてが索引された時点で表示されます。',
+    'vote.st.writeInCancel':'キャンセルしました。完了済みの手順は有効なままです。',
+    'vote.st.writeInFail':'失敗しました。完了済みの手順は有効です。再度開いて残りを完了してください。',
+    'vote.st.writeInConnect':'先にウォレットを接続してください。',
+    'vote.st.writeInNoPrice':'現在 $RWI の価格を取得できないため、費用を提示できません。',
+    'vote.st.writeInNote':'3 件の個別トランザクション:トークン送金にメッセージは載せられないため、推薦と各支払いを個別に署名します。ディレクトリは The Giving Block の検証済み一部であり、全掲載ではありません。'
+  ,
+    'vote.st.openSlot':'空き枠',
+    'vote.st.openSlotHint':'保有者の推薦用に確保',
+    'vote.st.writeInTag':'保有者枠 3 · $RWI で $5'
+  ,
+    'vote.st.boxDelegated':'投票箱アドレスはスマートアカウント ウォレット(EIP-7702)です。送られた calldata は委任先のコントラクトを実行して失敗するため、投票を記録できません。コードのない通常のアドレスが必要です。'
+  ,
+    'vote.st.writeInAll':'全 {n} 団体 · 入力で絞り込み',
+    'vote.st.writeInMatches':'{n} 件一致'
+  ,
+    'cause.hunger':'飢餓と食料アクセス',
+    'cause.homeless':'ホームレスと住まい',
+    'cause.animals':'動物と野生生物',
+    'cause.health':'健康と医療',
+    'cause.children':'子どもと若者',
+    'cause.education':'教育と訓練',
+    'cause.water':'水と衛生',
+    'cause.environment':'環境と気候',
+    'cause.veterans':'退役軍人と軍関係者',
+    'cause.refugees':'難民と避難',
+    'cause.disaster':'災害対応',
+    'cause.mental':'メンタルヘルス',
+    'cause.rights':'人権と正義',
+    'cause.faith':'信仰に基づく',
+    'cause.arts':'芸術と文化',
+    'cause.community':'地域財団',
+    'cause.other':'一般的な慈善活動',
+    'vote.st.pvNote':'分野は名称からの推定です。本サイトは The Giving Block から説明を取得できないため、実際の活動は同ページをご覧ください。',
+    'vote.st.pvOpen':'ページを開く ↗',
+    'vote.st.pvChoose':'これを選ぶ'
   },
   ko: {
     'nav.home.arrow':'← rwihood.org',
@@ -483,6 +683,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'내 투표',
     'vote.st.yoursPending':'내 투표 · 확인 중'
+  ,
+    'vote.st.writeInBtn':'직접 추천',
+    'vote.st.writeInTitle':'단체 추천하기',
+    'vote.st.writeInLede':'6개 투표 자리 중 3개는 보유자 추천 몫입니다. The Giving Block에서 원하는 단체를 고르세요.',
+    'vote.st.writeInCost':'비용은 $RWI로 {usd}달러 (~{rwi}) — {dev}달러는 개발 지갑으로, {burn}달러는 소각.',
+    'vote.st.writeInSearch':'단체 검색',
+    'vote.st.writeInNone':'검증된 디렉터리에 일치 항목이 없습니다.',
+    'vote.st.writeInDup':'해당 단체는 이미 상시 후보입니다.',
+    'vote.st.writeInSubmit':'추천 제출',
+    'vote.st.writeInBy':'보유자 추천',
+    'vote.st.wiStep1':'온체인 추천',
+    'vote.st.wiStep2':'개발 몫 지불',
+    'vote.st.wiStep3':'나머지 소각',
+    'vote.st.wiSigning':'지갑에서 3건 중 {n}번째 거래를 확인하세요…',
+    'vote.st.writeInDone':'추천이 제출되었습니다. 세 거래가 모두 색인되면 표시됩니다.',
+    'vote.st.writeInCancel':'취소되었습니다. 완료된 단계는 그대로 유지됩니다.',
+    'vote.st.writeInFail':'실패했습니다. 완료된 단계는 유지되며, 다시 열어 나머지를 마치세요.',
+    'vote.st.writeInConnect':'먼저 지갑을 연결하세요.',
+    'vote.st.writeInNoPrice':'지금 $RWI 가격을 읽을 수 없어 수수료를 산정할 수 없습니다.',
+    'vote.st.writeInNote':'세 건의 개별 거래: 토큰 전송에는 메시지를 담을 수 없어 추천과 각 결제를 따로 서명합니다. 디렉터리는 The Giving Block의 검증된 일부이며 전체 목록이 아닙니다.'
+  ,
+    'vote.st.openSlot':'빈 자리',
+    'vote.st.openSlotHint':'보유자 추천용으로 예약됨',
+    'vote.st.writeInTag':'보유자 3자리 · $RWI로 $5'
+  ,
+    'vote.st.boxDelegated':'투표함 주소가 스마트 계정 지갑(EIP-7702)입니다. 전송된 calldata가 위임 컨트랙트를 실행하고 되돌려지므로 투표를 기록할 수 없습니다. 코드가 없는 일반 주소가 필요합니다.'
+  ,
+    'vote.st.writeInAll':'전체 {n}개 단체 · 입력하여 필터',
+    'vote.st.writeInMatches':'{n}개 일치'
+  ,
+    'cause.hunger':'기아·식량 접근',
+    'cause.homeless':'노숙·주거',
+    'cause.animals':'동물·야생',
+    'cause.health':'건강·의료',
+    'cause.children':'아동·청소년',
+    'cause.education':'교육·훈련',
+    'cause.water':'물·위생',
+    'cause.environment':'환경·기후',
+    'cause.veterans':'재향군인·군인',
+    'cause.refugees':'난민·실향',
+    'cause.disaster':'재난 대응',
+    'cause.mental':'정신 건강',
+    'cause.rights':'인권·정의',
+    'cause.faith':'신앙 기반',
+    'cause.arts':'예술·문화',
+    'cause.community':'지역 재단',
+    'cause.other':'일반 자선 활동',
+    'vote.st.pvNote':'분야는 이름에서 추정했습니다. 이 사이트는 The Giving Block에서 설명을 가져올 수 없으니 해당 페이지에서 실제 활동을 확인하세요.',
+    'vote.st.pvOpen':'페이지 열기 ↗',
+    'vote.st.pvChoose':'이 단체 선택'
   },
   pt: {
     'nav.home.arrow':'← rwihood.org',
@@ -576,6 +826,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'Seu voto',
     'vote.st.yoursPending':'Seu voto · confirmando'
+  ,
+    'vote.st.writeInBtn':'Indicar',
+    'vote.st.writeInTitle':'Indicar uma organizacao',
+    'vote.st.writeInLede':'Tres das seis vagas sao reservadas a organizacoes indicadas por holders. Escolha qualquer uma da The Giving Block.',
+    'vote.st.writeInCost':'Custa ${usd} em $RWI (~{rwi}): ${dev} para a carteira dev, ${burn} queimados.',
+    'vote.st.writeInSearch':'Buscar organizacoes',
+    'vote.st.writeInNone':'Nenhuma correspondencia no diretorio verificado.',
+    'vote.st.writeInDup':'Essa organizacao ja e candidata permanente.',
+    'vote.st.writeInSubmit':'Enviar indicacao',
+    'vote.st.writeInBy':'Indicada por um holder',
+    'vote.st.wiStep1':'Indicar onchain',
+    'vote.st.wiStep2':'Pagar a parte dev',
+    'vote.st.wiStep3':'Queimar o restante',
+    'vote.st.wiSigning':'Confirme a transacao {n} de 3 na sua carteira…',
+    'vote.st.writeInDone':'Indicacao enviada. Aparecera quando as tres transacoes forem indexadas.',
+    'vote.st.writeInCancel':'Cancelado. As etapas concluidas permanecem validas.',
+    'vote.st.writeInFail':'Algo falhou. As etapas concluidas permanecem; reabra para terminar.',
+    'vote.st.writeInConnect':'Conecte uma carteira primeiro.',
+    'vote.st.writeInNoPrice':'Nao e possivel ler o preco do $RWI agora, entao a taxa nao pode ser cotada.',
+    'vote.st.writeInNote':'Tres transacoes separadas: uma transferencia de tokens nao carrega mensagem, entao a indicacao e cada pagamento sao assinados individualmente. O diretorio e um subconjunto verificado da The Giving Block, nao a listagem completa.'
+  ,
+    'vote.st.openSlot':'Vaga aberta',
+    'vote.st.openSlotHint':'Reservado para indicacao de holder',
+    'vote.st.writeInTag':'3 vagas para holders · $5 em $RWI'
+  ,
+    'vote.st.boxDelegated':'O endereco da urna e uma carteira de conta inteligente (EIP-7702). Os dados enviados executam o contrato delegado e revertem, entao os votos nao podem ser registrados. E preciso um endereco simples sem codigo.'
+  ,
+    'vote.st.writeInAll':'Todas as {n} organizacoes · digite para filtrar',
+    'vote.st.writeInMatches':'{n} correspondencias'
+  ,
+    'cause.hunger':'Fome e acesso a alimentos',
+    'cause.homeless':'Sem-teto e moradia',
+    'cause.animals':'Animais e vida selvagem',
+    'cause.health':'Saude e medicina',
+    'cause.children':'Criancas e juventude',
+    'cause.education':'Educacao e formacao',
+    'cause.water':'Agua e higiene',
+    'cause.environment':'Meio ambiente e clima',
+    'cause.veterans':'Veteranos e militares',
+    'cause.refugees':'Refugiados e deslocamento',
+    'cause.disaster':'Resposta a desastres',
+    'cause.mental':'Saude mental',
+    'cause.rights':'Direitos humanos e justica',
+    'cause.faith':'De base religiosa',
+    'cause.arts':'Artes e cultura',
+    'cause.community':'Fundacoes comunitarias',
+    'cause.other':'Trabalho beneficente geral',
+    'vote.st.pvNote':'Area da causa inferida do nome. Este site nao consegue obter descricoes da The Giving Block; abra a pagina deles para ver o que a organizacao faz.',
+    'vote.st.pvOpen':'Abrir a pagina ↗',
+    'vote.st.pvChoose':'Escolher esta'
   },
   fr: {
     'nav.home.arrow':'← rwihood.org',
@@ -669,6 +969,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'Votre vote',
     'vote.st.yoursPending':'Votre vote · confirmation'
+  ,
+    'vote.st.writeInBtn':'Proposer',
+    'vote.st.writeInTitle':'Proposer une organisation',
+    'vote.st.writeInLede':'Trois des six places du scrutin sont reservees aux organisations proposees par les detenteurs. Choisissez-en une sur The Giving Block.',
+    'vote.st.writeInCost':'Coute {usd} $ en $RWI (~{rwi}) : {dev} $ au portefeuille dev, {burn} $ brules.',
+    'vote.st.writeInSearch':'Rechercher une organisation',
+    'vote.st.writeInNone':'Aucun resultat dans l annuaire verifie.',
+    'vote.st.writeInDup':'Cette organisation est deja candidate permanente.',
+    'vote.st.writeInSubmit':'Envoyer la proposition',
+    'vote.st.writeInBy':'Proposee par un detenteur',
+    'vote.st.wiStep1':'Proposer onchain',
+    'vote.st.wiStep2':'Payer la part dev',
+    'vote.st.wiStep3':'Bruler le reste',
+    'vote.st.wiSigning':'Confirmez la transaction {n} sur 3 dans votre portefeuille…',
+    'vote.st.writeInDone':'Proposition envoyee. Elle apparaitra une fois les trois transactions indexees.',
+    'vote.st.writeInCancel':'Annule. Les etapes deja effectuees restent valides.',
+    'vote.st.writeInFail':'Echec. Les etapes effectuees restent ; rouvrez pour terminer.',
+    'vote.st.writeInConnect':'Connectez d abord un portefeuille.',
+    'vote.st.writeInNoPrice':'Impossible de lire le prix du $RWI, le montant ne peut pas etre calcule.',
+    'vote.st.writeInNote':'Trois transactions distinctes : un transfert de jetons ne porte aucun message, la proposition et chaque paiement sont donc signes separement. L annuaire est un sous-ensemble verifie de The Giving Block, pas sa liste complete.'
+  ,
+    'vote.st.openSlot':'Place libre',
+    'vote.st.openSlotHint':'Reservee a une proposition de detenteur',
+    'vote.st.writeInTag':'3 places pour les detenteurs · 5 $ en $RWI'
+  ,
+    'vote.st.boxDelegated':'L adresse de l urne est un portefeuille a compte intelligent (EIP-7702). Les donnees envoyees executent le contrat delegue et echouent, les votes ne peuvent donc pas y etre enregistres. Il faut une adresse simple sans code.'
+  ,
+    'vote.st.writeInAll':'Les {n} organisations · tapez pour filtrer',
+    'vote.st.writeInMatches':'{n} resultats'
+  ,
+    'cause.hunger':'Faim et acces alimentaire',
+    'cause.homeless':'Sans-abrisme et logement',
+    'cause.animals':'Animaux et faune',
+    'cause.health':'Sante et medecine',
+    'cause.children':'Enfants et jeunesse',
+    'cause.education':'Education et formation',
+    'cause.water':'Eau et hygiene',
+    'cause.environment':'Environnement et climat',
+    'cause.veterans':'Anciens combattants et militaires',
+    'cause.refugees':'Refugies et deplacement',
+    'cause.disaster':'Reponse aux catastrophes',
+    'cause.mental':'Sante mentale',
+    'cause.rights':'Droits humains et justice',
+    'cause.faith':'Confessionnel',
+    'cause.arts':'Arts et culture',
+    'cause.community':'Fondations communautaires',
+    'cause.other':'Action caritative generale',
+    'vote.st.pvNote':'Domaine deduit du nom. Ce site ne peut pas recuperer les descriptions de The Giving Block : ouvrez leur page pour savoir ce que fait l organisation.',
+    'vote.st.pvOpen':'Ouvrir leur page ↗',
+    'vote.st.pvChoose':'Choisir celle-ci'
   },
   ru: {
     'nav.home.arrow':'← rwihood.org',
@@ -762,6 +1112,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'Ваш голос',
     'vote.st.yoursPending':'Ваш голос · подтверждается'
+  ,
+    'vote.st.writeInBtn':'Вписать',
+    'vote.st.writeInTitle':'Вписать организацию',
+    'vote.st.writeInLede':'Три из шести мест в бюллетене отведены организациям, предложенным держателями. Выберите любую из The Giving Block.',
+    'vote.st.writeInCost':'Стоит {usd}$ в $RWI (~{rwi}) — {dev}$ в девелоперский кошелёк, {burn}$ сжигается.',
+    'vote.st.writeInSearch':'Поиск организаций',
+    'vote.st.writeInNone':'Совпадений в проверенном каталоге нет.',
+    'vote.st.writeInDup':'Эта организация уже постоянный кандидат.',
+    'vote.st.writeInSubmit':'Отправить заявку',
+    'vote.st.writeInBy':'Предложено держателем',
+    'vote.st.wiStep1':'Заявка в блокчейн',
+    'vote.st.wiStep2':'Оплатить долю разработки',
+    'vote.st.wiStep3':'Сжечь остаток',
+    'vote.st.wiSigning':'Подтвердите транзакцию {n} из 3 в кошельке…',
+    'vote.st.writeInDone':'Заявка отправлена. Появится, когда все три транзакции будут проиндексированы.',
+    'vote.st.writeInCancel':'Отменено. Уже выполненные шаги остаются в силе.',
+    'vote.st.writeInFail':'Что-то не получилось. Выполненные шаги остаются; откройте снова, чтобы закончить.',
+    'vote.st.writeInConnect':'Сначала подключите кошелёк.',
+    'vote.st.writeInNoPrice':'Сейчас не удаётся прочитать цену $RWI, поэтому комиссию не рассчитать.',
+    'vote.st.writeInNote':'Три отдельные транзакции: перевод токенов не несёт сообщения, поэтому заявка и каждый платёж подписываются по отдельности. Каталог — проверенное подмножество The Giving Block, а не полный список.'
+  ,
+    'vote.st.openSlot':'Свободное место',
+    'vote.st.openSlotHint':'Зарезервировано под заявку держателя',
+    'vote.st.writeInTag':'3 места для держателей · $5 в $RWI'
+  ,
+    'vote.st.boxDelegated':'Адрес урны — кошелёк со смарт-аккаунтом (EIP-7702). Отправленные данные запускают делегированный контракт и откатываются, поэтому голоса записать нельзя. Нужен обычный адрес без кода.'
+  ,
+    'vote.st.writeInAll':'Все {n} организаций · введите для фильтра',
+    'vote.st.writeInMatches':'{n} совпадений'
+  ,
+    'cause.hunger':'Голод и доступ к еде',
+    'cause.homeless':'Бездомность и жильё',
+    'cause.animals':'Животные и дикая природа',
+    'cause.health':'Здоровье и медицина',
+    'cause.children':'Дети и молодёжь',
+    'cause.education':'Образование и обучение',
+    'cause.water':'Вода и гигиена',
+    'cause.environment':'Экология и климат',
+    'cause.veterans':'Ветераны и военные',
+    'cause.refugees':'Беженцы и перемещение',
+    'cause.disaster':'Реагирование на бедствия',
+    'cause.mental':'Психическое здоровье',
+    'cause.rights':'Права человека и правосудие',
+    'cause.faith':'На религиозной основе',
+    'cause.arts':'Искусство и культура',
+    'cause.community':'Общественные фонды',
+    'cause.other':'Общая благотворительность',
+    'vote.st.pvNote':'Направление выведено из названия. Сайт не может получить описания от The Giving Block — откройте их страницу, чтобы узнать, чем занимается организация.',
+    'vote.st.pvOpen':'Открыть страницу ↗',
+    'vote.st.pvChoose':'Выбрать эту'
   },
   tr: {
     'nav.home.arrow':'← rwihood.org',
@@ -855,6 +1255,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'Oyunuz',
     'vote.st.yoursPending':'Oyunuz · onaylaniyor'
+  ,
+    'vote.st.writeInBtn':'Aday goster',
+    'vote.st.writeInTitle':'Bir kurulus aday goster',
+    'vote.st.writeInLede':'Alti oy yerinden ucu, sahiplerin aday gosterdigi kuruluslara ayrilmistir. The Giving Block\'tan dilediginizi secin.',
+    'vote.st.writeInCost':'$RWI olarak {usd}$ tutar (~{rwi}) — {dev}$ gelistirici cuzdanina, {burn}$ yakilir.',
+    'vote.st.writeInSearch':'Kurulus ara',
+    'vote.st.writeInNone':'Dogrulanmis dizinde eslesme yok.',
+    'vote.st.writeInDup':'Bu kurulus zaten sabit aday.',
+    'vote.st.writeInSubmit':'Adaylig gonder',
+    'vote.st.writeInBy':'Bir sahip tarafindan onerildi',
+    'vote.st.wiStep1':'Zincir uzerinde aday goster',
+    'vote.st.wiStep2':'Gelistirici payini ode',
+    'vote.st.wiStep3':'Kalani yak',
+    'vote.st.wiSigning':'Cuzdaninizda 3 islemden {n}. olanini onaylayin…',
+    'vote.st.writeInDone':'Adaylik gonderildi. Uc islem de dizine girdiginde gorunur.',
+    'vote.st.writeInCancel':'Iptal edildi. Tamamlanan adimlar gecerli kalir.',
+    'vote.st.writeInFail':'Bir sey basarisiz oldu. Tamamlananlar gecerli; kalani bitirmek icin tekrar acin.',
+    'vote.st.writeInConnect':'Once bir cuzdan baglayin.',
+    'vote.st.writeInNoPrice':'Su anda $RWI fiyati okunamiyor, bu yuzden ucret hesaplanamiyor.',
+    'vote.st.writeInNote':'Uc ayri islem: token transferi mesaj tasimaz, bu yuzden adaylik ve her odeme ayri imzalanir. Dizin, The Giving Block\'un dogrulanmis bir alt kumesidir, tam listesi degil.'
+  ,
+    'vote.st.openSlot':'Bos yer',
+    'vote.st.openSlotHint':'Sahiplerin adayligi icin ayrildi',
+    'vote.st.writeInTag':'Sahipler icin 3 yer · $RWI ile 5$'
+  ,
+    'vote.st.boxDelegated':'Oy sandigi adresi bir akilli hesap cuzdani (EIP-7702). Gonderilen calldata devredilen sozlesmeyi calistirir ve geri alinir, bu yuzden oylar kaydedilemez. Kodsuz duz bir adres gerekir.'
+  ,
+    'vote.st.writeInAll':'Tum {n} kurulus · filtrelemek icin yazin',
+    'vote.st.writeInMatches':'{n} eslesme'
+  ,
+    'cause.hunger':'Aclik ve gidaya erisim',
+    'cause.homeless':'Evsizlik ve barinma',
+    'cause.animals':'Hayvanlar ve yaban hayati',
+    'cause.health':'Saglik ve tip',
+    'cause.children':'Cocuklar ve genclik',
+    'cause.education':'Egitim ve ogretim',
+    'cause.water':'Su ve hijyen',
+    'cause.environment':'Cevre ve iklim',
+    'cause.veterans':'Gaziler ve askerler',
+    'cause.refugees':'Multeciler ve yerinden edilme',
+    'cause.disaster':'Afet mudahalesi',
+    'cause.mental':'Ruh sagligi',
+    'cause.rights':'Insan haklari ve adalet',
+    'cause.faith':'Inanc temelli',
+    'cause.arts':'Sanat ve kultur',
+    'cause.community':'Toplum vakiflari',
+    'cause.other':'Genel hayir isleri',
+    'vote.st.pvNote':'Alan, isimden cikarildi. Bu site The Giving Block\'tan aciklama alamaz; kurulusun ne yaptigini gormek icin sayfalarini acin.',
+    'vote.st.pvOpen':'Sayfalarini ac ↗',
+    'vote.st.pvChoose':'Bunu sec'
   },
   vi: {
     'nav.home.arrow':'← rwihood.org',
@@ -948,6 +1398,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'Phiếu của bạn',
     'vote.st.yoursPending':'Phiếu của bạn · đang xác nhận'
+  ,
+    'vote.st.writeInBtn':'Đề cử',
+    'vote.st.writeInTitle':'Đề cử một tổ chức',
+    'vote.st.writeInLede':'Ba trong sáu vị trí lá phiếu dành cho tổ chức do người nắm giữ đề cử. Chọn bất kỳ tổ chức nào từ The Giving Block.',
+    'vote.st.writeInCost':'Chi phí {usd}$ bằng $RWI (~{rwi}) — {dev}$ cho ví dev, {burn}$ bị đốt.',
+    'vote.st.writeInSearch':'Tìm tổ chức',
+    'vote.st.writeInNone':'Không có kết quả trong danh mục đã xác minh.',
+    'vote.st.writeInDup':'Tổ chức đó đã là ứng viên thường trực.',
+    'vote.st.writeInSubmit':'Gửi đề cử',
+    'vote.st.writeInBy':'Do người nắm giữ đề cử',
+    'vote.st.wiStep1':'Đề cử onchain',
+    'vote.st.wiStep2':'Trả phần dev',
+    'vote.st.wiStep3':'Đốt phần còn lại',
+    'vote.st.wiSigning':'Xác nhận giao dịch {n}/3 trong ví…',
+    'vote.st.writeInDone':'Đã gửi đề cử. Nó xuất hiện khi cả ba giao dịch được lập chỉ mục.',
+    'vote.st.writeInCancel':'Đã hủy. Các bước đã hoàn tất vẫn có hiệu lực.',
+    'vote.st.writeInFail':'Có lỗi. Các bước đã xong vẫn giữ; mở lại để hoàn tất phần còn lại.',
+    'vote.st.writeInConnect':'Kết nối ví trước đã.',
+    'vote.st.writeInNoPrice':'Hiện không đọc được giá $RWI nên không thể báo phí.',
+    'vote.st.writeInNote':'Ba giao dịch riêng: chuyển token không mang thông điệp, nên đề cử và mỗi khoản thanh toán được ký riêng. Danh mục là tập con đã xác minh của The Giving Block, không phải toàn bộ danh sách.'
+  ,
+    'vote.st.openSlot':'Chỗ trống',
+    'vote.st.openSlotHint':'Dành cho đề cử của người nắm giữ',
+    'vote.st.writeInTag':'3 chỗ cho người nắm giữ · 5$ bằng $RWI'
+  ,
+    'vote.st.boxDelegated':'Địa chỉ hòm phiếu là ví tài khoản thông minh (EIP-7702). Calldata gửi đến sẽ chạy hợp đồng được ủy quyền và bị hoàn, nên không ghi được phiếu. Cần một địa chỉ thường không có mã.'
+  ,
+    'vote.st.writeInAll':'Tất cả {n} tổ chức · gõ để lọc',
+    'vote.st.writeInMatches':'{n} kết quả'
+  ,
+    'cause.hunger':'Đói và tiếp cận thực phẩm',
+    'cause.homeless':'Vô gia cư và nhà ở',
+    'cause.animals':'Động vật & hoang dã',
+    'cause.health':'Sức khỏe & y tế',
+    'cause.children':'Trẻ em & thanh thiếu niên',
+    'cause.education':'Giáo dục & đào tạo',
+    'cause.water':'Nước & vệ sinh',
+    'cause.environment':'Môi trường & khí hậu',
+    'cause.veterans':'Cựu chiến binh & quân nhân',
+    'cause.refugees':'Người tị nạn & di dời',
+    'cause.disaster':'Ứng phó thảm họa',
+    'cause.mental':'Sức khỏe tâm thần',
+    'cause.rights':'Nhân quyền & công lý',
+    'cause.faith':'Dựa trên đức tin',
+    'cause.arts':'Nghệ thuật & văn hóa',
+    'cause.community':'Quỹ cộng đồng',
+    'cause.other':'Hoạt động từ thiện chung',
+    'vote.st.pvNote':'Lĩnh vực được suy ra từ tên. Trang này không lấy được mô tả từ The Giving Block; hãy mở trang của họ để biết tổ chức thực sự làm gì.',
+    'vote.st.pvOpen':'Mở trang của họ ↗',
+    'vote.st.pvChoose':'Chọn tổ chức này'
   },
   hi: {
     'nav.home.arrow':'← rwihood.org',
@@ -1041,6 +1541,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'आपका वोट',
     'vote.st.yoursPending':'आपका वोट · पुष्टि हो रही'
+  ,
+    'vote.st.writeInBtn':'नामांकित करें',
+    'vote.st.writeInTitle':'एक संगठन नामांकित करें',
+    'vote.st.writeInLede':'छह मतपत्र स्थानों में से तीन धारकों द्वारा नामांकित संगठनों के लिए आरक्षित हैं। The Giving Block से कोई भी चुनें।',
+    'vote.st.writeInCost':'लागत $RWI में {usd} डॉलर (~{rwi}) — {dev} डॉलर डेव वॉलेट को, {burn} डॉलर बर्न।',
+    'vote.st.writeInSearch':'संगठन खोजें',
+    'vote.st.writeInNone':'सत्यापित निर्देशिका में कोई मेल नहीं।',
+    'vote.st.writeInDup':'वह संगठन पहले से स्थायी उम्मीदवार है।',
+    'vote.st.writeInSubmit':'नामांकन भेजें',
+    'vote.st.writeInBy':'एक धारक द्वारा नामांकित',
+    'vote.st.wiStep1':'ऑनचेन नामांकन',
+    'vote.st.wiStep2':'डेव हिस्सा भुगतान',
+    'vote.st.wiStep3':'बाकी बर्न करें',
+    'vote.st.wiSigning':'अपने वॉलेट में 3 में से {n} लेनदेन की पुष्टि करें…',
+    'vote.st.writeInDone':'नामांकन भेजा गया। तीनों लेनदेन इंडेक्स होने पर दिखेगा।',
+    'vote.st.writeInCancel':'रद्द। पूर्ण किए गए चरण मान्य रहते हैं।',
+    'vote.st.writeInFail':'कुछ विफल हुआ। पूर्ण चरण बने रहते हैं; बाकी पूरा करने के लिए फिर खोलें।',
+    'vote.st.writeInConnect':'पहले वॉलेट कनेक्ट करें।',
+    'vote.st.writeInNoPrice':'अभी $RWI मूल्य नहीं पढ़ा जा सकता, इसलिए शुल्क नहीं बताया जा सकता।',
+    'vote.st.writeInNote':'तीन अलग लेनदेन: टोकन ट्रांसफर में संदेश नहीं जाता, इसलिए नामांकन और हर भुगतान अलग-अलग हस्ताक्षरित होते हैं। निर्देशिका The Giving Block का सत्यापित उपसमुच्चय है, पूरी सूची नहीं।'
+  ,
+    'vote.st.openSlot':'खाली स्थान',
+    'vote.st.openSlotHint':'धारक नामांकन हेतु आरक्षित',
+    'vote.st.writeInTag':'धारकों के लिए 3 स्थान · $RWI में $5'
+  ,
+    'vote.st.boxDelegated':'मतपेटी पता एक स्मार्ट-अकाउंट वॉलेट (EIP-7702) है। भेजा गया calldata प्रत्यायोजित अनुबंध चलाता है और वापस हो जाता है, इसलिए वोट दर्ज नहीं हो सकते। बिना कोड वाला सामान्य पता चाहिए।'
+  ,
+    'vote.st.writeInAll':'सभी {n} संगठन · फ़िल्टर हेतु टाइप करें',
+    'vote.st.writeInMatches':'{n} मेल'
+  ,
+    'cause.hunger':'भूख और भोजन पहुँच',
+    'cause.homeless':'बेघरी और आवास',
+    'cause.animals':'पशु और वन्यजीव',
+    'cause.health':'स्वास्थ्य और चिकित्सा',
+    'cause.children':'बच्चे और युवा',
+    'cause.education':'शिक्षा और प्रशिक्षण',
+    'cause.water':'जल और स्वच्छता',
+    'cause.environment':'पर्यावरण और जलवायु',
+    'cause.veterans':'पूर्व सैनिक और सेवाकर्मी',
+    'cause.refugees':'शरणार्थी और विस्थापन',
+    'cause.disaster':'आपदा प्रतिक्रिया',
+    'cause.mental':'मानसिक स्वास्थ्य',
+    'cause.rights':'मानवाधिकार और न्याय',
+    'cause.faith':'आस्था-आधारित',
+    'cause.arts':'कला और संस्कृति',
+    'cause.community':'सामुदायिक फाउंडेशन',
+    'cause.other':'सामान्य धर्मार्थ कार्य',
+    'vote.st.pvNote':'क्षेत्र नाम से अनुमानित। यह साइट The Giving Block से विवरण नहीं ला सकती; संगठन वास्तव में क्या करता है यह जानने के लिए उनका पृष्ठ खोलें।',
+    'vote.st.pvOpen':'उनका पृष्ठ खोलें ↗',
+    'vote.st.pvChoose':'इसे चुनें'
   },
   de: {
     'nav.home.arrow':'← rwihood.org',
@@ -1134,6 +1684,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'Deine Stimme',
     'vote.st.yoursPending':'Deine Stimme · wird bestaetigt'
+  ,
+    'vote.st.writeInBtn':'Vorschlagen',
+    'vote.st.writeInTitle':'Eine Organisation vorschlagen',
+    'vote.st.writeInLede':'Drei der sechs Plaetze sind fuer von Inhabern vorgeschlagene Organisationen reserviert. Waehle eine beliebige von The Giving Block.',
+    'vote.st.writeInCost':'Kostet {usd}$ in $RWI (~{rwi}) — {dev}$ an die Dev-Wallet, {burn}$ verbrannt.',
+    'vote.st.writeInSearch':'Organisationen suchen',
+    'vote.st.writeInNone':'Kein Treffer im geprueften Verzeichnis.',
+    'vote.st.writeInDup':'Diese Organisation ist bereits staendige Kandidatin.',
+    'vote.st.writeInSubmit':'Vorschlag senden',
+    'vote.st.writeInBy':'Von einem Inhaber vorgeschlagen',
+    'vote.st.wiStep1':'Onchain vorschlagen',
+    'vote.st.wiStep2':'Dev-Anteil zahlen',
+    'vote.st.wiStep3':'Rest verbrennen',
+    'vote.st.wiSigning':'Bestaetige Transaktion {n} von 3 in deiner Wallet…',
+    'vote.st.writeInDone':'Vorschlag gesendet. Er erscheint, sobald alle drei Transaktionen indexiert sind.',
+    'vote.st.writeInCancel':'Abgebrochen. Bereits erledigte Schritte bleiben bestehen.',
+    'vote.st.writeInFail':'Etwas ist fehlgeschlagen. Erledigte Schritte bleiben; erneut oeffnen zum Abschliessen.',
+    'vote.st.writeInConnect':'Verbinde zuerst eine Wallet.',
+    'vote.st.writeInNoPrice':'Der $RWI-Preis ist gerade nicht lesbar, daher laesst sich die Gebuehr nicht beziffern.',
+    'vote.st.writeInNote':'Drei getrennte Transaktionen: Ein Token-Transfer traegt keine Nachricht, daher werden Vorschlag und jede Zahlung einzeln signiert. Das Verzeichnis ist eine gepruefte Teilmenge von The Giving Block, nicht die vollstaendige Liste.'
+  ,
+    'vote.st.openSlot':'Freier Platz',
+    'vote.st.openSlotHint':'Reserviert fuer einen Inhaber-Vorschlag',
+    'vote.st.writeInTag':'3 Plaetze fuer Inhaber · 5$ in $RWI'
+  ,
+    'vote.st.boxDelegated':'Die Wahlurnen-Adresse ist eine Smart-Account-Wallet (EIP-7702). Gesendete Calldata fuehrt den delegierten Vertrag aus und schlaegt fehl, Stimmen koennen dort nicht erfasst werden. Noetig ist eine einfache Adresse ohne Code.'
+  ,
+    'vote.st.writeInAll':'Alle {n} Organisationen · tippen zum Filtern',
+    'vote.st.writeInMatches':'{n} Treffer'
+  ,
+    'cause.hunger':'Hunger & Ernaehrung',
+    'cause.homeless':'Obdachlosigkeit & Wohnen',
+    'cause.animals':'Tiere & Wildtiere',
+    'cause.health':'Gesundheit & Medizin',
+    'cause.children':'Kinder & Jugend',
+    'cause.education':'Bildung & Ausbildung',
+    'cause.water':'Wasser & Hygiene',
+    'cause.environment':'Umwelt & Klima',
+    'cause.veterans':'Veteranen & Soldaten',
+    'cause.refugees':'Fluechtlinge & Vertreibung',
+    'cause.disaster':'Katastrophenhilfe',
+    'cause.mental':'Psychische Gesundheit',
+    'cause.rights':'Menschenrechte & Justiz',
+    'cause.faith':'Glaubensbasiert',
+    'cause.arts':'Kunst & Kultur',
+    'cause.community':'Gemeinschaftsstiftungen',
+    'cause.other':'Allgemeine gemeinnuetzige Arbeit',
+    'vote.st.pvNote':'Themenfeld aus dem Namen abgeleitet. Diese Seite kann keine Beschreibungen von The Giving Block laden — oeffne deren Seite fuer die tatsaechliche Arbeit.',
+    'vote.st.pvOpen':'Seite oeffnen ↗',
+    'vote.st.pvChoose':'Diese waehlen'
   },
   id: {
     'nav.home.arrow':'← rwihood.org',
@@ -1227,6 +1827,56 @@ const TRANSLATIONS = {
   ,
     'vote.st.yours':'Suara Anda',
     'vote.st.yoursPending':'Suara Anda · mengonfirmasi'
+  ,
+    'vote.st.writeInBtn':'Usulkan',
+    'vote.st.writeInTitle':'Usulkan sebuah organisasi',
+    'vote.st.writeInLede':'Tiga dari enam slot surat suara disediakan untuk organisasi usulan pemegang. Pilih salah satu dari The Giving Block.',
+    'vote.st.writeInCost':'Biaya {usd}$ dalam $RWI (~{rwi}) — {dev}$ ke dompet dev, {burn}$ dibakar.',
+    'vote.st.writeInSearch':'Cari organisasi',
+    'vote.st.writeInNone':'Tidak ada kecocokan di direktori terverifikasi.',
+    'vote.st.writeInDup':'Organisasi itu sudah menjadi kandidat tetap.',
+    'vote.st.writeInSubmit':'Kirim usulan',
+    'vote.st.writeInBy':'Diusulkan oleh pemegang',
+    'vote.st.wiStep1':'Usulkan onchain',
+    'vote.st.wiStep2':'Bayar bagian dev',
+    'vote.st.wiStep3':'Bakar sisanya',
+    'vote.st.wiSigning':'Konfirmasi transaksi {n} dari 3 di dompet Anda…',
+    'vote.st.writeInDone':'Usulan terkirim. Akan muncul setelah ketiga transaksi terindeks.',
+    'vote.st.writeInCancel':'Dibatalkan. Langkah yang selesai tetap berlaku.',
+    'vote.st.writeInFail':'Ada yang gagal. Langkah selesai tetap; buka lagi untuk menyelesaikan sisanya.',
+    'vote.st.writeInConnect':'Hubungkan dompet dulu.',
+    'vote.st.writeInNoPrice':'Tidak dapat membaca harga $RWI sekarang, jadi biaya tidak bisa dihitung.',
+    'vote.st.writeInNote':'Tiga transaksi terpisah: transfer token tidak membawa pesan, jadi usulan dan tiap pembayaran ditandatangani sendiri. Direktori adalah subset terverifikasi The Giving Block, bukan daftar lengkapnya.'
+  ,
+    'vote.st.openSlot':'Slot kosong',
+    'vote.st.openSlotHint':'Disediakan untuk usulan pemegang',
+    'vote.st.writeInTag':'3 slot untuk pemegang · $5 dalam $RWI'
+  ,
+    'vote.st.boxDelegated':'Alamat kotak suara adalah dompet akun pintar (EIP-7702). Calldata yang dikirim menjalankan kontrak terdelegasi dan dibatalkan, jadi suara tidak bisa dicatat. Diperlukan alamat biasa tanpa kode.'
+  ,
+    'vote.st.writeInAll':'Semua {n} organisasi · ketik untuk menyaring',
+    'vote.st.writeInMatches':'{n} cocok'
+  ,
+    'cause.hunger':'Kelaparan & akses pangan',
+    'cause.homeless':'Tunawisma & perumahan',
+    'cause.animals':'Hewan & satwa liar',
+    'cause.health':'Kesehatan & kedokteran',
+    'cause.children':'Anak & remaja',
+    'cause.education':'Pendidikan & pelatihan',
+    'cause.water':'Air & kebersihan',
+    'cause.environment':'Lingkungan & iklim',
+    'cause.veterans':'Veteran & anggota militer',
+    'cause.refugees':'Pengungsi & pengungsian',
+    'cause.disaster':'Tanggap bencana',
+    'cause.mental':'Kesehatan mental',
+    'cause.rights':'HAM & keadilan',
+    'cause.faith':'Berbasis iman',
+    'cause.arts':'Seni & budaya',
+    'cause.community':'Yayasan komunitas',
+    'cause.other':'Kerja amal umum',
+    'vote.st.pvNote':'Bidang disimpulkan dari nama. Situs ini tidak bisa mengambil deskripsi dari The Giving Block; buka halaman mereka untuk tahu apa yang organisasi lakukan.',
+    'vote.st.pvOpen':'Buka halaman mereka ↗',
+    'vote.st.pvChoose':'Pilih yang ini'
   }
 };
 
@@ -1601,6 +2251,85 @@ document.addEventListener('DOMContentLoaded', function(){
   .cand[aria-pressed="true"].is-mine{border-color:var(--ink)}
   @keyframes yoursPulse{0%,100%{opacity:.75}50%{opacity:.3}}
   @media (prefers-reduced-motion:reduce){ .cand .yours.pending{animation:none} }
+
+  /* ---------- write-ins ---------- */
+  #writeInModal{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;
+    padding:20px;background:rgba(11,11,9,.74);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  #writeInModal.open{display:flex}
+  .wi-panel{width:min(560px,100%);max-height:88vh;overflow:auto;background:var(--ink);color:var(--lime);
+    border:1px solid var(--lime);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+  .wi-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;
+    border-bottom:1px solid rgba(204,254,6,.35);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  #wiClose{background:transparent;color:inherit;border:1px solid rgba(204,254,6,.5);border-radius:999px;
+    width:26px;height:26px;flex:none;cursor:pointer;font-size:14px;line-height:1;display:grid;place-items:center}
+  #wiClose:hover,#wiClose:focus-visible{background:rgba(204,254,6,.12);outline:none}
+  .wi-body{padding:18px 16px 20px}
+  .wi-lede{font-size:15px;line-height:1.5;margin:0 0 10px}
+  .wi-cost{font-family:var(--mono);font-size:12px;margin:0 0 16px;opacity:.85}
+  .wi-label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.65;margin:0 0 7px}
+  #wiSearch{width:100%;padding:11px 13px;border-radius:10px;border:1px solid rgba(204,254,6,.4);
+    background:transparent;color:var(--lime);font-family:var(--mono);font-size:13px;box-sizing:border-box}
+  #wiSearch:focus{border-color:var(--lime);outline:none}
+  .wi-results{max-height:300px;overflow:auto;border-radius:10px;overscroll-behavior:contain}
+  .wi-results:not(:empty){border:1px solid rgba(204,254,6,.28)}
+  .wi-opt{display:block;width:100%;text-align:left;background:transparent;color:inherit;border:0;
+    border-bottom:1px solid rgba(204,254,6,.16);padding:10px 12px;cursor:pointer;font-size:14px;line-height:1.3}
+  .wi-opt:last-child{border-bottom:0}
+  .wi-opt:hover,.wi-opt:focus-visible,.wi-opt.on{background:rgba(204,254,6,.14);outline:none}
+  .wi-opt .sl{display:block;font-family:var(--mono);font-size:9.5px;opacity:.5;margin-top:2px}
+  .wi-empty{padding:12px;font-family:var(--mono);font-size:11px;opacity:.6}
+  .wi-chosen{margin-top:14px;padding:11px 13px;border:1px solid var(--lime);border-radius:10px;font-size:14px}
+  .wi-chosen .sl{display:block;font-family:var(--mono);font-size:9.5px;opacity:.6;margin-top:3px}
+  .wi-steps{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:7px}
+  .wi-steps li{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11.5px;opacity:.55}
+  .wi-steps li .n{flex:none;width:20px;height:20px;border:1px solid currentColor;border-radius:999px;
+    display:grid;place-items:center;font-size:10px}
+  .wi-steps li.doing{opacity:1}
+  .wi-steps li.done{opacity:1}
+  .wi-steps li.done .n{background:var(--lime);color:var(--ink);border-color:var(--lime)}
+  .wi-actions{margin-top:18px}
+  #wiSubmit{background:var(--lime);color:var(--ink);border:1px solid var(--lime);border-radius:999px;
+    padding:11px 20px;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+  #wiSubmit[disabled]{opacity:.4;cursor:not-allowed}
+  .wi-status{font-family:var(--mono);font-size:11.5px;margin:12px 0 0;min-height:1.3em}
+  .wi-status.err{color:#ff8a8a}
+  .wi-note{font-size:12px;line-height:1.55;opacity:.6;margin:16px 0 0}
+  .cand.writein .cause{opacity:.75}
+
+  .wi-inline{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .wi-tag{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;opacity:.6;white-space:nowrap}
+  .cand.open-slot{border-style:dashed;opacity:.55;cursor:pointer}
+  .cand.open-slot:hover,.cand.open-slot:focus-visible{opacity:.95;border-style:solid;outline:none}
+  .cand.open-slot .radio{opacity:.4}
+  .cand.open-slot .name{opacity:.9}
+  .cand.open-slot .pct{opacity:.4}
+  @media (max-width:640px){ .wi-tag{white-space:normal} }
+
+  .wi-count{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    opacity:.55;margin:9px 0 5px}
+
+  .wi-scroll{position:relative}
+  .wi-preview{
+    position:absolute;right:8px;width:min(250px,72%);z-index:5;
+    background:var(--ink);border:1px solid var(--lime);border-radius:12px;padding:12px;
+    box-shadow:0 14px 34px rgba(0,0,0,.5);pointer-events:auto;
+  }
+  .wi-pv-top{display:flex;align-items:center;gap:10px}
+  .wi-pv-logo{width:44px;height:44px;flex:none;object-fit:contain;background:#fff;border-radius:8px}
+  .wi-pv-noimg{display:grid;place-items:center;background:rgba(204,254,6,.12);color:var(--lime);font-size:16px}
+  .wi-pv-id{min-width:0}
+  .wi-pv-name{display:block;font-size:14px;line-height:1.25}
+  .wi-pv-cause{display:block;margin-top:3px;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:.1em;text-transform:uppercase;opacity:.65}
+  .wi-pv-note{font-size:11.5px;line-height:1.5;opacity:.6;margin:10px 0 0}
+  .wi-pv-link{display:inline-block;margin-top:9px;font-family:var(--mono);font-size:10px;
+    letter-spacing:.1em;text-transform:uppercase;text-decoration:none;
+    border-bottom:1px solid rgba(204,254,6,.5)}
+  .wi-pv-link:hover{border-bottom-color:var(--lime)}
+  .wi-pv-choose{display:block;width:100%;margin-top:11px;padding:9px;cursor:pointer;
+    background:var(--lime);color:var(--ink);border:0;border-radius:999px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
+  @media (max-width:520px){ .wi-preview{position:static;width:auto;margin-top:8px} }
 </style>
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
 <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
@@ -1673,6 +2402,7 @@ document.addEventListener('DOMContentLoaded', function(){
         <button class="btn" id="voteBtn" type="button" disabled data-i18n="vote.cast">Cast vote</button>
         <button class="btn ghost" id="refreshBtn" type="button" data-i18n="vote.refresh">Refresh tally</button>
         <span class="muted mono" id="myVote"></span>
+        <span class="wi-inline"><button class="btn ghost" id="writeInBtn" type="button" aria-haspopup="dialog" data-i18n="vote.st.writeInBtn">Write in</button><span class="wi-tag" data-i18n="vote.st.writeInTag">3 slots for holders · $5 in $RWI</span></span>
         <button class="btn owner-only" id="nextRoundBtn" type="button" aria-controls="ownerSection" aria-expanded="false" hidden data-i18n="vote.nextround">Next round &rarr;</button>
       </div>
       <p class="status" id="voteStatus"></p>
@@ -2108,6 +2838,330 @@ function rankAcuteByCrises(counts){
   }).map(function(x){ return x.slug; });
 }
 
+
+/* ---------------------------------------------------------------------------
+   WRITE-INS
+
+   Three of the six ballot slots are reserved for organisations nominated by
+   holders. A nomination costs $5 of $RWI, split as the founder specified:
+   $2 to the dev wallet, $3 burned to the dead address.
+
+   Three things about this are worth stating plainly rather than burying:
+
+   1. IT IS THREE TRANSACTIONS. An ERC-20 transfer carries no room for a
+      message, so paying two addresses is two transfers, and the nomination
+      itself is a third zero-value transaction to the ballot box. There is no
+      contract here to bundle them, and adding one would mean an audit and a
+      deployment. The UI walks the three steps explicitly.
+
+   2. THE DIRECTORY IS A VERIFIED SUBSET, NOT ALL 1,500+. The Giving Block
+      publishes no public API, so every entry below was read off their own
+      directory page and its slug checked. Shipping the full list would mean
+      guessing slugs, and a guessed slug is a dead donation link.
+
+   3. THE $5 IS PRICED AT SUBMISSION TIME. $RWI has no fixed dollar value, so
+      the token amount is computed from the live pair price when the nomination
+      is made. A big price move between quoting and signing changes what $5
+      buys; the quote is re-fetched before each step for that reason.
+   ------------------------------------------------------------------------- */
+const WRITEIN_TAG      = 'RWIWRITEIN:';                                    // RWIWRITEIN:<round>:<slug>
+const WRITEIN_USD      = 5;
+const WRITEIN_DEV_USD  = 2;
+const WRITEIN_BURN_USD = 3;
+const WRITEIN_DEV      = '0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5';     // founder's dev wallet
+const WRITEIN_BURN     = '0x000000000000000000000000000000000000dEaD';     // dead address
+const WRITEIN_SLOTS    = 3;
+const WRITEIN_TOLERANCE = 0.80;   // accept a payment worth >=80% of quote; price moves between steps
+const RWI_PAIR = 'https://api.dexscreener.com/latest/dex/pairs/robinhood/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697';
+
+/* Verified against The Giving Block's public directory. [slug, display name] */
+const TGB_DIRECTORY = [
+  ['2535-water','2535 Water','organization_logo%2F8419c8f0-b0b0-4915-b3ae-6f385c229e35.jpg'],
+  ['3strands-global-foundation','3Strands Global Foundation','organization_logo%2F9a08c185-603e-4496-803f-187d0e1117d3.jpg'],
+  ['a-t-childrens-project','A-T Children\'s Project','organization_logo%2F982f240a-373a-4383-890f-88c3718ce032.jpeg'],
+  ['achieva','Achieva','organization_logo%2F3e836a4c-0cec-4d9d-b1a3-44181c5cf89f.jpg'],
+  ['action-on-poverty-limited','Action on Poverty','organization_logo%2Fae1f9204-b80a-4859-8980-fa5d7c9b49af.jpg'],
+  ['action-on-smoking-and-health','Action on Smoking and Health','organization_logo%2F1a1e9785-9ecd-4567-9ab4-f0f18244d9c6.jpg'],
+  ['african-enterprise','African Enterprise','organization_logo%2F8504889c-421c-4770-996d-8c431f03865b.jpeg'],
+  ['akron-canton-regional-foodbank','Akron-Canton Regional Foodbank','organization_logo/a35f2f3a-7cca-4bad-8a4e-5d705c3d0344.jpg'],
+  ['ali-forney-center','Ali Forney Center','organization_logo%2Fd558b2b0-2c57-4f0b-bb34-164be39ae7eb.jpg'],
+  ['all-star-code','All Star Code','organization_logo%2F0381500e-be21-4f86-865e-9d2d0ad4fdaa.jpeg'],
+  ['alliance-for-safety-and-justice','Alliance for Safety and Justice','organization_logo%2F99c818f7-5ee2-4ba1-9312-4125cbee0c36.jpeg'],
+  ['american-hiking-society','American Hiking Society','organization_logo/a894671e-df8b-4ab8-af1e-685b2b6cb174.jpg'],
+  ['animal-rescue-corps-inc','Animal Rescue Corps','organization_logo%2F5090d1f5-b7fc-44f5-afe0-c6862bbd7e42.jpeg'],
+  ['arlington-free-clinic','Arlington Free Clinic','organization_logo%2Fd6060ac6-a279-47e7-b689-b113c5768f96.jpg'],
+  ['atlanta-community-food-bank','Atlanta Community Food Bank','organization_logo/276ff0ef-b61c-4f09-bc8a-c9e58f858f13.jpg'],
+  ['arizona-coalition-to-end-sexual-and-domestic-violence','AZ Coalition to End Sexual & Domestic Violence','organization_logo%2F6d0c97b8-0337-411f-95a5-dc925fc9b568.jpeg'],
+  ['baylor-college-of-medicine','Baylor College of Medicine','organization_logo%2Ff7f14b6f-bc71-42b8-a66d-2da142f874aa.jpeg'],
+  ['berkeley-east-bay-humane-society','Berkeley-East Bay Humane Society','organization_logo%2F19b4c12e-cf21-4dab-9b06-d84d54449803.jpg'],
+  ['bethany-christian-services','Bethany Christian Services','organization_logo%2Ff6bf7fca-2a31-4777-b574-14f1514dad58.jpg'],
+  ['born-free-usa','Born Free USA','organization_logo%2F48f40f23-f219-46cb-9c5c-7664b9b62aae.jpeg'],
+  ['boys-girls-clubs-of-martin-county','Boys & Girls Clubs of Martin County','organization_logo%2F6dd2937b-a1a7-43c4-bd44-f45e62677779.jpg'],
+  ['boys-hope-girls-hope','Boys Hope Girls Hope','organization_logo%2F6877a55b-cc05-401e-9b3d-6815e82c484b.jpeg'],
+  ['broadway-cares-equity-fights-aids','Broadway Cares/Equity Fights AIDS','organization_logo/b5c7d3c7-1f23-4047-99a8-81c22afda1b8.jpg'],
+  ['bye-bye-plastic','Bye Bye Plastic','organization_logo/08c00549-27d9-4d04-8eb9-6c9311ae014b.jpg'],
+  ['california-institute-of-technology','California Institute of Technology','organization_logo%2F0dd1a433-8ab6-4ba8-8e92-46640c2f8ffd.jpg'],
+  ['cascades-raptor-center','Cascades Raptor Center','organization_logo%2Fbb86d57f-6284-4eec-b628-f50496d81854.jpg'],
+  ['center-for-excellence-in-education','Center for Excellence in Education','organization_logo%2Ffab4b50e-45a4-4a61-98ab-254201e57a7c.jpg'],
+  ['certified-humane','Certified Humane','organization_logo%2Fd70af7bf-5a82-453a-8ffa-fc344f74c819.jpg'],
+  ['charity-right','Charity Right','organization_logo%2F8a2512ba-475c-4b89-860a-4386cdc3282d.jpeg'],
+  ['children-change-colombia','Children Change Colombia','organization_logo%2Ff8013e91-849a-415c-a9d3-a21599f496ef.jpg'],
+  ['chimp-haven','Chimp Haven','organization_logo%2Fb3289c67-efe9-44e4-b0b1-3bf90000738b.jpg'],
+  ['choose-love','Choose Love','organization_logo%2F721f88f0-70ba-4786-abf2-2c99e901537d.jpg'],
+  ['circle-of-care','Circle of Care for Families with Cancer','organization_logo%2F4314a3a3-a0b2-4a65-863e-d176fd33a1e0.jpg'],
+  ['climateforce-limited','ClimateForce','organization_logo/90d8858c-59f1-4c8e-a2b1-9d1683abd26f.jpg'],
+  ['coalition-for-the-homeless-inc','Coalition for the Homeless','organization_logo%2F3650276b-f9b0-47c7-bd26-1ce45d0a5e75.jpg'],
+  ['common-sense-media','Common Sense Media','organization_logo%2Ff6ac608b-8fb5-4938-bbda-a6414ae25b1c.jpg'],
+  ['community-action-partnership-of-orange-county-capoc','Community Action Partnership of Orange County','organization_logo%2F765f940b-6b9e-4bef-9cf2-0d4c8e6019a1.jpeg'],
+  ['the-community-foundation-for-greater-atlanta','Community Foundation for Greater Atlanta','organization_logo/219b437f-d240-4161-b140-686c8ffc8f58.jpg'],
+  ['compassion-uk','Compassion UK','organization_logo%2Fe2c29d44-01a3-4685-a62a-87d6e56972e6.jpg'],
+  ['conard-house','Conard House','organization_logo%2F9dd58d41-85e6-4843-b229-42ba42c30556.jpg'],
+  ['conservation-earth-wildmind','Conservation Earth / Wildmind','organization_logo%2F5a435d02-11ae-440b-af4b-4ef9b7460f1e.jpeg'],
+  ['cornerstone-community-outreach','Cornerstone Community Outreach','organization_logo/4ea5c003-1671-44ab-9b80-4ab0704f43f3.jpg'],
+  ['crisis-text-line-inc','Crisis Text Line','organization_logo%2Fa2e5651c-422a-4adf-9d5b-21a1f0cb0bb8.jpeg'],
+  ['csforall','CSforALL','organization_logo%2F21fa326f-f917-4936-b235-4e97824a3ff9.jpg'],
+  ['california-state-university-northridge-foundation','CSU Northridge Foundation','organization_logo%2F07aa25d1-3914-4291-bca5-22e78a0e1a04.jpg'],
+  ['dallas-pets-alive','Dallas Pets Alive','organization_logo%2F04042a91-e3d4-4c2b-bb18-bd2d8e2456dd.jpg'],
+  ['deaf-plus-adult-community','Deaf Plus Adult Community','organization_logo%2F5146c216-6306-4d9e-9f0c-6a17ef5b0bc2.jpg'],
+  ['diabetes-research-institute-foundation','Diabetes Research Institute Foundation','organization_logo%2F4df0f2fa-5199-4973-893b-7312b3fcffaa.jpg'],
+  ['disabled-american-veterans','Disabled American Veterans','organization_logo/82274c02-8b2e-41af-b389-fae9393836ae.jpg'],
+  ['easter-seals-inc','Easterseals','organization_logo%2Ffd91f4e5-76b8-4d32-b2a2-00c65f3ce28f.jpg'],
+  ['easterseals-swfl','Easterseals Southwest Florida','organization_logo%2F2113917c-f8de-47d0-be45-dc91e497047e.jpg'],
+  ['eastwood-ranch-foundation','Eastwood Ranch Foundation','organization_logo%2Fd4e8acb9-0ce6-444d-a7fd-1054bc70a4f9.jpg'],
+  ['elizabeth-glaser-pediatric-aids-foundation','Elizabeth Glaser Pediatric AIDS Foundation','organization_logo%2Fd5fa656e-24c4-4210-b409-d7d4db043ce5.jpeg'],
+  ['ella-baker-center-for-human-rights','Ella Baker Center for Human Rights','organization_logo/9e57ec98-30b8-4466-ac02-c7df12a5e729.jpg'],
+  ['emmanuel-cancer-foundation','Emmanuel Cancer Foundation','organization_logo%2Fdc6d26e2-669a-449f-955a-3a0b9de9e2d3.jpg'],
+  ['entryway','Entryway','organization_logo/d574b19f-f16e-4c39-8c51-8099e9ea3c6c.jpg'],
+  ['family-promise-greater-phoenix','Family Promise - Greater Phoenix','FamilyPromiseGreaterPhoenix.jpg'],
+  ['feeding-pets-of-the-homeless','Feeding Pets of the Homeless','organization_logo%2F00c55083-0e20-48fa-a307-439ecfa5e438.jpeg'],
+  ['first-graduate','First Graduate','organization_logo%2Fb6d18b29-0002-4543-83a5-832fb1f3ea3b.jpg'],
+  ['florence-immigrant-refugee-rights-project','Florence Immigrant & Refugee Rights Project','organization_logo%2Fb69d1495-8cce-4a98-965a-e1671fff9193.jpeg'],
+  ['food-bank-of-iowa','Food Bank of Iowa','organization_logo%2Ff340a600-fe68-4238-b772-4b25d7883160.jpg'],
+  ['food-bank-of-northeast-georgia-inc','Food Bank of Northeast Georgia','organization_logo%2Ff79f8632-7cd5-4e7d-aa8d-5925e27fde68.jpeg'],
+  ['food-share-of-ventura-county','Food Share of Ventura County','organization_logo%2Fb6e7018e-9e58-4044-bd7b-bc498bf8ebe3.jpg'],
+  ['forgotten-animals','Forgotten Animals','ForgottenAnimals.jpg'],
+  ['forward-edge-international','Forward Edge International','organization_logo%2F4da7928e-614f-4c4b-9232-86e2860ef6cd.jpg'],
+  ['foxg1-research-foundation','FOXG1 Research Foundation','organization_logo%2F15aed73e-da03-43d2-9d36-3756340f9f4e.jpg'],
+  ['franciscan-university-of-steubenville','Franciscan University of Steubenville','organization_logo%2F92de182e-d156-4bdf-bf5e-9be15a7fbe8b.jpeg'],
+  ['free-arts-nyc','Free Arts NYC','organization_logo%2F8af5fd03-c2be-42cf-b0ab-10d568df030a.jpeg'],
+  ['freedom-community-center','Freedom Community Center','organization_logo%2F3195817c-c8eb-4ff2-bdf3-24056cea77fd.jpg'],
+  ['fresh-air-fund','Fresh Air Fund','organization_logo%2Fdd07a2ae-d728-4428-8725-5747627d820a.jpg'],
+  ['fresno-rescue-mission','Fresno Mission','organization_logo%2F859bb36b-0a17-4073-9e5e-d9e5d4038ef2.jpg'],
+  ['friends-of-yad-sarah','Friends of Yad Sarah','organization_logo%2Fc4e8ff8c-04ce-40e4-aa3b-b77550f271c9.jpg'],
+  ['the-friendship-bridge','Friendship Bridge','organization_logo%2F6b4095e8-6575-44ad-be91-53e64c25dc0d.jpeg'],
+  ['fundlife-international','FundLife International','organization_logo%2Fa97b51d8-e396-42d8-938f-f5f89b628c70.jpg'],
+  ['gaia-global-health','GAIA Global Health','organization_logo%2F380d5062-4398-40fb-871a-37e2809f46ae.jpg'],
+  ['gbowee-peace-foundation-africa-usa','Gbowee Peace Foundation Africa-USA','organization_logo%2F47e6c17b-4de7-4389-b919-9df90a5ed081.jpg'],
+  ['girl-scouts-of-northeast-texas','Girl Scouts of Northeast Texas','organization_logo%2Fdd216069-1f37-4f11-a439-747484d8b947.jpg'],
+  ['giving-tuesday-inc','GivingTuesday','organization_logo%2F20068401-4039-47fa-9112-ea940c3d4082.jpg'],
+  ['glenrose-rehabilitation-hospital-foundation','Glenrose Rehabilitation Hospital Foundation','organization_logo%2F063025d8-b652-41e7-9101-8e9c42c59741.jpg'],
+  ['global-disaster-relief-team','Global Disaster Relief Team','organization_logo/483a26d4-3028-4a5c-ac79-1d042a432055.jpg'],
+  ['go-conscious-earth','Go Conscious Earth','organization_logo/0b986e7f-a368-46b4-8ca8-75de1ba960e7.jpeg'],
+  ['good-sports','Good Sports','organization_logo%2F409a2837-a875-4478-9e53-58df55944398.jpg'],
+  ['grace-gorillas','GRACE Gorillas','organization_logo%2F58d26c0f-cd13-4de5-a0b5-071ba2634909.jpg'],
+  ['greater-tacoma-community-foundation','Greater Tacoma Community Foundation','organization_logo%2F4312eec1-70fc-4015-b858-343d4d3beef7.jpeg'],
+  ['guide-dogs-for-the-blind','Guide Dogs for the Blind','organization_logo%2Fab74194c-26fc-41ca-a49a-2510f61e6eaa.jpg'],
+  ['habitat-for-humanity-greater-orlando-and-osceola-county','Habitat for Humanity Greater Orlando','organization_logo/c7c62538-6067-4cc1-9b58-2d4f4852d61e.jpg'],
+  ['habitat-for-humanity-international','Habitat for Humanity International','organization_logo%2F25784b31-e698-4934-8c97-e87d7143ec3e.jpg'],
+  ['habitat-for-humanity-nyc-westchester','Habitat for Humanity NYC & Westchester','organization_logo%2F08377c40-55f2-4b77-a31f-9b67a2328837.jpeg'],
+  ['habitat-for-humanity-of-cape-cod-inc','Habitat for Humanity of Cape Cod','organization_logo/018c8cbf-6366-4eaa-bf61-4a09b2c59a92.jpg'],
+  ['heart-of-america','Heart of America','organization_logo/5a4d88a7-9e6e-4e36-9e0d-127e26683d89.jpg'],
+  ['help-lesotho','Help Lesotho','organization_logo/877854d1-4b9b-416d-a756-3d416b316291.jpg'],
+  ['homestart-inc','HomeStart','organization_logo%2Fb817975d-5019-4a0a-abd9-1406f374965d.jpeg'],
+  ['hope-and-comfort-inc','Hope and Comfort','organization_logo%2F54d9d3b5-dab8-4018-8bda-6d5b36d27ff4.jpeg'],
+  ['hope-ministries','Hope Ministries','organization_logo/c274322e-5f44-47f2-8f99-630bf914973d.png'],
+  ['hope-rescue','Hope Rescue','organization_logo%2Ffe3bace1-7272-4d85-abba-8ab788a34e91.jpg'],
+  ['hopeway-foundation','HopeWay Foundation','organization_logo%2Fc1380ef0-d63a-4dcc-af53-1155e79a241f.jpg'],
+  ['hospice-of-santa-cruz-county','Hospice of Santa Cruz County','organization_logo%2F28686ff1-f3dc-49e6-ad96-37a1d4f6dffd.jpg'],
+  ['hospice-of-the-north-coast','Hospice of the North Coast','organization_logo%2Fafae9c1f-5bad-43ed-a30f-ecd30ce00451.jpg'],
+  ['house-of-ruth','House of Ruth','organization_logo/a6edf8da-dc96-4d38-b4ee-f996d649ff9f.jpg'],
+  ['human-i-t','Human-I-T','organization_logo%2F1da6cb26-d63f-4e42-ba7c-bd2a3d7cab8d.jpg'],
+  ['humane-society-for-southwest-washington','Humane Society for Southwest Washington','organization_logo%2Fa5bce1bf-d3d1-40fa-ab2e-602892aa0392.jpg'],
+  ['immigration-institute-of-the-bay-area','Immigration Institute of the Bay Area','organization_logo%2Fce6e41dd-fd20-48ca-81bd-3f8713206d33.jpeg'],
+  ['independence-historical-trust','Independence Historical Trust','organization_logo%2F7e685eaa-b834-4d18-877d-ef019064efb5.jpeg'],
+  ['india-partners','India Partners','organization_logo%2Fcc971b62-fcf4-474e-b825-2b0fa6e4d124.jpg'],
+  ['institute-for-social-policy-and-understanding','Institute for Social Policy and Understanding','organization_logo%2F93153826-67b4-4f04-9fca-357d8d6c78b0.jpg'],
+  ['international-bear-association','International Bear Association','organization_logo%2F7b71b250-e815-42e6-a959-8b5bd7813d02.jpg'],
+  ['internet-security-research-group','Internet Security Research Group','organization_logo%2F6ebdc694-8a84-4c30-afe7-8a9e1add1017.jpg'],
+  ['kids-in-tech','Kids in Tech','organization_logo/5b6249df-d68e-4e63-91b3-880d8bb467d5.jpg'],
+  ['kofi-annan-foundation','Kofi Annan Foundation','organization_logo%2F157e10fd-b5e9-4d0d-b413-bfb1db66f801.jpeg'],
+  ['lambda-legal','Lambda Legal','organization_logo/411a7e2a-fc5f-4afb-9aa9-4777042c87dd.jpg'],
+  ['lemons-of-love-inc','Lemons of Love','organization_logo%2F08ae8a46-bd58-4202-8969-f5872ca013dc.jpeg'],
+  ['life-saver-dogs','Life Saver Dogs','organization_logo%2Fff2be8e6-eaf4-4026-9d2a-6833a5f5f9bc.jpg'],
+  ['lighthouse-youth-family-services','Lighthouse Youth & Family Services','organization_logo%2Fd77baaa7-b7a1-4316-9bca-13af2a4ac8ec.jpg'],
+  ['lonely-whale','Lonely Whale','organization_logo%2Fd0493426-c473-4c24-acff-ceb17b9b69d9.jpg'],
+  ['long-island-cares','Long Island Cares','organization_logo/2162801c-6a70-4f8f-8c2a-bc668b112813.png'],
+  ['los-angeles-county-museum-of-art','Los Angeles County Museum of Art','organization_logo%2Fb71c69bb-f68e-44f0-9ba6-7f5d51a424d1.jpeg'],
+  ['love146','Love146','organization_logo%2Ff3510bf1-99c0-4e18-a0c0-8f1f18c3cf5e.jpeg'],
+  ['lucky-duck-foundation','Lucky Duck Foundation','organization_logo%2F71de522b-85f6-44c1-8172-7e576e9bf61b.jpeg'],
+  ['maf-australia','MAF Australia','organization_logo%2Faa0268b2-f885-4025-9565-872cc73910d7.jpg'],
+  ['male-contraceptive-initiative','Male Contraceptive Initiative','organization_logo%2Fb7bd9c00-6ffd-4094-9ac7-0104e72e80da.jpg'],
+  ['marthas-kitchen','Martha\'s Kitchen','organization_logo%2Fb4c8ea4c-1ef4-4e70-8cf9-4df2d97d68bf.jpg'],
+  ['mathkind-global','Mathkind Global','organization_logo/d3c619c6-7b7f-4eb9-b5ad-810ebd7b2654.jpg'],
+  ['meals-on-wheels-of-alameda-county','Meals on Wheels of Alameda County','MealsonWheelsAlameda.jpg'],
+  ['mental-health-innovations','Mental Health Innovations','organization_logo%2F3241f09a-1ee0-4631-83b8-cc39942a16df.jpg'],
+  ['miracosta-college-foundation','MiraCosta College Foundation','organization_logo%2F55b1065d-9612-4288-a229-5a366c3b5786.jpeg'],
+  ['mountaineer-food-bank','Mountaineer Food Bank','organization_logo%2F3ae8ec5f-3630-4e2d-81f8-cf824d202265.jpg'],
+  ['move-united','Move United','organization_logo/e0284e0e-a729-47d1-9737-a1636dd11759.jpg'],
+  ['movember-canada','Movember Canada','organization_logo%2Fe2f5e135-3876-4713-a04d-23a1c95a83f4.jpg'],
+  ['muscular-dystrophy-association','Muscular Dystrophy Association','organization_logo%2F4956934f-357c-4cb9-9919-c413adcc4b87.jpg'],
+  ['nami-seattle','NAMI Seattle','organization_logo%2F0f9ddd8b-174c-453f-977b-24fb47227a5d.jpeg'],
+  ['national-black-chamber-of-commerce','National Black Chamber of Commerce'],
+  ['national-breast-cancer-foundation','National Breast Cancer Foundation','organization_logo/5309b0e6-6b15-459e-bed9-8f2ef2c12f92.jpg'],
+  ['national-multiple-sclerosis-society','National Multiple Sclerosis Society','organization_logo%2F2d4d24fb-2e4f-4b3a-9ad7-9c7a54f859f1.jpg'],
+  ['near-east-foundation','Near East Foundation','organization_logo/4e90399e-ae9e-4ff4-8a17-4a39dba0486a.jpg'],
+  ['nephcure-kidney-international','NephCure Kidney International','organization_logo%2F208d5dd3-e9a0-4920-bde9-31b293dfec01.jpg'],
+  ['norton-childrens-hospital-foundation','Norton Children\'s Hospital Foundation','organization_logo/8c1f4b5f-552a-4c83-aa95-7dcba2f4deca.jpg'],
+  ['npower','NPower','organization_logo/2f7607d9-82f9-47f9-b0ae-613ab9ca36b5.jpg'],
+  ['nten','NTEN','organization_logo/a9d8ca51-e362-4f12-843b-fb2e0e118052.jpeg'],
+  ['operation-delta-dog','Operation Delta Dog','organization_logo/4ebf256d-9476-4a24-9cc9-32ad56bb8807.jpg'],
+  ['operation-homefront','Operation Homefront','organization_logo/9a9ab242-d8fd-485c-b3c0-66b6b3398afb.jpg'],
+  ['oregon-humane-society','Oregon Humane Society','organization_logo%2F0ac9ef93-1c2e-4894-a746-dc92e4cf3cc2.jpeg'],
+  ['palm-beach-county-food-bank-inc','Palm Beach County Food Bank','organization_logo%2F2b99c39c-9528-47f1-89c5-55143e723c5f.jpg'],
+  ['pancreatic-cancer-action-network-inc','Pancreatic Cancer Action Network','organization_logo%2F9e773fa7-5abd-43b7-bb70-b8dff06e2451.jpeg'],
+  ['paws','PAWS','organization_logo%2F5631253d-953f-4bcc-a105-c63f1eb860d4.jpg'],
+  ['penny-appeal','Penny Appeal','organization_logo%2Fc6273adc-6e9c-4aba-804c-86e3c4299cd6.jpg'],
+  ['pepperdine-university','Pepperdine University','organization_logo%2F6625d4d4-dfa4-447b-b3fa-c647d4527e4f.jpg'],
+  ['pollinator-partnership','Pollinator Partnership','organization_logo/7a63d65f-0dd7-445f-9614-9ee162479d9d.jpg'],
+  ['pollinator-partnership-canada','Pollinator Partnership Canada','organization_logo%2Fa989d5d9-1fa1-49b7-8c3e-aecd4aae6397.jpeg'],
+  ['project-8p','Project 8p Foundation','organization_logo%2Fde593c59-ef87-4602-a995-b097962d52de.jpg'],
+  ['project-healing-waters-fly-fishing','Project Healing Waters Fly Fishing','organization_logo%2F8e8796dc-03c4-4280-ac8c-07cfaff31d09.jpg'],
+  ['raiseup-families','RaiseUp Families','organization_logo/bb785665-923d-40e1-aa3e-877573a5f275.jpg'],
+  ['reach-out-and-read-colorado','Reach Out and Read Colorado','organization_logo%2F223329c4-1654-4089-9654-f457e9c88f6c.jpeg'],
+  ['redwood-empire-food-bank','Redwood Empire Food Bank','organization_logo%2F56eb5166-eb92-4e47-ac6b-738a3e2acdec.jpg'],
+  ['regenerative-resources','Regenerative Resources','organization_logo%2F2e1f50cb-e350-4328-8bb7-3f0eb6bf8db8.jpeg'],
+  ['restorative-justice-for-oakland-youth-rjoy','Restorative Justice for Oakland Youth','organization_logo%2F558f0a57-c511-4e33-ace4-494b6d9cf923.jpeg'],
+  ['ronald-mcdonald-house-charities-bay-area','Ronald McDonald House Charities (Bay Area)','organization_logo%2Fdcb7af26-0b96-45a6-a807-4d39dcb08d6f.jpg'],
+  ['ronald-mcdonald-house-charities-of-greater-cincinnati','Ronald McDonald House Charities (Cincinnati)','organization_logo%2Fbe10d520-ce5c-46c4-8e93-e30c821c60a7.jpg'],
+  ['room-to-read','Room to Read','RoomtoRead.jpg'],
+  ['rose-hulman-institute-of-technology','Rose-Hulman Institute of Technology','organization_logo%2Ffe20902a-2d28-4a0c-a44a-51cc25b77e4a.jpeg'],
+  ['saint-paul-minnesota-foundation','Saint Paul & Minnesota Foundation','organization_logo%2F404f01e3-fc7b-4163-ac70-fd5fe1a181a4.jpg'],
+  ['samaritan-house','Samaritan House','organization_logo/86ecb92f-c641-4677-9db8-6a01b536ac54.jpg'],
+  ['san-diego-humane-society','San Diego Humane Society','organization_logo%2F8e1f50fa-9166-400e-94db-d98ee90e39c6.jpeg'],
+  ['san-diego-zoo-wildlife-alliance','San Diego Zoo Wildlife Alliance','organization_logo%2Fe7ae907f-ab9c-4312-8bc2-ffdcba5eaa6c.jpeg'],
+  ['sansum-diabetes-research-institute','Sansum Diabetes Research Institute','organization_logo%2F01a108a9-647e-4748-a93f-588991b75ad0.jpg'],
+  ['saving-nature','Saving Nature','organization_logo%2Fa625c158-2d67-467e-98d3-b64b84b233cd.jpg'],
+  ['school-on-wheels-inc','School on Wheels','organization_logo%2F850cdacc-64c3-423d-b422-7f98b1313925.jpeg'],
+  ['sea-turtle-conservancy','Sea Turtle Conservancy','organization_logo%2F93f4b428-1134-44e6-814a-41b90def8a77.jpg'],
+  ['institute-for-shipboard-education','Semester at Sea','organization_logo/c03fbf2c-88d0-4e3c-a0c5-c845b761d00b.jpeg'],
+  ['sentinels-of-freedom-scholarship-foundation','Sentinels of Freedom Scholarship Foundation','organization_logo%2Fc968e394-fadf-44a7-9577-147b12e2d45b.jpg'],
+  ['sight-for-all-united','Sight for All United','organization_logo/c29292e7-0b51-4ca7-8f69-f10716bbd868.webp'],
+  ['sky-mountain-wild-horse-sanctuary','Sky Mountain Wild Horse Sanctuary','SkyMountainWildHorseSanctuary.jpg'],
+  ['sleep-in-heavenly-peace','Sleep in Heavenly Peace','organization_logo/6c74d7ee-5f04-43a3-b2b9-63fa66459b17.jpg'],
+  ['smile-train-inc','Smile Train','organization_logo/3781b002-451b-40b5-9b8e-5950ca149ab4.jpg'],
+  ['solve-me-cfs-initiative','Solve ME/CFS Initiative','organization_logo/367bfedd-42dc-4629-b1ed-e9720311d0d8.jpg'],
+  ['special-operations-warrior-foundation','Special Operations Warrior Foundation','organization_logo%2F693b06e1-25e9-47b3-ab73-48789ebb327d.jpg'],
+  ['spirit-of-america','Spirit of America','organization_logo%2F416c1b97-505c-40cb-9e53-0c1f319eeded.jpeg'],
+  ['st-mary-medical-center-foundation','St. Mary Medical Center Foundation','organization_logo%2Fb9e1c1ae-c0d9-4ce2-81b1-001a62456d23.jpg'],
+  ['street-soccer-scotland','Street Soccer Scotland','organization_logo/5f50a09b-486b-4aa4-8c67-cd91d19ce68b.jpg'],
+  ['teen-challenge-of-arizona','Teen Challenge of Arizona','organization_logo%2F518992ee-57f1-4c36-8407-4cf12315a61b.jpeg'],
+  ['the-abolition-initiative','The Abolition Initiative','organization_logo%2Fde3fe73b-47f4-4512-a61b-19d7bf9c61da.jpeg'],
+  ['the-arc-of-the-united-states','The Arc of the United States','organization_logo%2F8a74697d-68ed-41b3-886d-8ab3d2bbdc9f.jpg'],
+  ['the-baby-fold','The Baby Fold','organization_logo/ac0f53e6-b590-4408-a76c-18a225bac11e.jpg'],
+  ['the-bowery-mission','The Bowery Mission','organization_logo%2Fb56288ca-7ee8-4fb3-b87e-c83cf77225d2.jpg'],
+  ['the-chick-mission-inc','The Chick Mission','organization_logo/9fd3c25e-c0c4-4661-afbe-7a52a5197f22.png'],
+  ['the-childrens-foundation','The Children\'s Foundation','organization_logo%2F01ccd349-2a54-42ce-9135-1c4c8a402e2b.jpg'],
+  ['the-cova-project-limited','The Cova Project','organization_logo/48f1e493-59b8-49cd-a41a-c2f6c17bec8a.jpg'],
+  ['the-exodus-road','The Exodus Road','organization_logo/6d5bfd45-f1ad-47a2-9690-819238ee6493.jpg'],
+  ['the-farmlink-project','The Farmlink Project','organization_logo%2F510d6025-124c-404e-919b-1ca0c47b95c2.jpeg'],
+  ['the-florida-aquarium','The Florida Aquarium','organization_logo%2Fab5b2213-cef9-4fe5-b49f-44b2f836f428.jpg'],
+  ['the-foundation-for-art-and-blockchain','The Foundation for Art and Blockchain','organization_logo%2F0b93cbad-8c6d-4747-ac16-fb80402a6181.jpg'],
+  ['the-greg-hill-foundation','The Greg Hill Foundation','organization_logo%2F9c16a769-0f87-43e8-98fc-ca728746e7ba.jpg'],
+  ['the-halo-foundation','The HALO Foundation','organization_logo%2Ffdb9d80e-3dfd-4b2b-824b-a0a4823da13f.jpeg'],
+  ['the-heritage-foundation','The Heritage Foundation','organization_logo/9d84f90e-3ed6-417b-9991-ef0344f1ccc4.png'],
+  ['the-kanpe-foundation','The KANPE Foundation','organization_logo%2Fcb8a08ee-b012-4e26-819d-636e61395336.jpg'],
+  ['the-museum-of-contemporary-art-moca','The Museum of Contemporary Art (MOCA)','organization_logo%2F04e196af-7759-4059-b809-a7eeb5a05256.jpg'],
+  ['the-ohio-state-university-foundation','The Ohio State University Foundation','organization_logo%2Fad987153-2632-418f-9fbb-a134d030cec1.jpeg'],
+  ['the-rescue-house','The Rescue House','organization_logo%2F620bf521-1fae-452a-a7bd-9eabda6ac10d.jpg'],
+  ['the-sentencing-project','The Sentencing Project','organization_logo%2Ff64d54b3-c47d-40c9-a5a9-410eeba45828.jpg'],
+  ['the-source-lgbt-center','The Source LGBT+ Center','organization_logo%2F69d173d9-8382-4612-9583-fa567a7513ab.jpeg'],
+  ['the-turing-trust','The Turing Trust','organization_logo%2Ff7cc891e-db6b-4f3e-8b48-181ec8803a66.jpeg'],
+  ['the-wyman-center','The Wyman Center','organization_logo/f019f4f8-db63-46c4-8075-b8eafc8ee6fa.jpg'],
+  ['tlc-for-kids','TLC for Kids','organization_logo%2Fdb4a22b7-4ebd-483e-b6ba-67aa49fd79fd.jpg'],
+  ['trans-empowerment-project','Trans Empowerment Project','organization_logo%2F08b9ca9a-dcb1-4860-a795-a48733a9339f.jpg'],
+  ['u-s-ukraine-foundation','U.S.-Ukraine Foundation','organization_logo%2F7f2d7557-41c1-4be9-88a1-98359673188f.jpeg'],
+  ['uacc','Ukrainian American Coordinating Council','organization_logo%2Fe6ba4f5c-e9dd-4a7c-b73c-9a691f3f0da8.jpg'],
+  ['united-macedonian-diaspora','United Macedonian Diaspora','organization_logo%2F1163970d-57e0-41cd-8058-9a232f269f63.jpg'],
+  ['united-network-for-organ-sharing','United Network for Organ Sharing','organization_logo/83975b05-19ef-414b-86ff-c0ca6167486c.jpg'],
+  ['united-way-of-massachusetts-bay','United Way of Massachusetts Bay','organization_logo%2F1cc9128e-fa48-4fa5-bcf2-155bbdf1d954.jpeg'],
+  ['united-way-of-the-lowcountry','United Way of the Lowcountry','organization_logo%2Fe76b997a-d930-4381-b4bb-674df9ba004a.jpg'],
+  ['university-of-arizona-foundation','University of Arizona Foundation','UniveristyofArizona2.jpg'],
+  ['university-of-colorado-foundation','University of Colorado Foundation','organization_logo%2Fd8ef91ad-61f7-473d-ab48-06d9be6d59b6.jpg'],
+  ['university-of-oregon-foundation','University of Oregon Foundation','organization_logo%2Fb6ee9fe4-ba95-4c0a-904a-7b57312519e8.jpeg'],
+  ['unsilenced-voices','Unsilenced Voices','organization_logo%2Fcf29dab9-bd25-4e2c-8c7f-a5f2ba418e55.jpeg'],
+  ['urban-upbound','Urban Upbound','UrbanUpbound.jpg'],
+  ['usa-for-unhcr','USA for UNHCR','organization_logo%2F20c7bb60-6210-4efc-a29a-bb4610b77c18.jpeg'],
+  ['usona-institute','Usona Institute','organization_logo%2F354f7cf6-6f86-4271-aa76-9fdf8d57ffbb.jpg'],
+  ['utah-food-bank','Utah Food Bank','organization_logo%2F4f51c05d-c90d-4a84-b771-74fa6bb50e9e.jpeg'],
+  ['vegfund','VegFund','organization_logo%2Fe1c1d8e6-2dc6-4b33-8600-13788c1dd310.jpg'],
+  ['the-pineda-foundation-world-enabled','Victor Pineda Foundation / World Enabled','organization_logo%2Fc90c645f-1365-4287-ae1c-f0259bd8b64f.jpg'],
+  ['vista-del-mar-child-and-family-services','Vista Del Mar Child and Family Services','organization_logo/ce98344c-6b95-410f-8966-5e387d8d1411.jpg'],
+  ['voices-for-children','Voices for Children','organization_logo%2F147285ff-0cb6-4c0b-b895-cc8861c60d9a.jpg'],
+  ['warrior-rising','Warrior Rising','organization_logo%2F5b11717e-a79b-4a4c-b651-c6552e0d8d7a.jpeg'],
+  ['wholeschool-mindfulness-inc','WholeSchool Mindfulness','organization_logo%2F093702df-d668-48fd-979f-790be7c0e778.jpeg'],
+  ['wildaid','WildAid','organization_logo%2F487fb7c5-5f30-473a-9101-ba49b86b5d37.jpg'],
+  ['wildlife-conservation-society','Wildlife Conservation Society','organization_logo%2F8d08efe9-aa08-4e17-8114-2281615716cf.jpg'],
+  ['wisconsin-humane-society','Wisconsin Humane Society','organization_logo/57f3a905-baf9-4e36-8797-add16f1556bf.jpg'],
+  ['women-in-blockchain-foundation','Women in Blockchain Foundation','organization_logo/24b427bc-c618-4d2b-bea0-b6dd64bc07af.jpg'],
+  ['youth-alive','Youth ALIVE!','organization_logo/10f1edb3-44e6-47bd-aa27-be34bcded274.jpg'],
+  ['youthcentric','YouthCentric','organization_logo%2F598a6bf1-9fb5-4053-8223-0676f8d66d58.jpeg'],
+  ['zaman-international','Zaman International','organization_logo%2Fe1bf4d1d-f544-48ee-9ca3-9b5c3d1a17fb.jpeg']
+];
+const TGB_BY_SLUG = (function(){ const m = {}; TGB_DIRECTORY.forEach(function(r){ m[r[0]] = r[1]; }); return m; })();
+const TGB_LOGO = (function(){ const m = {}; TGB_DIRECTORY.forEach(function(r){ if(r[2]) m[r[0]] = r[2]; }); return m; })();
+const TGB_CDN = 'https://static.tgbwidget.com/';
+
+/* What an organisation DOES is not something this page can state. The Giving
+   Block publishes no API and their pages are not fetchable cross-origin, so
+   there are no descriptions to show — and inventing one for 230 charities would
+   be fabrication on a site whose whole argument is that claims are checkable.
+   What IS real: their own logo, served from their CDN (an <img> load is not
+   subject to CORS), and a cause area inferred from the organisation's name.
+   The inference is labelled as such, and the link goes to the source of truth. */
+const CAUSE_RULES = [
+  [/food bank|foodbank|hunger|meals|kitchen|feeding|farmlink|nutrition/i, 'cause.hunger'],
+  [/homeless|shelter|housing|habitat|bowery|homestart|rescue mission/i,   'cause.homeless'],
+  [/humane|animal|wildlife|zoo|pets|dogs|raptor|chimp|bear|turtle|whale|gorilla|horse/i, 'cause.animals'],
+  [/hospital|health|medical|clinic|cancer|diabetes|hospice|sclerosis|kidney|nephcure|aids|dystrophy/i, 'cause.health'],
+  [/children|kids|youth|child|baby|girl scouts|boys|pediatric|orphan/i,  'cause.children'],
+  [/university|college|school|education|scholar|literacy|read|learning|academy|institute of technology/i, 'cause.education'],
+  [/water|sanitation|hygiene|well/i,                                     'cause.water'],
+  [/conserv|environment|climate|nature|earth|pollinator|plastic|forest/i, 'cause.environment'],
+  [/veteran|warrior|armed forces|homefront|military|soldier/i,           'cause.veterans'],
+  [/refugee|unhcr|immigrant|migration|displac|ukraine|asylum/i,          'cause.refugees'],
+  [/disaster|relief|emergency|crisis/i,                                  'cause.disaster'],
+  [/mental health|nami|crisis text|suicide|counsel/i,                    'cause.mental'],
+  [/rights|justice|legal|equality|abolition|trafficking|exodus|sentencing/i, 'cause.rights'],
+  [/church|ministr|catholic|christian|jewish|yeshiva|faith|monastery|mission/i, 'cause.faith'],
+  [/museum|art|theatre|music|ballet|philharmonic|dance|film|library/i,   'cause.arts'],
+  [/community foundation|united way|foundation of|civic/i,               'cause.community'],
+];
+function inferCause(name){
+  for(const r of CAUSE_RULES){ if(r[0].test(name)) return r[1]; }
+  return 'cause.other';
+}
+
+let rwiUsdPrice = null;
+async function fetchRwiPrice(){
+  try{
+    const res = await fetch(RWI_PAIR);
+    if(!res.ok) throw new Error('price ' + res.status);
+    const j = await res.json();
+    const p = (j.pairs && j.pairs[0]) || j.pair;
+    const v = p && p.priceUsd ? parseFloat(p.priceUsd) : null;
+    if(!v || !isFinite(v) || v <= 0) throw new Error('no price');
+    rwiUsdPrice = v;
+    return v;
+  }catch(e){ rwiUsdPrice = null; return null; }
+}
+/* Dollars -> $RWI base units, at the live price. */
+function usdToRwiUnits(usd, price){
+  const tokens = usd / price;
+  const whole = Math.floor(tokens);
+  const frac = Math.round((tokens - whole) * 1e6);       // 6dp is ample here
+  return BigInt(whole) * (10n ** 18n) + BigInt(frac) * (10n ** 12n);
+}
+
 /* Slate composition.
    autoSlate()     — deterministic rotation. No network. Always works.
    composeSlate()  — same shape, but the ACUTE picks are ranked against the live
@@ -2140,13 +3194,16 @@ function pickDiverse(tier, n, round, used){
   }
   return out;
 }
+/* Half the ballot is composed automatically, half is nominated by holders.
+   The auto half keeps a ballot valid even when nobody has written anything in. */
+const AUTO_SLOTS = 6 - WRITEIN_SLOTS;
 function autoSlate(round){
   const used = new Set();
   return [...new Set([
     ...pickDiverse('returning',1,round,used),
-    ...pickDiverse('lane',2,round,used),
-    ...pickDiverse('acute',3,round,used)
-  ])];
+    ...pickDiverse('lane',1,round,used),
+    ...pickDiverse('acute',1,round,used)
+  ])].slice(0, AUTO_SLOTS);
 }
 async function composeSlate(round){
   const usedThemes = new Set();
@@ -2482,29 +3539,59 @@ async function refreshPower(){
 
 /* ------------------------------------------------------------------- ballot */
 let selected = null;
+function orgRecord(slug){
+  if(ORG_POOL[slug]) return Object.assign({slug:slug}, ORG_POOL[slug]);
+  if(TGB_BY_SLUG[slug]) return {                       // a holder's write-in
+    slug: slug, name: TGB_BY_SLUG[slug], tgb: slug,
+    cause: t('vote.st.writeInBy'), theme: 'writein', writein: true
+  };
+  return null;
+}
 function activeOrgs(){
-  return SLATE.filter(s => ORG_POOL[s]).map(s => Object.assign({slug:s}, ORG_POOL[s]));
+  const filled = SLATE.map(orgRecord).filter(Boolean);
+  // Show the unclaimed write-in slots rather than a short ballot. An empty seat
+  // reads as an invitation; a five-item list just looks like the list.
+  const open = Math.max(0, (AUTO_SLOTS + WRITEIN_SLOTS) - filled.length);
+  for(let i = 0; i < open; i++) filled.push({ slug:'__open' + i, placeholder:true });
+  return filled;
 }
 function renderBallot(){
   const orgs = activeOrgs();
-  $('ballot').innerHTML = orgs.map(c => `
-    <button class="cand" type="button" role="radio" aria-pressed="false" data-slug="${esc(c.slug)}">
+  $('ballot').innerHTML = orgs.map(c => {
+    if(c.placeholder){
+      // Not a radio: there is nothing to choose yet. It is a prompt.
+      return `
+    <button class="cand open-slot" type="button" data-open="1">
+      <span class="radio" aria-hidden="true"></span>
+      <span class="who">
+        <span class="name">${esc(t('vote.st.openSlot'))}</span>
+        <span class="cause">${esc(t('vote.st.openSlotHint'))}</span>
+      </span>
+      <span class="tally"><span class="pct">&mdash;</span></span>
+    </button>`;
+    }
+    return `
+    <button class="cand${c.writein ? ' writein' : ''}" type="button" role="radio" aria-pressed="false" data-slug="${esc(c.slug)}">
       <span class="radio" aria-hidden="true"></span>
       <span class="who">
         <span class="name">${esc(c.name)}${c.tgb ? `<a class="tgb-link" href="${TGB_BASE}${esc(c.tgb)}/" target="_blank" rel="noopener" title="View on The Giving Block">Giving Block &#8599;</a>` : ''}</span>
         <span class="cause">${esc(c.cause)}</span>
       </span>
-      <span class="tally"><span class="pct" data-pct>—</span><br><span class="muted" data-wt></span><span class="yours" data-yours hidden></span></span>
+      <span class="tally"><span class="pct" data-pct>&mdash;</span><br><span class="muted" data-wt></span><span class="yours" data-yours hidden></span></span>
       <span class="bar" data-bar></span>
-    </button>`).join('');
-  // Rebuilding wipes aria-pressed; restore whatever is currently selected.
+    </button>`;
+  }).join('');
   if(selected){
     const cur = $('ballot').querySelector('.cand[data-slug="' + selected + '"]');
     if(cur) cur.setAttribute('aria-pressed','true');
   }
   $('ballot').querySelectorAll('.cand').forEach(el => {
     el.addEventListener('click', (e) => {
-      if(e.target.closest('.tgb-link')) return;   // let the link through
+      if(e.target.closest('.tgb-link')) return;
+      if(el.dataset.open){                       // an empty seat opens the write-in flow
+        const wb = $('writeInBtn'); if(wb) wb.click();
+        return;
+      }
       selected = el.dataset.slug;
       clearVoteStatus();
       $('ballot').querySelectorAll('.cand').forEach(x => x.setAttribute('aria-pressed', String(x === el)));
@@ -2546,22 +3633,51 @@ async function preflightGas(txParams){
 /* An address holding code will run its fallback on our calldata and, absent a
    matching function, revert. The ballot box must therefore be a plain account. */
 let ballotBoxIsContract = null;
+let ballotBoxKind = null;
 let ownerIsContract = null;
+let ownerKind = null;
+/* Classify an address by its code.
+
+     'eoa'       no code at all — an ordinary account
+     'delegated' an EIP-7702 delegation indicator: 0xef0100 || 20-byte address.
+                 This is STILL AN EOA. It can sign and send transactions like
+                 any other. Treating it as a contract was my earlier mistake:
+                 eth_getCode returns non-empty for both, but only one of them
+                 is barred from being a transaction sender.
+     'contract'  real deployed bytecode — cannot originate a transaction.
+
+   Both 'delegated' and 'contract' are unsafe as a ballot box, because calldata
+   sent to either runs code that will most likely revert. Only 'contract' is
+   disqualifying for the round controller. */
+function classifyCode(code){
+  if(!code || code === '0x' || code === '0x0') return 'eoa';
+  const body = code.toLowerCase().replace(/^0x/, '');
+  if(body.length === 46 && body.startsWith('ef0100')) return 'delegated';
+  return 'contract';
+}
+async function codeKind(addr){
+  try{ return classifyCode(await rpc('eth_getCode', [addr, 'latest'])); }
+  catch(e){ return null; }
+}
 async function hasCode(addr){
-  try{
-    const code = await rpc('eth_getCode', [addr, 'latest']);
-    return !!(code && code !== '0x' && code !== '0x0');
-  }catch(e){ return null; }
+  const k = await codeKind(addr);
+  return k === null ? null : (k !== 'eoa');
 }
 async function checkBallotBox(){
-  ballotBoxIsContract = await hasCode(BALLOT_BOX);
+  const kind = await codeKind(BALLOT_BOX);
+  ballotBoxKind = kind;
+  // Either kind runs code on incoming calldata, so either is unsafe here.
+  ballotBoxIsContract = (kind === 'contract' || kind === 'delegated');
   return ballotBoxIsContract;
 }
 /* A contract cannot be the sender of a transaction, so a contract OWNER can
    never open a round. Worth surfacing before anyone waits on a button that
    cannot work. */
 async function checkOwner(){
-  ownerIsContract = await hasCode(OWNER);
+  const kind = await codeKind(OWNER);
+  ownerKind = kind;
+  // A 7702-delegated EOA signs perfectly well; only real bytecode cannot.
+  ownerIsContract = (kind === 'contract');
   return ownerIsContract;
 }
 
@@ -2579,7 +3695,7 @@ async function castVote(){
     // ballot box is also checked for code directly.
     voteStatus(t('vote.st.checking'));
     const boxHasCode = ballotBoxIsContract === null ? await checkBallotBox() : ballotBoxIsContract;
-    if(boxHasCode){ voteStatus(t('vote.st.boxContract'), true); return; }
+    if(boxHasCode){ voteStatus(t(ballotBoxKind === 'delegated' ? 'vote.st.boxDelegated' : 'vote.st.boxContract'), true); return; }
     const gas = await preflightGas(tx);
     if(gas === null){
       const isContract = ballotBoxIsContract === null ? await checkBallotBox() : ballotBoxIsContract;
@@ -2686,6 +3802,14 @@ async function loadRound(txs){
       slateRecovered = true;
     }
   } else { ROUND = 1; SLATE = autoSlate(1); }
+  // Holder write-ins fill the remaining slots on top of the auto-composed half.
+  try{
+    const wi = await loadWriteIns(rows, ROUND);
+    if(wi.length){
+      const base = SLATE.filter(function(s){ return ORG_POOL[s]; }).slice(0, AUTO_SLOTS);
+      SLATE = [...new Set([...base, ...wi])];
+    }
+  }catch(e){ /* write-ins are additive; a failure must not empty the ballot */ }
   $('prefixEg').textContent = 'RWIVOTE:\u2039n\u203a:\u2039slug\u203a';
 }
 
@@ -2799,6 +3923,88 @@ async function refreshAll(opts){
   await loadTally(voteTxCache);
   if(seq !== refreshSeq) return;
   updateVoteButton();
+}
+
+/* --------------------------------------------------------------- write-ins
+   A nomination only counts if it was PAID FOR. We read the token transfers
+   into both destinations and require the nominating wallet to appear in both,
+   for at least the quoted amount. An unpaid RWIWRITEIN transaction is free to
+   broadcast, so without this check the fee would be decorative. */
+let writeInCache = [];
+async function fetchTokenTransfersTo(addr){
+  const out = [];
+  let url = SCAN + '/api/v2/addresses/' + addr + '/token-transfers?type=ERC-20&filter=to';
+  for(let page = 0; page < 6; page++){
+    const res = await fetch(url, {headers:{accept:'application/json'}});
+    if(!res.ok) break;
+    const j = await res.json();
+    (j.items || []).forEach(function(t){ out.push(t); });
+    if(!j.next_page_params) break;
+    url = SCAN + '/api/v2/addresses/' + addr + '/token-transfers?type=ERC-20&filter=to&'
+        + new URLSearchParams(j.next_page_params).toString();
+  }
+  return out;
+}
+/* Sum of $RWI each wallet has sent to `addr`. */
+function sumRwiBySender(transfers){
+  const by = new Map();
+  transfers.forEach(function(t){
+    const tok = (t.token && (t.token.address || t.token.address_hash) || '').toLowerCase();
+    if(tok !== RWI.toLowerCase()) return;
+    const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
+    const raw = (t.total && (t.total.value || t.total)) || t.value || '0';
+    let v; try{ v = BigInt(raw); }catch(e){ return; }
+    by.set(from, (by.get(from) || 0n) + v);
+  });
+  return by;
+}
+async function loadWriteIns(txs, round){
+  const rows = txs || [];
+  const nominations = [];
+  rows.forEach(function(t){
+    const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
+    const text = fromHexUtf8(t.raw_input || t.input || '');
+    if(!from || !text.startsWith(WRITEIN_TAG)) return;
+    const body = text.slice(WRITEIN_TAG.length);
+    const sep = body.indexOf(':');
+    if(sep < 0) return;
+    if(parseInt(body.slice(0, sep), 10) !== round) return;      // scoped to this ballot
+    const slug = body.slice(sep + 1).trim().toLowerCase();
+    if(!TGB_BY_SLUG[slug]) return;                              // must be a directory entry
+    if(ORG_POOL[slug]) return;                                  // already a standing candidate
+    nominations.push({
+      slug: slug, from: from,
+      block: Number(t.block_number || t.block || 0),
+      index: Number(t.index !== undefined ? t.index : (t.position !== undefined ? t.position : 0))
+    });
+  });
+  if(!nominations.length) return [];
+
+  let devPaid, burnPaid;
+  try{
+    const both = await Promise.all([fetchTokenTransfersTo(WRITEIN_DEV), fetchTokenTransfersTo(WRITEIN_BURN)]);
+    devPaid = sumRwiBySender(both[0]);
+    burnPaid = sumRwiBySender(both[1]);
+  }catch(e){ return []; }                                        // cannot verify -> count nothing
+
+  const price = rwiUsdPrice || await fetchRwiPrice();
+  if(!price) return [];
+  const needDev  = usdToRwiUnits(WRITEIN_DEV_USD  * WRITEIN_TOLERANCE, price);
+  const needBurn = usdToRwiUnits(WRITEIN_BURN_USD * WRITEIN_TOLERANCE, price);
+
+  const paid = nominations.filter(function(n){
+    return (devPaid.get(n.from) || 0n) >= needDev && (burnPaid.get(n.from) || 0n) >= needBurn;
+  });
+  // newest first; one slot per wallet so a single payer cannot take the whole board
+  paid.sort(function(a,b){ return b.block !== a.block ? b.block - a.block : b.index - a.index; });
+  const seenWallet = new Set(), seenSlug = new Set(), out = [];
+  for(const n of paid){
+    if(seenWallet.has(n.from) || seenSlug.has(n.slug)) continue;
+    seenWallet.add(n.from); seenSlug.add(n.slug);
+    out.push(n.slug);
+    if(out.length >= WRITEIN_SLOTS) break;
+  }
+  return out;
 }
 
 /* ------------------------------------------------------------------- tally */
@@ -2952,6 +4158,7 @@ function paintTally(){
     for(let i = 0; i < rema.length && left > 0; i++, left--) tenths.set(rema[i].s, tenths.get(rema[i].s) + 1);
   }
   $('ballot').querySelectorAll('.cand').forEach(function(el){
+    if(el.dataset.open) return;                 // empty seat: nothing to paint
     const slug = el.dataset.slug;
     const w = byslug.get(slug) || 0n;
     const pct = total > 0n ? (tenths.get(slug) || 0) / 10 : 0;
@@ -2998,6 +4205,225 @@ function repaintDynamic(){
   }catch(e){}
 }
 
+/* ------------------------------------------------------- write-in interface */
+(function(){
+  let chosen = null, busy = false;
+  function $w(id){ return document.getElementById(id); }
+  function wiStatus(msg, isErr){
+    const el = $w('wiStatus'); if(!el) return;
+    el.textContent = msg || ''; el.classList.toggle('err', !!isErr);
+  }
+  function markStep(n, state){
+    const el = $w('wiStep' + n); if(!el) return;
+    el.classList.remove('doing','done');
+    if(state) el.classList.add(state);
+  }
+  /* Rank matches so a typed prefix beats a mid-word hit — with 230 entries a
+     plain substring match buries the obvious answer. */
+  /* With no query, hand back the whole directory so the list can simply be
+     browsed. TGB_DIRECTORY is already sorted by display name. No result cap:
+     230 buttons is nothing to render, and truncating a browse list silently
+     hides organisations the user came here to find. */
+  function search(q){
+    const s = q.trim().toLowerCase();
+    if(!s) return TGB_DIRECTORY.slice();
+    const scored = [];
+    for(const row of TGB_DIRECTORY){
+      const name = row[1].toLowerCase();
+      let score = -1;
+      if(name.startsWith(s)) score = 0;
+      else if(name.indexOf(' ' + s) >= 0) score = 1;
+      else if(name.indexOf(s) >= 0) score = 2;
+      else if(row[0].indexOf(s.replace(/\s+/g,'-')) >= 0) score = 3;
+      if(score >= 0) scored.push([score, row]);
+    }
+    scored.sort(function(a,b){ return a[0] - b[0] || a[1][1].localeCompare(b[1][1]); });
+    return scored.map(function(x){ return x[1]; });
+  }
+  function renderResults(q){
+    const box = $w('wiResults'), count = $w('wiCount');
+    if(!box) return;
+    const rows = search(q);
+    if(count) count.textContent = q.trim()
+      ? t('vote.st.writeInMatches', {n: rows.length})
+      : t('vote.st.writeInAll', {n: TGB_DIRECTORY.length});
+    if(!rows.length){ box.innerHTML = '<div class="wi-empty">' + esc(t('vote.st.writeInNone')) + '</div>'; return; }
+    box.innerHTML = rows.map(function(r){
+      return '<button type="button" class="wi-opt" role="option" data-slug="' + esc(r[0]) + '">'
+           + esc(r[1]) + '<span class="sl">' + esc(r[0]) + '</span></button>';
+    }).join('');
+    box.querySelectorAll('.wi-opt').forEach(function(b){
+      if(FINE_POINTER){
+        b.addEventListener('mouseenter', function(){ showPreview(b.dataset.slug, b); });
+        b.addEventListener('focus',      function(){ showPreview(b.dataset.slug, b); });
+        b.addEventListener('click', function(){ pick(b.dataset.slug); });
+      } else {
+        // touch: first tap previews, the preview's own button commits
+        b.addEventListener('click', function(){
+          if(previewSlug === b.dataset.slug){ pick(b.dataset.slug); hidePreview(); }
+          else { showPreview(b.dataset.slug, b); }
+        });
+      }
+    });
+    if(FINE_POINTER) box.addEventListener('mouseleave', hidePreview);
+  }
+
+  /* ---- preview -------------------------------------------------------------
+     Pointer devices get it on hover. Touch devices get it on first tap, with a
+     second tap on "Choose" to commit — tap-to-select and tap-to-preview cannot
+     both own the same gesture, and silently selecting something the user was
+     only inspecting is the worse failure. */
+  const FINE_POINTER = (function(){
+    try{ return window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches; }
+    catch(e){ return true; }
+  })();
+  let previewSlug = null;
+  function previewHTML(slug){
+    const name = TGB_BY_SLUG[slug] || slug;
+    const logo = TGB_LOGO[slug];
+    return '<div class="wi-pv-top">'
+      + (logo ? '<img class="wi-pv-logo" src="' + TGB_CDN + logo + '" alt="" loading="lazy" referrerpolicy="no-referrer">'
+              : '<div class="wi-pv-logo wi-pv-noimg" aria-hidden="true">&#9679;</div>')
+      + '<div class="wi-pv-id"><span class="wi-pv-name">' + esc(name) + '</span>'
+      + '<span class="wi-pv-cause">' + esc(t(inferCause(name))) + '</span></div></div>'
+      + '<p class="wi-pv-note">' + esc(t('vote.st.pvNote')) + '</p>'
+      + '<a class="wi-pv-link" href="' + TGB_BASE + esc(slug) + '/" target="_blank" rel="noopener">'
+      + esc(t('vote.st.pvOpen')) + '</a>'
+      + (FINE_POINTER ? '' : '<button type="button" class="wi-pv-choose" data-choose="' + esc(slug) + '">'
+          + esc(t('vote.st.pvChoose')) + '</button>');
+  }
+  function showPreview(slug, anchorEl){
+    const box = $w('wiPreview'); if(!box) return;
+    previewSlug = slug;
+    box.innerHTML = previewHTML(slug);
+    box.hidden = false;
+    const ch = box.querySelector('[data-choose]');
+    if(ch) ch.addEventListener('click', function(){ pick(ch.dataset.choose); hidePreview(); });
+    if(FINE_POINTER && anchorEl){
+      // sit alongside the hovered row, clamped inside the panel
+      const panel = box.offsetParent || box.parentNode;
+      const r = anchorEl.getBoundingClientRect(), pr = panel.getBoundingClientRect();
+      box.style.top = Math.max(0, Math.min(r.top - pr.top, panel.clientHeight - 150)) + 'px';
+    }
+  }
+  function hidePreview(){
+    const box = $w('wiPreview'); if(!box) return;
+    box.hidden = true; box.innerHTML = ''; previewSlug = null;
+  }
+
+  function pick(slug){
+    hidePreview();
+    if(ORG_POOL[slug]){ wiStatus(t('vote.st.writeInDup'), true); return; }
+    chosen = slug;
+    const box = $w('wiChosen');
+    box.hidden = false;
+    box.innerHTML = esc(TGB_BY_SLUG[slug]) + '<span class="sl">thegivingblock.com/donate/' + esc(slug) + '/</span>';
+    $w('wiResults').innerHTML = '';
+    $w('wiSearch').value = TGB_BY_SLUG[slug];
+    $w('wiSteps').hidden = false;
+    $w('wiSubmit').disabled = false;
+    wiStatus('');
+  }
+  async function refreshCost(){
+    const el = $w('wiCost'); if(!el) return;
+    const p = await fetchRwiPrice();
+    if(!p){ el.textContent = t('vote.st.writeInNoPrice'); return; }
+    const total = usdToRwiUnits(WRITEIN_USD, p);
+    el.textContent = t('vote.st.writeInCost', {
+      usd: WRITEIN_USD, rwi: fmtToken(total),
+      dev: WRITEIN_DEV_USD, burn: WRITEIN_BURN_USD
+    });
+  }
+  /* transfer(address,uint256) */
+  async function sendRwi(to, units, from){
+    const data = '0xa9059cbb'
+      + to.toLowerCase().replace(/^0x/,'').padStart(64,'0')
+      + units.toString(16).padStart(64,'0');
+    const tx = { from: from, to: RWI, data: data };
+    const gas = await preflightGas(tx);
+    if(gas === null) throw new Error('would revert');
+    tx.gas = gas;
+    const hash = await wallet.request({ method:'eth_sendTransaction', params:[tx] });
+    const rec = await waitForTx(hash);
+    if(rec && !txSucceeded(rec)) throw new Error('reverted');
+    return hash;
+  }
+  async function submit(){
+    if(busy || !chosen) return;
+    if(!account || !wallet){ wiStatus(t('vote.st.writeInConnect'), true); return; }
+    if(!walletOnChain){ wiStatus(t('vote.st.switchChain'), true); return; }
+    const price = await fetchRwiPrice();
+    if(!price){ wiStatus(t('vote.st.writeInNoPrice'), true); return; }
+    busy = true; $w('wiSubmit').disabled = true;
+    try{
+      // 1 — the nomination itself
+      markStep(1,'doing');
+      wiStatus(t('vote.st.wiSigning', {n:1}));
+      const nomTx = { from: account, to: BALLOT_BOX, value:'0x0',
+                      data: toHexUtf8(WRITEIN_TAG + ROUND + ':' + chosen) };
+      const nomGas = await preflightGas(nomTx);
+      if(nomGas === null) throw new Error('nomination would revert');
+      nomTx.gas = nomGas;
+      const h1 = await wallet.request({ method:'eth_sendTransaction', params:[nomTx] });
+      const r1 = await waitForTx(h1);
+      if(r1 && !txSucceeded(r1)) throw new Error('nomination reverted');
+      markStep(1,'done');
+
+      // 2 — the dev share
+      markStep(2,'doing');
+      wiStatus(t('vote.st.wiSigning', {n:2}));
+      await sendRwi(WRITEIN_DEV, usdToRwiUnits(WRITEIN_DEV_USD, price), account);
+      markStep(2,'done');
+
+      // 3 — the burn
+      markStep(3,'doing');
+      wiStatus(t('vote.st.wiSigning', {n:3}));
+      await sendRwi(WRITEIN_BURN, usdToRwiUnits(WRITEIN_BURN_USD, price), account);
+      markStep(3,'done');
+
+      wiStatus(t('vote.st.writeInDone'));
+      setTimeout(function(){ refreshAll(); }, 1500);
+    }catch(e){
+      const cancelled = e && e.code === 4001;
+      wiStatus(t(cancelled ? 'vote.st.writeInCancel' : 'vote.st.writeInFail'), true);
+    }finally{
+      busy = false; $w('wiSubmit').disabled = !chosen;
+    }
+  }
+  function init(){
+    const btn = $w('writeInBtn'), modal = $w('writeInModal'),
+          panel = modal && modal.querySelector('.wi-panel');
+    if(!btn || !modal) return;
+    let lastFocus = null;
+    function open(){
+      lastFocus = document.activeElement;
+      modal.classList.add('open'); document.body.style.overflow = 'hidden';
+      refreshCost();
+      $w('wiSearch').value = ''; chosen = null;
+      $w('wiChosen').hidden = true; $w('wiSteps').hidden = true; $w('wiSubmit').disabled = true;
+      renderResults('');                       // full list, ready to browse
+      $w('wiSearch').focus();
+    }
+    function close(){
+      modal.classList.remove('open'); document.body.style.overflow = '';
+      if(lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    btn.addEventListener('click', function(e){ e.stopPropagation(); open(); });
+    $w('wiClose').addEventListener('click', close);
+    modal.addEventListener('click', function(e){ if(panel && !panel.contains(e.target)) close(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modal.classList.contains('open')) close(); });
+    let deb = null;
+    $w('wiSearch').addEventListener('input', function(e){
+      chosen = null; $w('wiChosen').hidden = true; $w('wiSteps').hidden = true; $w('wiSubmit').disabled = true;
+      clearTimeout(deb);
+      deb = setTimeout(function(){ renderResults(e.target.value); }, 90);
+    });
+    $w('wiSubmit').addEventListener('click', submit);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+
 /* --------------------------------------------------------------------- boot */
 document.addEventListener('DOMContentLoaded', () => {
   $('boxAddr').textContent = BALLOT_BOX;
@@ -3023,7 +4449,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Surface a mis-configured ballot box before anyone spends gas on it.
   Promise.all([checkBallotBox(), checkOwner()]).then(function(r){
     const w = $('slateWarn'); if(!w) return;
-    if(r[0])      w.textContent = t('vote.st.boxContract');
+    if(r[0])      w.textContent = t(ballotBoxKind === 'delegated' ? 'vote.st.boxDelegated' : 'vote.st.boxContract');
     else if(r[1]) w.textContent = t('vote.st.ownerContract');
   });
   // Live crisis context — cached 6h, purely informational, failure is silent.
@@ -3155,5 +4581,32 @@ document.addEventListener('DOMContentLoaded', () => {
   if(document.readyState!=='loading') syncLabel();
 })();
 </script>
+<div id="writeInModal" role="dialog" aria-modal="true" aria-labelledby="wiTitle">
+  <div class="wi-panel">
+    <div class="wi-head">
+      <span id="wiTitle" data-i18n="vote.st.writeInTitle">Write in an organisation</span>
+      <button type="button" id="wiClose" aria-label="Close">&#10005;</button>
+    </div>
+    <div class="wi-body">
+      <p class="wi-lede" data-i18n="vote.st.writeInLede">Nominate any organisation from The Giving Block for one of three holder slots on the ballot.</p>
+      <p class="wi-cost" id="wiCost"></p>
+      <label class="wi-label" for="wiSearch" data-i18n="vote.st.writeInSearch">Search organisations</label>
+      <input id="wiSearch" type="text" autocomplete="off" spellcheck="false" placeholder="food bank, wildlife, veterans…" role="combobox" aria-expanded="false" aria-controls="wiResults">
+      <p class="wi-count" id="wiCount"></p>
+      <div class="wi-scroll"><div class="wi-results" id="wiResults" role="listbox"></div><div class="wi-preview" id="wiPreview" hidden></div></div>
+      <div class="wi-chosen" id="wiChosen" hidden></div>
+      <ol class="wi-steps" id="wiSteps" hidden>
+        <li id="wiStep1"><span class="n">1</span><span class="s" data-i18n="vote.st.wiStep1">Nominate onchain</span></li>
+        <li id="wiStep2"><span class="n">2</span><span class="s" data-i18n="vote.st.wiStep2">Pay $2 to the dev wallet</span></li>
+        <li id="wiStep3"><span class="n">3</span><span class="s" data-i18n="vote.st.wiStep3">Burn $3 to the dead address</span></li>
+      </ol>
+      <div class="wi-actions">
+        <button type="button" class="btn" id="wiSubmit" disabled data-i18n="vote.st.writeInSubmit">Submit write-in</button>
+      </div>
+      <p class="wi-status" id="wiStatus"></p>
+      <p class="wi-note" data-i18n="vote.st.writeInNote">Three separate transactions: a token transfer carries no message, so the nomination and each payment are signed individually. The directory below is a verified subset of The Giving Block, not the full listing.</p>
+    </div>
+  </div>
+</div>
 </body>
 </html>
