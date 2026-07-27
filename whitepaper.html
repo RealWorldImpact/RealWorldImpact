@@ -256,6 +256,78 @@
     .appendix .row{border-bottom-color:#bbb !important}
     a{color:inherit;border-bottom:0 !important;text-decoration:none}
   }
+
+  /* Tabular figures keep numeric columns from jittering as values update. */
+  .amt.mono,.ledger-table .amt{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  /* Sticky header offset for anchor jumps. */
+  :where(section[id],div[id]){scroll-margin-top:76px}
+  /* Even out multi-line headings; avoid orphaned words in prose. */
+  h1,h2,h3,.lede,.sub{text-wrap:balance}
+  p{text-wrap:pretty}
+  /* ---------- floating chart pill + modal ---------- */
+  #chartBtn{
+    position:fixed;bottom:16px;right:96px;z-index:9999;
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--lime, #CCFE06);color:var(--ink, #0B0B09);
+    border:1px solid var(--ink, #0B0B09);border-radius:999px;
+    padding:8px 14px;cursor:pointer;
+    font-family:var(--mono, "IBM Plex Mono", ui-monospace, monospace);
+    font-size:11px;letter-spacing:.12em;text-transform:uppercase;line-height:1;
+    box-shadow:0 4px 14px rgba(0,0,0,.18);
+    transition:transform .15s ease,box-shadow .15s ease;
+  }
+  #chartBtn:hover,#chartBtn:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}
+  #chartBtn svg{width:12px;height:12px;flex:none}
+  #chartModal{
+    position:fixed;inset:0;z-index:10000;
+    display:none;align-items:center;justify-content:center;
+    padding:20px;background:rgba(11,11,9,.72);
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+    opacity:0;transition:opacity .18s ease;
+  }
+  #chartModal.open{display:flex;opacity:1}
+  .chart-panel{
+    position:relative;width:min(1040px,100%);height:min(78vh,720px);
+    display:flex;flex-direction:column;
+    background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);
+    border:1px solid var(--lime, #CCFE06);border-radius:16px;overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,.45);
+    transform:translateY(8px) scale(.99);transition:transform .18s ease;
+  }
+  #chartModal.open .chart-panel{transform:none}
+  .chart-head{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:12px 14px;border-bottom:1px solid rgba(204,254,6,.35);flex:none;
+    font-family:var(--mono, "IBM Plex Mono", ui-monospace, monospace);
+    font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  }
+  .chart-head .pair{opacity:.75}
+  .chart-actions{display:flex;align-items:center;gap:14px}
+  .chart-actions a{color:inherit;text-decoration:none;border-bottom:1px solid rgba(204,254,6,.5);white-space:nowrap}
+  .chart-actions a:hover{border-bottom-color:var(--lime)}
+  #chartClose{
+    background:transparent;color:inherit;border:1px solid rgba(204,254,6,.5);
+    border-radius:999px;width:26px;height:26px;flex:none;cursor:pointer;
+    font-size:14px;line-height:1;display:grid;place-items:center;
+    transition:background .15s ease,border-color .15s ease;
+  }
+  #chartClose:hover,#chartClose:focus-visible{background:rgba(204,254,6,.12);border-color:var(--lime);outline:none}
+  .chart-body{flex:1;min-height:0;position:relative;background:#0B0B09}
+  .chart-body iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+  .chart-loading{
+    position:absolute;inset:0;display:grid;place-items:center;
+    font-family:var(--mono, "IBM Plex Mono", ui-monospace, monospace);
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;
+  }
+  @media (max-width:640px){
+    #chartBtn{padding:7px 12px;font-size:10px}
+    .chart-panel{height:min(82vh,640px);border-radius:14px}
+    #chartModal{padding:12px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    #chartBtn,#chartModal,.chart-panel{transition:none}
+  }
+
 </style>
 <script>document.documentElement.classList.add('js')</script>
 <script>
@@ -404,6 +476,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · Whitepaper',
     'meta.title.dash':'Pools · Real World Impact'
+  ,
+    'index.chart.btn':'Chart',
+    'index.chart.title':'Live chart',
+    'index.chart.close':'Close',
+    'index.chart.open':'Open on GeckoTerminal ↗'
   },
   id: {
     'nav.home.arrow':'← rwihood.org',
@@ -585,6 +662,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · Whitepaper',
     'meta.title.dash':'Pool · Real World Impact'
+  ,
+    'index.chart.btn':'Grafik',
+    'index.chart.title':'Grafik langsung',
+    'index.chart.close':'Tutup',
+    'index.chart.open':'Buka di GeckoTerminal ↗'
   },
   de: {
     'nav.home.arrow':'← rwihood.org',
@@ -766,6 +848,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · Whitepaper',
     'meta.title.dash':'Pools · Real World Impact'
+  ,
+    'index.chart.btn':'Chart',
+    'index.chart.title':'Live-Chart',
+    'index.chart.close':'Schließen',
+    'index.chart.open':'Auf GeckoTerminal öffnen ↗'
   },
   es: {
     'nav.home.arrow':'← rwihood.org','nav.whitepaper':'Documento técnico','nav.lp':'LP','nav.dexscreener':'Dexscreener',
@@ -896,6 +983,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · Documento técnico',
     'meta.title.dash':'Pools · Real World Impact'
+  ,
+    'index.chart.btn':'Gráfico',
+    'index.chart.title':'Gráfico en vivo',
+    'index.chart.close':'Cerrar',
+    'index.chart.open':'Abrir en GeckoTerminal ↗'
   },
   zh: {
     'nav.home.arrow':'← rwihood.org','nav.whitepaper':'白皮书','nav.lp':'LP','nav.dexscreener':'Dexscreener',
@@ -1026,6 +1118,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · 白皮书',
     'meta.title.dash':'流动性池 · Real World Impact'
+  ,
+    'index.chart.btn':'图表',
+    'index.chart.title':'实时图表',
+    'index.chart.close':'关闭',
+    'index.chart.open':'在 GeckoTerminal 打开 ↗'
   }  ,
   ja: {
     'nav.home.arrow':'← rwihood.org','nav.whitepaper':'ホワイトペーパー','nav.lp':'LP','nav.dexscreener':'Dexscreener',
@@ -1155,6 +1252,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · ホワイトペーパー',
     'meta.title.dash':'プール · Real World Impact'
+  ,
+    'index.chart.btn':'チャート',
+    'index.chart.title':'ライブチャート',
+    'index.chart.close':'閉じる',
+    'index.chart.open':'GeckoTerminal で開く ↗'
   },
   ko: {
     'nav.home.arrow':'← rwihood.org','nav.whitepaper':'백서','nav.lp':'LP','nav.dexscreener':'Dexscreener',
@@ -1284,6 +1386,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · 백서',
     'meta.title.dash':'풀 · Real World Impact'
+  ,
+    'index.chart.btn':'차트',
+    'index.chart.title':'실시간 차트',
+    'index.chart.close':'닫기',
+    'index.chart.open':'GeckoTerminal에서 열기 ↗'
   },
   pt: {
     'nav.home.arrow':'← rwihood.org','nav.whitepaper':'Whitepaper','nav.lp':'LP','nav.dexscreener':'Dexscreener',
@@ -1413,6 +1520,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · Whitepaper',
     'meta.title.dash':'Pools · Real World Impact'
+  ,
+    'index.chart.btn':'Gráfico',
+    'index.chart.title':'Gráfico ao vivo',
+    'index.chart.close':'Fechar',
+    'index.chart.open':'Abrir no GeckoTerminal ↗'
   },
   fr: {
     'nav.home.arrow':'← rwihood.org','nav.whitepaper':'Livre blanc','nav.lp':'LP','nav.dexscreener':'Dexscreener',
@@ -1542,6 +1654,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · Livre blanc',
     'meta.title.dash':'Pools · Real World Impact'
+  ,
+    'index.chart.btn':'Graphique',
+    'index.chart.title':'Graphique en direct',
+    'index.chart.close':'Fermer',
+    'index.chart.open':'Ouvrir sur GeckoTerminal ↗'
   }  ,
   ru: {
     'nav.home.arrow':'← rwihood.org','nav.whitepaper':'Белая книга','nav.lp':'LP','nav.dexscreener':'Dexscreener',
@@ -1671,6 +1788,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · Белая книга',
     'meta.title.dash':'Пулы · Real World Impact'
+  ,
+    'index.chart.btn':'График',
+    'index.chart.title':'График в реальном времени',
+    'index.chart.close':'Закрыть',
+    'index.chart.open':'Открыть в GeckoTerminal ↗'
   },
   tr: {
     'nav.home.arrow':'← rwihood.org','nav.whitepaper':'Teknik doküman','nav.lp':'LP','nav.dexscreener':'Dexscreener',
@@ -1800,6 +1922,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · Teknik doküman',
     'meta.title.dash':'Havuzlar · Real World Impact'
+  ,
+    'index.chart.btn':'Grafik',
+    'index.chart.title':'Canlı grafik',
+    'index.chart.close':'Kapat',
+    'index.chart.open':'GeckoTerminal’de aç ↗'
   },
   vi: {
     'nav.home.arrow':'← rwihood.org','nav.whitepaper':'Sách trắng','nav.lp':'LP','nav.dexscreener':'Dexscreener',
@@ -1929,6 +2056,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · Sách trắng',
     'meta.title.dash':'Pools · Real World Impact'
+  ,
+    'index.chart.btn':'Biểu đồ',
+    'index.chart.title':'Biểu đồ trực tiếp',
+    'index.chart.close':'Đóng',
+    'index.chart.open':'Mở trên GeckoTerminal ↗'
   },
   hi: {
     'nav.home.arrow':'← rwihood.org','nav.whitepaper':'श्वेत पत्र','nav.lp':'LP','nav.dexscreener':'Dexscreener',
@@ -2058,6 +2190,11 @@ const TRANSLATIONS = {
     'meta.title.index':'Real World Impact · $RWI',
     'meta.title.wp':'Real World Impact · श्वेत पत्र',
     'meta.title.dash':'पूल · Real World Impact'
+  ,
+    'index.chart.btn':'चार्ट',
+    'index.chart.title':'लाइव चार्ट',
+    'index.chart.close':'बंद करें',
+    'index.chart.open':'GeckoTerminal पर खोलें ↗'
   }
 
 };
@@ -2134,6 +2271,8 @@ function setLang(l){
   applyI18n();
   document.querySelectorAll('#langSel button').forEach(b=>b.classList.toggle('on', b.dataset.lang===l));
   syncHead(l);
+  // The language pill's width changes with its label, so re-place the chart pill beside it.
+  try{ if(typeof window.updateChartBtnPosition === 'function') window.updateChartBtnPosition(); }catch(e){}
   // dashboard-specific: re-render dynamic UI that has already been drawn
   if(typeof zapPool !== 'undefined' && zapPool){ try{ renderTokenSeg(); applyMode(); }catch(e){} }
   if(typeof account !== 'undefined' && account){ try{ loadPositions(); }catch(e){} }
@@ -2291,11 +2430,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     <div class="ledger-table">
       <div class="row head"><div class="name" data-i18n="wp.ledger.table.recipient">Recipient</div><div class="amt" data-i18n="wp.ledger.table.amount">Amount</div></div>
-      <div class="row"><div class="name">Coalition for the Homeless</div><div class="amt mono">$270.87</div></div>
       <div class="row"><div class="name">No Kid Hungry</div><div class="amt mono">$1,832.22</div></div>
-      <div class="row"><div class="name">Children's Miracle Network Hospitals</div><div class="amt mono">$74.61</div></div>
-      <div class="row"><div class="name">Ronald McDonald House</div><div class="amt mono">$93.47</div></div>
+      <div class="row"><div class="name">Coalition for the Homeless</div><div class="amt mono">$270.87</div></div>
       <div class="row"><div class="name">Treegens</div><div class="amt mono">$210.18</div></div>
+      <div class="row"><div class="name">Ronald McDonald House</div><div class="amt mono">$93.47</div></div>
+      <div class="row"><div class="name">Children's Miracle Network Hospitals</div><div class="amt mono">$74.61</div></div>
       <div class="totals"><div class="name" data-i18n="wp.ledger.table.total">Total to date</div><div class="amt mono">$2,481.35</div></div>
     </div>
 
@@ -2500,6 +2639,81 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // initial label — the shared runtime's DOMContentLoaded sets the .on class
   document.addEventListener('DOMContentLoaded', syncLabel);
   if(document.readyState !== 'loading') syncLabel();
+})();
+</script>
+<!-- Floating chart pill + modal (GeckoTerminal). Sits immediately left of the
+     language pill; its offset is measured at runtime so the two never overlap. -->
+<button type="button" id="chartBtn" aria-haspopup="dialog" aria-controls="chartModal">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><path d="M6 16V9"/><path d="M11 16V4"/><path d="M16 16v-5"/><path d="M21 16v-9"/></svg>
+  <span data-i18n="index.chart.btn">Chart</span>
+</button>
+<div id="chartModal" role="dialog" aria-modal="true" aria-labelledby="chartModalTitle">
+  <div class="chart-panel">
+    <div class="chart-head">
+      <span><span id="chartModalTitle" data-i18n="index.chart.title">Live chart</span> <span class="pair">· $RWI / $WETH</span></span>
+      <span class="chart-actions">
+        <a href="https://www.geckoterminal.com/robinhood/pools/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697" target="_blank" rel="noopener" data-i18n="index.chart.open">Open on GeckoTerminal &#8599;</a>
+        <button type="button" id="chartClose" aria-label="Close">&#10005;</button>
+      </span>
+    </div>
+    <div class="chart-body">
+      <div class="chart-loading" id="chartLoading" data-i18n="index.chart.title">Live chart</div>
+      <iframe id="chartFrame" title="GeckoTerminal price chart" loading="lazy" allow="clipboard-write" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+<script>
+/* Chart modal. The iframe src is only assigned on first open, so the embed costs
+   nothing (no network, no third-party JS) unless the visitor actually asks for it. */
+(function(){
+  var POOL='0xff6aa24815d1274a9be0cfd17c7c7489cd40a697';
+  var SRC='https://www.geckoterminal.com/robinhood/pools/'+POOL+'?embed=1&info=0&swaps=0';
+  function init(){
+    var btn=document.getElementById('chartBtn'),
+        modal=document.getElementById('chartModal'),
+        panel=modal&&modal.querySelector('.chart-panel'),
+        closeBtn=document.getElementById('chartClose'),
+        frame=document.getElementById('chartFrame'),
+        loading=document.getElementById('chartLoading'),
+        langBtn=document.getElementById('langBtn');
+    if(!btn||!modal||!frame) return;
+    var loaded=false, lastFocus=null;
+
+    // Keep the chart pill clear of the language pill, whose width changes with its label.
+    function place(){
+      if(!langBtn) return;
+      var w=langBtn.getBoundingClientRect().width;
+      if(w) btn.style.right=(16+w+10)+'px';
+    }
+    window.addEventListener('resize', place);
+    window.updateChartBtnPosition=place;
+    place();
+
+    frame.addEventListener('load', function(){ if(loading) loading.style.display='none'; });
+
+    function open(){
+      lastFocus=document.activeElement;
+      if(!loaded){ frame.src=SRC; loaded=true; }
+      modal.classList.add('open');
+      btn.setAttribute('aria-expanded','true');
+      document.body.style.overflow='hidden';
+      if(closeBtn) closeBtn.focus();
+    }
+    function close(){
+      modal.classList.remove('open');
+      btn.setAttribute('aria-expanded','false');
+      document.body.style.overflow='';
+      if(lastFocus&&lastFocus.focus) lastFocus.focus();
+    }
+    window.__chartModalClose=close;
+
+    btn.addEventListener('click', function(e){ e.stopPropagation(); open(); });
+    if(closeBtn) closeBtn.addEventListener('click', close);
+    modal.addEventListener('click', function(e){ if(!panel.contains(e.target)) close(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape'&&modal.classList.contains('open')) close(); });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();
 </script>
 </body>
