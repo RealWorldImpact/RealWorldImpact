@@ -44,8 +44,8 @@ const TRANSLATIONS = {
     'vote.nextround':'Next round →',
     'vote.note.calldata':'Every vote is a zero-value transaction carrying your choice in its calldata. Nothing is stored on a server — the tally you see is read straight off Robinhood Chain, and re-voting simply replaces your previous choice.',
     'vote.founder.eyebrow':'Founder controls',
-    'vote.founder.open':'Open round',
-    'vote.founder.confirm':'Confirm & open round',
+    'vote.founder.open':'Open a new ballot',
+    'vote.founder.confirm':'Confirm & open',
     'vote.founder.note':'The slate below is composed automatically — one returning organisation, two from the project’s established cause areas, and three responding to current need, ranked against live ReliefWeb crisis data. Opening a new round is a transaction from your wallet: it supersedes the current round, and votes cast in earlier rounds stop counting immediately. Only this address can do it; declarations from anyone else are ignored when the page reads the chain.',
     'vote.s3.eyebrow':'03 — How the tally works',
     'vote.s3.title':'Countable by anyone.',
@@ -81,9 +81,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'Could not connect to that wallet.',
     'vote.st.readingCrises':'Reading current crises from ReliefWeb…',
     'vote.st.notOwner':'Only the round controller can open a round.',
-    'vote.st.confirmRound':'Confirm in your wallet — opening round {n}…',
-    'vote.st.roundLive':'Round {n} is open — slate ranked against live ReliefWeb crises. Earlier votes no longer count.',
-    'vote.st.roundRot':'Round {n} is open — live feed unavailable, used rotation. Earlier votes no longer count.',
+    'vote.st.confirmRound':'Confirm in your wallet — opening a new ballot…',
+    'vote.st.roundLive':'New ballot is open — slate ranked against live ReliefWeb crises. Earlier votes no longer count.',
+    'vote.st.roundRot':'New ballot is open — live feed unavailable, used rotation. Earlier votes no longer count.',
     'vote.st.cancelled':'Cancelled.',
     'vote.st.roundFail':'Could not open the round.',
     'vote.st.reliefweb':'Reading ReliefWeb…',
@@ -92,7 +92,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'{c} ongoing crises tracked by ReliefWeb · {t}'
   ,
     'vote.st.slateRecovered':'The onchain slate named organisations this build no longer lists — showing a freshly composed slate instead.',
-    'vote.st.slateStale':'{n} organisation(s) in this round are no longer listed and were skipped.'
+    'vote.st.slateStale':'{n} organisation(s) in this round are no longer listed and were skipped.',
+    'vote.ballotOpen':'Current ballot'
   },
   es: {
     'nav.home.arrow':'← rwihood.org',
@@ -119,8 +120,8 @@ const TRANSLATIONS = {
     'vote.nextround':'Siguiente ronda →',
     'vote.note.calldata':'Cada voto es una transacción de valor cero que lleva tu elección en su calldata. Nada se almacena en un servidor — el recuento que ves se lee directamente de Robinhood Chain, y volver a votar simplemente reemplaza tu elección anterior.',
     'vote.founder.eyebrow':'Controles del fundador',
-    'vote.founder.open':'Abrir ronda',
-    'vote.founder.confirm':'Confirmar y abrir ronda',
+    'vote.founder.open':'Abrir una nueva votacion',
+    'vote.founder.confirm':'Confirmar y abrir',
     'vote.founder.note':'La lista siguiente se compone automáticamente — una organización recurrente, dos de las áreas de causa establecidas del proyecto y tres que responden a la necesidad actual, clasificadas según datos de crisis en vivo de ReliefWeb. Abrir una nueva ronda es una transacción desde tu billetera: reemplaza la ronda actual y los votos de rondas anteriores dejan de contar de inmediato. Solo esta dirección puede hacerlo; las declaraciones de cualquier otra se ignoran cuando la página lee la cadena.',
     'vote.s3.eyebrow':'03 — Cómo funciona el recuento',
     'vote.s3.title':'Contable por cualquiera.',
@@ -156,9 +157,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'No se pudo conectar con esa billetera.',
     'vote.st.readingCrises':'Leyendo crisis actuales desde ReliefWeb…',
     'vote.st.notOwner':'Solo el controlador de ronda puede abrir una ronda.',
-    'vote.st.confirmRound':'Confirma en tu billetera — abriendo ronda {n}…',
-    'vote.st.roundLive':'Ronda {n} abierta — lista clasificada según crisis en vivo de ReliefWeb. Los votos anteriores ya no cuentan.',
-    'vote.st.roundRot':'Ronda {n} abierta — feed en vivo no disponible, se usó rotación. Los votos anteriores ya no cuentan.',
+    'vote.st.confirmRound':'Confirma en tu billetera — abriendo una nueva votacion…',
+    'vote.st.roundLive':'Nueva votacion abierta — lista clasificada segun crisis en vivo de ReliefWeb. Los votos anteriores ya no cuentan.',
+    'vote.st.roundRot':'Nueva votacion abierta — feed en vivo no disponible, se uso rotacion. Los votos anteriores ya no cuentan.',
     'vote.st.cancelled':'Cancelado.',
     'vote.st.roundFail':'No se pudo abrir la ronda.',
     'vote.st.reliefweb':'Leyendo ReliefWeb…',
@@ -167,7 +168,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'{c} crisis en curso rastreadas por ReliefWeb · {t}'
   ,
     'vote.st.slateRecovered':'La lista on-chain nombraba organizaciones que esta versión ya no lista — se muestra una lista recién compuesta.',
-    'vote.st.slateStale':'{n} organizacion(es) de esta ronda ya no estan listadas y se omitieron.'
+    'vote.st.slateStale':'{n} organizacion(es) de esta ronda ya no estan listadas y se omitieron.',
+    'vote.ballotOpen':'Votacion actual'
   },
   zh: {
     'nav.home.arrow':'← rwihood.org',
@@ -194,8 +196,8 @@ const TRANSLATIONS = {
     'vote.nextround':'下一轮 →',
     'vote.note.calldata':'每一票都是一笔零值交易,你的选择写在其 calldata 中。没有任何内容存储在服务器上 — 你看到的统计直接读自 Robinhood 链,重新投票只会替换你之前的选择。',
     'vote.founder.eyebrow':'创始人控制',
-    'vote.founder.open':'开启轮次',
-    'vote.founder.confirm':'确认并开启轮次',
+    'vote.founder.open':'开启新的投票',
+    'vote.founder.confirm':'确认并开启',
     'vote.founder.note':'下方名单为自动组成 — 一个回访组织、两个来自项目既有关注领域的组织,以及三个应对当前需求的组织,依据 ReliefWeb 实时危机数据排序。开启新一轮是来自你钱包的一笔交易:它会取代当前轮次,先前轮次的投票立即失效。只有此地址可以执行;页面读取链上数据时会忽略任何其他地址的声明。',
     'vote.s3.eyebrow':'03 — 统计如何运作',
     'vote.s3.title':'任何人都能统计。',
@@ -231,9 +233,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'无法连接到该钱包。',
     'vote.st.readingCrises':'正在从 ReliefWeb 读取当前危机…',
     'vote.st.notOwner':'只有轮次控制者才能开启轮次。',
-    'vote.st.confirmRound':'请在钱包中确认 — 正在开启第 {n} 轮…',
-    'vote.st.roundLive':'第 {n} 轮已开启 — 名单依据 ReliefWeb 实时危机排序。先前投票不再计入。',
-    'vote.st.roundRot':'第 {n} 轮已开启 — 实时数据不可用,已改用轮换。先前投票不再计入。',
+    'vote.st.confirmRound':'请在钱包中确认 — 正在开启新的投票…',
+    'vote.st.roundLive':'新的投票已开启 — 名单依据 ReliefWeb 实时危机排序。先前投票不再计入。',
+    'vote.st.roundRot':'新的投票已开启 — 实时数据不可用,已改用轮换。先前投票不再计入。',
     'vote.st.cancelled':'已取消。',
     'vote.st.roundFail':'无法开启该轮次。',
     'vote.st.reliefweb':'正在读取 ReliefWeb…',
@@ -242,7 +244,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'ReliefWeb 追踪的 {c} 起进行中危机 · {t}'
   ,
     'vote.st.slateRecovered':'链上名单引用了本版本已不再收录的组织 — 改为显示重新组成的名单。',
-    'vote.st.slateStale':'本轮中有 {n} 个组织已不再收录,已跳过。'
+    'vote.st.slateStale':'本轮中有 {n} 个组织已不再收录,已跳过。',
+    'vote.ballotOpen':'当前投票'
   },
   ja: {
     'nav.home.arrow':'← rwihood.org',
@@ -269,8 +272,8 @@ const TRANSLATIONS = {
     'vote.nextround':'次のラウンド →',
     'vote.note.calldata':'すべての投票は、選択を calldata に載せたゼロ価値のトランザクションです。サーバーには何も保存されません — 表示される集計は Robinhood Chain から直接読み取られ、再投票は以前の選択を置き換えるだけです。',
     'vote.founder.eyebrow':'創設者コントロール',
-    'vote.founder.open':'ラウンドを開く',
-    'vote.founder.confirm':'確認してラウンドを開く',
+    'vote.founder.open':'新しい投票を開く',
+    'vote.founder.confirm':'確認して開く',
     'vote.founder.note':'以下の候補は自動的に構成されます — 再登場の団体 1、プロジェクトの既存の関心領域から 2、そして ReliefWeb のライブ危機データに照らして順位付けされた、現在の必要に応える団体 3。新しいラウンドを開くのはあなたのウォレットからのトランザクションです:現在のラウンドを置き換え、以前のラウンドの投票は即座に無効になります。これを実行できるのはこのアドレスのみで、他の誰かの宣言はページがチェーンを読む際に無視されます。',
     'vote.s3.eyebrow':'03 — 集計の仕組み',
     'vote.s3.title':'誰でも数えられる。',
@@ -306,9 +309,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'そのウォレットに接続できませんでした。',
     'vote.st.readingCrises':'ReliefWeb から現在の危機を読み取り中…',
     'vote.st.notOwner':'ラウンドを開けるのはラウンド管理者だけです。',
-    'vote.st.confirmRound':'ウォレットで承認してください — ラウンド {n} を開いています…',
-    'vote.st.roundLive':'ラウンド {n} を開始 — ReliefWeb のライブ危機に照らして候補を順位付け。以前の投票は無効になります。',
-    'vote.st.roundRot':'ラウンド {n} を開始 — ライブフィードが利用できずローテーションを使用。以前の投票は無効になります。',
+    'vote.st.confirmRound':'ウォレットで承認してください — 新しい投票を開いています…',
+    'vote.st.roundLive':'新しい投票を開始 — ReliefWeb のライブ危機に照らして候補を順位付け。以前の投票は無効になります。',
+    'vote.st.roundRot':'新しい投票を開始 — ライブフィードが利用できずローテーションを使用。以前の投票は無効になります。',
     'vote.st.cancelled':'キャンセルしました。',
     'vote.st.roundFail':'ラウンドを開けませんでした。',
     'vote.st.reliefweb':'ReliefWeb を読み取り中…',
@@ -317,7 +320,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'ReliefWeb が追跡中の危機 {c} 件 · {t}'
   ,
     'vote.st.slateRecovered':'オンチェーンの候補にこのビルドが載せていない団体が含まれていました — 代わりに新しく構成した候補を表示しています。',
-    'vote.st.slateStale':'このラウンドの {n} 団体は掲載されておらず、スキップされました。'
+    'vote.st.slateStale':'このラウンドの {n} 団体は掲載されておらず、スキップされました。',
+    'vote.ballotOpen':'現在の投票'
   },
   ko: {
     'nav.home.arrow':'← rwihood.org',
@@ -344,8 +348,8 @@ const TRANSLATIONS = {
     'vote.nextround':'다음 라운드 →',
     'vote.note.calldata':'모든 투표는 선택을 calldata에 담은 0원 거래입니다. 서버에는 아무것도 저장되지 않습니다 — 보이는 집계는 Robinhood Chain에서 직접 읽으며, 재투표는 이전 선택을 대체할 뿐입니다.',
     'vote.founder.eyebrow':'창립자 제어',
-    'vote.founder.open':'라운드 열기',
-    'vote.founder.confirm':'확인하고 라운드 열기',
+    'vote.founder.open':'새 투표 열기',
+    'vote.founder.confirm':'확인하고 열기',
     'vote.founder.note':'아래 명단은 자동으로 구성됩니다 — 재등장 단체 1곳, 프로젝트의 기존 관심 분야에서 2곳, 그리고 ReliefWeb 실시간 위기 데이터에 따라 순위가 매겨진 현재 필요에 대응하는 3곳. 새 라운드를 여는 것은 당신 지갑에서 보내는 거래입니다: 현재 라운드를 대체하며, 이전 라운드의 투표는 즉시 무효가 됩니다. 오직 이 주소만 실행할 수 있으며, 다른 누군가의 선언은 페이지가 체인을 읽을 때 무시됩니다.',
     'vote.s3.eyebrow':'03 — 집계 방식',
     'vote.s3.title':'누구나 셀 수 있습니다.',
@@ -381,9 +385,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'해당 지갑에 연결할 수 없습니다.',
     'vote.st.readingCrises':'ReliefWeb에서 현재 위기를 읽는 중…',
     'vote.st.notOwner':'라운드 관리자만 라운드를 열 수 있습니다.',
-    'vote.st.confirmRound':'지갑에서 확인하세요 — 라운드 {n} 여는 중…',
-    'vote.st.roundLive':'라운드 {n} 시작 — ReliefWeb 실시간 위기 기준으로 명단이 정렬되었습니다. 이전 투표는 무효입니다.',
-    'vote.st.roundRot':'라운드 {n} 시작 — 실시간 피드를 쓸 수 없어 순환을 사용했습니다. 이전 투표는 무효입니다.',
+    'vote.st.confirmRound':'지갑에서 확인하세요 — 새 투표를 여는 중…',
+    'vote.st.roundLive':'새 투표 시작 — ReliefWeb 실시간 위기 기준으로 명단이 정렬되었습니다. 이전 투표는 무효입니다.',
+    'vote.st.roundRot':'새 투표 시작 — 실시간 피드를 쓸 수 없어 순환을 사용했습니다. 이전 투표는 무효입니다.',
     'vote.st.cancelled':'취소되었습니다.',
     'vote.st.roundFail':'라운드를 열 수 없습니다.',
     'vote.st.reliefweb':'ReliefWeb 읽는 중…',
@@ -392,7 +396,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'ReliefWeb이 추적 중인 위기 {c}건 · {t}'
   ,
     'vote.st.slateRecovered':'온체인 명단이 이 빌드에 없는 단체를 지목했습니다 — 새로 구성한 명단을 표시합니다.',
-    'vote.st.slateStale':'이번 라운드의 {n}개 단체는 더 이상 목록에 없어 건너뛰었습니다.'
+    'vote.st.slateStale':'이번 라운드의 {n}개 단체는 더 이상 목록에 없어 건너뛰었습니다.',
+    'vote.ballotOpen':'현재 투표'
   },
   pt: {
     'nav.home.arrow':'← rwihood.org',
@@ -419,8 +424,8 @@ const TRANSLATIONS = {
     'vote.nextround':'Próxima rodada →',
     'vote.note.calldata':'Cada voto é uma transação de valor zero que carrega sua escolha no calldata. Nada é armazenado em servidor — a contagem que você vê é lida direto da Robinhood Chain, e votar de novo simplesmente substitui sua escolha anterior.',
     'vote.founder.eyebrow':'Controles do fundador',
-    'vote.founder.open':'Abrir rodada',
-    'vote.founder.confirm':'Confirmar e abrir rodada',
+    'vote.founder.open':'Abrir uma nova votacao',
+    'vote.founder.confirm':'Confirmar e abrir',
     'vote.founder.note':'A lista abaixo é composta automaticamente — uma organização recorrente, duas das áreas de causa já estabelecidas do projeto e três respondendo à necessidade atual, classificadas conforme dados de crise ao vivo da ReliefWeb. Abrir uma nova rodada é uma transação da sua carteira: substitui a rodada atual, e votos de rodadas anteriores param de contar imediatamente. Só este endereço pode fazê-lo; declarações de qualquer outro são ignoradas quando a página lê a cadeia.',
     'vote.s3.eyebrow':'03 — Como a contagem funciona',
     'vote.s3.title':'Contável por qualquer um.',
@@ -456,9 +461,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'Não foi possível conectar a essa carteira.',
     'vote.st.readingCrises':'Lendo crises atuais do ReliefWeb…',
     'vote.st.notOwner':'Apenas o controlador da rodada pode abrir uma rodada.',
-    'vote.st.confirmRound':'Confirme na sua carteira — abrindo rodada {n}…',
-    'vote.st.roundLive':'Rodada {n} aberta — lista classificada por crises ao vivo do ReliefWeb. Votos anteriores não contam mais.',
-    'vote.st.roundRot':'Rodada {n} aberta — feed ao vivo indisponível, usou rotação. Votos anteriores não contam mais.',
+    'vote.st.confirmRound':'Confirme na sua carteira — abrindo uma nova votacao…',
+    'vote.st.roundLive':'Nova votacao aberta — lista classificada por crises ao vivo do ReliefWeb. Votos anteriores nao contam mais.',
+    'vote.st.roundRot':'Nova votacao aberta — feed ao vivo indisponivel, usou rotacao. Votos anteriores nao contam mais.',
     'vote.st.cancelled':'Cancelado.',
     'vote.st.roundFail':'Não foi possível abrir a rodada.',
     'vote.st.reliefweb':'Lendo ReliefWeb…',
@@ -467,7 +472,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'{c} crises em curso rastreadas pelo ReliefWeb · {t}'
   ,
     'vote.st.slateRecovered':'A lista onchain citava organizações que esta versão não lista mais — mostrando uma lista recém-composta.',
-    'vote.st.slateStale':'{n} organizacao(oes) desta rodada nao estao mais listadas e foram ignoradas.'
+    'vote.st.slateStale':'{n} organizacao(oes) desta rodada nao estao mais listadas e foram ignoradas.',
+    'vote.ballotOpen':'Votacao atual'
   },
   fr: {
     'nav.home.arrow':'← rwihood.org',
@@ -494,8 +500,8 @@ const TRANSLATIONS = {
     'vote.nextround':'Tour suivant →',
     'vote.note.calldata':'Chaque vote est une transaction de valeur nulle portant votre choix dans son calldata. Rien n\'est stocké sur un serveur — le décompte affiché est lu directement sur Robinhood Chain, et revoter remplace simplement votre choix précédent.',
     'vote.founder.eyebrow':'Contrôles du fondateur',
-    'vote.founder.open':'Ouvrir le tour',
-    'vote.founder.confirm':'Confirmer et ouvrir le tour',
+    'vote.founder.open':'Ouvrir un nouveau scrutin',
+    'vote.founder.confirm':'Confirmer et ouvrir',
     'vote.founder.note':'La liste ci-dessous est composée automatiquement — une organisation récurrente, deux issues des domaines déjà soutenus par le projet, et trois répondant au besoin actuel, classées selon les données de crise en direct de ReliefWeb. Ouvrir un nouveau tour est une transaction depuis votre portefeuille : elle remplace le tour actuel, et les votes des tours précédents cessent immédiatement de compter. Seule cette adresse peut le faire ; les déclarations de toute autre sont ignorées lorsque la page lit la chaîne.',
     'vote.s3.eyebrow':'03 — Comment le décompte fonctionne',
     'vote.s3.title':'Comptable par quiconque.',
@@ -531,9 +537,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'Impossible de se connecter à ce portefeuille.',
     'vote.st.readingCrises':'Lecture des crises actuelles depuis ReliefWeb…',
     'vote.st.notOwner':'Seul le contrôleur du tour peut ouvrir un tour.',
-    'vote.st.confirmRound':'Confirmez dans votre portefeuille — ouverture du tour {n}…',
-    'vote.st.roundLive':'Tour {n} ouvert — liste classée selon les crises en direct de ReliefWeb. Les votes précédents ne comptent plus.',
-    'vote.st.roundRot':'Tour {n} ouvert — flux en direct indisponible, rotation utilisée. Les votes précédents ne comptent plus.',
+    'vote.st.confirmRound':'Confirmez dans votre portefeuille — ouverture d un nouveau scrutin…',
+    'vote.st.roundLive':'Nouveau scrutin ouvert — liste classee selon les crises en direct de ReliefWeb. Les votes precedents ne comptent plus.',
+    'vote.st.roundRot':'Nouveau scrutin ouvert — flux en direct indisponible, rotation utilisee. Les votes precedents ne comptent plus.',
     'vote.st.cancelled':'Annulé.',
     'vote.st.roundFail':'Impossible d\'ouvrir le tour.',
     'vote.st.reliefweb':'Lecture de ReliefWeb…',
@@ -542,7 +548,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'{c} crises en cours suivies par ReliefWeb · {t}'
   ,
     'vote.st.slateRecovered':'La liste onchain citait des organisations que cette version ne liste plus — une liste recomposée est affichée.',
-    'vote.st.slateStale':'{n} organisation(s) de ce tour ne sont plus listees et ont ete ignorees.'
+    'vote.st.slateStale':'{n} organisation(s) de ce tour ne sont plus listees et ont ete ignorees.',
+    'vote.ballotOpen':'Scrutin en cours'
   },
   ru: {
     'nav.home.arrow':'← rwihood.org',
@@ -569,8 +576,8 @@ const TRANSLATIONS = {
     'vote.nextround':'Следующий раунд →',
     'vote.note.calldata':'Каждый голос — транзакция нулевой стоимости, несущая ваш выбор в calldata. Ничего не хранится на сервере — подсчёт читается напрямую из Robinhood Chain, а повторное голосование просто заменяет прежний выбор.',
     'vote.founder.eyebrow':'Управление основателя',
-    'vote.founder.open':'Открыть раунд',
-    'vote.founder.confirm':'Подтвердить и открыть раунд',
+    'vote.founder.open':'Открыть новое голосование',
+    'vote.founder.confirm':'Подтвердить и открыть',
     'vote.founder.note':'Список ниже составляется автоматически — одна возвращающаяся организация, две из уже поддержанных проектом направлений и три, отвечающие текущей нужде, ранжированные по живым данным о кризисах ReliefWeb. Открытие нового раунда — транзакция из вашего кошелька: она заменяет текущий раунд, и голоса прошлых раундов немедленно перестают считаться. Сделать это может только этот адрес; заявления от любого другого игнорируются при чтении цепочки.',
     'vote.s3.eyebrow':'03 — Как работает подсчёт',
     'vote.s3.title':'Подсчитать может любой.',
@@ -606,9 +613,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'Не удалось подключиться к этому кошельку.',
     'vote.st.readingCrises':'Чтение текущих кризисов из ReliefWeb…',
     'vote.st.notOwner':'Открыть раунд может только управляющий раундом.',
-    'vote.st.confirmRound':'Подтвердите в кошельке — открываем раунд {n}…',
-    'vote.st.roundLive':'Раунд {n} открыт — список ранжирован по живым кризисам ReliefWeb. Прежние голоса больше не считаются.',
-    'vote.st.roundRot':'Раунд {n} открыт — живая лента недоступна, использована ротация. Прежние голоса больше не считаются.',
+    'vote.st.confirmRound':'Подтвердите в кошельке — открываем новое голосование…',
+    'vote.st.roundLive':'Новое голосование открыто — список ранжирован по живым кризисам ReliefWeb. Прежние голоса больше не считаются.',
+    'vote.st.roundRot':'Новое голосование открыто — живая лента недоступна, использована ротация. Прежние голоса больше не считаются.',
     'vote.st.cancelled':'Отменено.',
     'vote.st.roundFail':'Не удалось открыть раунд.',
     'vote.st.reliefweb':'Чтение ReliefWeb…',
@@ -617,7 +624,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'{c} текущих кризисов отслеживает ReliefWeb · {t}'
   ,
     'vote.st.slateRecovered':'Ончейн-список назвал организации, которых нет в этой сборке — показан заново составленный список.',
-    'vote.st.slateStale':'{n} организаций этого раунда больше не в списке и были пропущены.'
+    'vote.st.slateStale':'{n} организаций этого раунда больше не в списке и были пропущены.',
+    'vote.ballotOpen':'Текущее голосование'
   },
   tr: {
     'nav.home.arrow':'← rwihood.org',
@@ -644,8 +652,8 @@ const TRANSLATIONS = {
     'vote.nextround':'Sonraki tur →',
     'vote.note.calldata':'Her oy, seçiminizi calldata içinde taşıyan sıfır değerli bir işlemdir. Sunucuda hiçbir şey saklanmaz — gördüğünüz sayım doğrudan Robinhood Chain\'den okunur ve yeniden oy vermek önceki seçiminizi değiştirir.',
     'vote.founder.eyebrow':'Kurucu kontrolleri',
-    'vote.founder.open':'Turu aç',
-    'vote.founder.confirm':'Onayla ve turu aç',
+    'vote.founder.open':'Yeni bir oylama ac',
+    'vote.founder.confirm':'Onayla ve ac',
     'vote.founder.note':'Aşağıdaki liste otomatik oluşturulur — bir tekrar eden kuruluş, projenin yerleşik ilgi alanlarından iki tane ve ReliefWeb canlı kriz verilerine göre sıralanmış, güncel ihtiyaca yanıt veren üç tane. Yeni bir tur açmak cüzdanınızdan bir işlemdir: mevcut turun yerini alır ve önceki turlardaki oylar anında sayılmaz olur. Bunu yalnızca bu adres yapabilir; başka herhangi birinin bildirimleri sayfa zinciri okurken yok sayılır.',
     'vote.s3.eyebrow':'03 — Sayım nasıl çalışır',
     'vote.s3.title':'Herkes sayabilir.',
@@ -681,9 +689,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'O cüzdana bağlanılamadı.',
     'vote.st.readingCrises':'ReliefWeb’den güncel krizler okunuyor…',
     'vote.st.notOwner':'Turu yalnızca tur denetleyicisi açabilir.',
-    'vote.st.confirmRound':'Cüzdanınızda onaylayın — tur {n} açılıyor…',
-    'vote.st.roundLive':'Tur {n} açık — liste canlı ReliefWeb krizlerine göre sıralandı. Önceki oylar artık sayılmaz.',
-    'vote.st.roundRot':'Tur {n} açık — canlı akış yok, rotasyon kullanıldı. Önceki oylar artık sayılmaz.',
+    'vote.st.confirmRound':'Cuzdaninizda onaylayin — yeni oylama aciliyor…',
+    'vote.st.roundLive':'Yeni oylama acik — liste canli ReliefWeb krizlerine gore siralandi. Onceki oylar artik sayilmaz.',
+    'vote.st.roundRot':'Yeni oylama acik — canli akis yok, rotasyon kullanildi. Onceki oylar artik sayilmaz.',
     'vote.st.cancelled':'İptal edildi.',
     'vote.st.roundFail':'Tur açılamadı.',
     'vote.st.reliefweb':'ReliefWeb okunuyor…',
@@ -692,7 +700,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'ReliefWeb tarafından izlenen {c} devam eden kriz · {t}'
   ,
     'vote.st.slateRecovered':'Zincir üstü liste bu sürümde artık bulunmayan kuruluşları andı — yerine yeni oluşturulmuş liste gösteriliyor.',
-    'vote.st.slateStale':'Bu turdaki {n} kurulus artik listede degil ve atlandi.'
+    'vote.st.slateStale':'Bu turdaki {n} kurulus artik listede degil ve atlandi.',
+    'vote.ballotOpen':'Mevcut oylama'
   },
   vi: {
     'nav.home.arrow':'← rwihood.org',
@@ -719,8 +728,8 @@ const TRANSLATIONS = {
     'vote.nextround':'Vòng tiếp theo →',
     'vote.note.calldata':'Mỗi phiếu là một giao dịch giá trị bằng không mang lựa chọn của bạn trong calldata. Không có gì lưu trên máy chủ — kiểm đếm bạn thấy được đọc thẳng từ Robinhood Chain, và bỏ phiếu lại chỉ thay thế lựa chọn trước đó.',
     'vote.founder.eyebrow':'Điều khiển người sáng lập',
-    'vote.founder.open':'Mở vòng',
-    'vote.founder.confirm':'Xác nhận & mở vòng',
+    'vote.founder.open':'Mở lá phiếu mới',
+    'vote.founder.confirm':'Xác nhận & mở',
     'vote.founder.note':'Danh sách bên dưới được soạn tự động — một tổ chức quay lại, hai từ các lĩnh vực dự án đã hỗ trợ, và ba đáp ứng nhu cầu hiện tại, xếp hạng theo dữ liệu khủng hoảng trực tiếp của ReliefWeb. Mở vòng mới là một giao dịch từ ví của bạn: nó thay thế vòng hiện tại, và phiếu ở các vòng trước lập tức không còn được tính. Chỉ địa chỉ này mới làm được; tuyên bố từ bất kỳ ai khác đều bị bỏ qua khi trang đọc chuỗi.',
     'vote.s3.eyebrow':'03 — Cách kiểm đếm hoạt động',
     'vote.s3.title':'Ai cũng đếm được.',
@@ -756,9 +765,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'Không thể kết nối với ví đó.',
     'vote.st.readingCrises':'Đang đọc khủng hoảng hiện tại từ ReliefWeb…',
     'vote.st.notOwner':'Chỉ người kiểm soát vòng mới mở được vòng.',
-    'vote.st.confirmRound':'Xác nhận trong ví — đang mở vòng {n}…',
-    'vote.st.roundLive':'Vòng {n} đã mở — danh sách xếp theo khủng hoảng trực tiếp từ ReliefWeb. Phiếu trước không còn được tính.',
-    'vote.st.roundRot':'Vòng {n} đã mở — nguồn trực tiếp không khả dụng, đã dùng luân phiên. Phiếu trước không còn được tính.',
+    'vote.st.confirmRound':'Xác nhận trong ví — đang mở lá phiếu mới…',
+    'vote.st.roundLive':'Lá phiếu mới đã mở — danh sách xếp theo khủng hoảng trực tiếp từ ReliefWeb. Phiếu trước không còn được tính.',
+    'vote.st.roundRot':'Lá phiếu mới đã mở — nguồn trực tiếp không khả dụng, đã dùng luân phiên. Phiếu trước không còn được tính.',
     'vote.st.cancelled':'Đã hủy.',
     'vote.st.roundFail':'Không mở được vòng.',
     'vote.st.reliefweb':'Đang đọc ReliefWeb…',
@@ -767,7 +776,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'{c} khủng hoảng đang diễn ra do ReliefWeb theo dõi · {t}'
   ,
     'vote.st.slateRecovered':'Danh sách onchain nêu các tổ chức bản dựng này không còn liệt kê — đang hiển thị danh sách mới soạn.',
-    'vote.st.slateStale':'{n} tổ chức trong vòng này không còn được liệt kê và đã bị bỏ qua.'
+    'vote.st.slateStale':'{n} tổ chức trong vòng này không còn được liệt kê và đã bị bỏ qua.',
+    'vote.ballotOpen':'Lá phiếu hiện tại'
   },
   hi: {
     'nav.home.arrow':'← rwihood.org',
@@ -794,8 +804,8 @@ const TRANSLATIONS = {
     'vote.nextround':'अगला दौर →',
     'vote.note.calldata':'हर वोट एक शून्य-मूल्य लेनदेन है जो आपकी पसंद को अपने calldata में रखता है। किसी सर्वर पर कुछ भी संग्रहीत नहीं होता — आप जो गणना देखते हैं वह सीधे Robinhood Chain से पढ़ी जाती है, और दोबारा वोट करना बस आपकी पिछली पसंद को बदल देता है।',
     'vote.founder.eyebrow':'संस्थापक नियंत्रण',
-    'vote.founder.open':'दौर खोलें',
-    'vote.founder.confirm':'पुष्टि करें और दौर खोलें',
+    'vote.founder.open':'नया मतपत्र खोलें',
+    'vote.founder.confirm':'पुष्टि करें और खोलें',
     'vote.founder.note':'नीचे की सूची स्वचालित रूप से बनती है — एक लौटने वाला संगठन, परियोजना के स्थापित कारण क्षेत्रों से दो, और वर्तमान आवश्यकता का उत्तर देने वाले तीन, जो ReliefWeb के लाइव संकट डेटा के आधार पर क्रमित हैं। नया दौर खोलना आपके वॉलेट से एक लेनदेन है: यह वर्तमान दौर की जगह लेता है, और पिछले दौरों के वोट तुरंत गिनना बंद कर देते हैं। केवल यही पता ऐसा कर सकता है; किसी और की घोषणाएँ तब अनदेखी की जाती हैं जब पृष्ठ चेन पढ़ता है।',
     'vote.s3.eyebrow':'03 — गणना कैसे काम करती है',
     'vote.s3.title':'कोई भी गिन सकता है।',
@@ -831,9 +841,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'उस वॉलेट से कनेक्ट नहीं हो सका।',
     'vote.st.readingCrises':'ReliefWeb से वर्तमान संकट पढ़े जा रहे हैं…',
     'vote.st.notOwner':'केवल दौर नियंत्रक ही दौर खोल सकता है।',
-    'vote.st.confirmRound':'अपने वॉलेट में पुष्टि करें — दौर {n} खोला जा रहा है…',
-    'vote.st.roundLive':'दौर {n} खुला — सूची ReliefWeb के लाइव संकटों के अनुसार क्रमित। पिछले वोट अब नहीं गिने जाते।',
-    'vote.st.roundRot':'दौर {n} खुला — लाइव फ़ीड अनुपलब्ध, रोटेशन का उपयोग किया। पिछले वोट अब नहीं गिने जाते।',
+    'vote.st.confirmRound':'अपने वॉलेट में पुष्टि करें — नया मतपत्र खोला जा रहा है…',
+    'vote.st.roundLive':'नया मतपत्र खुला — सूची ReliefWeb के लाइव संकटों के अनुसार क्रमित। पिछले वोट अब नहीं गिने जाते।',
+    'vote.st.roundRot':'नया मतपत्र खुला — लाइव फ़ीड अनुपलब्ध, रोटेशन का उपयोग किया। पिछले वोट अब नहीं गिने जाते।',
     'vote.st.cancelled':'रद्द।',
     'vote.st.roundFail':'दौर नहीं खोला जा सका।',
     'vote.st.reliefweb':'ReliefWeb पढ़ा जा रहा है…',
@@ -842,7 +852,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'ReliefWeb द्वारा ट्रैक किए गए {c} चल रहे संकट · {t}'
   ,
     'vote.st.slateRecovered':'ऑनचेन सूची ने ऐसे संगठनों का नाम लिया जो इस बिल्ड में नहीं हैं — इसके बजाय नई सूची दिखाई जा रही है।',
-    'vote.st.slateStale':'इस दौर के {n} संगठन अब सूचीबद्ध नहीं हैं और छोड़ दिए गए।'
+    'vote.st.slateStale':'इस दौर के {n} संगठन अब सूचीबद्ध नहीं हैं और छोड़ दिए गए।',
+    'vote.ballotOpen':'वर्तमान मतपत्र'
   },
   de: {
     'nav.home.arrow':'← rwihood.org',
@@ -869,8 +880,8 @@ const TRANSLATIONS = {
     'vote.nextround':'Nächste Runde →',
     'vote.note.calldata':'Jede Stimme ist eine Transaktion ohne Wert, die deine Wahl im Calldata trägt. Nichts wird auf einem Server gespeichert — die angezeigte Auszählung wird direkt von der Robinhood Chain gelesen, und erneutes Abstimmen ersetzt einfach deine vorherige Wahl.',
     'vote.founder.eyebrow':'Gründer-Steuerung',
-    'vote.founder.open':'Runde öffnen',
-    'vote.founder.confirm':'Bestätigen & Runde öffnen',
+    'vote.founder.open':'Neue Abstimmung oeffnen',
+    'vote.founder.confirm':'Bestaetigen & oeffnen',
     'vote.founder.note':'Die Liste unten wird automatisch zusammengestellt — eine wiederkehrende Organisation, zwei aus den etablierten Themenfeldern des Projekts und drei, die auf den aktuellen Bedarf reagieren, gewichtet nach Live-Krisendaten von ReliefWeb. Eine neue Runde zu öffnen ist eine Transaktion aus deiner Wallet: Sie löst die aktuelle Runde ab, und Stimmen früherer Runden zählen sofort nicht mehr. Nur diese Adresse kann das; Deklarationen von anderen werden ignoriert, wenn die Seite die Chain liest.',
     'vote.s3.eyebrow':'03 — Wie die Auszählung funktioniert',
     'vote.s3.title':'Von jedem zählbar.',
@@ -906,9 +917,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'Verbindung zu dieser Wallet fehlgeschlagen.',
     'vote.st.readingCrises':'Aktuelle Krisen von ReliefWeb werden gelesen…',
     'vote.st.notOwner':'Nur der Runden-Controller kann eine Runde öffnen.',
-    'vote.st.confirmRound':'In deiner Wallet bestätigen — Runde {n} wird geöffnet…',
-    'vote.st.roundLive':'Runde {n} offen — Liste nach Live-Krisen von ReliefWeb gewichtet. Frühere Stimmen zählen nicht mehr.',
-    'vote.st.roundRot':'Runde {n} offen — Live-Feed nicht verfügbar, Rotation genutzt. Frühere Stimmen zählen nicht mehr.',
+    'vote.st.confirmRound':'In deiner Wallet bestaetigen — neue Abstimmung wird geoeffnet…',
+    'vote.st.roundLive':'Neue Abstimmung offen — Liste nach Live-Krisen von ReliefWeb gewichtet. Fruehere Stimmen zaehlen nicht mehr.',
+    'vote.st.roundRot':'Neue Abstimmung offen — Live-Feed nicht verfuegbar, Rotation genutzt. Fruehere Stimmen zaehlen nicht mehr.',
     'vote.st.cancelled':'Abgebrochen.',
     'vote.st.roundFail':'Runde konnte nicht geöffnet werden.',
     'vote.st.reliefweb':'ReliefWeb wird gelesen…',
@@ -917,7 +928,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'{c} laufende Krisen von ReliefWeb verfolgt · {t}'
   ,
     'vote.st.slateRecovered':'Die Onchain-Liste nannte Organisationen, die dieser Build nicht mehr führt — es wird eine neu zusammengestellte Liste gezeigt.',
-    'vote.st.slateStale':'{n} Organisation(en) dieser Runde sind nicht mehr gelistet und wurden uebersprungen.'
+    'vote.st.slateStale':'{n} Organisation(en) dieser Runde sind nicht mehr gelistet und wurden uebersprungen.',
+    'vote.ballotOpen':'Aktuelle Abstimmung'
   },
   id: {
     'nav.home.arrow':'← rwihood.org',
@@ -944,8 +956,8 @@ const TRANSLATIONS = {
     'vote.nextround':'Putaran berikutnya →',
     'vote.note.calldata':'Setiap suara adalah transaksi bernilai nol yang membawa pilihan Anda di calldata-nya. Tidak ada yang disimpan di server — hitungan yang Anda lihat dibaca langsung dari Robinhood Chain, dan memilih ulang hanya menggantikan pilihan sebelumnya.',
     'vote.founder.eyebrow':'Kontrol pendiri',
-    'vote.founder.open':'Buka putaran',
-    'vote.founder.confirm':'Konfirmasi & buka putaran',
+    'vote.founder.open':'Buka surat suara baru',
+    'vote.founder.confirm':'Konfirmasi & buka',
     'vote.founder.note':'Daftar di bawah disusun otomatis — satu organisasi yang kembali, dua dari bidang yang sudah didukung proyek, dan tiga yang merespons kebutuhan saat ini, diperingkat menurut data krisis langsung ReliefWeb. Membuka putaran baru adalah transaksi dari dompet Anda: ia menggantikan putaran saat ini, dan suara di putaran sebelumnya langsung berhenti dihitung. Hanya alamat ini yang bisa melakukannya; deklarasi dari siapa pun lainnya diabaikan saat halaman membaca rantai.',
     'vote.s3.eyebrow':'03 — Cara penghitungan bekerja',
     'vote.s3.title':'Dapat dihitung siapa saja.',
@@ -981,9 +993,9 @@ const TRANSLATIONS = {
     'vote.st.connFail':'Tidak dapat terhubung ke dompet itu.',
     'vote.st.readingCrises':'Membaca krisis terkini dari ReliefWeb…',
     'vote.st.notOwner':'Hanya pengendali putaran yang bisa membuka putaran.',
-    'vote.st.confirmRound':'Konfirmasi di dompet — membuka putaran {n}…',
-    'vote.st.roundLive':'Putaran {n} terbuka — daftar diperingkat menurut krisis langsung ReliefWeb. Suara sebelumnya tidak lagi dihitung.',
-    'vote.st.roundRot':'Putaran {n} terbuka — umpan langsung tidak tersedia, memakai rotasi. Suara sebelumnya tidak lagi dihitung.',
+    'vote.st.confirmRound':'Konfirmasi di dompet — membuka surat suara baru…',
+    'vote.st.roundLive':'Surat suara baru terbuka — daftar diperingkat menurut krisis langsung ReliefWeb. Suara sebelumnya tidak lagi dihitung.',
+    'vote.st.roundRot':'Surat suara baru terbuka — umpan langsung tidak tersedia, memakai rotasi. Suara sebelumnya tidak lagi dihitung.',
     'vote.st.cancelled':'Dibatalkan.',
     'vote.st.roundFail':'Tidak dapat membuka putaran.',
     'vote.st.reliefweb':'Membaca ReliefWeb…',
@@ -992,7 +1004,8 @@ const TRANSLATIONS = {
     'vote.st.liveSignal':'{c} krisis berlangsung dilacak ReliefWeb · {t}'
   ,
     'vote.st.slateRecovered':'Daftar onchain menyebut organisasi yang tidak lagi ada di build ini — menampilkan daftar yang baru disusun.',
-    'vote.st.slateStale':'{n} organisasi di putaran ini tidak lagi terdaftar dan dilewati.'
+    'vote.st.slateStale':'{n} organisasi di putaran ini tidak lagi terdaftar dan dilewati.',
+    'vote.ballotOpen':'Surat suara saat ini'
   }
 };
 
@@ -1413,7 +1426,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="results-head">
         <div>
           <p class="eyebrow" style="margin-bottom:4px" data-i18n="vote.s2.eyebrow">02 — The ballot</p>
-          <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)"><span data-i18n="vote.round">Round</span> <span id="roundNo">1</span> <span data-i18n="vote.closes">· closes</span> <span id="roundClose" data-i18n="vote.closes.when">when the next donation is made</span></h2>
+          <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)"><span data-i18n="vote.ballotOpen">Current ballot</span> <span data-i18n="vote.closes">· closes</span> <span id="roundClose" data-i18n="vote.closes.when">when the next donation is made</span></h2>
         </div>
         <div class="totals"><span id="tallyTotals">Loading tally…</span><br><span class="livesig" id="liveSignal"></span><br><span class="livesig" id="slateWarn"></span></div>
       </div>
@@ -1435,11 +1448,11 @@ document.addEventListener('DOMContentLoaded', function(){
   <section id="ownerSection" hidden aria-hidden="true">
     <div class="wrap">
       <p class="eyebrow" data-i18n="vote.founder.eyebrow">Founder controls</p>
-      <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)"><span data-i18n="vote.founder.open">Open round</span> <span id="nextRoundNo">2</span>.</h2>
+      <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)"><span data-i18n="vote.founder.open">Open a new ballot</span>.</h2>
       <p class="note" data-i18n="vote.founder.note">The slate below is composed automatically.</p>
       <div class="org-picker" id="orgPicker"></div>
       <div class="wallet-bar" style="margin-top:18px">
-        <button class="btn" id="newRoundBtn" type="button"><span data-i18n="vote.founder.confirm">Confirm &amp; open round</span> <span id="nextRoundNo2"></span></button>
+        <button class="btn" id="newRoundBtn" type="button"><span data-i18n="vote.founder.confirm">Confirm &amp; open</span></button>
         <span class="muted mono" id="pickCount"></span>
       </div>
       <p class="status" id="ownerStatus"></p>
@@ -1675,14 +1688,32 @@ async function fetchLiveCrises(useCache){
       }
     }catch(e){}
   }
-  const url = RW_API
-    + '?appname=' + encodeURIComponent(RW_APP)
-    + '&filter[field]=status&filter[value]=ongoing'
-    + '&fields[include][]=name&fields[include][]=type.name'
-    + '&limit=100&sort[]=date.created:desc';
-  const res = await fetch(url, {headers:{accept:'application/json'}});
-  if(!res.ok) throw new Error('reliefweb ' + res.status);
-  const j = await res.json();
+  // Query variants, simplest last. The API's exact filter/sort grammar has moved
+  // between versions, so rather than betting on one shape we try a short ladder
+  // and use the first that returns usable data.
+  const q = '?appname=' + encodeURIComponent(RW_APP);
+  const CANDIDATE_URLS = [
+    'https://api.reliefweb.int/v1/disasters' + q + '&filter[field]=status&filter[value]=ongoing&fields[include][]=name&fields[include][]=type.name&limit=100',
+    'https://api.reliefweb.int/v1/disasters' + q + '&fields[include][]=name&fields[include][]=type.name&limit=100',
+    'https://api.reliefweb.int/v1/disasters' + q + '&preset=latest&limit=100',
+    'https://api.reliefweb.int/v2/disasters' + q + '&fields[include][]=name&fields[include][]=type.name&limit=100'
+  ];
+  let j = null, lastErr = '';
+  for(const u of CANDIDATE_URLS){
+    try{
+      // No custom headers: anything beyond the CORS-safelist forces a preflight,
+      // and a failed preflight is indistinguishable from the API being down.
+      const res = await fetch(u);
+      if(!res.ok){ lastErr = 'HTTP ' + res.status; continue; }
+      const parsed = await res.json();
+      if(parsed && Array.isArray(parsed.data) && parsed.data.length){ j = parsed; break; }
+      lastErr = 'empty';
+    }catch(e){
+      // A cross-origin block surfaces as a bare TypeError with no detail.
+      lastErr = (e && e.name === 'TypeError') ? 'blocked/offline' : String(e && e.message || e);
+    }
+  }
+  if(!j){ const err = new Error(lastErr || 'unavailable'); err.rwReason = lastErr; throw err; }
   const counts = {}, names = [];
   (j.data || []).forEach(function(d){
     const f = d.fields || {};
@@ -1771,7 +1802,7 @@ async function composeSlate(round){
     if(ranked.length < 3) throw new Error('thin ranking');
     return { slate:[...new Set([...base, ...ranked])], live:live, source:'reliefweb' };
   }catch(e){
-    return { slate: autoSlate(round), live:null, source:'rotation' };
+    return { slate: autoSlate(round), live:null, source:'rotation', reason:(e && e.rwReason) || (e && e.message) || '' };
   }
 }
 
@@ -1853,6 +1884,7 @@ function voteStatus(msg, isErr){
 }
 
 async function connect(){
+  userDisconnected = false;
   const list = providers.length ? providers
     : (window.ethereum ? [{info:{name:'Injected wallet',rdns:'window.ethereum'},provider:window.ethereum}] : []);
   if(!list.length){ walletStatus(t('vote.st.noWallet'), true); return; }
@@ -1880,10 +1912,20 @@ async function connectWith(d){
     walletStatus(t(e && e.code === 4001 ? 'vote.st.rejected' : 'vote.st.connFail'), true);
   }
 }
-function disconnect(){
-  wallet=null; account=null; walletOnChain=false;
+let userDisconnected = false;   // blocks the silent session-resume race
+async function disconnect(){
+  userDisconnected = true;
+  // Ask the wallet to actually drop the permission where that is supported.
+  // Without this the site stays authorised and re-connecting skips the prompt,
+  // which makes the button look like it did nothing.
+  try{
+    if(wallet && wallet.request){
+      await wallet.request({ method:'wallet_revokePermissions', params:[{ eth_accounts:{} }] });
+    }
+  }catch(e){ /* not supported everywhere — the local reset below still applies */ }
+  wallet=null; account=null; walletOnChain=false; myPower=0n; selected=null;
   try{ localStorage.removeItem('rwi_wallet_rdns'); }catch(e){}
-  ['acctChip','chainChip','powerChip','disconnectBtn'].forEach(id => $(id).hidden = true);
+  ['acctChip','chainChip','powerChip','disconnectBtn'].forEach(function(id){ const e=$(id); if(e) e.hidden=true; });
   const os=$('ownerSection'); if(os) os.hidden = true;
   const nb=$('nextRoundBtn'); if(nb) nb.hidden = true;
   ownerPanelOpen = false;
@@ -1891,7 +1933,11 @@ function disconnect(){
   $('voteBtn').disabled = true;
   $('myVote').textContent = '';
   walletStatus('');
+  voteStatus('');
+  const ow=$('ownerStatus'); if(ow) ow.textContent='';
+  document.querySelectorAll('.cand').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
 }
+
 async function setAccount(a){
   account = a;
   $('acctChip').textContent = short(a); $('acctChip').hidden = false;
@@ -1969,7 +2015,6 @@ function renderBallot(){
       updateVoteButton();
     });
   });
-  $('roundNo').textContent = String(ROUND);
 }
 function updateVoteButton(){
   const ok = !!(account && walletOnChain && selected && myPower > 0n);
@@ -2056,8 +2101,7 @@ async function loadRound(txs){
       slateRecovered = true;
     }
   } else { ROUND = 1; SLATE = autoSlate(1); }
-  $('roundNo').textContent = String(ROUND);
-  $('prefixEg').textContent = votePrefix() + '<slug>';
+  $('prefixEg').textContent = 'RWIVOTE:\u2039n\u203a:\u2039slug\u203a';
 }
 
 /* ---- founder panel ---- */
@@ -2074,9 +2118,6 @@ function renderOwnerPanel(){
   if(trigger) trigger.setAttribute('aria-expanded', String(isOwner() && ownerPanelOpen));
   if(!isOwner()){ ownerPanelOpen = false; return; }
   if(!ownerPanelOpen) return;
-  const nx = String(ROUND + 1);
-  $('nextRoundNo').textContent = nx;
-  const nx2 = $('nextRoundNo2'); if(nx2) nx2.textContent = nx;
   // Preview of the auto-composed slate, ranked against live crises. Read-only.
   $('orgPicker').innerHTML = '<div class="pick"><span class="pname">' + esc(t('vote.st.reliefweb')) + '</span></div>';
   $('pickCount').textContent = '';
@@ -2112,14 +2153,15 @@ async function openNewRound(){
   const payload = ROUND_TAG + n + ':' + slate.join(',');
   try{
     $('nextRoundBtn').disabled = true;
-    $('ownerStatus').textContent = t('vote.st.confirmRound',{n:n});
+    $('ownerStatus').textContent = t('vote.st.confirmRound');
     const hash = await wallet.request({
       method:'eth_sendTransaction',
       params:[{ from:live, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) }]
     });
     await waitForTx(hash);
     ownerPanelOpen = false;
-    $('ownerStatus').textContent = t(composed.source === 'reliefweb' ? 'vote.st.roundLive' : 'vote.st.roundRot', {n:n});
+    $('ownerStatus').textContent = t(composed.source === 'reliefweb' ? 'vote.st.roundLive' : 'vote.st.roundRot')
+      + (composed.reason ? ' (' + composed.reason + ')' : '');
     await refreshAll();
   }catch(e){
     $('ownerStatus').textContent = t((e && e.code === 4001) ? 'vote.st.cancelled' : 'vote.st.roundFail');
@@ -2251,8 +2293,7 @@ function repaintDynamic(){
 document.addEventListener('DOMContentLoaded', () => {
   $('boxAddr').textContent = BALLOT_BOX;
   $('ownerAddr').textContent = OWNER;
-  $('prefixEg').textContent = votePrefix() + '<slug>';
-  $('roundNo').textContent = String(ROUND);
+  $('prefixEg').textContent = 'RWIVOTE:\u2039n\u203a:\u2039slug\u203a';
   renderBallot();
   $('connectBtn').addEventListener('click', connect);
   $('disconnectBtn').addEventListener('click', disconnect);
@@ -2281,7 +2322,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // resume a previous session silently if the wallet is still authorised
   (async () => {
     let saved=null; try{ saved = localStorage.getItem('rwi_wallet_rdns'); }catch(e){}
-    if(!saved) return;
+    if(!saved || userDisconnected) return;
     await new Promise(r => setTimeout(r, 350)); // let EIP-6963 announcements land
     const list = providers.length ? providers
       : (window.ethereum ? [{info:{name:'Injected',rdns:'window.ethereum'},provider:window.ethereum}] : []);
@@ -2289,6 +2330,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(!d) return;
     try{
       const accts = await d.provider.request({method:'eth_accounts'});
+      if(userDisconnected) return;
       if(accts && accts[0]){ wallet = d.provider; chosenProvider = d; setAccount(accts[0]); ensureChain(); }
     }catch(e){}
   })();
