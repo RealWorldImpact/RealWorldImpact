@@ -3386,7 +3386,15 @@ async function sendTx(to, data, value){
   }
   throw new Error('timed out waiting for receipt');
 }
-const txLink = h => '<a href="https://robinhoodchain.blockscout.com/tx/'+h+'" target="_blank" rel="noopener">'+h.slice(0,10)+'… ↗</a>';
+/* A transaction hash is interpolated into markup here, so validate its shape
+   rather than trusting it. It arrives from the wallet provider — a browser
+   extension the user installed, not a source this page controls. A malicious
+   extension can already sign anything, so this is hygiene rather than a
+   meaningful barrier, but an unchecked string in an href is not worth keeping. */
+const isTxHash = h => typeof h === 'string' && /^0x[a-fA-F0-9]{64}$/.test(h);
+const txLink = h => isTxHash(h)
+  ? '<a href="https://robinhoodchain.blockscout.com/tx/'+h+'" target="_blank" rel="noopener">'+h.slice(0,10)+'… ↗</a>'
+  : '<span class="mono">'+String(h).replace(/[&<>"\']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])).slice(0,20)+'</span>';
 // On a ~0.1s-block L2 with load-balanced RPCs, a balance read taken the instant a receipt
 // lands can hit a node that hasn't reached that block yet. Poll until the delta shows up —
 // a confirmed swap must never be declared "not detected" because a read lagged.
