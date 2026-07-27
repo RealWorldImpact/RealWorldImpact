@@ -1986,6 +1986,7 @@ function setLang(l){
   try{ if(typeof window.updateReceiptsFades === 'function') window.updateReceiptsFades(); }catch(e){}
   // The language pill's width changes with its label, so re-place the chart pill beside it.
   try{ if(typeof window.updateChartBtnPosition === 'function') window.updateChartBtnPosition(); }catch(e){}
+  try{ if(typeof window.matchVotePillWidth === 'function') window.matchVotePillWidth(); }catch(e){}
   document.querySelectorAll('#langSel button').forEach(b=>b.classList.toggle('on', b.dataset.lang===l));
   syncHead(l);
   // dashboard-specific: re-render dynamic UI that has already been drawn
@@ -2279,14 +2280,22 @@ document.addEventListener('DOMContentLoaded', ()=>{
      it would flow alongside the CA pill on wide viewports). Inverted against .btn
      so it reads as a live thing rather than a third button. */
   .vote-cta{
-    display:flex;width:fit-content;align-items:center;gap:9px;
-    margin:16px auto 0;padding:9px 16px;
+    /* Sized to match the contract-address pill directly above it: same padding,
+       same 12.5px mono, and the body line-height inherited rather than reset to
+       1 — that reset was what made it ~10px shorter. Width is matched at runtime
+       (see the pairing script) because the pill's width depends on the address
+       and the viewport, and the label's length changes with the language. */
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    width:fit-content;max-width:100%;
+    margin:14px auto 0;padding:10px 14px;
     background:var(--lime);color:var(--ink);
     border:1px solid var(--ink);border-radius:999px;
-    font-family:var(--mono);font-size:11.5px;letter-spacing:.11em;
-    text-transform:uppercase;text-decoration:none;line-height:1;
+    font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;
+    text-transform:uppercase;text-decoration:none;
+    box-sizing:border-box;
     transition:transform .15s ease,box-shadow .15s ease;
   }
+  .vote-cta > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .vote-cta:hover,.vote-cta:focus-visible{
     transform:translateY(-1px);box-shadow:0 4px 14px rgba(11,11,9,.16);outline:none;
   }
@@ -3314,6 +3323,28 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+})();
+</script>
+<script>
+/* Keep the hero vote pill the same width as the contract-address pill it sits
+   under. Measured rather than hard-coded: the address pill resizes with the
+   viewport, and the vote label changes length in each of the 13 languages. */
+(function(){
+  function pair(){
+    const ca = document.querySelector('.ca');
+    const cta = document.querySelector('.vote-cta');
+    if(!ca || !cta) return;
+    cta.style.width = '';                       // measure natural size first
+    const w = Math.round(ca.getBoundingClientRect().width);
+    if(w > 0) cta.style.width = w + 'px';
+  }
+  window.addEventListener('resize', pair);
+  window.matchVotePillWidth = pair;             // re-run after a language change
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pair);
+  else pair();
+  // fonts change metrics; re-measure once they have settled
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(pair).catch(function(){});
+  setTimeout(pair, 400);
 })();
 </script>
 </body>
