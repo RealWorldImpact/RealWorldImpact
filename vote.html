@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vote · Real World Impact</title>
+<meta name="description" content="$RWI holders signal which vetted charity should receive the next Real World Impact donation. Votes settle onchain and anyone can tally them.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://rwihood.org/vote.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Real World Impact">
+<meta property="og:title" content="Vote · Real World Impact">
+<meta property="og:description" content="$RWI holders signal which vetted charity receives the next donation. Onchain, weighted by balance, tallied by anyone.">
+<meta property="og:url" content="https://rwihood.org/vote.html">
+<meta property="og:locale" content="en_US">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+  :root{
+    --lime:#CCFE06;            /* sampled from the logo — the page IS the logo canvas */
+    --ink:#0B0B09;
+    --rule:rgba(11,11,9,.28);
+    --rule-strong:rgba(11,11,9,.85);
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--lime);color:var(--ink);
+    font-family:var(--serif);font-size:18px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--ink);color:var(--lime)}
+  a{color:inherit}
+  h1,h2,h3{font-weight:500;margin:0;text-wrap:balance}
+  p{text-wrap:pretty}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  .mono{font-family:var(--mono)}
+  .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;opacity:.72;margin:0 0 10px;
+  }
+
+  header{
+    border-bottom:1px solid var(--rule-strong);position:sticky;top:0;
+    background:var(--lime);z-index:100;
+  }
+  header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:11px;padding-bottom:11px}
+  .brand{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none}
+  .links{display:flex;gap:18px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+  .links a{text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+  .links a:hover,.links a:focus-visible{border-bottom-color:var(--ink)}
+
+  .hero{padding:56px 0 34px}
+  .hero h1{font-size:clamp(2.1rem,6vw,3.6rem);line-height:1.05;letter-spacing:-.02em}
+  .hero h1 em{font-style:italic}
+  .lede{font-size:clamp(1.02rem,2.2vw,1.22rem);max-width:60ch;margin:16px 0 0;opacity:.9}
+
+  /* honest framing — a signal, not binding governance */
+  .disclaimer{
+    margin-top:22px;border:1px solid var(--rule-strong);border-radius:12px;
+    padding:14px 16px;background:rgba(11,11,9,.06);
+    font-size:14.5px;line-height:1.5;max-width:70ch;
+  }
+  .disclaimer b{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px}
+
+  section{padding:34px 0;border-top:1px solid var(--rule-strong)}
+
+  /* inverted band for the ballot — mirrors the ledger band on the home page */
+  .band{background:var(--ink);color:var(--lime)}
+  .band ::selection{background:var(--lime);color:var(--ink)}
+  .band .eyebrow{color:var(--lime)}
+
+  .btn{
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    background:var(--ink);color:var(--lime);border:1px solid var(--ink);
+    border-radius:999px;padding:10px 18px;cursor:pointer;text-decoration:none;display:inline-block;
+    transition:opacity .15s ease;
+  }
+  .btn:hover,.btn:focus-visible{opacity:.85;outline:none}
+  .btn[disabled]{opacity:.35;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .band .btn{background:var(--lime);color:var(--ink);border-color:var(--lime)}
+  .band .btn.ghost{background:transparent;color:var(--lime);border-color:rgba(204,254,6,.55)}
+
+  .wallet-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-family:var(--mono);font-size:12px}
+  .chip{
+    display:inline-block;border:1px solid var(--rule-strong);border-radius:999px;
+    padding:5px 11px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .chip.warn{border-color:#8f2f2f;color:#8f2f2f}
+  .band .chip{border-color:rgba(204,254,6,.5)}
+  .band .chip.warn{border-color:#ff8a8a;color:#ff8a8a}
+  .muted{opacity:.62}
+
+  /* ballot */
+  .ballot{display:grid;gap:10px;margin-top:20px}
+  .cand{
+    display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;
+    gap:14px;padding:14px 16px;border:1px solid rgba(204,254,6,.4);border-radius:12px;
+    cursor:pointer;background:transparent;text-align:left;font:inherit;color:inherit;
+    transition:border-color .15s ease,background .15s ease,color .15s ease;
+    position:relative;overflow:hidden;
+  }
+  .cand:hover,.cand:focus-visible{border-color:var(--lime);outline:none}
+  .cand[aria-pressed="true"]{background:var(--lime);color:var(--ink);border-color:var(--lime)}
+  .cand .radio{
+    width:15px;height:15px;border-radius:50%;border:1.5px solid rgba(204,254,6,.6);flex:none;
+  }
+  .cand[aria-pressed="true"] .radio{border-color:var(--ink);background:var(--ink);box-shadow:inset 0 0 0 3px var(--lime)}
+  .cand .who{min-width:0}
+  .cand .name{font-size:17px;line-height:1.3}
+  .cand .cause{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-top:3px}
+  .cand .tally{font-family:var(--mono);font-size:12px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .cand .pct{font-size:15px}
+  .cand .bar{
+    position:absolute;left:0;bottom:0;height:3px;background:var(--lime);
+    width:0;transition:width .5s ease;
+  }
+  .cand[aria-pressed="true"] .bar{background:var(--ink)}
+
+  .results-head{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+  .totals{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;opacity:.85}
+
+  .note{font-size:14.5px;opacity:.82;margin-top:16px;max-width:70ch}
+  .status{font-family:var(--mono);font-size:12px;margin-top:14px;min-height:1.4em}
+  .status.err{color:#8f2f2f}
+  .band .status.err{color:#ff8a8a}
+
+  .how{display:grid;gap:12px;margin-top:18px}
+  .how .s{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
+  .how .s b{
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;opacity:.55;
+    border:1px solid var(--rule);border-radius:999px;padding:3px 9px;
+  }
+  .how .s p{margin:0;font-size:15.5px}
+
+  code{
+    font-family:var(--mono);font-size:.86em;background:rgba(11,11,9,.1);
+    padding:2px 6px;border-radius:4px;word-break:break-all;
+  }
+  .band code{background:rgba(204,254,6,.14)}
+
+  footer{border-top:1px solid var(--rule-strong);padding:26px 0 40px;font-family:var(--mono);font-size:11px;letter-spacing:.08em}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
+  footer a{text-decoration:none;border-bottom:1px solid var(--rule)}
+  .fine{font-family:var(--serif);font-size:13.5px;letter-spacing:0;opacity:.72;margin-top:14px;max-width:80ch;line-height:1.5}
+
+  @media (max-width:640px){
+    .cand{grid-template-columns:auto minmax(0,1fr);row-gap:8px}
+    .cand .tally{grid-column:1/-1;text-align:left}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .cand,.cand .bar,.btn{transition:none}
+  }
+
+  /* ---------- two-tone cursors: ink on lime, lime on ink ----------
+     Same bitmaps as the rest of the site. Mapping differs from index because
+     this page's buttons stay ink-filled on hover (index's .btn goes transparent),
+     and the ballot sits in an inverted band. Rule of thumb: the cursor is
+     whichever colour contrasts with the surface directly beneath it. */
+  @media (any-pointer:fine){
+    body{cursor:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABmJLR0QA/wD/AP+gvaeTAAACkElEQVRIidXUS0hVQRgH8P8355w53q7dNMx2SQsziCi0IAOFCntgBaUZBEVQmGBl0SIq6LEIC4SMQGgTKBVSLURc9KCgQk3uw4wiUwoDRQrJCz7OPefcO1+LXrowr9Yh+u9m+Ob78c3AAP8iQTaLQix3edFbTFoplLLCnQ5XnvcWAvCuk+DEcLrNkg0hhuEZ1POScGCtZgx/RpltGU86GWmeQAAw8AGoWKeZ/b1itWXJYIRTsjyBAODLJ6CySJiRp8iyY4lwmI08TyAAsMaAU7s1o6VepMVdag2zuc0TCABUAqg9IbS6M0Im4twUZrPSE+hH7tURndsnhGNzbYdjXGNO/uyMIAB41kw4skno1iiVt1uyqY3h8wQCgLchwsECTQ4NYiOPy9YuTs30BAKAwT6gvFCYvV20bMxyIkE2czyBAGAkSji+VcjnLbQw4XAwzHrB7+r1mTRftATYc0ypeRlwA+msAung1DSQbmCuUuJBiJGxijA+Kyg9ExgZBuIuEJjP2LKXBZgaIKgHUFEGRRkiSqT6p0KmhfI3My40qPitK0KrryZ6/YLQ102xxTk8kEdOzfR38CtTvtHOCsbFRpWQJh6VHFKO/v0fb7xKKbbNVW8Y8o8gTWNU1ajE4WplCx0laZqzw5fKscLtDAB4fJfg2DQnBlk2E2hSggnzentMctu4MTTxEw268vLNoGn5/T72+318tNrk1lH5atYTEdSoUugWPn1lHrnhn1Pqom5pLsvsFd+mar4hYJhYFmE9f1bQiHBPOj5n+Rqy+ifu51Lsox3D/dIKTqQvAIr3M8fjUKxEcbIQJVsY5pT1rqsegoG4i/c+P18KwL2dTbCT7ZFUmEEhlmcjnLLhrzb+b/MVneAOZxpRg+YAAAAASUVORK5CYII=") 4 2,default}
+    a,button{cursor:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAB70lEQVR42u2UwWoTURSGv3POMFCyU0FxIbiQoggqNnkBHboQ1/UdRPABuhFaKbgQcS2IRTDZCGJcpPuStmBrF6HVPoAb1yXTzB0Xk5ukSVoKM40u8sPhHi7MnO/+954jDGkrCStJhyUAC1gsW7zJJNVsh41SaSYtlWbSZjtsnHc9Hd5wjmhcPjGASev/B1g/DNNmO2xsJWHlnwBEl4ynDzVKOiydB8yZrmDvu+AckYc5itnoglyd+BvY3xYAns1rlHR4nxdCm+2wcVZrVUEty3/tCs8fZRB5AALniJ7cNoCo1kpG7l8ERGD+sqGW5QBmcLAruWeFqrIG8Oc3PLhgx34mAqJZmGWrGjy+ZpiBBQU8QgtYrLWStYtXso1PbwSRvt291TIIX9jv5QYoW7ypRrXWSuoisP5Neif1xa2bmwcJ+lFIF1SC+F2acuvm/ZSfP+SY3b7wYFEfs3dTRGgV0oYWsPy24eqn2d0r3s1fVt2KKl8KAVBl1btwkt2DoQrOsaBGtRCAOY1jC1h+/dXVTyw64MyNOynAYdnincImoXdh9l46YrfP/XW8+JDf/hEA78Krz25l2G4b7Agrxn6AYMy4XT3qsNdrw+4gUu0PJtUUwPLaPxZgTuO42Q4PPu4k10/7UIR9pppqqqmmKkB/AYB+pE4p9c4WAAAAAElFTkSuQmCC") 5 0,pointer}
+    /* solid ink-filled buttons on the lime page need the lime hand */
+    .btn:not(.ghost){cursor:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACAklEQVR42u2UPYsTURSGn7mTBAayTNRG7AS/CLh+FFvYT7PabBMXBBt/gFhYCIKNQkpBLAVhG7dVAruJ/oCVFVcQNWhlo4IKugkDS849FpObzO5mdWEmwSIvHO7hwsx57nvPPbBD5XIwF1aCZlgJmuVyMMekFVaC5rot6botaVgJmuOuZ3ZtGKJR+cQAJq3/H+DAwUDH2ZD/BGh9Fx4+t5Ff4O44YPZ1BafOK8YQOZhiibU+yJGJ98DJcwrAg1Ub+QUeZ4UwYSVo7tdaa8FKkh+fVe43EogsAAVjiJ68FYCoVvV33b8qqMLqN8FKkgOIwLFZzTwrjLW0AA4dhhc/ZdvPVEFtEiLJagWefRZEQHo5NKH0uF2r+q0fX5ONxeuK6tDuwSoJhCvs9jIDdDrxSyss16p+QxUuzOvgpK649HNxIL1h5PIKNjfjR55H9f0rjxNndJvdrnC6qIv2hocq77IAeC6ZmQmuGZ+FlS9y0VoG16B2uA7A+nCLp/06wO9f8a3Mc8BalpwLe9mdDmvBGC5bYTmXQdTtxlvS496NS6axZ9FUI3584wHEnU68kdskdC60X3vDwmkXZNj9d66aurU8zXUUOxduLpj6Trsl/SIkH/sBCiPG7VKxwIfBM0w3orrcA/Cz2j8SoNuNt8Ji8OnKWf/o3z5Upc1UU0011VQ56A9N/2Ewn1lofAAAAABJRU5ErkJggg==") 5 0,pointer}
+    /* inverted ballot band */
+    .band{cursor:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABmJLR0QA/wD/AP+gvaeTAAACeklEQVRIidXUT0gUURwH8O+b2Z15b+bNOrOtSX9ICcqkoD8WFGRBUpf+QKQiRGAXwYrqIEQFkhBGkGAolB466EG6iET/TAgyxINW0KHISxB2KKzWlHVzZ96vQwQWbLKbQ/Q9fnnv93nwHg/4F7Ftc6+Uojp0SEreaUtBMsYvLfZs7fdi3WaCaeKC64luANHQoLWbCLdGVNQrRI0XF49d13VDgQBgxWqg80lgriqlbUxPj3LOi0OBACBeBHQ8UuaW3Sjmgj2zLKs8FAgAhA1cua2iB+rIjURp2LKsg6FAAKDpwNlWpZ9oUYauU7+U1slQoJ+paiDW3KO0SJTaYjHRnsvenCAA2HWI0D6gInaM6l1P9AMQoUAAULaV0DWkjMLl2OclxLCUcmkoEAAsKwG6nipzzUZaHzWD545jloYCAYDjEtruKmPnfirSdDbqOLziT+sjuQx/Nw70tmkqOYnM1CeomSnQTBLMzzCHMQwASABI5QV9+Qg4HhCJAl8/M9zvYRpj1E3ExolYUtMoCVCSMTWRDVkQGnnI0HRM8482Kr3uHLEN2wklZZR++wrvU6nZawsdcn6y3lHfTYaLtVrgz9Fg3w0252d+9LWniRucnQFg/BUUBAzXG7Wg47z2zffZkenp9OHUDEsP3WEAgMpqAhdk2TavyQX6JVLyzgJPkBsXk/M/UccRV8sr+OyYMmhMGdTQzCleKF7mDdm2aI0v4a+FECvn95zzYilF0PvCpDFl0IMJg5yYCIQQO/K1IsjyQLwEv1dVz/3BDwadajGVFxcZKa3L+UJZIyXfEysQfoEr/HiCv7FtfhyAuegQAGZZvMm2eWUYw/+/fAeiob/yhcZVjQAAAABJRU5ErkJggg==") 4 2,default}
+    .band a,.band button{cursor:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACAklEQVR42u2UPYsTURSGn7mTBAayTNRG7AS/CLh+FFvYT7PabBMXBBt/gFhYCIKNQkpBLAVhG7dVAruJ/oCVFVcQNWhlo4IKugkDS849FpObzO5mdWEmwSIvHO7hwsx57nvPPbBD5XIwF1aCZlgJmuVyMMekFVaC5rot6botaVgJmuOuZ3ZtGKJR+cQAJq3/H+DAwUDH2ZD/BGh9Fx4+t5Ff4O44YPZ1BafOK8YQOZhiibU+yJGJ98DJcwrAg1Ub+QUeZ4UwYSVo7tdaa8FKkh+fVe43EogsAAVjiJ68FYCoVvV33b8qqMLqN8FKkgOIwLFZzTwrjLW0AA4dhhc/ZdvPVEFtEiLJagWefRZEQHo5NKH0uF2r+q0fX5ONxeuK6tDuwSoJhCvs9jIDdDrxSyss16p+QxUuzOvgpK649HNxIL1h5PIKNjfjR55H9f0rjxNndJvdrnC6qIv2hocq77IAeC6ZmQmuGZ+FlS9y0VoG16B2uA7A+nCLp/06wO9f8a3Mc8BalpwLe9mdDmvBGC5bYTmXQdTtxlvS496NS6axZ9FUI3584wHEnU68kdskdC60X3vDwmkXZNj9d66aurU8zXUUOxduLpj6Trsl/SIkH/sBCiPG7VKxwIfBM0w3orrcA/Cz2j8SoNuNt8Ji8OnKWf/o3z5Upc1UU0011VQ56A9N/2Ewn1lofAAAAABJRU5ErkJggg==") 5 0,pointer}
+    /* lime-filled surfaces inside the band take the ink hand back */
+    .band .btn:not(.ghost),.cand[aria-pressed="true"]{cursor:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAB70lEQVR42u2UwWoTURSGv3POMFCyU0FxIbiQoggqNnkBHboQ1/UdRPABuhFaKbgQcS2IRTDZCGJcpPuStmBrF6HVPoAb1yXTzB0Xk5ukSVoKM40u8sPhHi7MnO/+954jDGkrCStJhyUAC1gsW7zJJNVsh41SaSYtlWbSZjtsnHc9Hd5wjmhcPjGASev/B1g/DNNmO2xsJWHlnwBEl4ynDzVKOiydB8yZrmDvu+AckYc5itnoglyd+BvY3xYAns1rlHR4nxdCm+2wcVZrVUEty3/tCs8fZRB5AALniJ7cNoCo1kpG7l8ERGD+sqGW5QBmcLAruWeFqrIG8Oc3PLhgx34mAqJZmGWrGjy+ZpiBBQU8QgtYrLWStYtXso1PbwSRvt291TIIX9jv5QYoW7ypRrXWSuoisP5Neif1xa2bmwcJ+lFIF1SC+F2acuvm/ZSfP+SY3b7wYFEfs3dTRGgV0oYWsPy24eqn2d0r3s1fVt2KKl8KAVBl1btwkt2DoQrOsaBGtRCAOY1jC1h+/dXVTyw64MyNOynAYdnincImoXdh9l46YrfP/XW8+JDf/hEA78Krz25l2G4b7Agrxn6AYMy4XT3qsNdrw+4gUu0PJtUUwPLaPxZgTuO42Q4PPu4k10/7UIR9pppqqqmmKkB/AYB+pE4p9c4WAAAAAElFTkSuQmCC") 5 0,pointer}
+  }
+
+  /* founder slate picker */
+  .org-picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:16px}
+  .pick{
+    text-align:left;font:inherit;color:inherit;cursor:pointer;
+    background:transparent;border:1px solid var(--rule);border-radius:10px;
+    padding:11px 13px;display:grid;gap:3px;transition:border-color .12s ease,background .12s ease;
+  }
+  .pick:hover,.pick:focus-visible{border-color:var(--ink);outline:none}
+  .pick.on{background:var(--ink);color:var(--lime);border-color:var(--ink)}
+  .pick .pname{font-size:15px;line-height:1.25}
+  .pick .pmeta{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.62}
+  @media (any-pointer:fine){ .pick.on{cursor:inherit} }
+
+  /* owner-only control: sits at the right edge of the ballot controls row */
+  .owner-only{margin-left:auto}
+  .band .btn.owner-only{
+    background:transparent;color:var(--lime);
+    border:1px dashed rgba(204,254,6,.75);
+  }
+  .band .btn.owner-only:hover,.band .btn.owner-only:focus-visible{
+    background:rgba(204,254,6,.14);border-style:solid;opacity:1;
+  }
+  .owner-only[hidden]{display:none}
+  @media (max-width:640px){ .owner-only{margin-left:0;width:100%} }
+  /* ---------- floating chart pill + modal ---------- */
+  #chartBtn{
+    position:fixed;bottom:16px;right:96px;z-index:9999;
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--lime, #CCFE06);color:var(--ink, #0B0B09);
+    border:1px solid var(--ink, #0B0B09);border-radius:999px;
+    padding:8px 14px;cursor:pointer;
+    font-family:var(--mono, "IBM Plex Mono", ui-monospace, monospace);
+    font-size:11px;letter-spacing:.12em;text-transform:uppercase;line-height:1;
+    box-shadow:0 4px 14px rgba(0,0,0,.18);
+    transition:transform .15s ease,box-shadow .15s ease;
+  }
+  #chartBtn:hover,#chartBtn:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}
+  #chartBtn svg{width:12px;height:12px;flex:none}
+  #chartModal{
+    position:fixed;inset:0;z-index:10000;
+    display:none;align-items:center;justify-content:center;
+    padding:20px;background:rgba(11,11,9,.72);
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+    opacity:0;transition:opacity .18s ease;
+  }
+  #chartModal.open{display:flex;opacity:1}
+  .chart-panel{
+    position:relative;width:min(1040px,100%);height:min(78vh,720px);
+    display:flex;flex-direction:column;
+    background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);
+    border:1px solid var(--lime, #CCFE06);border-radius:16px;overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,.45);
+    transform:translateY(8px) scale(.99);transition:transform .18s ease;
+  }
+  #chartModal.open .chart-panel{transform:none}
+  .chart-head{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:12px 14px;border-bottom:1px solid rgba(204,254,6,.35);flex:none;
+    font-family:var(--mono, "IBM Plex Mono", ui-monospace, monospace);
+    font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  }
+  .chart-head .pair{opacity:.75}
+  .chart-actions{display:flex;align-items:center;gap:14px}
+  .chart-actions a{color:inherit;text-decoration:none;border-bottom:1px solid rgba(204,254,6,.5);white-space:nowrap}
+  .chart-actions a:hover{border-bottom-color:var(--lime)}
+  #chartClose{
+    background:transparent;color:inherit;border:1px solid rgba(204,254,6,.5);
+    border-radius:999px;width:26px;height:26px;flex:none;cursor:pointer;
+    font-size:14px;line-height:1;display:grid;place-items:center;
+    transition:background .15s ease,border-color .15s ease;
+  }
+  #chartClose:hover,#chartClose:focus-visible{background:rgba(204,254,6,.12);border-color:var(--lime);outline:none}
+  .chart-body{flex:1;min-height:0;position:relative;background:#0B0B09}
+  .chart-body iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+  .chart-loading{
+    position:absolute;inset:0;display:grid;place-items:center;
+    font-family:var(--mono, "IBM Plex Mono", ui-monospace, monospace);
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;
+  }
+  @media (max-width:640px){
+    #chartBtn{padding:7px 12px;font-size:10px}
+    .chart-panel{height:min(82vh,640px);border-radius:14px}
+    #chartModal{padding:12px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    #chartBtn,#chartModal,.chart-panel{transition:none}
+  }
+
+  /* Hero vote call-out — sits directly beneath the contract-address pill.
+     display:flex + width:fit-content forces its own centered line (as inline-flex
+     it would flow alongside the CA pill on wide viewports). Inverted against .btn
+     so it reads as a live thing rather than a third button. */
+  .vote-cta{
+    display:flex;width:fit-content;align-items:center;gap:9px;
+    margin:16px auto 0;padding:9px 16px;
+    background:var(--lime);color:var(--ink);
+    border:1px solid var(--ink);border-radius:999px;
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.11em;
+    text-transform:uppercase;text-decoration:none;line-height:1;
+    transition:transform .15s ease,box-shadow .15s ease;
+  }
+  .vote-cta:hover,.vote-cta:focus-visible{
+    transform:translateY(-1px);box-shadow:0 4px 14px rgba(11,11,9,.16);outline:none;
+  }
+  .vote-cta .live{
+    width:7px;height:7px;border-radius:50%;background:var(--ink);flex:none;
+    animation:votePulse 2s ease-in-out infinite;
+  }
+  .vote-cta .go{transition:transform .15s ease}
+  .vote-cta:hover .go{transform:translateX(2px)}
+  @keyframes votePulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @media (prefers-reduced-motion:reduce){
+    .vote-cta,.vote-cta .go{transition:none}
+    .vote-cta .live{animation:none}
+  }
+
+</style>
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
+<meta name="theme-color" content="#0B0B09">
+<meta property="og:image" content="https://rwihood.org/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="RWI — Real World Impact. $RWI holders vote on the next donation.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@RWIrobinhood">
+<meta name="twitter:image" content="https://rwihood.org/og.png">
+<meta name="twitter:title" content="Vote · Real World Impact">
+<meta name="twitter:description" content="$RWI holders signal which vetted charity receives the next donation. Onchain, weighted by balance, tallied by anyone.">
+<link rel="alternate" hreflang="x-default" href="https://rwihood.org/vote.html">
+<link rel="alternate" hreflang="en" href="https://rwihood.org/vote.html">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="/">← rwihood.org</a>
+    <nav class="links">
+      <a href="/#ledger">Ledger</a>
+      <a href="whitepaper.html">Whitepaper</a>
+      <a href="dashboard.html">LP</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <p class="eyebrow">Community signal</p>
+    <h1>You hold it.<br><em>You pick</em> who's next.</h1>
+    <p class="lede">$RWI holders signal which vetted charity should receive the next donation. Your vote is a transaction on Robinhood Chain, weighted by the $RWI you hold. Anyone can tally it — including you.</p>
+
+    <div class="disclaimer">
+      <b>Read this first</b>
+      This is an <strong>advisory signal, not binding governance</strong>. $RWI grants no governance rights and no claim on revenue. The project reads the result and weighs it, but retains final say over every donation — recipients must clear The Giving Block's vetting regardless of how the vote lands. Voting is weighted by token balance, which means larger holders carry more weight. Balances are read live at tally time, so a vote is not locked to a snapshot.
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <p class="eyebrow">01 — Your wallet</p>
+      <div class="wallet-bar">
+        <button class="btn" id="connectBtn" type="button">Connect wallet</button>
+        <span class="chip" id="acctChip" hidden></span>
+        <span class="chip" id="chainChip" hidden></span>
+        <span class="chip" id="powerChip" hidden></span>
+        <button class="btn ghost" id="disconnectBtn" type="button" hidden>Disconnect</button>
+      </div>
+      <p class="status" id="walletStatus"></p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <div class="results-head">
+        <div>
+          <p class="eyebrow" style="margin-bottom:4px">02 — The ballot</p>
+          <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)">Round <span id="roundNo">1</span> · closes <span id="roundClose">when the next donation is made</span></h2>
+        </div>
+        <div class="totals" id="tallyTotals">Loading tally…</div>
+      </div>
+
+      <div class="ballot" id="ballot"><!-- rendered from ORG_POOL / SLATE --></div>
+
+      <div class="wallet-bar" style="margin-top:20px">
+        <button class="btn" id="voteBtn" type="button" disabled>Cast vote</button>
+        <button class="btn ghost" id="refreshBtn" type="button">Refresh tally</button>
+        <span class="muted mono" id="myVote"></span>
+        <button class="btn owner-only" id="nextRoundBtn" type="button" aria-controls="ownerSection" aria-expanded="false" hidden>Next round &rarr;</button>
+      </div>
+      <p class="status" id="voteStatus"></p>
+
+      <p class="note">Every vote is a zero-value transaction carrying your choice in its calldata. Nothing is stored on a server — the tally you see is read straight off Robinhood Chain, and re-voting simply replaces your previous choice.</p>
+    </div>
+  </section>
+
+  <section id="ownerSection" hidden aria-hidden="true">
+    <div class="wrap">
+      <p class="eyebrow">Founder controls</p>
+      <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)">Open round <span id="nextRoundNo">2</span>.</h2>
+      <p class="note">Choose the slate. Opening a new round is a transaction from your wallet — it supersedes the current round, and votes cast in earlier rounds stop counting immediately. Only this address can do it; declarations from anyone else are ignored when the page reads the chain.</p>
+      <div class="org-picker" id="orgPicker"></div>
+      <div class="wallet-bar" style="margin-top:18px">
+        <button class="btn" id="newRoundBtn" type="button" disabled>Open round <span id="nextRoundNo2"></span></button>
+        <span class="muted mono" id="pickCount"></span>
+      </div>
+      <p class="status" id="ownerStatus"></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="eyebrow">03 — How the tally works</p>
+      <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)">Countable by anyone.</h2>
+      <div class="how">
+        <div class="s"><b>01</b><p>Your wallet sends a 0-value transaction to the ballot box address with <code id="prefixEg">RWIVOTE:1:&lt;slug&gt;</code> in the data field. You pay only gas.</p></div>
+        <div class="s"><b>02</b><p>The page reads every transaction ever sent to that address, decodes the choices, and keeps the most recent vote per wallet.</p></div>
+        <div class="s"><b>03</b><p>Each wallet's weight is its live $RWI balance, read from the token contract. Wallets holding nothing carry no weight.</p></div>
+        <div class="s"><b>04</b><p>Totals are recomputed in your browser. No server sits in the middle, so you never have to trust this page — re-run the same reads yourself.</p></div>
+      </div>
+      <p class="note">
+        Ballot box: <code id="boxAddr"></code><br>
+        $RWI token: <code>0x2286397228be256529BE1ae9ed8D7d16549e9C6A</code><br>
+        Round controller: <code id="ownerAddr"></code>
+      </p>
+      <p class="note">Rounds are opened by a transaction from the round controller above. Declarations sent from any other address are ignored when this page reads the chain — so you can confirm for yourself who can and cannot move the ballot, without taking our word for it.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Real World Impact · Community signal</span>
+    <span><a href="/">rwihood.org</a></span>
+  </div>
+  <div class="wrap">
+    <p class="fine">$RWI is a memecoin with a charitable mission, not an investment product and not a governance token. This poll is advisory. Nothing here is financial advice. Voting costs gas and confers no rights, no revenue share, and no claim on any treasury. Recipients are subject to The Giving Block's vetting; a winning vote is a recommendation, not an instruction.</p>
+  </div>
+</footer>
+
+<script>
+/* =============================================================================
+   RWI COMMUNITY SIGNAL — onchain, token-weighted, serverless.
+
+   HOW IT WORKS
+     A vote is a 0-value transaction to BALLOT_BOX whose calldata is the UTF-8
+     string  RWIVOTE:<round>:<slug>  hex-encoded. Tallying = read every tx to
+     BALLOT_BOX via Blockscout, decode, keep the latest vote per sender, then
+     weight each sender by their live $RWI balance.
+
+   WHAT YOU EDIT EACH ROUND
+     ROUND        — no longer edited here. Rounds are opened onchain by OWNER
+                    via the founder panel; older rounds' votes stop counting.
+     ORG_POOL     — the roster a ballot can draw from. Every entry must already
+                    be a vetted Giving Block nonprofit; a vote never bypasses vetting.
+     OWNER        — the only address whose round declarations are honoured.
+     BALLOT_BOX   — the address votes are sent to. Use a dedicated address you
+                    control. It only ever receives 0-value transactions.
+
+   LIMITATIONS — STATED PLAINLY
+     · Token-weighted, so large holders dominate. This is plutocratic by design.
+     · No balance snapshot: someone can buy, vote, and sell. Weights are read
+       at tally time. A snapshot block would need a contract or an indexer.
+     · Advisory only. The project retains final say.
+   ========================================================================== */
+
+const CHAIN = {
+  idHex:'0x1237', // 4663
+  params:{
+    chainId:'0x1237',
+    chainName:'Robinhood Chain',
+    nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},
+    rpcUrls:['https://rpc.mainnet.chain.robinhood.com'],
+    blockExplorerUrls:['https://robinhoodchain.blockscout.com']
+  }
+};
+const RPCS = ['https://rpc.mainnet.chain.robinhood.com','https://robinhoodchain.blockscout.com/api/eth-rpc'];
+const SCAN = 'https://robinhoodchain.blockscout.com';
+
+const RWI = '0x2286397228be256529BE1ae9ed8D7d16549e9C6A';
+const RWI_DECIMALS = 18;
+
+/* Address that receives vote transactions. Defaults to the project's active dev
+   wallet so the page works out of the box. A separate, dedicated address would
+   keep the vote log easier to audit, but is not required. */
+const BALLOT_BOX = '0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5';
+
+/* ---------------------------------------------------------------------------
+   ROUND CONTROLLER — the only address whose round declarations are honoured.
+
+   The project's active dev wallet, confirmed by the owner. EIP-55 checksum verified.
+
+   HOW THE GATE ACTUALLY WORKS. Hiding the button when a different wallet is
+   connected is cosmetic — anyone can call openNewRound() from a console. The
+   real control is in loadRound(): it walks every transaction sent to the ballot
+   box and DISCARDS every RWIROUND declaration whose sender is not this address.
+   A forged declaration still lands onchain (the attacker pays the gas) but the
+   page treats it as noise, because a transaction's sender cannot be forged.
+
+   Consequence: whoever holds this key controls the ballot. Nothing else does.
+   ------------------------------------------------------------------------- */
+const OWNER = '0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5';
+const OWNER_LC = OWNER.toLowerCase();
+
+const VOTE_TAG  = 'RWIVOTE:';    // RWIVOTE:<round>:<slug>
+const ROUND_TAG = 'RWIROUND:';   // RWIROUND:<round>:<slug>,<slug>,...   (owner only)
+
+const votePrefix = () => VOTE_TAG + ROUND + ':';
+
+/* ---------------------------------------------------------------------------
+   ORG POOL — every organisation that may appear on a ballot.
+
+   SELECTION LOGIC (three tiers, in priority order):
+     1. PROVEN LANE  — cause areas this project has actually funded, evidenced by
+        the public ledger: hunger, homelessness, children's health, environment.
+        A winning vote here is always something RWI would plausibly have done.
+     2. ACUTE NEED   — organisations responding to whatever is genuinely worst
+        right now. Anchored to The Giving Block's own emergency response funds,
+        because those are (a) news-driven by design and (b) already vetted.
+     3. RETURNING    — prior recipients, so holders can vote "more of that".
+
+   Deliberately excluded: politically contested conflict zones. The Giving Block
+   does run an Israel-Gaza fund, but putting a geopolitical flashpoint on a
+   memecoin ballot splits the holder base whichever way it lands and drags the
+   project into an argument it did not sign up for. That is a judgement call the
+   founder can reverse — the slug just has to be added to this pool.
+
+   `why` is shown nowhere; it exists so the reasoning stays auditable in source.
+   VERIFY each organisation is currently listed on thegivingblock.com before
+   putting it on a live ballot. Rosters change.
+   ------------------------------------------------------------------------- */
+const ORG_POOL = {
+  /* --- tier 1 / tier 3: proven lane + prior recipients ------------------- */
+  nokidhungry: { name:'No Kid Hungry', cause:'Childhood hunger · US', tier:'returning',
+    why:'Largest RWI donation to date ($1,832.22). Proven Giving Block partner.' },
+  coalitionhomeless: { name:'Coalition for the Homeless', cause:'Homelessness · US', tier:'returning',
+    why:'Prior recipient ($270.87). Restores the homelessness lane my first slate dropped.' },
+  rmhc: { name:'Ronald McDonald House Charities', cause:"Children's health · US", tier:'returning',
+    why:'Prior recipient ($93.47).' },
+  cmnh: { name:"Children's Miracle Network Hospitals", cause:"Children's health · US", tier:'returning',
+    why:'Prior recipient ($74.61).' },
+  treegens: { name:'Treegens', cause:'Reforestation · crypto-native', tier:'returning',
+    why:'Most recent recipient ($210.18). Crypto-native, resonates with the holder base.' },
+  feedingamerica: { name:'Feeding America', cause:'Hunger · US', tier:'lane',
+    why:'Largest US hunger network. Same lane as the biggest donation on the ledger.' },
+
+  /* --- tier 2: acute need, tracked to Giving Block emergency campaigns ---- */
+  wck: { name:'World Central Kitchen', cause:'Disaster feeding · global', tier:'acute',
+    why:'Feeds on the ground in active disasters. Bridges the hunger lane to emergency response.' },
+  directrelief: { name:'Direct Relief', cause:'Emergency medical · global', tier:'acute',
+    why:'Recurring participant in Giving Block disaster funds (wildfires, hurricanes, quakes).' },
+  irc: { name:'International Rescue Committee', cause:'Displacement · famine', tier:'acute',
+    why:'2026 Watchlist: Sudan is the largest displacement and hunger crisis on earth.' },
+  concern: { name:'Concern Worldwide', cause:'Famine · Sahel', tier:'acute',
+    why:'Operates in Chad/Lake Chad Basin hosting 3.3M Sudanese refugees; $975M appeal for 2026.' },
+  unhcr: { name:'USA for UNHCR', cause:'Refugees · global', tier:'acute',
+    why:'Refugee agency; long-running crypto donation channel, incl. Ukraine.' },
+  care: { name:'CARE', cause:'Poverty · emergency relief', tier:'acute',
+    why:'Confirmed Giving Block partner and Ukraine Emergency Response Fund participant.' },
+  teamrubicon: { name:'Team Rubicon', cause:'Disaster response · US', tier:'acute',
+    why:'Veteran-led US disaster response — active in flood and wildfire recovery.' },
+  foodforlife: { name:'Food for Life Global', cause:'Food relief · global', tier:'acute',
+    why:'Named by The Giving Block as the largest food relief organisation on the platform.' },
+};
+
+/* Fallback slate used until an onchain round declaration exists.
+   Balanced: 3 returning (proven lane) + 3 acute (current need). */
+const DEFAULT_SLATE = ['nokidhungry','coalitionhomeless','treegens','wck','irc','directrelief'];
+
+/* Live round state — resolved from chain by loadRound(); these are just the
+   pre-chain defaults. Declared after DEFAULT_SLATE so the const is initialised. */
+let ROUND = 1;
+let SLATE = DEFAULT_SLATE.slice();
+
+/* ---------------------------------------------------------------- utilities */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const short = a => a.slice(0,6) + '…' + a.slice(-4);
+
+function toHexUtf8(str){
+  let out = '0x';
+  const bytes = new TextEncoder().encode(str);
+  for(const b of bytes) out += b.toString(16).padStart(2,'0');
+  return out;
+}
+function fromHexUtf8(hex){
+  if(!hex || hex === '0x') return '';
+  const h = hex.startsWith('0x') ? hex.slice(2) : hex;
+  if(h.length % 2) return '';
+  const arr = new Uint8Array(h.length/2);
+  for(let i=0;i<arr.length;i++) arr[i] = parseInt(h.substr(i*2,2),16);
+  try{ return new TextDecoder('utf-8',{fatal:false}).decode(arr); }catch(e){ return ''; }
+}
+function fmtToken(bi){
+  const d = 10n ** BigInt(RWI_DECIMALS);
+  const whole = bi / d;
+  const n = Number(whole);
+  if(n >= 1e9) return (n/1e9).toFixed(2)+'B';
+  if(n >= 1e6) return (n/1e6).toFixed(2)+'M';
+  if(n >= 1e3) return (n/1e3).toFixed(1)+'K';
+  return n.toLocaleString('en-US');
+}
+
+/* ------------------------------------------------------------ rpc transport */
+let rpcI = 0;
+async function rpc(method, params){
+  // Prefer the connected wallet's node (never CORS-blocked); fall back to public RPCs.
+  if(wallet && walletOnChain){
+    try{
+      const res = await wallet.request({method, params});
+      if(res !== undefined && res !== null) return res;
+    }catch(e){/* fall through */}
+  }
+  for(let k=0;k<RPCS.length;k++){
+    const url = RPCS[(rpcI+k)%RPCS.length];
+    try{
+      const r = await fetch(url,{
+        method:'POST',headers:{'content-type':'application/json'},
+        body:JSON.stringify({jsonrpc:'2.0',id:Date.now(),method,params})
+      });
+      const j = await r.json();
+      if(j && j.result !== undefined && j.result !== null){ rpcI = (rpcI+k)%RPCS.length; return j.result; }
+    }catch(e){/* next */}
+  }
+  throw new Error('rpc failed: ' + method);
+}
+async function erc20BalanceOf(token, who){
+  const data = '0x70a08231' + who.toLowerCase().replace(/^0x/,'').padStart(64,'0');
+  const res = await rpc('eth_call',[{to:token,data},'latest']);
+  return BigInt(res || '0x0');
+}
+
+/* --------------------------------------------------------- wallet (EIP-6963) */
+let wallet=null, account=null, walletOnChain=false, chosenProvider=null;
+const providers = [];
+window.addEventListener('eip6963:announceProvider', e => {
+  if(!providers.some(p => p.info && e.detail.info && p.info.uuid === e.detail.info.uuid)) providers.push(e.detail);
+});
+window.dispatchEvent(new Event('eip6963:requestProvider'));
+
+function walletStatus(msg, isErr){
+  const el = $('walletStatus'); el.textContent = msg || ''; el.classList.toggle('err', !!isErr);
+}
+function voteStatus(msg, isErr){
+  const el = $('voteStatus'); el.textContent = msg || ''; el.classList.toggle('err', !!isErr);
+}
+
+async function connect(){
+  const list = providers.length ? providers
+    : (window.ethereum ? [{info:{name:'Injected wallet',rdns:'window.ethereum'},provider:window.ethereum}] : []);
+  if(!list.length){ walletStatus('No wallet detected. Install a browser wallet, then reload.', true); return; }
+  if(list.length === 1) return connectWith(list[0]);
+  // more than one wallet: pick the last one the user used, else just take the first
+  let saved=null; try{ saved = localStorage.getItem('rwi_wallet_rdns'); }catch(e){}
+  const match = list.find(d => d.info && d.info.rdns === saved);
+  return connectWith(match || list[0]);
+}
+async function connectWith(d){
+  const p = d.provider;
+  try{
+    const accts = await p.request({method:'eth_requestAccounts'});
+    if(!accts || !accts[0]) throw {code:4001};
+    wallet = p; chosenProvider = d;
+    try{ localStorage.setItem('rwi_wallet_rdns',(d.info&&d.info.rdns)||'window.ethereum'); }catch(e){}
+    setAccount(accts[0]);
+    await ensureChain();
+    if(p.on && !p._rwiBound){
+      p._rwiBound = true;
+      p.on('accountsChanged', a => { if(a&&a[0]) setAccount(a[0]); else disconnect(); });
+      p.on('chainChanged', () => ensureChain());
+    }
+  }catch(e){
+    walletStatus(e && e.code === 4001 ? 'Connection rejected.' : 'Could not connect to that wallet.', true);
+  }
+}
+function disconnect(){
+  wallet=null; account=null; walletOnChain=false;
+  try{ localStorage.removeItem('rwi_wallet_rdns'); }catch(e){}
+  ['acctChip','chainChip','powerChip','disconnectBtn'].forEach(id => $(id).hidden = true);
+  const os=$('ownerSection'); if(os) os.hidden = true;
+  const nb=$('nextRoundBtn'); if(nb) nb.hidden = true;
+  ownerPanelOpen = false;
+  $('connectBtn').hidden = false;
+  $('voteBtn').disabled = true;
+  $('myVote').textContent = '';
+  walletStatus('');
+}
+async function setAccount(a){
+  account = a;
+  $('acctChip').textContent = short(a); $('acctChip').hidden = false;
+  $('connectBtn').hidden = true; $('disconnectBtn').hidden = false;
+  walletStatus('');
+  await refreshPower();
+  updateVoteButton();
+  showMyVote();
+  renderOwnerPanel();
+}
+async function ensureChain(){
+  if(!wallet) return false;
+  try{
+    const cid = await wallet.request({method:'eth_chainId'});
+    if(cid === CHAIN.idHex){
+      walletOnChain = true;
+      $('chainChip').textContent = 'Robinhood Chain'; $('chainChip').className='chip ok'; $('chainChip').hidden=false;
+      await refreshPower(); updateVoteButton(); return true;
+    }
+    walletOnChain = false;
+    $('chainChip').textContent = 'Wrong network'; $('chainChip').className='chip warn'; $('chainChip').hidden=false;
+    try{
+      await wallet.request({method:'wallet_switchEthereumChain',params:[{chainId:CHAIN.idHex}]});
+    }catch(sw){
+      if(sw && (sw.code === 4902 || sw.code === -32603)){
+        try{ await wallet.request({method:'wallet_addEthereumChain',params:[CHAIN.params]}); }catch(e){}
+      }
+    }
+    const again = await wallet.request({method:'eth_chainId'});
+    walletOnChain = (again === CHAIN.idHex);
+    if(walletOnChain){
+      $('chainChip').textContent='Robinhood Chain'; $('chainChip').className='chip ok';
+      await refreshPower();
+    }
+    updateVoteButton();
+    return walletOnChain;
+  }catch(e){ return false; }
+}
+
+let myPower = 0n;
+async function refreshPower(){
+  if(!account){ myPower = 0n; return; }
+  try{
+    myPower = await erc20BalanceOf(RWI, account);
+    $('powerChip').textContent = fmtToken(myPower) + ' $RWI';
+    $('powerChip').hidden = false;
+  }catch(e){
+    myPower = 0n;
+    $('powerChip').hidden = true;
+  }
+}
+
+/* ------------------------------------------------------------------- ballot */
+let selected = null;
+function activeOrgs(){
+  return SLATE.filter(s => ORG_POOL[s]).map(s => Object.assign({slug:s}, ORG_POOL[s]));
+}
+function renderBallot(){
+  const orgs = activeOrgs();
+  $('ballot').innerHTML = orgs.map(c => `
+    <button class="cand" type="button" role="radio" aria-pressed="false" data-slug="${esc(c.slug)}">
+      <span class="radio" aria-hidden="true"></span>
+      <span class="who">
+        <span class="name">${esc(c.name)}</span>
+        <span class="cause">${esc(c.cause)}</span>
+      </span>
+      <span class="tally"><span class="pct" data-pct>—</span><br><span class="muted" data-wt></span></span>
+      <span class="bar" data-bar></span>
+    </button>`).join('');
+  $('ballot').querySelectorAll('.cand').forEach(el => {
+    el.addEventListener('click', () => {
+      selected = el.dataset.slug;
+      $('ballot').querySelectorAll('.cand').forEach(x => x.setAttribute('aria-pressed', String(x === el)));
+      updateVoteButton();
+    });
+  });
+  $('roundNo').textContent = String(ROUND);
+}
+function updateVoteButton(){
+  const ok = !!(account && walletOnChain && selected && myPower > 0n);
+  $('voteBtn').disabled = !ok;
+  if(account && myPower === 0n) voteStatus('This wallet holds no $RWI, so a vote from it would carry zero weight.');
+  else if(account && !walletOnChain) voteStatus('Switch to Robinhood Chain to vote.');
+  else voteStatus('');
+}
+
+/* ------------------------------------------------------------------ voting */
+async function castVote(){
+  if(!account || !selected) return;
+  const payload = votePrefix() + selected;
+  try{
+    $('voteBtn').disabled = true;
+    voteStatus('Confirm the transaction in your wallet…');
+    const txHash = await wallet.request({
+      method:'eth_sendTransaction',
+      params:[{ from:account, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) }]
+    });
+    voteStatus('Vote sent. Waiting for it to settle…');
+    await waitForTx(txHash);
+    voteStatus('Vote recorded onchain.');
+    setTimeout(() => refreshAll(), 1200);
+  }catch(e){
+    voteStatus(e && e.code === 4001 ? 'Vote cancelled.' : 'Vote failed to send.', true);
+  }finally{
+    updateVoteButton();
+  }
+}
+async function waitForTx(hash, tries){
+  tries = tries || 24;
+  for(let i=0;i<tries;i++){
+    try{
+      const r = await rpc('eth_getTransactionReceipt',[hash]);
+      if(r && r.blockNumber) return r;
+    }catch(e){}
+    await new Promise(r => setTimeout(r, 1500));
+  }
+  return null;
+}
+
+/* ------------------------------------------------------- rounds (owner-gated)
+   A round is opened by a transaction FROM the owner carrying
+      RWIROUND:<n>:<slug>,<slug>,...
+   Anyone can broadcast that string, but loadRound() only honours declarations
+   whose sender is OWNER, so a forged one is inert. That is the real control —
+   the hidden button is only convenience. */
+let voteTxCache = null;
+async function loadRound(txs){
+  const rows = txs || await fetchVoteTxs();
+  let best = null;
+  for(const t of rows){
+    const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
+    if(from !== OWNER_LC) continue;                         // <-- the gate
+    const text = fromHexUtf8(t.raw_input || t.input || '');
+    if(!text.startsWith(ROUND_TAG)) continue;
+    const body = text.slice(ROUND_TAG.length);
+    const sep = body.indexOf(':');
+    if(sep < 0) continue;
+    const n = parseInt(body.slice(0, sep), 10);
+    if(!Number.isFinite(n) || n < 1) continue;
+    const slugs = body.slice(sep+1).split(',').map(s => s.trim().toLowerCase()).filter(s => ORG_POOL[s]);
+    if(!slugs.length) continue;
+    const bn = Number(t.block_number || t.block || 0);
+    if(!best || n > best.n || (n === best.n && bn >= best.bn)) best = {n, slugs, bn};
+  }
+  if(best){ ROUND = best.n; SLATE = best.slugs; }
+  else { ROUND = 1; SLATE = DEFAULT_SLATE.slice(); }
+  $('roundNo').textContent = String(ROUND);
+  $('prefixEg').textContent = votePrefix() + '<slug>';
+}
+
+/* ---- founder panel ---- */
+let picked = new Set();
+function isOwner(){ return !!account && account.toLowerCase() === OWNER_LC; }
+let ownerPanelOpen = false;
+function renderOwnerPanel(){
+  const sec = $('ownerSection');
+  const trigger = $('nextRoundBtn');
+  if(!sec) return;
+  // The trigger only appears for the controller; the panel only appears once asked for.
+  if(trigger) trigger.hidden = !isOwner();
+  sec.hidden = !(isOwner() && ownerPanelOpen);
+  sec.setAttribute('aria-hidden', String(sec.hidden));
+  if(trigger) trigger.setAttribute('aria-expanded', String(isOwner() && ownerPanelOpen));
+  if(!isOwner()){ ownerPanelOpen = false; return; }
+  if(!ownerPanelOpen) return;
+  const nx = String(ROUND + 1);
+  $('nextRoundNo').textContent = nx;
+  const nx2 = $('nextRoundNo2'); if(nx2) nx2.textContent = nx;
+  const tierLabel = {returning:'Returning', lane:'Proven lane', acute:'Acute need'};
+  $('orgPicker').innerHTML = Object.keys(ORG_POOL).map(slug => {
+    const o = ORG_POOL[slug];
+    const on = picked.has(slug);
+    return `<button type="button" class="pick${on?' on':''}" data-slug="${esc(slug)}" aria-pressed="${on}">
+      <span class="pname">${esc(o.name)}</span>
+      <span class="pmeta">${esc(tierLabel[o.tier]||o.tier)} · ${esc(o.cause)}</span>
+    </button>`;
+  }).join('');
+  $('orgPicker').querySelectorAll('.pick').forEach(b => {
+    b.addEventListener('click', () => {
+      const s = b.dataset.slug;
+      if(picked.has(s)) picked.delete(s); else picked.add(s);
+      renderOwnerPanel();
+    });
+  });
+  $('pickCount').textContent = picked.size + ' selected' + (picked.size < 2 ? ' — pick at least 2' : '');
+  $('newRoundBtn').disabled = picked.size < 2;
+}
+async function openNewRound(){
+  if(picked.size < 2) return;
+  // Re-read the live account rather than trusting cached state, and refuse to
+  // even broadcast from a non-owner wallet. (A bypass would be ignored by
+  // loadRound anyway — this just avoids wasting someone's gas.)
+  let live = account;
+  try{ const a = await wallet.request({method:'eth_accounts'}); if(a && a[0]) live = a[0]; }catch(e){}
+  if(!live || live.toLowerCase() !== OWNER_LC){
+    $('ownerStatus').textContent = 'Only the round controller can open a round.';
+    return;
+  }
+  const n = ROUND + 1;
+  const payload = ROUND_TAG + n + ':' + [...picked].join(',');
+  try{
+    $('newRoundBtn').disabled = true;
+    $('ownerStatus').textContent = 'Confirm in your wallet…';
+    const hash = await wallet.request({
+      method:'eth_sendTransaction',
+      params:[{ from:live, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) }]
+    });
+    $('ownerStatus').textContent = 'Opening round ' + n + '…';
+    await waitForTx(hash);
+    picked = new Set();
+    ownerPanelOpen = false;
+    $('ownerStatus').textContent = 'Round ' + n + ' is open. Previous votes no longer count.';
+    await refreshAll();
+  }catch(e){
+    $('ownerStatus').textContent = (e && e.code === 4001) ? 'Cancelled.' : 'Could not open the round.';
+  }finally{ renderOwnerPanel(); }
+}
+
+async function refreshAll(){
+  voteTxCache = await fetchVoteTxs().catch(()=>[]);
+  await loadRound(voteTxCache);
+  selected = null;
+  renderBallot();
+  renderOwnerPanel();
+  await loadTally(voteTxCache);
+  updateVoteButton();
+}
+
+/* ------------------------------------------------------------------- tally */
+let lastTally = null;
+async function fetchVoteTxs(){
+  // Blockscout v2, cursor-paginated. Only transactions *to* the ballot box matter.
+  const out = [];
+  let url = SCAN + '/api/v2/addresses/' + BALLOT_BOX + '/transactions?filter=to';
+  for(let page=0; page<6; page++){
+    const r = await fetch(url, {headers:{accept:'application/json'}});
+    if(!r.ok) break;
+    const j = await r.json();
+    (j.items || []).forEach(t => out.push(t));
+    if(!j.next_page_params) break;
+    const q = new URLSearchParams(j.next_page_params).toString();
+    url = SCAN + '/api/v2/addresses/' + BALLOT_BOX + '/transactions?filter=to&' + q;
+  }
+  return out;
+}
+async function loadTally(cached){
+  const totalsEl = $('tallyTotals');
+  totalsEl.textContent = 'Reading votes from chain…';
+  let txs = cached;
+  if(!txs){
+    try{ txs = await fetchVoteTxs(); }
+    catch(e){ totalsEl.textContent = 'Could not read the tally right now.'; return; }
+  }
+  const pfx = votePrefix();
+  // only the slate for the CURRENT round counts; older rounds fall away
+  const valid = new Set(SLATE);
+  const latest = new Map(); // addr -> {slug, block}
+  for(const t of txs){
+    const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
+    const raw = t.raw_input || t.input || '';
+    const text = fromHexUtf8(raw);
+    if(!from || !text.startsWith(pfx)) continue;
+    const slug = text.slice(pfx.length).trim().toLowerCase();
+    if(!valid.has(slug)) continue;
+    const bn = Number(t.block_number || t.block || 0);
+    const prev = latest.get(from);
+    if(!prev || bn >= prev.block) latest.set(from, {slug, block:bn});
+  }
+
+  // weight each voter by live $RWI balance
+  const weights = new Map();
+  const voters = [...latest.keys()];
+  const CONCURRENCY = 4;
+  for(let i=0;i<voters.length;i+=CONCURRENCY){
+    const slice = voters.slice(i,i+CONCURRENCY);
+    const bals = await Promise.all(slice.map(a => erc20BalanceOf(RWI,a).catch(()=>0n)));
+    slice.forEach((a,k) => weights.set(a, bals[k]));
+  }
+
+  const byslug = new Map(SLATE.map(s => [s, 0n]));
+  let total = 0n, counted = 0;
+  for(const [addr, v] of latest){
+    const w = weights.get(addr) || 0n;
+    if(w <= 0n) continue;
+    byslug.set(v.slug, (byslug.get(v.slug) || 0n) + w);
+    total += w; counted++;
+  }
+
+  lastTally = {byslug, total, counted, wallets:latest.size};
+  paintTally();
+}
+function paintTally(){
+  if(!lastTally){ return; }
+  const {byslug, total, counted} = lastTally;
+  $('ballot').querySelectorAll('.cand').forEach(el => {
+    const slug = el.dataset.slug;
+    const w = byslug.get(slug) || 0n;
+    const pct = total > 0n ? Number(w * 10000n / total)/100 : 0;
+    el.querySelector('[data-pct]').textContent = total > 0n ? pct.toFixed(1)+'%' : '—';
+    el.querySelector('[data-wt]').textContent = total > 0n ? fmtToken(w)+' $RWI' : '';
+    el.querySelector('[data-bar]').style.width = (total > 0n ? pct : 0) + '%';
+  });
+  $('tallyTotals').textContent = counted
+    ? counted + (counted===1?' wallet · ':' wallets · ') + fmtToken(total) + ' $RWI voting'
+    : 'No votes cast yet — be the first.';
+}
+function showMyVote(){
+  if(!account || !lastTally) { $('myVote').textContent=''; return; }
+  $('myVote').textContent = myPower > 0n ? 'Your weight: ' + fmtToken(myPower) + ' $RWI' : '';
+}
+
+/* --------------------------------------------------------------------- boot */
+document.addEventListener('DOMContentLoaded', () => {
+  $('boxAddr').textContent = BALLOT_BOX;
+  $('ownerAddr').textContent = OWNER;
+  $('prefixEg').textContent = votePrefix() + '<slug>';
+  $('roundNo').textContent = String(ROUND);
+  renderBallot();
+  $('connectBtn').addEventListener('click', connect);
+  $('disconnectBtn').addEventListener('click', disconnect);
+  $('voteBtn').addEventListener('click', castVote);
+  $('refreshBtn').addEventListener('click', () => refreshAll());
+  const nrb = $('newRoundBtn'); if(nrb) nrb.addEventListener('click', openNewRound);
+  const trg = $('nextRoundBtn');
+  if(trg) trg.addEventListener('click', () => {
+    if(!isOwner()) return;                       // cosmetic; the chain filter is the real gate
+    ownerPanelOpen = !ownerPanelOpen;
+    renderOwnerPanel();
+    if(ownerPanelOpen){
+      const sec = $('ownerSection');
+      if(sec && sec.scrollIntoView) sec.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+  refreshAll();
+  // resume a previous session silently if the wallet is still authorised
+  (async () => {
+    let saved=null; try{ saved = localStorage.getItem('rwi_wallet_rdns'); }catch(e){}
+    if(!saved) return;
+    await new Promise(r => setTimeout(r, 350)); // let EIP-6963 announcements land
+    const list = providers.length ? providers
+      : (window.ethereum ? [{info:{name:'Injected',rdns:'window.ethereum'},provider:window.ethereum}] : []);
+    const d = list.find(x => x.info && x.info.rdns === saved);
+    if(!d) return;
+    try{
+      const accts = await d.provider.request({method:'eth_accounts'});
+      if(accts && accts[0]){ wallet = d.provider; chosenProvider = d; setAccount(accts[0]); ensureChain(); }
+    }catch(e){}
+  })();
+});
+</script>
+
+<!-- Floating chart pill + modal (GeckoTerminal). Sits immediately left of the
+     language pill; its offset is measured at runtime so the two never overlap. -->
+<button type="button" id="chartBtn" aria-haspopup="dialog" aria-controls="chartModal">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><path d="M6 16V9"/><path d="M11 16V4"/><path d="M16 16v-5"/><path d="M21 16v-9"/></svg>
+  <span data-i18n="index.chart.btn">Chart</span>
+</button>
+<div id="chartModal" role="dialog" aria-modal="true" aria-labelledby="chartModalTitle">
+  <div class="chart-panel">
+    <div class="chart-head">
+      <span><span id="chartModalTitle" data-i18n="index.chart.title">Live chart</span> <span class="pair">· $RWI / $WETH</span></span>
+      <span class="chart-actions">
+        <a href="https://www.geckoterminal.com/robinhood/pools/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697" target="_blank" rel="noopener" data-i18n="index.chart.open">Open on GeckoTerminal &#8599;</a>
+        <button type="button" id="chartClose" aria-label="Close">&#10005;</button>
+      </span>
+    </div>
+    <div class="chart-body">
+      <div class="chart-loading" id="chartLoading" data-i18n="index.chart.title">Live chart</div>
+      <iframe id="chartFrame" title="GeckoTerminal price chart" loading="lazy" allow="clipboard-write" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+<script>
+/* Chart modal. The iframe src is only assigned on first open, so the embed costs
+   nothing (no network, no third-party JS) unless the visitor actually asks for it. */
+(function(){
+  var POOL='0xff6aa24815d1274a9be0cfd17c7c7489cd40a697';
+  var SRC='https://www.geckoterminal.com/robinhood/pools/'+POOL+'?embed=1&info=0&swaps=0';
+  function init(){
+    var btn=document.getElementById('chartBtn'),
+        modal=document.getElementById('chartModal'),
+        panel=modal&&modal.querySelector('.chart-panel'),
+        closeBtn=document.getElementById('chartClose'),
+        frame=document.getElementById('chartFrame'),
+        loading=document.getElementById('chartLoading'),
+        langBtn=document.getElementById('langBtn');
+    if(!btn||!modal||!frame) return;
+    var loaded=false, lastFocus=null;
+
+    // Keep the chart pill clear of the language pill, whose width changes with its label.
+    function place(){
+      if(!langBtn){ btn.style.right='16px'; return; }   // no language pill on this page
+      var w=langBtn.getBoundingClientRect().width;
+      if(w) btn.style.right=(16+w+10)+'px';
+    }
+    window.addEventListener('resize', place);
+    window.updateChartBtnPosition=place;
+    place();
+
+    frame.addEventListener('load', function(){ if(loading) loading.style.display='none'; });
+
+    function open(){
+      lastFocus=document.activeElement;
+      if(!loaded){ frame.src=SRC; loaded=true; }
+      modal.classList.add('open');
+      btn.setAttribute('aria-expanded','true');
+      document.body.style.overflow='hidden';
+      if(closeBtn) closeBtn.focus();
+    }
+    function close(){
+      modal.classList.remove('open');
+      btn.setAttribute('aria-expanded','false');
+      document.body.style.overflow='';
+      if(lastFocus&&lastFocus.focus) lastFocus.focus();
+    }
+    window.__chartModalClose=close;
+
+    btn.addEventListener('click', function(e){ e.stopPropagation(); open(); });
+    if(closeBtn) closeBtn.addEventListener('click', close);
+    modal.addEventListener('click', function(e){ if(!panel.contains(e.target)) close(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape'&&modal.classList.contains('open')) close(); });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+</body>
+</html>
