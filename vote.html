@@ -17,6 +17,1000 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js')</script>
+<script>
+const TRANSLATIONS = {
+  en: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'Ledger',
+    'nav.whitepaper':'Whitepaper',
+    'vote.eyebrow':'Community signal',
+    'vote.title.a':'You hold it.',
+    'vote.title.b':'You pick',
+    'vote.title.c':'who\'s next.',
+    'vote.lede':'$RWI holders signal which vetted charity should receive the next donation. Your vote is a transaction on Robinhood Chain, weighted by the $RWI you hold. Anyone can tally it — including you.',
+    'vote.disclaimer.title':'Read this first',
+    'vote.disclaimer.body':'This is an advisory signal, not binding governance. $RWI grants no governance rights and no claim on revenue. The project reads the result and weighs it, but retains final say over every donation — recipients must clear The Giving Block\'s vetting regardless of how the vote lands. Voting is weighted by token balance, which means larger holders carry more weight. Balances are read live at tally time, so a vote is not locked to a snapshot.',
+    'vote.s1.eyebrow':'01 — Your wallet',
+    'vote.connect':'Connect wallet',
+    'vote.disconnect':'Disconnect',
+    'vote.chain.ok':'Robinhood Chain',
+    'vote.chain.wrong':'Wrong network',
+    'vote.s2.eyebrow':'02 — The ballot',
+    'vote.round':'Round',
+    'vote.closes':'· closes',
+    'vote.closes.when':'when the next donation is made',
+    'vote.cast':'Cast vote',
+    'vote.refresh':'Refresh tally',
+    'vote.nextround':'Next round →',
+    'vote.note.calldata':'Every vote is a zero-value transaction carrying your choice in its calldata. Nothing is stored on a server — the tally you see is read straight off Robinhood Chain, and re-voting simply replaces your previous choice.',
+    'vote.founder.eyebrow':'Founder controls',
+    'vote.founder.open':'Open round',
+    'vote.founder.confirm':'Confirm & open round',
+    'vote.founder.note':'The slate below is composed automatically — one returning organisation, two from the project’s established cause areas, and three responding to current need, ranked against live ReliefWeb crisis data. Opening a new round is a transaction from your wallet: it supersedes the current round, and votes cast in earlier rounds stop counting immediately. Only this address can do it; declarations from anyone else are ignored when the page reads the chain.',
+    'vote.s3.eyebrow':'03 — How the tally works',
+    'vote.s3.title':'Countable by anyone.',
+    'vote.how1a':'Your wallet sends a 0-value transaction to the ballot box address with',
+    'vote.how1b':'in the data field. You pay only gas.',
+    'vote.how2':'The page reads every transaction ever sent to that address, decodes the choices, and keeps the most recent vote per wallet.',
+    'vote.how3':'Each wallet\'s weight is its live $RWI balance, read from the token contract. Wallets holding nothing carry no weight.',
+    'vote.how4':'Totals are recomputed in your browser. No server sits in the middle, so you never have to trust this page — re-run the same reads yourself.',
+    'vote.addr.box':'Ballot box:',
+    'vote.addr.token':'$RWI token:',
+    'vote.addr.controller':'Round controller:',
+    'vote.addr.note':'Rounds are opened by a transaction from the round controller above. Declarations sent from any other address are ignored when this page reads the chain — so you can confirm for yourself who can and cannot move the ballot, without taking our word for it.',
+    'vote.footer.brand':'Real World Impact · Community signal',
+    'vote.footer.fine':'$RWI is a memecoin with a charitable mission, not an investment product and not a governance token. This poll is advisory. Nothing here is financial advice. Voting costs gas and confers no rights, no revenue share, and no claim on any treasury. Recipients are subject to The Giving Block’s vetting; a winning vote is a recommendation, not an instruction.',
+    'chart.btn':'Chart',
+    'chart.title':'Live chart',
+    'chart.open':'Open on GeckoTerminal ↗',
+    'vote.st.tallyReading':'Reading votes from chain…',
+    'vote.st.tallyErr':'Could not read the tally right now.',
+    'vote.st.noVotes':'No votes cast yet — be the first.',
+    'vote.st.wallets':'{n} wallets · {w} $RWI voting',
+    'vote.st.wallet1':'1 wallet · {w} $RWI voting',
+    'vote.st.weight':'Your weight: {w} $RWI',
+    'vote.st.noRwi':'This wallet holds no $RWI, so a vote from it would carry zero weight.',
+    'vote.st.switchChain':'Switch to Robinhood Chain to vote.',
+    'vote.st.confirmVote':'Confirm the transaction in your wallet…',
+    'vote.st.voteSent':'Vote sent. Waiting for it to settle…',
+    'vote.st.voteOk':'Vote recorded onchain.',
+    'vote.st.voteCancel':'Vote cancelled.',
+    'vote.st.voteFail':'Vote failed to send.',
+    'vote.st.noWallet':'No wallet detected. Install a browser wallet, then reload.',
+    'vote.st.rejected':'Connection rejected.',
+    'vote.st.connFail':'Could not connect to that wallet.',
+    'vote.st.readingCrises':'Reading current crises from ReliefWeb…',
+    'vote.st.notOwner':'Only the round controller can open a round.',
+    'vote.st.confirmRound':'Confirm in your wallet — opening round {n}…',
+    'vote.st.roundLive':'Round {n} is open — slate ranked against live ReliefWeb crises. Earlier votes no longer count.',
+    'vote.st.roundRot':'Round {n} is open — live feed unavailable, used rotation. Earlier votes no longer count.',
+    'vote.st.cancelled':'Cancelled.',
+    'vote.st.roundFail':'Could not open the round.',
+    'vote.st.reliefweb':'Reading ReliefWeb…',
+    'vote.st.slateLive':'{n} organisations · acute picks ranked against {c} ongoing crises',
+    'vote.st.slateRot':'{n} organisations · live feed unavailable, using rotation',
+    'vote.st.liveSignal':'{c} ongoing crises tracked by ReliefWeb · {t}'
+  },
+  es: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'Registro',
+    'nav.whitepaper':'Documento técnico',
+    'vote.eyebrow':'Señal de la comunidad',
+    'vote.title.a':'Tú lo tienes.',
+    'vote.title.b':'Tú eliges',
+    'vote.title.c':'quién sigue.',
+    'vote.lede':'Los poseedores de $RWI señalan qué organización benéfica verificada debe recibir la próxima donación. Tu voto es una transacción en Robinhood Chain, ponderada por el $RWI que posees. Cualquiera puede contarlo — incluido tú.',
+    'vote.disclaimer.title':'Lee esto primero',
+    'vote.disclaimer.body':'Esto es una señal consultiva, no gobernanza vinculante. $RWI no otorga derechos de gobernanza ni derecho sobre los ingresos. El proyecto lee el resultado y lo pondera, pero conserva la última palabra sobre cada donación — los destinatarios deben pasar la verificación de The Giving Block sea cual sea el resultado. El voto se pondera por saldo de tokens, por lo que los grandes tenedores pesan más. Los saldos se leen en vivo al momento del recuento, así que un voto no queda fijado a una instantánea.',
+    'vote.s1.eyebrow':'01 — Tu billetera',
+    'vote.connect':'Conectar billetera',
+    'vote.disconnect':'Desconectar',
+    'vote.chain.ok':'Robinhood Chain',
+    'vote.chain.wrong':'Red incorrecta',
+    'vote.s2.eyebrow':'02 — La votación',
+    'vote.round':'Ronda',
+    'vote.closes':'· cierra',
+    'vote.closes.when':'cuando se haga la próxima donación',
+    'vote.cast':'Emitir voto',
+    'vote.refresh':'Actualizar recuento',
+    'vote.nextround':'Siguiente ronda →',
+    'vote.note.calldata':'Cada voto es una transacción de valor cero que lleva tu elección en su calldata. Nada se almacena en un servidor — el recuento que ves se lee directamente de Robinhood Chain, y volver a votar simplemente reemplaza tu elección anterior.',
+    'vote.founder.eyebrow':'Controles del fundador',
+    'vote.founder.open':'Abrir ronda',
+    'vote.founder.confirm':'Confirmar y abrir ronda',
+    'vote.founder.note':'La lista siguiente se compone automáticamente — una organización recurrente, dos de las áreas de causa establecidas del proyecto y tres que responden a la necesidad actual, clasificadas según datos de crisis en vivo de ReliefWeb. Abrir una nueva ronda es una transacción desde tu billetera: reemplaza la ronda actual y los votos de rondas anteriores dejan de contar de inmediato. Solo esta dirección puede hacerlo; las declaraciones de cualquier otra se ignoran cuando la página lee la cadena.',
+    'vote.s3.eyebrow':'03 — Cómo funciona el recuento',
+    'vote.s3.title':'Contable por cualquiera.',
+    'vote.how1a':'Tu billetera envía una transacción de valor 0 a la dirección de la urna con',
+    'vote.how1b':'en el campo de datos. Solo pagas gas.',
+    'vote.how2':'La página lee todas las transacciones enviadas a esa dirección, decodifica las elecciones y conserva el voto más reciente por billetera.',
+    'vote.how3':'El peso de cada billetera es su saldo $RWI en vivo, leído del contrato del token. Las billeteras sin saldo no tienen peso.',
+    'vote.how4':'Los totales se recalculan en tu navegador. No hay servidor en el medio, así que nunca tienes que confiar en esta página — repite las mismas lecturas tú mismo.',
+    'vote.addr.box':'Urna:',
+    'vote.addr.token':'Token $RWI:',
+    'vote.addr.controller':'Controlador de ronda:',
+    'vote.addr.note':'Las rondas se abren mediante una transacción del controlador de ronda indicado arriba. Las declaraciones enviadas desde cualquier otra dirección se ignoran cuando esta página lee la cadena — así puedes comprobar por ti mismo quién puede y quién no puede mover la votación, sin fiarte de nuestra palabra.',
+    'vote.footer.brand':'Real World Impact · Señal de la comunidad',
+    'vote.footer.fine':'$RWI es una memecoin con misión benéfica, no un producto de inversión ni un token de gobernanza. Esta votación es consultiva. Nada aquí es asesoramiento financiero. Votar cuesta gas y no confiere derechos, ni participación en ingresos, ni derecho sobre ninguna tesorería. Los destinatarios están sujetos a la verificación de The Giving Block; un voto ganador es una recomendación, no una instrucción.',
+    'chart.btn':'Gráfico',
+    'chart.title':'Gráfico en vivo',
+    'chart.open':'Abrir en GeckoTerminal ↗',
+    'vote.st.tallyReading':'Leyendo votos de la cadena…',
+    'vote.st.tallyErr':'No se pudo leer el recuento ahora mismo.',
+    'vote.st.noVotes':'Aún no hay votos — sé el primero.',
+    'vote.st.wallets':'{n} billeteras · {w} $RWI votando',
+    'vote.st.wallet1':'1 billetera · {w} $RWI votando',
+    'vote.st.weight':'Tu peso: {w} $RWI',
+    'vote.st.noRwi':'Esta billetera no tiene $RWI, así que un voto suyo tendría peso cero.',
+    'vote.st.switchChain':'Cambia a Robinhood Chain para votar.',
+    'vote.st.confirmVote':'Confirma la transacción en tu billetera…',
+    'vote.st.voteSent':'Voto enviado. Esperando confirmación…',
+    'vote.st.voteOk':'Voto registrado on-chain.',
+    'vote.st.voteCancel':'Voto cancelado.',
+    'vote.st.voteFail':'No se pudo enviar el voto.',
+    'vote.st.noWallet':'No se detectó billetera. Instala una billetera de navegador y recarga.',
+    'vote.st.rejected':'Conexión rechazada.',
+    'vote.st.connFail':'No se pudo conectar con esa billetera.',
+    'vote.st.readingCrises':'Leyendo crisis actuales desde ReliefWeb…',
+    'vote.st.notOwner':'Solo el controlador de ronda puede abrir una ronda.',
+    'vote.st.confirmRound':'Confirma en tu billetera — abriendo ronda {n}…',
+    'vote.st.roundLive':'Ronda {n} abierta — lista clasificada según crisis en vivo de ReliefWeb. Los votos anteriores ya no cuentan.',
+    'vote.st.roundRot':'Ronda {n} abierta — feed en vivo no disponible, se usó rotación. Los votos anteriores ya no cuentan.',
+    'vote.st.cancelled':'Cancelado.',
+    'vote.st.roundFail':'No se pudo abrir la ronda.',
+    'vote.st.reliefweb':'Leyendo ReliefWeb…',
+    'vote.st.slateLive':'{n} organizaciones · selección aguda clasificada según {c} crisis en curso',
+    'vote.st.slateRot':'{n} organizaciones · feed en vivo no disponible, usando rotación',
+    'vote.st.liveSignal':'{c} crisis en curso rastreadas por ReliefWeb · {t}'
+  },
+  zh: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'账本',
+    'nav.whitepaper':'白皮书',
+    'vote.eyebrow':'社区信号',
+    'vote.title.a':'你持有它。',
+    'vote.title.b':'你来选',
+    'vote.title.c':'下一个是谁。',
+    'vote.lede':'$RWI 持有者投票决定下一笔捐赠应当流向哪个经审查的慈善机构。你的投票是 Robinhood 链上的一笔交易,按你持有的 $RWI 加权。任何人都可以统计 — 包括你。',
+    'vote.disclaimer.title':'请先阅读',
+    'vote.disclaimer.body':'这是咨询性信号,而非有约束力的治理。$RWI 不授予治理权,也不构成对收入的索取权。项目会参考结果并加以权衡,但对每笔捐赠保留最终决定权 — 无论投票结果如何,接收方都必须通过 The Giving Block 的审查。投票按代币余额加权,这意味着大持有者权重更高。余额在统计时实时读取,因此投票并不锁定于某个快照。',
+    'vote.s1.eyebrow':'01 — 你的钱包',
+    'vote.connect':'连接钱包',
+    'vote.disconnect':'断开',
+    'vote.chain.ok':'Robinhood 链',
+    'vote.chain.wrong':'网络错误',
+    'vote.s2.eyebrow':'02 — 选票',
+    'vote.round':'轮次',
+    'vote.closes':'· 结束于',
+    'vote.closes.when':'下一笔捐赠完成时',
+    'vote.cast':'投票',
+    'vote.refresh':'刷新统计',
+    'vote.nextround':'下一轮 →',
+    'vote.note.calldata':'每一票都是一笔零值交易,你的选择写在其 calldata 中。没有任何内容存储在服务器上 — 你看到的统计直接读自 Robinhood 链,重新投票只会替换你之前的选择。',
+    'vote.founder.eyebrow':'创始人控制',
+    'vote.founder.open':'开启轮次',
+    'vote.founder.confirm':'确认并开启轮次',
+    'vote.founder.note':'下方名单为自动组成 — 一个回访组织、两个来自项目既有关注领域的组织,以及三个应对当前需求的组织,依据 ReliefWeb 实时危机数据排序。开启新一轮是来自你钱包的一笔交易:它会取代当前轮次,先前轮次的投票立即失效。只有此地址可以执行;页面读取链上数据时会忽略任何其他地址的声明。',
+    'vote.s3.eyebrow':'03 — 统计如何运作',
+    'vote.s3.title':'任何人都能统计。',
+    'vote.how1a':'你的钱包向投票箱地址发送一笔 0 值交易,附带',
+    'vote.how1b':'写在 data 字段中。你只需支付 gas。',
+    'vote.how2':'页面读取曾发送到该地址的每一笔交易,解码其中的选择,并保留每个钱包最新的一票。',
+    'vote.how3':'每个钱包的权重是其实时 $RWI 余额,从代币合约读取。持有为零的钱包没有权重。',
+    'vote.how4':'总计在你的浏览器中重新计算。中间没有服务器,所以你无需信任本页面 — 你可以自行重跑同样的读取。',
+    'vote.addr.box':'投票箱:',
+    'vote.addr.token':'$RWI 代币:',
+    'vote.addr.controller':'轮次控制者:',
+    'vote.addr.note':'轮次由上述轮次控制者的交易开启。当本页面读取链上数据时,来自任何其他地址的声明都会被忽略 — 因此你可以自行确认谁能、谁不能推动投票,而无需相信我们的说法。',
+    'vote.footer.brand':'Real World Impact · 社区信号',
+    'vote.footer.fine':'$RWI 是一种带有慈善使命的 memecoin,不是投资产品,也不是治理代币。本次投票为咨询性质。此处内容均不构成财务建议。投票需支付 gas,且不赋予任何权利、收入分成或对任何资金库的索取权。接收方须通过 The Giving Block 的审查;胜出的投票是建议,而非指令。',
+    'chart.btn':'图表',
+    'chart.title':'实时图表',
+    'chart.open':'在 GeckoTerminal 打开 ↗',
+    'vote.st.tallyReading':'正在从链上读取投票…',
+    'vote.st.tallyErr':'目前无法读取统计。',
+    'vote.st.noVotes':'尚无投票 — 成为第一个。',
+    'vote.st.wallets':'{n} 个钱包 · {w} $RWI 参与投票',
+    'vote.st.wallet1':'1 个钱包 · {w} $RWI 参与投票',
+    'vote.st.weight':'你的权重:{w} $RWI',
+    'vote.st.noRwi':'该钱包不持有 $RWI,因此其投票权重为零。',
+    'vote.st.switchChain':'请切换到 Robinhood 链后投票。',
+    'vote.st.confirmVote':'请在钱包中确认交易…',
+    'vote.st.voteSent':'投票已发送。等待上链确认…',
+    'vote.st.voteOk':'投票已记录在链上。',
+    'vote.st.voteCancel':'投票已取消。',
+    'vote.st.voteFail':'投票发送失败。',
+    'vote.st.noWallet':'未检测到钱包。请安装浏览器钱包后刷新。',
+    'vote.st.rejected':'连接被拒绝。',
+    'vote.st.connFail':'无法连接到该钱包。',
+    'vote.st.readingCrises':'正在从 ReliefWeb 读取当前危机…',
+    'vote.st.notOwner':'只有轮次控制者才能开启轮次。',
+    'vote.st.confirmRound':'请在钱包中确认 — 正在开启第 {n} 轮…',
+    'vote.st.roundLive':'第 {n} 轮已开启 — 名单依据 ReliefWeb 实时危机排序。先前投票不再计入。',
+    'vote.st.roundRot':'第 {n} 轮已开启 — 实时数据不可用,已改用轮换。先前投票不再计入。',
+    'vote.st.cancelled':'已取消。',
+    'vote.st.roundFail':'无法开启该轮次。',
+    'vote.st.reliefweb':'正在读取 ReliefWeb…',
+    'vote.st.slateLive':'{n} 个组织 · 紧急项依据 {c} 起进行中的危机排序',
+    'vote.st.slateRot':'{n} 个组织 · 实时数据不可用,使用轮换',
+    'vote.st.liveSignal':'ReliefWeb 追踪的 {c} 起进行中危机 · {t}'
+  },
+  ja: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'台帳',
+    'nav.whitepaper':'ホワイトペーパー',
+    'vote.eyebrow':'コミュニティシグナル',
+    'vote.title.a':'あなたが保有する。',
+    'vote.title.b':'あなたが選ぶ',
+    'vote.title.c':'次は誰かを。',
+    'vote.lede':'$RWI 保有者が、次の寄付をどの審査済み慈善団体が受け取るべきかを示します。投票は Robinhood Chain 上のトランザクションで、保有する $RWI で重み付けされます。誰でも集計できます — あなたも含めて。',
+    'vote.disclaimer.title':'まずお読みください',
+    'vote.disclaimer.body':'これは助言的なシグナルであり、拘束力のあるガバナンスではありません。$RWI はガバナンス権も収益への請求権も付与しません。プロジェクトは結果を読み取り考慮しますが、すべての寄付について最終決定権を保持します — 投票結果にかかわらず、受取人は The Giving Block の審査を通過する必要があります。投票はトークン残高で重み付けされるため、大口保有者ほど影響が大きくなります。残高は集計時にライブで読み取られるため、投票はスナップショットに固定されません。',
+    'vote.s1.eyebrow':'01 — あなたのウォレット',
+    'vote.connect':'ウォレットを接続',
+    'vote.disconnect':'切断',
+    'vote.chain.ok':'Robinhood Chain',
+    'vote.chain.wrong':'ネットワークが違います',
+    'vote.s2.eyebrow':'02 — 投票用紙',
+    'vote.round':'ラウンド',
+    'vote.closes':'· 締切',
+    'vote.closes.when':'次の寄付が行われたとき',
+    'vote.cast':'投票する',
+    'vote.refresh':'集計を更新',
+    'vote.nextround':'次のラウンド →',
+    'vote.note.calldata':'すべての投票は、選択を calldata に載せたゼロ価値のトランザクションです。サーバーには何も保存されません — 表示される集計は Robinhood Chain から直接読み取られ、再投票は以前の選択を置き換えるだけです。',
+    'vote.founder.eyebrow':'創設者コントロール',
+    'vote.founder.open':'ラウンドを開く',
+    'vote.founder.confirm':'確認してラウンドを開く',
+    'vote.founder.note':'以下の候補は自動的に構成されます — 再登場の団体 1、プロジェクトの既存の関心領域から 2、そして ReliefWeb のライブ危機データに照らして順位付けされた、現在の必要に応える団体 3。新しいラウンドを開くのはあなたのウォレットからのトランザクションです:現在のラウンドを置き換え、以前のラウンドの投票は即座に無効になります。これを実行できるのはこのアドレスのみで、他の誰かの宣言はページがチェーンを読む際に無視されます。',
+    'vote.s3.eyebrow':'03 — 集計の仕組み',
+    'vote.s3.title':'誰でも数えられる。',
+    'vote.how1a':'ウォレットが投票箱アドレスに 0 価値のトランザクションを送信し、',
+    'vote.how1b':'を data フィールドに含めます。支払うのはガス代のみです。',
+    'vote.how2':'ページはそのアドレスに送られた全トランザクションを読み、選択をデコードし、ウォレットごとに最新の投票を残します。',
+    'vote.how3':'各ウォレットの重みは、トークンコントラクトから読み取ったライブ $RWI 残高です。残高ゼロのウォレットは重みを持ちません。',
+    'vote.how4':'合計はあなたのブラウザで再計算されます。間にサーバーはないので、このページを信頼する必要はありません — 同じ読み取りを自分で再実行できます。',
+    'vote.addr.box':'投票箱:',
+    'vote.addr.token':'$RWI トークン:',
+    'vote.addr.controller':'ラウンド管理者:',
+    'vote.addr.note':'ラウンドは上記のラウンド管理者からのトランザクションで開かれます。他のアドレスから送られた宣言は、このページがチェーンを読む際に無視されます — つまり、誰が投票を動かせて誰が動かせないかを、私たちの言葉を信じずに自分で確認できます。',
+    'vote.footer.brand':'Real World Impact · コミュニティシグナル',
+    'vote.footer.fine':'$RWI は慈善的使命を持つ memecoin であり、投資商品でもガバナンストークンでもありません。この投票は助言的なものです。ここに書かれた内容は金融アドバイスではありません。投票にはガス代がかかり、いかなる権利、収益分配、財源への請求権も生じません。受取人は The Giving Block の審査を受けます。勝利した投票は推奨であり、指示ではありません。',
+    'chart.btn':'チャート',
+    'chart.title':'ライブチャート',
+    'chart.open':'GeckoTerminal で開く ↗',
+    'vote.st.tallyReading':'チェーンから投票を読み取り中…',
+    'vote.st.tallyErr':'現在集計を読み取れません。',
+    'vote.st.noVotes':'まだ投票がありません — 最初の一票を。',
+    'vote.st.wallets':'{n} ウォレット · {w} $RWI が投票',
+    'vote.st.wallet1':'1 ウォレット · {w} $RWI が投票',
+    'vote.st.weight':'あなたの重み: {w} $RWI',
+    'vote.st.noRwi':'このウォレットは $RWI を保有していないため、投票の重みはゼロになります。',
+    'vote.st.switchChain':'投票するには Robinhood Chain に切り替えてください。',
+    'vote.st.confirmVote':'ウォレットでトランザクションを承認してください…',
+    'vote.st.voteSent':'投票を送信しました。確定を待っています…',
+    'vote.st.voteOk':'投票がオンチェーンに記録されました。',
+    'vote.st.voteCancel':'投票をキャンセルしました。',
+    'vote.st.voteFail':'投票の送信に失敗しました。',
+    'vote.st.noWallet':'ウォレットが検出されません。ブラウザウォレットを入れて再読み込みしてください。',
+    'vote.st.rejected':'接続が拒否されました。',
+    'vote.st.connFail':'そのウォレットに接続できませんでした。',
+    'vote.st.readingCrises':'ReliefWeb から現在の危機を読み取り中…',
+    'vote.st.notOwner':'ラウンドを開けるのはラウンド管理者だけです。',
+    'vote.st.confirmRound':'ウォレットで承認してください — ラウンド {n} を開いています…',
+    'vote.st.roundLive':'ラウンド {n} を開始 — ReliefWeb のライブ危機に照らして候補を順位付け。以前の投票は無効になります。',
+    'vote.st.roundRot':'ラウンド {n} を開始 — ライブフィードが利用できずローテーションを使用。以前の投票は無効になります。',
+    'vote.st.cancelled':'キャンセルしました。',
+    'vote.st.roundFail':'ラウンドを開けませんでした。',
+    'vote.st.reliefweb':'ReliefWeb を読み取り中…',
+    'vote.st.slateLive':'{n} 団体 · 緊急枠は進行中の {c} 件の危機に照らして順位付け',
+    'vote.st.slateRot':'{n} 団体 · ライブフィード利用不可、ローテーションを使用',
+    'vote.st.liveSignal':'ReliefWeb が追跡中の危機 {c} 件 · {t}'
+  },
+  ko: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'원장',
+    'nav.whitepaper':'백서',
+    'vote.eyebrow':'커뮤니티 신호',
+    'vote.title.a':'당신이 보유합니다.',
+    'vote.title.b':'당신이 고릅니다',
+    'vote.title.c':'다음은 누구인지.',
+    'vote.lede':'$RWI 보유자가 다음 기부를 어느 검증된 자선단체가 받아야 할지 신호합니다. 투표는 Robinhood Chain의 거래이며, 보유한 $RWI로 가중됩니다. 누구나 집계할 수 있습니다 — 당신도 포함해서.',
+    'vote.disclaimer.title':'먼저 읽어주세요',
+    'vote.disclaimer.body':'이것은 자문 신호이며 구속력 있는 거버넌스가 아닙니다. $RWI는 거버넌스 권리도, 수익에 대한 청구권도 부여하지 않습니다. 프로젝트는 결과를 읽고 참고하지만 모든 기부에 대한 최종 결정권을 유지합니다 — 투표 결과와 무관하게 수혜자는 The Giving Block의 검증을 통과해야 합니다. 투표는 토큰 잔액으로 가중되므로 대규모 보유자의 영향이 큽니다. 잔액은 집계 시점에 실시간으로 읽히므로 투표는 스냅샷에 고정되지 않습니다.',
+    'vote.s1.eyebrow':'01 — 내 지갑',
+    'vote.connect':'지갑 연결',
+    'vote.disconnect':'연결 해제',
+    'vote.chain.ok':'Robinhood Chain',
+    'vote.chain.wrong':'잘못된 네트워크',
+    'vote.s2.eyebrow':'02 — 투표용지',
+    'vote.round':'라운드',
+    'vote.closes':'· 마감',
+    'vote.closes.when':'다음 기부가 이루어질 때',
+    'vote.cast':'투표하기',
+    'vote.refresh':'집계 새로고침',
+    'vote.nextround':'다음 라운드 →',
+    'vote.note.calldata':'모든 투표는 선택을 calldata에 담은 0원 거래입니다. 서버에는 아무것도 저장되지 않습니다 — 보이는 집계는 Robinhood Chain에서 직접 읽으며, 재투표는 이전 선택을 대체할 뿐입니다.',
+    'vote.founder.eyebrow':'창립자 제어',
+    'vote.founder.open':'라운드 열기',
+    'vote.founder.confirm':'확인하고 라운드 열기',
+    'vote.founder.note':'아래 명단은 자동으로 구성됩니다 — 재등장 단체 1곳, 프로젝트의 기존 관심 분야에서 2곳, 그리고 ReliefWeb 실시간 위기 데이터에 따라 순위가 매겨진 현재 필요에 대응하는 3곳. 새 라운드를 여는 것은 당신 지갑에서 보내는 거래입니다: 현재 라운드를 대체하며, 이전 라운드의 투표는 즉시 무효가 됩니다. 오직 이 주소만 실행할 수 있으며, 다른 누군가의 선언은 페이지가 체인을 읽을 때 무시됩니다.',
+    'vote.s3.eyebrow':'03 — 집계 방식',
+    'vote.s3.title':'누구나 셀 수 있습니다.',
+    'vote.how1a':'지갑이 투표함 주소로 0원 거래를 보내며',
+    'vote.how1b':'를 data 필드에 담습니다. 가스비만 지불합니다.',
+    'vote.how2':'페이지는 해당 주소로 보내진 모든 거래를 읽고 선택을 디코딩하여 지갑별 최신 투표만 남깁니다.',
+    'vote.how3':'각 지갑의 가중치는 토큰 컨트랙트에서 읽은 실시간 $RWI 잔액입니다. 보유가 없는 지갑은 가중치가 없습니다.',
+    'vote.how4':'합계는 브라우저에서 다시 계산됩니다. 중간에 서버가 없으므로 이 페이지를 신뢰할 필요가 없습니다 — 같은 조회를 직접 실행해 보세요.',
+    'vote.addr.box':'투표함:',
+    'vote.addr.token':'$RWI 토큰:',
+    'vote.addr.controller':'라운드 관리자:',
+    'vote.addr.note':'라운드는 위 라운드 관리자의 거래로 열립니다. 다른 주소에서 보낸 선언은 이 페이지가 체인을 읽을 때 무시됩니다 — 따라서 누가 투표를 움직일 수 있고 없는지 우리 말을 믿지 않고 직접 확인할 수 있습니다.',
+    'vote.footer.brand':'Real World Impact · 커뮤니티 신호',
+    'vote.footer.fine':'$RWI는 자선적 사명을 가진 밈코인이며, 투자 상품도 거버넌스 토큰도 아닙니다. 이 투표는 자문용입니다. 여기 어떤 것도 금융 조언이 아닙니다. 투표에는 가스비가 들며 어떤 권리, 수익 분배, 재무에 대한 청구권도 부여하지 않습니다. 수혜자는 The Giving Block의 검증을 받습니다. 승리한 투표는 권고이지 지시가 아닙니다.',
+    'chart.btn':'차트',
+    'chart.title':'실시간 차트',
+    'chart.open':'GeckoTerminal에서 열기 ↗',
+    'vote.st.tallyReading':'체인에서 투표를 읽는 중…',
+    'vote.st.tallyErr':'지금은 집계를 읽을 수 없습니다.',
+    'vote.st.noVotes':'아직 투표가 없습니다 — 첫 번째가 되어보세요.',
+    'vote.st.wallets':'{n}개 지갑 · {w} $RWI 투표',
+    'vote.st.wallet1':'지갑 1개 · {w} $RWI 투표',
+    'vote.st.weight':'내 가중치: {w} $RWI',
+    'vote.st.noRwi':'이 지갑은 $RWI를 보유하지 않아 투표 가중치가 0입니다.',
+    'vote.st.switchChain':'투표하려면 Robinhood Chain으로 전환하세요.',
+    'vote.st.confirmVote':'지갑에서 거래를 확인하세요…',
+    'vote.st.voteSent':'투표를 보냈습니다. 정산을 기다리는 중…',
+    'vote.st.voteOk':'투표가 온체인에 기록되었습니다.',
+    'vote.st.voteCancel':'투표가 취소되었습니다.',
+    'vote.st.voteFail':'투표 전송에 실패했습니다.',
+    'vote.st.noWallet':'지갑이 감지되지 않았습니다. 브라우저 지갑을 설치한 뒤 새로고침하세요.',
+    'vote.st.rejected':'연결이 거부되었습니다.',
+    'vote.st.connFail':'해당 지갑에 연결할 수 없습니다.',
+    'vote.st.readingCrises':'ReliefWeb에서 현재 위기를 읽는 중…',
+    'vote.st.notOwner':'라운드 관리자만 라운드를 열 수 있습니다.',
+    'vote.st.confirmRound':'지갑에서 확인하세요 — 라운드 {n} 여는 중…',
+    'vote.st.roundLive':'라운드 {n} 시작 — ReliefWeb 실시간 위기 기준으로 명단이 정렬되었습니다. 이전 투표는 무효입니다.',
+    'vote.st.roundRot':'라운드 {n} 시작 — 실시간 피드를 쓸 수 없어 순환을 사용했습니다. 이전 투표는 무효입니다.',
+    'vote.st.cancelled':'취소되었습니다.',
+    'vote.st.roundFail':'라운드를 열 수 없습니다.',
+    'vote.st.reliefweb':'ReliefWeb 읽는 중…',
+    'vote.st.slateLive':'{n}개 단체 · 긴급 선택은 진행 중인 {c}건의 위기 기준',
+    'vote.st.slateRot':'{n}개 단체 · 실시간 피드 불가, 순환 사용',
+    'vote.st.liveSignal':'ReliefWeb이 추적 중인 위기 {c}건 · {t}'
+  },
+  pt: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'Registro',
+    'nav.whitepaper':'Whitepaper',
+    'vote.eyebrow':'Sinal da comunidade',
+    'vote.title.a':'Você o detém.',
+    'vote.title.b':'Você escolhe',
+    'vote.title.c':'quem é o próximo.',
+    'vote.lede':'Detentores de $RWI sinalizam qual instituição verificada deve receber a próxima doação. Seu voto é uma transação na Robinhood Chain, ponderada pelo $RWI que você detém. Qualquer um pode contabilizar — inclusive você.',
+    'vote.disclaimer.title':'Leia isto primeiro',
+    'vote.disclaimer.body':'Isto é um sinal consultivo, não governança vinculante. $RWI não concede direitos de governança nem direito sobre receitas. O projeto lê o resultado e o pondera, mas mantém a palavra final sobre cada doação — os destinatários devem passar pela verificação da The Giving Block independentemente do resultado. O voto é ponderado pelo saldo de tokens, o que significa que grandes detentores pesam mais. Os saldos são lidos ao vivo no momento da contagem, então um voto não fica preso a um instantâneo.',
+    'vote.s1.eyebrow':'01 — Sua carteira',
+    'vote.connect':'Conectar carteira',
+    'vote.disconnect':'Desconectar',
+    'vote.chain.ok':'Robinhood Chain',
+    'vote.chain.wrong':'Rede incorreta',
+    'vote.s2.eyebrow':'02 — A votação',
+    'vote.round':'Rodada',
+    'vote.closes':'· encerra',
+    'vote.closes.when':'quando a próxima doação for feita',
+    'vote.cast':'Votar',
+    'vote.refresh':'Atualizar contagem',
+    'vote.nextround':'Próxima rodada →',
+    'vote.note.calldata':'Cada voto é uma transação de valor zero que carrega sua escolha no calldata. Nada é armazenado em servidor — a contagem que você vê é lida direto da Robinhood Chain, e votar de novo simplesmente substitui sua escolha anterior.',
+    'vote.founder.eyebrow':'Controles do fundador',
+    'vote.founder.open':'Abrir rodada',
+    'vote.founder.confirm':'Confirmar e abrir rodada',
+    'vote.founder.note':'A lista abaixo é composta automaticamente — uma organização recorrente, duas das áreas de causa já estabelecidas do projeto e três respondendo à necessidade atual, classificadas conforme dados de crise ao vivo da ReliefWeb. Abrir uma nova rodada é uma transação da sua carteira: substitui a rodada atual, e votos de rodadas anteriores param de contar imediatamente. Só este endereço pode fazê-lo; declarações de qualquer outro são ignoradas quando a página lê a cadeia.',
+    'vote.s3.eyebrow':'03 — Como a contagem funciona',
+    'vote.s3.title':'Contável por qualquer um.',
+    'vote.how1a':'Sua carteira envia uma transação de valor 0 para o endereço da urna com',
+    'vote.how1b':'no campo de dados. Você paga apenas gas.',
+    'vote.how2':'A página lê todas as transações enviadas a esse endereço, decodifica as escolhas e mantém o voto mais recente por carteira.',
+    'vote.how3':'O peso de cada carteira é seu saldo $RWI ao vivo, lido do contrato do token. Carteiras sem saldo não têm peso.',
+    'vote.how4':'Os totais são recalculados no seu navegador. Nenhum servidor no meio, então você nunca precisa confiar nesta página — refaça as mesmas leituras você mesmo.',
+    'vote.addr.box':'Urna:',
+    'vote.addr.token':'Token $RWI:',
+    'vote.addr.controller':'Controlador da rodada:',
+    'vote.addr.note':'As rodadas são abertas por uma transação do controlador de rodada acima. Declarações enviadas de qualquer outro endereço são ignoradas quando esta página lê a cadeia — então você pode confirmar por conta própria quem pode e quem não pode mover a votação, sem acreditar na nossa palavra.',
+    'vote.footer.brand':'Real World Impact · Sinal da comunidade',
+    'vote.footer.fine':'$RWI é uma memecoin com missão beneficente, não um produto de investimento nem um token de governança. Esta votação é consultiva. Nada aqui é aconselhamento financeiro. Votar custa gas e não confere direitos, participação em receitas ou reivindicação sobre qualquer tesouraria. Os destinatários passam pela verificação da The Giving Block; um voto vencedor é uma recomendação, não uma instrução.',
+    'chart.btn':'Gráfico',
+    'chart.title':'Gráfico ao vivo',
+    'chart.open':'Abrir no GeckoTerminal ↗',
+    'vote.st.tallyReading':'Lendo votos da cadeia…',
+    'vote.st.tallyErr':'Não foi possível ler a contagem agora.',
+    'vote.st.noVotes':'Nenhum voto ainda — seja o primeiro.',
+    'vote.st.wallets':'{n} carteiras · {w} $RWI votando',
+    'vote.st.wallet1':'1 carteira · {w} $RWI votando',
+    'vote.st.weight':'Seu peso: {w} $RWI',
+    'vote.st.noRwi':'Esta carteira não possui $RWI, então um voto dela teria peso zero.',
+    'vote.st.switchChain':'Mude para a Robinhood Chain para votar.',
+    'vote.st.confirmVote':'Confirme a transação na sua carteira…',
+    'vote.st.voteSent':'Voto enviado. Aguardando liquidação…',
+    'vote.st.voteOk':'Voto registrado onchain.',
+    'vote.st.voteCancel':'Voto cancelado.',
+    'vote.st.voteFail':'Falha ao enviar o voto.',
+    'vote.st.noWallet':'Nenhuma carteira detectada. Instale uma carteira de navegador e recarregue.',
+    'vote.st.rejected':'Conexão rejeitada.',
+    'vote.st.connFail':'Não foi possível conectar a essa carteira.',
+    'vote.st.readingCrises':'Lendo crises atuais do ReliefWeb…',
+    'vote.st.notOwner':'Apenas o controlador da rodada pode abrir uma rodada.',
+    'vote.st.confirmRound':'Confirme na sua carteira — abrindo rodada {n}…',
+    'vote.st.roundLive':'Rodada {n} aberta — lista classificada por crises ao vivo do ReliefWeb. Votos anteriores não contam mais.',
+    'vote.st.roundRot':'Rodada {n} aberta — feed ao vivo indisponível, usou rotação. Votos anteriores não contam mais.',
+    'vote.st.cancelled':'Cancelado.',
+    'vote.st.roundFail':'Não foi possível abrir a rodada.',
+    'vote.st.reliefweb':'Lendo ReliefWeb…',
+    'vote.st.slateLive':'{n} organizações · escolhas agudas classificadas por {c} crises em curso',
+    'vote.st.slateRot':'{n} organizações · feed ao vivo indisponível, usando rotação',
+    'vote.st.liveSignal':'{c} crises em curso rastreadas pelo ReliefWeb · {t}'
+  },
+  fr: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'Registre',
+    'nav.whitepaper':'Livre blanc',
+    'vote.eyebrow':'Signal de la communauté',
+    'vote.title.a':'Vous le détenez.',
+    'vote.title.b':'Vous choisissez',
+    'vote.title.c':'qui est le prochain.',
+    'vote.lede':'Les détenteurs de $RWI indiquent quelle œuvre vérifiée doit recevoir le prochain don. Votre vote est une transaction sur Robinhood Chain, pondérée par le $RWI que vous détenez. N\'importe qui peut le compter — vous compris.',
+    'vote.disclaimer.title':'Lisez ceci d\'abord',
+    'vote.disclaimer.body':'Ceci est un signal consultatif, pas une gouvernance contraignante. $RWI ne confère aucun droit de gouvernance ni créance sur les revenus. Le projet lit le résultat et en tient compte, mais conserve le dernier mot sur chaque don — les bénéficiaires doivent passer la vérification de The Giving Block quel que soit le vote. Le vote est pondéré par le solde de tokens, les gros détenteurs pèsent donc davantage. Les soldes sont lus en direct au moment du décompte, un vote n\'est donc pas figé sur un instantané.',
+    'vote.s1.eyebrow':'01 — Votre portefeuille',
+    'vote.connect':'Connecter le portefeuille',
+    'vote.disconnect':'Déconnecter',
+    'vote.chain.ok':'Robinhood Chain',
+    'vote.chain.wrong':'Mauvais réseau',
+    'vote.s2.eyebrow':'02 — Le bulletin',
+    'vote.round':'Tour',
+    'vote.closes':'· clôture',
+    'vote.closes.when':'lorsque le prochain don sera effectué',
+    'vote.cast':'Voter',
+    'vote.refresh':'Actualiser le décompte',
+    'vote.nextround':'Tour suivant →',
+    'vote.note.calldata':'Chaque vote est une transaction de valeur nulle portant votre choix dans son calldata. Rien n\'est stocké sur un serveur — le décompte affiché est lu directement sur Robinhood Chain, et revoter remplace simplement votre choix précédent.',
+    'vote.founder.eyebrow':'Contrôles du fondateur',
+    'vote.founder.open':'Ouvrir le tour',
+    'vote.founder.confirm':'Confirmer et ouvrir le tour',
+    'vote.founder.note':'La liste ci-dessous est composée automatiquement — une organisation récurrente, deux issues des domaines déjà soutenus par le projet, et trois répondant au besoin actuel, classées selon les données de crise en direct de ReliefWeb. Ouvrir un nouveau tour est une transaction depuis votre portefeuille : elle remplace le tour actuel, et les votes des tours précédents cessent immédiatement de compter. Seule cette adresse peut le faire ; les déclarations de toute autre sont ignorées lorsque la page lit la chaîne.',
+    'vote.s3.eyebrow':'03 — Comment le décompte fonctionne',
+    'vote.s3.title':'Comptable par quiconque.',
+    'vote.how1a':'Votre portefeuille envoie une transaction de valeur 0 à l\'adresse de l\'urne avec',
+    'vote.how1b':'dans le champ de données. Vous ne payez que le gas.',
+    'vote.how2':'La page lit chaque transaction envoyée à cette adresse, décode les choix et conserve le vote le plus récent par portefeuille.',
+    'vote.how3':'Le poids de chaque portefeuille est son solde $RWI en direct, lu depuis le contrat du token. Les portefeuilles vides n\'ont aucun poids.',
+    'vote.how4':'Les totaux sont recalculés dans votre navigateur. Aucun serveur au milieu, vous n\'avez donc jamais à faire confiance à cette page — refaites vous-même les mêmes lectures.',
+    'vote.addr.box':'Urne :',
+    'vote.addr.token':'Token $RWI :',
+    'vote.addr.controller':'Contrôleur du tour :',
+    'vote.addr.note':'Les tours sont ouverts par une transaction du contrôleur de tour ci-dessus. Les déclarations envoyées depuis toute autre adresse sont ignorées lorsque cette page lit la chaîne — vous pouvez donc vérifier vous-même qui peut ou non faire bouger le scrutin, sans nous croire sur parole.',
+    'vote.footer.brand':'Real World Impact · Signal de la communauté',
+    'vote.footer.fine':'$RWI est un memecoin à mission caritative, ni un produit d\'investissement ni un token de gouvernance. Ce scrutin est consultatif. Rien ici n\'est un conseil financier. Voter coûte du gas et ne confère aucun droit, aucune part de revenus, aucune créance sur une trésorerie. Les bénéficiaires sont soumis à la vérification de The Giving Block ; un vote gagnant est une recommandation, pas une instruction.',
+    'chart.btn':'Graphique',
+    'chart.title':'Graphique en direct',
+    'chart.open':'Ouvrir sur GeckoTerminal ↗',
+    'vote.st.tallyReading':'Lecture des votes sur la chaîne…',
+    'vote.st.tallyErr':'Impossible de lire le décompte pour le moment.',
+    'vote.st.noVotes':'Aucun vote pour l\'instant — soyez le premier.',
+    'vote.st.wallets':'{n} portefeuilles · {w} $RWI votants',
+    'vote.st.wallet1':'1 portefeuille · {w} $RWI votant',
+    'vote.st.weight':'Votre poids : {w} $RWI',
+    'vote.st.noRwi':'Ce portefeuille ne détient pas de $RWI, un vote depuis celui-ci aurait donc un poids nul.',
+    'vote.st.switchChain':'Basculez sur Robinhood Chain pour voter.',
+    'vote.st.confirmVote':'Confirmez la transaction dans votre portefeuille…',
+    'vote.st.voteSent':'Vote envoyé. En attente de règlement…',
+    'vote.st.voteOk':'Vote enregistré onchain.',
+    'vote.st.voteCancel':'Vote annulé.',
+    'vote.st.voteFail':'Échec de l\'envoi du vote.',
+    'vote.st.noWallet':'Aucun portefeuille détecté. Installez un portefeuille de navigateur puis rechargez.',
+    'vote.st.rejected':'Connexion refusée.',
+    'vote.st.connFail':'Impossible de se connecter à ce portefeuille.',
+    'vote.st.readingCrises':'Lecture des crises actuelles depuis ReliefWeb…',
+    'vote.st.notOwner':'Seul le contrôleur du tour peut ouvrir un tour.',
+    'vote.st.confirmRound':'Confirmez dans votre portefeuille — ouverture du tour {n}…',
+    'vote.st.roundLive':'Tour {n} ouvert — liste classée selon les crises en direct de ReliefWeb. Les votes précédents ne comptent plus.',
+    'vote.st.roundRot':'Tour {n} ouvert — flux en direct indisponible, rotation utilisée. Les votes précédents ne comptent plus.',
+    'vote.st.cancelled':'Annulé.',
+    'vote.st.roundFail':'Impossible d\'ouvrir le tour.',
+    'vote.st.reliefweb':'Lecture de ReliefWeb…',
+    'vote.st.slateLive':'{n} organisations · choix aigus classés selon {c} crises en cours',
+    'vote.st.slateRot':'{n} organisations · flux en direct indisponible, rotation utilisée',
+    'vote.st.liveSignal':'{c} crises en cours suivies par ReliefWeb · {t}'
+  },
+  ru: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'Реестр',
+    'nav.whitepaper':'Белая книга',
+    'vote.eyebrow':'Сигнал сообщества',
+    'vote.title.a':'Вы держите его.',
+    'vote.title.b':'Вы выбираете',
+    'vote.title.c':'кто следующий.',
+    'vote.lede':'Держатели $RWI указывают, какая проверенная благотворительная организация должна получить следующее пожертвование. Ваш голос — транзакция в Robinhood Chain, взвешенная по количеству $RWI. Подсчитать может любой — включая вас.',
+    'vote.disclaimer.title':'Сначала прочтите это',
+    'vote.disclaimer.body':'Это консультативный сигнал, а не обязывающее управление. $RWI не даёт ни прав управления, ни притязаний на доход. Проект читает результат и учитывает его, но сохраняет за собой последнее слово по каждому пожертвованию — получатели обязаны пройти проверку The Giving Block независимо от исхода голосования. Голос взвешивается по балансу токенов, поэтому крупные держатели весят больше. Балансы читаются в момент подсчёта, поэтому голос не привязан к снимку.',
+    'vote.s1.eyebrow':'01 — Ваш кошелёк',
+    'vote.connect':'Подключить кошелёк',
+    'vote.disconnect':'Отключить',
+    'vote.chain.ok':'Robinhood Chain',
+    'vote.chain.wrong':'Неверная сеть',
+    'vote.s2.eyebrow':'02 — Бюллетень',
+    'vote.round':'Раунд',
+    'vote.closes':'· закрывается',
+    'vote.closes.when':'когда будет сделано следующее пожертвование',
+    'vote.cast':'Проголосовать',
+    'vote.refresh':'Обновить подсчёт',
+    'vote.nextround':'Следующий раунд →',
+    'vote.note.calldata':'Каждый голос — транзакция нулевой стоимости, несущая ваш выбор в calldata. Ничего не хранится на сервере — подсчёт читается напрямую из Robinhood Chain, а повторное голосование просто заменяет прежний выбор.',
+    'vote.founder.eyebrow':'Управление основателя',
+    'vote.founder.open':'Открыть раунд',
+    'vote.founder.confirm':'Подтвердить и открыть раунд',
+    'vote.founder.note':'Список ниже составляется автоматически — одна возвращающаяся организация, две из уже поддержанных проектом направлений и три, отвечающие текущей нужде, ранжированные по живым данным о кризисах ReliefWeb. Открытие нового раунда — транзакция из вашего кошелька: она заменяет текущий раунд, и голоса прошлых раундов немедленно перестают считаться. Сделать это может только этот адрес; заявления от любого другого игнорируются при чтении цепочки.',
+    'vote.s3.eyebrow':'03 — Как работает подсчёт',
+    'vote.s3.title':'Подсчитать может любой.',
+    'vote.how1a':'Ваш кошелёк отправляет транзакцию нулевой стоимости на адрес урны с',
+    'vote.how1b':'в поле данных. Вы платите только за газ.',
+    'vote.how2':'Страница читает все транзакции, отправленные на этот адрес, декодирует выбор и оставляет самый свежий голос от каждого кошелька.',
+    'vote.how3':'Вес каждого кошелька — его текущий баланс $RWI, считанный из контракта токена. Пустые кошельки веса не имеют.',
+    'vote.how4':'Итоги пересчитываются в вашем браузере. Посередине нет сервера, поэтому доверять этой странице не нужно — повторите те же запросы сами.',
+    'vote.addr.box':'Урна:',
+    'vote.addr.token':'Токен $RWI:',
+    'vote.addr.controller':'Управляющий раундом:',
+    'vote.addr.note':'Раунды открываются транзакцией от указанного выше управляющего. Заявления с любого другого адреса игнорируются при чтении цепочки — так что вы можете сами убедиться, кто может и кто не может двигать голосование, не веря нам на слово.',
+    'vote.footer.brand':'Real World Impact · Сигнал сообщества',
+    'vote.footer.fine':'$RWI — мемкоин с благотворительной миссией, не инвестиционный продукт и не токен управления. Этот опрос консультативный. Ничто здесь не является финансовым советом. Голосование стоит газа и не даёт прав, доли дохода или притязаний на казну. Получатели проходят проверку The Giving Block; победивший голос — рекомендация, а не указание.',
+    'chart.btn':'График',
+    'chart.title':'График в реальном времени',
+    'chart.open':'Открыть в GeckoTerminal ↗',
+    'vote.st.tallyReading':'Чтение голосов из блокчейна…',
+    'vote.st.tallyErr':'Сейчас не удалось прочитать подсчёт.',
+    'vote.st.noVotes':'Голосов пока нет — станьте первым.',
+    'vote.st.wallets':'{n} кошельков · {w} $RWI голосует',
+    'vote.st.wallet1':'1 кошелёк · {w} $RWI голосует',
+    'vote.st.weight':'Ваш вес: {w} $RWI',
+    'vote.st.noRwi':'В этом кошельке нет $RWI, поэтому голос от него будет иметь нулевой вес.',
+    'vote.st.switchChain':'Переключитесь на Robinhood Chain, чтобы голосовать.',
+    'vote.st.confirmVote':'Подтвердите транзакцию в кошельке…',
+    'vote.st.voteSent':'Голос отправлен. Ожидание подтверждения…',
+    'vote.st.voteOk':'Голос записан в блокчейн.',
+    'vote.st.voteCancel':'Голосование отменено.',
+    'vote.st.voteFail':'Не удалось отправить голос.',
+    'vote.st.noWallet':'Кошелёк не обнаружен. Установите браузерный кошелёк и перезагрузите.',
+    'vote.st.rejected':'Подключение отклонено.',
+    'vote.st.connFail':'Не удалось подключиться к этому кошельку.',
+    'vote.st.readingCrises':'Чтение текущих кризисов из ReliefWeb…',
+    'vote.st.notOwner':'Открыть раунд может только управляющий раундом.',
+    'vote.st.confirmRound':'Подтвердите в кошельке — открываем раунд {n}…',
+    'vote.st.roundLive':'Раунд {n} открыт — список ранжирован по живым кризисам ReliefWeb. Прежние голоса больше не считаются.',
+    'vote.st.roundRot':'Раунд {n} открыт — живая лента недоступна, использована ротация. Прежние голоса больше не считаются.',
+    'vote.st.cancelled':'Отменено.',
+    'vote.st.roundFail':'Не удалось открыть раунд.',
+    'vote.st.reliefweb':'Чтение ReliefWeb…',
+    'vote.st.slateLive':'{n} организаций · срочные выбраны по {c} текущим кризисам',
+    'vote.st.slateRot':'{n} организаций · живая лента недоступна, используется ротация',
+    'vote.st.liveSignal':'{c} текущих кризисов отслеживает ReliefWeb · {t}'
+  },
+  tr: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'Defter',
+    'nav.whitepaper':'Teknik doküman',
+    'vote.eyebrow':'Topluluk sinyali',
+    'vote.title.a':'Sen tutuyorsun.',
+    'vote.title.b':'Sen seçiyorsun',
+    'vote.title.c':'sıradakini.',
+    'vote.lede':'$RWI sahipleri, bir sonraki bağışı hangi doğrulanmış hayır kurumunun alması gerektiğini işaret eder. Oyunuz Robinhood Chain üzerinde bir işlemdir ve elinizdeki $RWI ile ağırlıklandırılır. Herkes sayabilir — siz dahil.',
+    'vote.disclaimer.title':'Önce bunu okuyun',
+    'vote.disclaimer.body':'Bu bağlayıcı bir yönetişim değil, danışma niteliğinde bir sinyaldir. $RWI ne yönetişim hakkı ne de gelir üzerinde hak verir. Proje sonucu okur ve dikkate alır, ancak her bağış üzerinde son sözü saklı tutar — alıcılar, oy nasıl sonuçlanırsa sonuçlansın The Giving Block doğrulamasından geçmelidir. Oylama token bakiyesiyle ağırlıklandırılır, bu da büyük sahiplerin daha fazla ağırlık taşıdığı anlamına gelir. Bakiyeler sayım anında canlı okunur, bu yüzden oy bir anlık görüntüye sabitlenmez.',
+    'vote.s1.eyebrow':'01 — Cüzdanınız',
+    'vote.connect':'Cüzdan bağla',
+    'vote.disconnect':'Bağlantıyı kes',
+    'vote.chain.ok':'Robinhood Chain',
+    'vote.chain.wrong':'Yanlış ağ',
+    'vote.s2.eyebrow':'02 — Oy pusulası',
+    'vote.round':'Tur',
+    'vote.closes':'· kapanış',
+    'vote.closes.when':'bir sonraki bağış yapıldığında',
+    'vote.cast':'Oy ver',
+    'vote.refresh':'Sayımı yenile',
+    'vote.nextround':'Sonraki tur →',
+    'vote.note.calldata':'Her oy, seçiminizi calldata içinde taşıyan sıfır değerli bir işlemdir. Sunucuda hiçbir şey saklanmaz — gördüğünüz sayım doğrudan Robinhood Chain\'den okunur ve yeniden oy vermek önceki seçiminizi değiştirir.',
+    'vote.founder.eyebrow':'Kurucu kontrolleri',
+    'vote.founder.open':'Turu aç',
+    'vote.founder.confirm':'Onayla ve turu aç',
+    'vote.founder.note':'Aşağıdaki liste otomatik oluşturulur — bir tekrar eden kuruluş, projenin yerleşik ilgi alanlarından iki tane ve ReliefWeb canlı kriz verilerine göre sıralanmış, güncel ihtiyaca yanıt veren üç tane. Yeni bir tur açmak cüzdanınızdan bir işlemdir: mevcut turun yerini alır ve önceki turlardaki oylar anında sayılmaz olur. Bunu yalnızca bu adres yapabilir; başka herhangi birinin bildirimleri sayfa zinciri okurken yok sayılır.',
+    'vote.s3.eyebrow':'03 — Sayım nasıl çalışır',
+    'vote.s3.title':'Herkes sayabilir.',
+    'vote.how1a':'Cüzdanınız oy sandığı adresine 0 değerli bir işlem gönderir,',
+    'vote.how1b':'veri alanında. Yalnızca gas ödersiniz.',
+    'vote.how2':'Sayfa o adrese gönderilmiş her işlemi okur, seçimleri çözer ve cüzdan başına en son oyu tutar.',
+    'vote.how3':'Her cüzdanın ağırlığı, token sözleşmesinden okunan canlı $RWI bakiyesidir. Bakiyesi olmayan cüzdanlar ağırlık taşımaz.',
+    'vote.how4':'Toplamlar tarayıcınızda yeniden hesaplanır. Arada sunucu yoktur, bu yüzden bu sayfaya güvenmek zorunda değilsiniz — aynı okumaları kendiniz yapın.',
+    'vote.addr.box':'Oy sandığı:',
+    'vote.addr.token':'$RWI token:',
+    'vote.addr.controller':'Tur denetleyicisi:',
+    'vote.addr.note':'Turlar yukarıdaki tur denetleyicisinden gelen bir işlemle açılır. Başka herhangi bir adresten gönderilen bildirimler bu sayfa zinciri okurken yok sayılır — böylece oylamayı kimin hareket ettirebileceğini, sözümüze güvenmeden kendiniz doğrulayabilirsiniz.',
+    'vote.footer.brand':'Real World Impact · Topluluk sinyali',
+    'vote.footer.fine':'$RWI hayırseverlik misyonu olan bir memecoin\'dir; ne yatırım ürünü ne de yönetişim token\'ıdır. Bu oylama danışma niteliğindedir. Buradaki hiçbir şey finansal tavsiye değildir. Oy vermek gas maliyeti taşır ve hiçbir hak, gelir payı veya hazine üzerinde talep vermez. Alıcılar The Giving Block doğrulamasına tabidir; kazanan oy bir öneridir, talimat değil.',
+    'chart.btn':'Grafik',
+    'chart.title':'Canlı grafik',
+    'chart.open':'GeckoTerminal’de aç ↗',
+    'vote.st.tallyReading':'Zincirden oylar okunuyor…',
+    'vote.st.tallyErr':'Şu anda sayım okunamadı.',
+    'vote.st.noVotes':'Henüz oy yok — ilk siz olun.',
+    'vote.st.wallets':'{n} cüzdan · {w} $RWI oy veriyor',
+    'vote.st.wallet1':'1 cüzdan · {w} $RWI oy veriyor',
+    'vote.st.weight':'Ağırlığınız: {w} $RWI',
+    'vote.st.noRwi':'Bu cüzdanda $RWI yok, dolayısıyla oyu sıfır ağırlık taşır.',
+    'vote.st.switchChain':'Oy vermek için Robinhood Chain’e geçin.',
+    'vote.st.confirmVote':'İşlemi cüzdanınızda onaylayın…',
+    'vote.st.voteSent':'Oy gönderildi. Yerleşmesi bekleniyor…',
+    'vote.st.voteOk':'Oy zincir üstüne kaydedildi.',
+    'vote.st.voteCancel':'Oy iptal edildi.',
+    'vote.st.voteFail':'Oy gönderilemedi.',
+    'vote.st.noWallet':'Cüzdan bulunamadı. Bir tarayıcı cüzdanı kurup sayfayı yenileyin.',
+    'vote.st.rejected':'Bağlantı reddedildi.',
+    'vote.st.connFail':'O cüzdana bağlanılamadı.',
+    'vote.st.readingCrises':'ReliefWeb’den güncel krizler okunuyor…',
+    'vote.st.notOwner':'Turu yalnızca tur denetleyicisi açabilir.',
+    'vote.st.confirmRound':'Cüzdanınızda onaylayın — tur {n} açılıyor…',
+    'vote.st.roundLive':'Tur {n} açık — liste canlı ReliefWeb krizlerine göre sıralandı. Önceki oylar artık sayılmaz.',
+    'vote.st.roundRot':'Tur {n} açık — canlı akış yok, rotasyon kullanıldı. Önceki oylar artık sayılmaz.',
+    'vote.st.cancelled':'İptal edildi.',
+    'vote.st.roundFail':'Tur açılamadı.',
+    'vote.st.reliefweb':'ReliefWeb okunuyor…',
+    'vote.st.slateLive':'{n} kuruluş · acil seçimler {c} devam eden krize göre sıralandı',
+    'vote.st.slateRot':'{n} kuruluş · canlı akış yok, rotasyon kullanılıyor',
+    'vote.st.liveSignal':'ReliefWeb tarafından izlenen {c} devam eden kriz · {t}'
+  },
+  vi: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'Sổ cái',
+    'nav.whitepaper':'Sách trắng',
+    'vote.eyebrow':'Tín hiệu cộng đồng',
+    'vote.title.a':'Bạn nắm giữ nó.',
+    'vote.title.b':'Bạn chọn',
+    'vote.title.c':'ai là người tiếp theo.',
+    'vote.lede':'Người nắm giữ $RWI báo hiệu tổ chức từ thiện đã kiểm định nào nên nhận khoản quyên góp tiếp theo. Phiếu của bạn là một giao dịch trên Robinhood Chain, được tính trọng số theo lượng $RWI bạn nắm giữ. Bất kỳ ai cũng có thể kiểm đếm — kể cả bạn.',
+    'vote.disclaimer.title':'Đọc điều này trước',
+    'vote.disclaimer.body':'Đây là tín hiệu tư vấn, không phải quản trị ràng buộc. $RWI không trao quyền quản trị và không có quyền đòi doanh thu. Dự án đọc kết quả và cân nhắc, nhưng giữ quyền quyết định cuối cùng với mọi khoản quyên góp — người nhận phải qua kiểm định của The Giving Block bất kể kết quả bỏ phiếu. Bỏ phiếu được tính trọng số theo số dư token, nghĩa là người nắm giữ lớn có trọng lượng lớn hơn. Số dư được đọc trực tiếp lúc kiểm đếm, nên phiếu không bị khóa vào một ảnh chụp.',
+    'vote.s1.eyebrow':'01 — Ví của bạn',
+    'vote.connect':'Kết nối ví',
+    'vote.disconnect':'Ngắt kết nối',
+    'vote.chain.ok':'Robinhood Chain',
+    'vote.chain.wrong':'Sai mạng',
+    'vote.s2.eyebrow':'02 — Lá phiếu',
+    'vote.round':'Vòng',
+    'vote.closes':'· đóng',
+    'vote.closes.when':'khi khoản quyên góp tiếp theo được thực hiện',
+    'vote.cast':'Bỏ phiếu',
+    'vote.refresh':'Làm mới kiểm đếm',
+    'vote.nextround':'Vòng tiếp theo →',
+    'vote.note.calldata':'Mỗi phiếu là một giao dịch giá trị bằng không mang lựa chọn của bạn trong calldata. Không có gì lưu trên máy chủ — kiểm đếm bạn thấy được đọc thẳng từ Robinhood Chain, và bỏ phiếu lại chỉ thay thế lựa chọn trước đó.',
+    'vote.founder.eyebrow':'Điều khiển người sáng lập',
+    'vote.founder.open':'Mở vòng',
+    'vote.founder.confirm':'Xác nhận & mở vòng',
+    'vote.founder.note':'Danh sách bên dưới được soạn tự động — một tổ chức quay lại, hai từ các lĩnh vực dự án đã hỗ trợ, và ba đáp ứng nhu cầu hiện tại, xếp hạng theo dữ liệu khủng hoảng trực tiếp của ReliefWeb. Mở vòng mới là một giao dịch từ ví của bạn: nó thay thế vòng hiện tại, và phiếu ở các vòng trước lập tức không còn được tính. Chỉ địa chỉ này mới làm được; tuyên bố từ bất kỳ ai khác đều bị bỏ qua khi trang đọc chuỗi.',
+    'vote.s3.eyebrow':'03 — Cách kiểm đếm hoạt động',
+    'vote.s3.title':'Ai cũng đếm được.',
+    'vote.how1a':'Ví của bạn gửi một giao dịch giá trị 0 đến địa chỉ hòm phiếu với',
+    'vote.how1b':'trong trường dữ liệu. Bạn chỉ trả gas.',
+    'vote.how2':'Trang đọc mọi giao dịch từng gửi đến địa chỉ đó, giải mã lựa chọn, và giữ phiếu mới nhất cho mỗi ví.',
+    'vote.how3':'Trọng số của mỗi ví là số dư $RWI trực tiếp, đọc từ hợp đồng token. Ví không nắm giữ gì thì không có trọng số.',
+    'vote.how4':'Tổng số được tính lại trong trình duyệt của bạn. Không có máy chủ ở giữa, nên bạn không phải tin trang này — hãy tự chạy lại đúng những truy vấn đó.',
+    'vote.addr.box':'Hòm phiếu:',
+    'vote.addr.token':'Token $RWI:',
+    'vote.addr.controller':'Người kiểm soát vòng:',
+    'vote.addr.note':'Các vòng được mở bằng giao dịch từ người kiểm soát vòng ở trên. Tuyên bố gửi từ bất kỳ địa chỉ nào khác đều bị bỏ qua khi trang này đọc chuỗi — nên bạn có thể tự xác nhận ai có và không thể điều khiển lá phiếu, không cần tin lời chúng tôi.',
+    'vote.footer.brand':'Real World Impact · Tín hiệu cộng đồng',
+    'vote.footer.fine':'$RWI là memecoin với sứ mệnh từ thiện, không phải sản phẩm đầu tư và không phải token quản trị. Cuộc bỏ phiếu này mang tính tư vấn. Không có gì ở đây là lời khuyên tài chính. Bỏ phiếu tốn gas và không trao quyền, phần chia doanh thu, hay quyền đòi bất kỳ kho bạc nào. Người nhận chịu sự kiểm định của The Giving Block; phiếu thắng là khuyến nghị, không phải chỉ thị.',
+    'chart.btn':'Biểu đồ',
+    'chart.title':'Biểu đồ trực tiếp',
+    'chart.open':'Mở trên GeckoTerminal ↗',
+    'vote.st.tallyReading':'Đang đọc phiếu từ chuỗi…',
+    'vote.st.tallyErr':'Hiện không đọc được kiểm đếm.',
+    'vote.st.noVotes':'Chưa có phiếu nào — hãy là người đầu tiên.',
+    'vote.st.wallets':'{n} ví · {w} $RWI đang bỏ phiếu',
+    'vote.st.wallet1':'1 ví · {w} $RWI đang bỏ phiếu',
+    'vote.st.weight':'Trọng số của bạn: {w} $RWI',
+    'vote.st.noRwi':'Ví này không nắm giữ $RWI, nên phiếu từ nó sẽ có trọng số bằng không.',
+    'vote.st.switchChain':'Chuyển sang Robinhood Chain để bỏ phiếu.',
+    'vote.st.confirmVote':'Xác nhận giao dịch trong ví của bạn…',
+    'vote.st.voteSent':'Đã gửi phiếu. Đang chờ thanh toán…',
+    'vote.st.voteOk':'Phiếu đã được ghi onchain.',
+    'vote.st.voteCancel':'Đã hủy bỏ phiếu.',
+    'vote.st.voteFail':'Gửi phiếu thất bại.',
+    'vote.st.noWallet':'Không phát hiện ví. Hãy cài ví trình duyệt rồi tải lại.',
+    'vote.st.rejected':'Kết nối bị từ chối.',
+    'vote.st.connFail':'Không thể kết nối với ví đó.',
+    'vote.st.readingCrises':'Đang đọc khủng hoảng hiện tại từ ReliefWeb…',
+    'vote.st.notOwner':'Chỉ người kiểm soát vòng mới mở được vòng.',
+    'vote.st.confirmRound':'Xác nhận trong ví — đang mở vòng {n}…',
+    'vote.st.roundLive':'Vòng {n} đã mở — danh sách xếp theo khủng hoảng trực tiếp từ ReliefWeb. Phiếu trước không còn được tính.',
+    'vote.st.roundRot':'Vòng {n} đã mở — nguồn trực tiếp không khả dụng, đã dùng luân phiên. Phiếu trước không còn được tính.',
+    'vote.st.cancelled':'Đã hủy.',
+    'vote.st.roundFail':'Không mở được vòng.',
+    'vote.st.reliefweb':'Đang đọc ReliefWeb…',
+    'vote.st.slateLive':'{n} tổ chức · lựa chọn cấp bách xếp theo {c} khủng hoảng đang diễn ra',
+    'vote.st.slateRot':'{n} tổ chức · nguồn trực tiếp không khả dụng, dùng luân phiên',
+    'vote.st.liveSignal':'{c} khủng hoảng đang diễn ra do ReliefWeb theo dõi · {t}'
+  },
+  hi: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'बहीखाता',
+    'nav.whitepaper':'श्वेत पत्र',
+    'vote.eyebrow':'समुदाय संकेत',
+    'vote.title.a':'आप इसे रखते हैं।',
+    'vote.title.b':'आप चुनते हैं',
+    'vote.title.c':'अगला कौन है।',
+    'vote.lede':'$RWI धारक संकेत देते हैं कि अगला दान किस सत्यापित धर्मार्थ संगठन को मिलना चाहिए। आपका वोट Robinhood Chain पर एक लेनदेन है, जो आपके पास मौजूद $RWI के अनुसार भारित होता है। कोई भी इसकी गिनती कर सकता है — आप भी।',
+    'vote.disclaimer.title':'पहले यह पढ़ें',
+    'vote.disclaimer.body':'यह एक सलाहकारी संकेत है, बाध्यकारी शासन नहीं। $RWI कोई शासन अधिकार या राजस्व पर दावा नहीं देता। परियोजना परिणाम पढ़ती है और उस पर विचार करती है, लेकिन हर दान पर अंतिम निर्णय अपने पास रखती है — वोट चाहे जैसा भी हो, प्राप्तकर्ताओं को The Giving Block की जाँच पास करनी होगी। मतदान टोकन शेष के अनुसार भारित होता है, यानी बड़े धारकों का वजन अधिक होता है। शेष गिनती के समय लाइव पढ़े जाते हैं, इसलिए वोट किसी स्नैपशॉट से बंधा नहीं है।',
+    'vote.s1.eyebrow':'01 — आपका वॉलेट',
+    'vote.connect':'वॉलेट कनेक्ट करें',
+    'vote.disconnect':'डिस्कनेक्ट',
+    'vote.chain.ok':'Robinhood Chain',
+    'vote.chain.wrong':'गलत नेटवर्क',
+    'vote.s2.eyebrow':'02 — मतपत्र',
+    'vote.round':'दौर',
+    'vote.closes':'· समाप्त',
+    'vote.closes.when':'जब अगला दान किया जाएगा',
+    'vote.cast':'वोट डालें',
+    'vote.refresh':'गणना ताज़ा करें',
+    'vote.nextround':'अगला दौर →',
+    'vote.note.calldata':'हर वोट एक शून्य-मूल्य लेनदेन है जो आपकी पसंद को अपने calldata में रखता है। किसी सर्वर पर कुछ भी संग्रहीत नहीं होता — आप जो गणना देखते हैं वह सीधे Robinhood Chain से पढ़ी जाती है, और दोबारा वोट करना बस आपकी पिछली पसंद को बदल देता है।',
+    'vote.founder.eyebrow':'संस्थापक नियंत्रण',
+    'vote.founder.open':'दौर खोलें',
+    'vote.founder.confirm':'पुष्टि करें और दौर खोलें',
+    'vote.founder.note':'नीचे की सूची स्वचालित रूप से बनती है — एक लौटने वाला संगठन, परियोजना के स्थापित कारण क्षेत्रों से दो, और वर्तमान आवश्यकता का उत्तर देने वाले तीन, जो ReliefWeb के लाइव संकट डेटा के आधार पर क्रमित हैं। नया दौर खोलना आपके वॉलेट से एक लेनदेन है: यह वर्तमान दौर की जगह लेता है, और पिछले दौरों के वोट तुरंत गिनना बंद कर देते हैं। केवल यही पता ऐसा कर सकता है; किसी और की घोषणाएँ तब अनदेखी की जाती हैं जब पृष्ठ चेन पढ़ता है।',
+    'vote.s3.eyebrow':'03 — गणना कैसे काम करती है',
+    'vote.s3.title':'कोई भी गिन सकता है।',
+    'vote.how1a':'आपका वॉलेट मतपेटी पते पर 0-मूल्य लेनदेन भेजता है, जिसमें',
+    'vote.how1b':'data फ़ील्ड में। आप केवल gas चुकाते हैं।',
+    'vote.how2':'पृष्ठ उस पते पर भेजे गए हर लेनदेन को पढ़ता है, चयनों को डिकोड करता है, और प्रति वॉलेट सबसे हालिया वोट रखता है।',
+    'vote.how3':'हर वॉलेट का वजन उसका लाइव $RWI शेष है, जो टोकन अनुबंध से पढ़ा जाता है। जिन वॉलेट में कुछ नहीं है उनका कोई वजन नहीं।',
+    'vote.how4':'कुल आपके ब्राउज़र में पुनः गणना किए जाते हैं। बीच में कोई सर्वर नहीं है, इसलिए आपको इस पृष्ठ पर भरोसा करने की ज़रूरत नहीं — वही पठन आप स्वयं दोहरा सकते हैं।',
+    'vote.addr.box':'मतपेटी:',
+    'vote.addr.token':'$RWI टोकन:',
+    'vote.addr.controller':'दौर नियंत्रक:',
+    'vote.addr.note':'दौर ऊपर दिए गए दौर नियंत्रक से आए एक लेनदेन द्वारा खोले जाते हैं। किसी अन्य पते से भेजी गई घोषणाएँ तब अनदेखी की जाती हैं जब यह पृष्ठ चेन पढ़ता है — इसलिए आप स्वयं पुष्टि कर सकते हैं कि कौन मतदान को चला सकता है और कौन नहीं, हमारी बात मानने की ज़रूरत नहीं।',
+    'vote.footer.brand':'Real World Impact · समुदाय संकेत',
+    'vote.footer.fine':'$RWI एक चैरिटेबल मिशन वाला memecoin है, न निवेश उत्पाद न शासन टोकन। यह मतदान सलाहकारी है। यहाँ कुछ भी वित्तीय सलाह नहीं है। वोट करने में gas लगता है और यह कोई अधिकार, राजस्व हिस्सा, या किसी ट्रेजरी पर दावा नहीं देता। प्राप्तकर्ता The Giving Block की जाँच के अधीन हैं; जीतने वाला वोट एक सिफ़ारिश है, निर्देश नहीं।',
+    'chart.btn':'चार्ट',
+    'chart.title':'लाइव चार्ट',
+    'chart.open':'GeckoTerminal पर खोलें ↗',
+    'vote.st.tallyReading':'चेन से वोट पढ़े जा रहे हैं…',
+    'vote.st.tallyErr':'अभी गणना नहीं पढ़ी जा सकी।',
+    'vote.st.noVotes':'अभी कोई वोट नहीं — पहले बनें।',
+    'vote.st.wallets':'{n} वॉलेट · {w} $RWI मतदान',
+    'vote.st.wallet1':'1 वॉलेट · {w} $RWI मतदान',
+    'vote.st.weight':'आपका वजन: {w} $RWI',
+    'vote.st.noRwi':'इस वॉलेट में कोई $RWI नहीं है, इसलिए इसका वोट शून्य वजन रखेगा।',
+    'vote.st.switchChain':'वोट करने के लिए Robinhood Chain पर स्विच करें।',
+    'vote.st.confirmVote':'अपने वॉलेट में लेनदेन की पुष्टि करें…',
+    'vote.st.voteSent':'वोट भेजा गया। निपटान की प्रतीक्षा…',
+    'vote.st.voteOk':'वोट ऑनचेन दर्ज हो गया।',
+    'vote.st.voteCancel':'वोट रद्द किया गया।',
+    'vote.st.voteFail':'वोट भेजने में विफल।',
+    'vote.st.noWallet':'कोई वॉलेट नहीं मिला। ब्राउज़र वॉलेट इंस्टॉल करें, फिर पुनः लोड करें।',
+    'vote.st.rejected':'कनेक्शन अस्वीकृत।',
+    'vote.st.connFail':'उस वॉलेट से कनेक्ट नहीं हो सका।',
+    'vote.st.readingCrises':'ReliefWeb से वर्तमान संकट पढ़े जा रहे हैं…',
+    'vote.st.notOwner':'केवल दौर नियंत्रक ही दौर खोल सकता है।',
+    'vote.st.confirmRound':'अपने वॉलेट में पुष्टि करें — दौर {n} खोला जा रहा है…',
+    'vote.st.roundLive':'दौर {n} खुला — सूची ReliefWeb के लाइव संकटों के अनुसार क्रमित। पिछले वोट अब नहीं गिने जाते।',
+    'vote.st.roundRot':'दौर {n} खुला — लाइव फ़ीड अनुपलब्ध, रोटेशन का उपयोग किया। पिछले वोट अब नहीं गिने जाते।',
+    'vote.st.cancelled':'रद्द।',
+    'vote.st.roundFail':'दौर नहीं खोला जा सका।',
+    'vote.st.reliefweb':'ReliefWeb पढ़ा जा रहा है…',
+    'vote.st.slateLive':'{n} संगठन · तात्कालिक चयन {c} चल रहे संकटों के अनुसार',
+    'vote.st.slateRot':'{n} संगठन · लाइव फ़ीड अनुपलब्ध, रोटेशन का उपयोग',
+    'vote.st.liveSignal':'ReliefWeb द्वारा ट्रैक किए गए {c} चल रहे संकट · {t}'
+  },
+  de: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'Hauptbuch',
+    'nav.whitepaper':'Whitepaper',
+    'vote.eyebrow':'Community-Signal',
+    'vote.title.a':'Du hältst ihn.',
+    'vote.title.b':'Du wählst',
+    'vote.title.c':'wer als Nächstes.',
+    'vote.lede':'$RWI-Inhaber signalisieren, welche geprüfte Organisation die nächste Spende erhalten soll. Deine Stimme ist eine Transaktion auf der Robinhood Chain, gewichtet nach dem $RWI, das du hältst. Jeder kann sie auszählen — auch du.',
+    'vote.disclaimer.title':'Lies das zuerst',
+    'vote.disclaimer.body':'Dies ist ein beratendes Signal, keine bindende Governance. $RWI gewährt weder Governance-Rechte noch Ansprüche auf Erlöse. Das Projekt liest das Ergebnis und gewichtet es, behält aber bei jeder Spende das letzte Wort — Empfänger müssen die Prüfung von The Giving Block bestehen, unabhängig vom Abstimmungsergebnis. Die Abstimmung wird nach Token-Guthaben gewichtet, große Inhaber wiegen also schwerer. Guthaben werden zum Auszählungszeitpunkt live gelesen, eine Stimme ist also nicht auf einen Snapshot festgelegt.',
+    'vote.s1.eyebrow':'01 — Deine Wallet',
+    'vote.connect':'Wallet verbinden',
+    'vote.disconnect':'Trennen',
+    'vote.chain.ok':'Robinhood Chain',
+    'vote.chain.wrong':'Falsches Netzwerk',
+    'vote.s2.eyebrow':'02 — Der Stimmzettel',
+    'vote.round':'Runde',
+    'vote.closes':'· endet',
+    'vote.closes.when':'wenn die nächste Spende erfolgt',
+    'vote.cast':'Abstimmen',
+    'vote.refresh':'Auszählung aktualisieren',
+    'vote.nextround':'Nächste Runde →',
+    'vote.note.calldata':'Jede Stimme ist eine Transaktion ohne Wert, die deine Wahl im Calldata trägt. Nichts wird auf einem Server gespeichert — die angezeigte Auszählung wird direkt von der Robinhood Chain gelesen, und erneutes Abstimmen ersetzt einfach deine vorherige Wahl.',
+    'vote.founder.eyebrow':'Gründer-Steuerung',
+    'vote.founder.open':'Runde öffnen',
+    'vote.founder.confirm':'Bestätigen & Runde öffnen',
+    'vote.founder.note':'Die Liste unten wird automatisch zusammengestellt — eine wiederkehrende Organisation, zwei aus den etablierten Themenfeldern des Projekts und drei, die auf den aktuellen Bedarf reagieren, gewichtet nach Live-Krisendaten von ReliefWeb. Eine neue Runde zu öffnen ist eine Transaktion aus deiner Wallet: Sie löst die aktuelle Runde ab, und Stimmen früherer Runden zählen sofort nicht mehr. Nur diese Adresse kann das; Deklarationen von anderen werden ignoriert, wenn die Seite die Chain liest.',
+    'vote.s3.eyebrow':'03 — Wie die Auszählung funktioniert',
+    'vote.s3.title':'Von jedem zählbar.',
+    'vote.how1a':'Deine Wallet sendet eine Transaktion mit Wert 0 an die Wahlurnen-Adresse mit',
+    'vote.how1b':'im Datenfeld. Du zahlst nur Gas.',
+    'vote.how2':'Die Seite liest jede jemals an diese Adresse gesendete Transaktion, dekodiert die Auswahl und behält pro Wallet die jüngste Stimme.',
+    'vote.how3':'Das Gewicht jeder Wallet ist ihr aktuelles $RWI-Guthaben, gelesen aus dem Token-Vertrag. Wallets ohne Bestand haben kein Gewicht.',
+    'vote.how4':'Summen werden in deinem Browser neu berechnet. Kein Server dazwischen, du musst dieser Seite also nie vertrauen — führe dieselben Abfragen selbst aus.',
+    'vote.addr.box':'Wahlurne:',
+    'vote.addr.token':'$RWI-Token:',
+    'vote.addr.controller':'Runden-Controller:',
+    'vote.addr.note':'Runden werden durch eine Transaktion des oben genannten Runden-Controllers geöffnet. Deklarationen von jeder anderen Adresse werden ignoriert, wenn diese Seite die Chain liest — du kannst also selbst prüfen, wer den Stimmzettel bewegen kann und wer nicht, ohne uns glauben zu müssen.',
+    'vote.footer.brand':'Real World Impact · Community-Signal',
+    'vote.footer.fine':'$RWI ist ein Memecoin mit wohltätiger Mission, weder Anlageprodukt noch Governance-Token. Diese Abstimmung ist beratend. Nichts hier ist Finanzberatung. Abstimmen kostet Gas und verleiht keine Rechte, keinen Erlösanteil und keinen Anspruch auf eine Kasse. Empfänger unterliegen der Prüfung von The Giving Block; eine gewinnende Stimme ist eine Empfehlung, keine Anweisung.',
+    'chart.btn':'Chart',
+    'chart.title':'Live-Chart',
+    'chart.open':'Auf GeckoTerminal öffnen ↗',
+    'vote.st.tallyReading':'Stimmen werden aus der Chain gelesen…',
+    'vote.st.tallyErr':'Auszählung konnte gerade nicht gelesen werden.',
+    'vote.st.noVotes':'Noch keine Stimmen — sei der Erste.',
+    'vote.st.wallets':'{n} Wallets · {w} $RWI stimmen ab',
+    'vote.st.wallet1':'1 Wallet · {w} $RWI stimmt ab',
+    'vote.st.weight':'Dein Gewicht: {w} $RWI',
+    'vote.st.noRwi':'Diese Wallet hält kein $RWI, eine Stimme daraus hätte also kein Gewicht.',
+    'vote.st.switchChain':'Wechsle zur Robinhood Chain, um abzustimmen.',
+    'vote.st.confirmVote':'Bestätige die Transaktion in deiner Wallet…',
+    'vote.st.voteSent':'Stimme gesendet. Warte auf Bestätigung…',
+    'vote.st.voteOk':'Stimme onchain erfasst.',
+    'vote.st.voteCancel':'Abstimmung abgebrochen.',
+    'vote.st.voteFail':'Stimme konnte nicht gesendet werden.',
+    'vote.st.noWallet':'Keine Wallet erkannt. Installiere eine Browser-Wallet und lade neu.',
+    'vote.st.rejected':'Verbindung abgelehnt.',
+    'vote.st.connFail':'Verbindung zu dieser Wallet fehlgeschlagen.',
+    'vote.st.readingCrises':'Aktuelle Krisen von ReliefWeb werden gelesen…',
+    'vote.st.notOwner':'Nur der Runden-Controller kann eine Runde öffnen.',
+    'vote.st.confirmRound':'In deiner Wallet bestätigen — Runde {n} wird geöffnet…',
+    'vote.st.roundLive':'Runde {n} offen — Liste nach Live-Krisen von ReliefWeb gewichtet. Frühere Stimmen zählen nicht mehr.',
+    'vote.st.roundRot':'Runde {n} offen — Live-Feed nicht verfügbar, Rotation genutzt. Frühere Stimmen zählen nicht mehr.',
+    'vote.st.cancelled':'Abgebrochen.',
+    'vote.st.roundFail':'Runde konnte nicht geöffnet werden.',
+    'vote.st.reliefweb':'ReliefWeb wird gelesen…',
+    'vote.st.slateLive':'{n} Organisationen · akute Auswahl nach {c} laufenden Krisen gewichtet',
+    'vote.st.slateRot':'{n} Organisationen · Live-Feed nicht verfügbar, Rotation genutzt',
+    'vote.st.liveSignal':'{c} laufende Krisen von ReliefWeb verfolgt · {t}'
+  },
+  id: {
+    'nav.home.arrow':'← rwihood.org',
+    'nav.ledger':'Buku besar',
+    'nav.whitepaper':'Whitepaper',
+    'vote.eyebrow':'Sinyal komunitas',
+    'vote.title.a':'Anda memegangnya.',
+    'vote.title.b':'Anda memilih',
+    'vote.title.c':'siapa berikutnya.',
+    'vote.lede':'Pemegang $RWI memberi sinyal lembaga amal terverifikasi mana yang harus menerima donasi berikutnya. Suara Anda adalah transaksi di Robinhood Chain, dibobot oleh $RWI yang Anda pegang. Siapa pun bisa menghitungnya — termasuk Anda.',
+    'vote.disclaimer.title':'Baca ini dulu',
+    'vote.disclaimer.body':'Ini adalah sinyal penasihat, bukan tata kelola yang mengikat. $RWI tidak memberikan hak tata kelola maupun klaim atas pendapatan. Proyek membaca hasilnya dan mempertimbangkannya, tetapi memegang keputusan akhir atas setiap donasi — penerima harus lolos verifikasi The Giving Block terlepas dari hasil pemungutan suara. Pemungutan suara dibobot berdasarkan saldo token, artinya pemegang besar membawa bobot lebih. Saldo dibaca langsung saat penghitungan, jadi suara tidak terkunci pada snapshot.',
+    'vote.s1.eyebrow':'01 — Dompet Anda',
+    'vote.connect':'Hubungkan dompet',
+    'vote.disconnect':'Putuskan',
+    'vote.chain.ok':'Robinhood Chain',
+    'vote.chain.wrong':'Jaringan salah',
+    'vote.s2.eyebrow':'02 — Surat suara',
+    'vote.round':'Putaran',
+    'vote.closes':'· ditutup',
+    'vote.closes.when':'saat donasi berikutnya dilakukan',
+    'vote.cast':'Beri suara',
+    'vote.refresh':'Segarkan hitungan',
+    'vote.nextround':'Putaran berikutnya →',
+    'vote.note.calldata':'Setiap suara adalah transaksi bernilai nol yang membawa pilihan Anda di calldata-nya. Tidak ada yang disimpan di server — hitungan yang Anda lihat dibaca langsung dari Robinhood Chain, dan memilih ulang hanya menggantikan pilihan sebelumnya.',
+    'vote.founder.eyebrow':'Kontrol pendiri',
+    'vote.founder.open':'Buka putaran',
+    'vote.founder.confirm':'Konfirmasi & buka putaran',
+    'vote.founder.note':'Daftar di bawah disusun otomatis — satu organisasi yang kembali, dua dari bidang yang sudah didukung proyek, dan tiga yang merespons kebutuhan saat ini, diperingkat menurut data krisis langsung ReliefWeb. Membuka putaran baru adalah transaksi dari dompet Anda: ia menggantikan putaran saat ini, dan suara di putaran sebelumnya langsung berhenti dihitung. Hanya alamat ini yang bisa melakukannya; deklarasi dari siapa pun lainnya diabaikan saat halaman membaca rantai.',
+    'vote.s3.eyebrow':'03 — Cara penghitungan bekerja',
+    'vote.s3.title':'Dapat dihitung siapa saja.',
+    'vote.how1a':'Dompet Anda mengirim transaksi bernilai 0 ke alamat kotak suara dengan',
+    'vote.how1b':'di bidang data. Anda hanya membayar gas.',
+    'vote.how2':'Halaman membaca setiap transaksi yang pernah dikirim ke alamat itu, mendekode pilihannya, dan menyimpan suara terbaru per dompet.',
+    'vote.how3':'Bobot setiap dompet adalah saldo $RWI langsungnya, dibaca dari kontrak token. Dompet tanpa saldo tidak berbobot.',
+    'vote.how4':'Total dihitung ulang di peramban Anda. Tidak ada server di tengah, jadi Anda tak perlu memercayai halaman ini — jalankan sendiri pembacaan yang sama.',
+    'vote.addr.box':'Kotak suara:',
+    'vote.addr.token':'Token $RWI:',
+    'vote.addr.controller':'Pengendali putaran:',
+    'vote.addr.note':'Putaran dibuka oleh transaksi dari pengendali putaran di atas. Deklarasi dari alamat lain diabaikan saat halaman ini membaca rantai — jadi Anda bisa memastikan sendiri siapa yang bisa dan tidak bisa menggerakkan surat suara, tanpa percaya kata kami.',
+    'vote.footer.brand':'Real World Impact · Sinyal komunitas',
+    'vote.footer.fine':'$RWI adalah memecoin dengan misi amal, bukan produk investasi dan bukan token tata kelola. Jajak pendapat ini bersifat penasihat. Tidak ada di sini yang merupakan nasihat keuangan. Memilih memerlukan gas dan tidak memberikan hak, bagi hasil, atau klaim atas kas mana pun. Penerima tunduk pada verifikasi The Giving Block; suara pemenang adalah rekomendasi, bukan instruksi.',
+    'chart.btn':'Grafik',
+    'chart.title':'Grafik langsung',
+    'chart.open':'Buka di GeckoTerminal ↗',
+    'vote.st.tallyReading':'Membaca suara dari rantai…',
+    'vote.st.tallyErr':'Tidak dapat membaca hitungan sekarang.',
+    'vote.st.noVotes':'Belum ada suara — jadilah yang pertama.',
+    'vote.st.wallets':'{n} dompet · {w} $RWI memilih',
+    'vote.st.wallet1':'1 dompet · {w} $RWI memilih',
+    'vote.st.weight':'Bobot Anda: {w} $RWI',
+    'vote.st.noRwi':'Dompet ini tidak memegang $RWI, jadi suaranya berbobot nol.',
+    'vote.st.switchChain':'Beralih ke Robinhood Chain untuk memilih.',
+    'vote.st.confirmVote':'Konfirmasi transaksi di dompet Anda…',
+    'vote.st.voteSent':'Suara terkirim. Menunggu penyelesaian…',
+    'vote.st.voteOk':'Suara tercatat onchain.',
+    'vote.st.voteCancel':'Suara dibatalkan.',
+    'vote.st.voteFail':'Gagal mengirim suara.',
+    'vote.st.noWallet':'Dompet tidak terdeteksi. Pasang dompet peramban, lalu muat ulang.',
+    'vote.st.rejected':'Koneksi ditolak.',
+    'vote.st.connFail':'Tidak dapat terhubung ke dompet itu.',
+    'vote.st.readingCrises':'Membaca krisis terkini dari ReliefWeb…',
+    'vote.st.notOwner':'Hanya pengendali putaran yang bisa membuka putaran.',
+    'vote.st.confirmRound':'Konfirmasi di dompet — membuka putaran {n}…',
+    'vote.st.roundLive':'Putaran {n} terbuka — daftar diperingkat menurut krisis langsung ReliefWeb. Suara sebelumnya tidak lagi dihitung.',
+    'vote.st.roundRot':'Putaran {n} terbuka — umpan langsung tidak tersedia, memakai rotasi. Suara sebelumnya tidak lagi dihitung.',
+    'vote.st.cancelled':'Dibatalkan.',
+    'vote.st.roundFail':'Tidak dapat membuka putaran.',
+    'vote.st.reliefweb':'Membaca ReliefWeb…',
+    'vote.st.slateLive':'{n} organisasi · pilihan akut diperingkat menurut {c} krisis berlangsung',
+    'vote.st.slateRot':'{n} organisasi · umpan langsung tidak tersedia, memakai rotasi',
+    'vote.st.liveSignal':'{c} krisis berlangsung dilacak ReliefWeb · {t}'
+  }
+};
+
+let LANG = 'en';
+function detectLang(){
+  try{ const p=new URLSearchParams(location.search).get('lang'); if(p&&TRANSLATIONS[p.toLowerCase()]) return p.toLowerCase(); }catch(e){}
+  try{ const s=localStorage.getItem('rwi_lang'); if(s&&TRANSLATIONS[s]) return s; }catch(e){}
+  try{
+    const prefs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||'en'];
+    for(const p of prefs){ const k=p.toLowerCase().split('-')[0]; if(TRANSLATIONS[k]) return k; }
+  }catch(e){}
+  return 'en';
+}
+function t(key, vars){
+  const d=TRANSLATIONS[LANG]||TRANSLATIONS.en;
+  let s=d[key]||TRANSLATIONS.en[key]||key;
+  if(vars) for(const k in vars) s=s.split('{'+k+'}').join(vars[k]);
+  return s;
+}
+function applyI18n(root){
+  (root||document).querySelectorAll('[data-i18n]').forEach(function(el){ el.textContent=t(el.getAttribute('data-i18n')); });
+}
+const OG_LOCALE={en:'en_US',es:'es_ES',zh:'zh_CN',ja:'ja_JP',ko:'ko_KR',pt:'pt_BR',fr:'fr_FR',ru:'ru_RU',tr:'tr_TR',vi:'vi_VN',hi:'hi_IN',de:'de_DE',id:'id_ID'};
+function syncHead(l){
+  try{
+    document.documentElement.setAttribute('lang', l);
+    const ol=document.querySelector('meta[property="og:locale"]'); if(ol) ol.setAttribute('content', OG_LOCALE[l]||'en_US');
+    const httpOrigin=(location.protocol==='http:'||location.protocol==='https:');
+    const canon=document.querySelector('link[rel="canonical"]');
+    const base=httpOrigin?(location.origin+location.pathname):location.pathname;
+    if(l==='en'){
+      if(canon) canon.setAttribute('href', base);
+      if(httpOrigin){ try{ history.replaceState(null,'',location.pathname+location.hash); }catch(e){} }
+    } else {
+      if(canon) canon.setAttribute('href', base+'?lang='+l);
+      if(httpOrigin){ try{ history.replaceState(null,'',location.pathname+'?lang='+l+location.hash); }catch(e){} }
+    }
+  }catch(e){}
+}
+function setLang(l){
+  if(!TRANSLATIONS[l]) l='en';
+  LANG=l;
+  try{ localStorage.setItem('rwi_lang', l); }catch(e){}
+  applyI18n();
+  document.querySelectorAll('#langSel button').forEach(function(b){ b.classList.toggle('on', b.dataset.lang===l); });
+  syncHead(l);
+  try{ if(typeof repaintDynamic==='function') repaintDynamic(); }catch(e){}
+  try{ if(typeof window.updateChartBtnPosition==='function') window.updateChartBtnPosition(); }catch(e){}
+}
+document.addEventListener('DOMContentLoaded', function(){
+  LANG=detectLang();
+  applyI18n();
+  syncHead(LANG);
+  document.querySelectorAll('#langSel button').forEach(function(b){ b.classList.toggle('on', b.dataset.lang===LANG); });
+});
+
+</script>
 <style>
   :root{
     --lime:#CCFE06;            /* sampled from the logo — the page IS the logo canvas */
@@ -290,6 +1284,36 @@
     .vote-cta .live{animation:none}
   }
 
+
+  .tgb-link{
+    margin-left:9px;font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;
+    text-transform:uppercase;text-decoration:none;opacity:.62;white-space:nowrap;
+    border-bottom:1px solid rgba(204,254,6,.45);
+  }
+  .tgb-link:hover,.tgb-link:focus-visible{opacity:1;border-bottom-color:var(--lime);outline:none}
+  .cand[aria-pressed="true"] .tgb-link{border-bottom-color:rgba(11,11,9,.5)}
+  .cand[aria-pressed="true"] .tgb-link:hover{border-bottom-color:var(--ink)}
+  .org-picker .pick{cursor:default}
+  .org-picker .pick.on{background:var(--ink);color:var(--lime);border-color:var(--ink)}
+
+  .livesig{display:inline-block;margin-top:5px;opacity:.6;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+
+  #langBtn{position:fixed;bottom:16px;right:16px;z-index:9999;background:var(--ink);color:var(--lime);
+    border:1px solid var(--lime);border-radius:999px;padding:8px 14px;font-family:var(--mono);font-size:11px;
+    letter-spacing:.12em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18);
+    transition:transform .15s ease,box-shadow .15s ease;line-height:1}
+  #langBtn:hover,#langBtn:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}
+  #langBtn .caret{margin-left:6px;opacity:.7}
+  #langSel{position:fixed;bottom:64px;right:16px;z-index:9999;background:var(--ink);color:var(--lime);
+    border:1px solid var(--lime);border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.28);
+    display:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;min-width:200px;max-width:calc(100vw - 32px)}
+  #langSel.open{display:grid}
+  #langSel button{background:transparent;color:inherit;border:0;padding:8px 10px;font-family:var(--mono);
+    font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:8px;text-align:left;
+    transition:background .12s ease}
+  #langSel button:hover,#langSel button:focus-visible{background:rgba(204,254,6,.12);outline:none}
+  #langSel button.on{background:var(--lime);color:var(--ink)}
+  @media (max-width:480px){ #langSel{grid-template-columns:repeat(2,minmax(0,1fr));min-width:170px} }
 </style>
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
 <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
@@ -310,10 +1334,10 @@
 
 <header>
   <div class="wrap">
-    <a class="brand" href="/">← rwihood.org</a>
+    <a class="brand" href="/" data-i18n="nav.home.arrow">← rwihood.org</a>
     <nav class="links">
-      <a href="/#ledger">Ledger</a>
-      <a href="whitepaper.html">Whitepaper</a>
+      <a href="/#ledger" data-i18n="nav.ledger">Ledger</a>
+      <a href="whitepaper.html" data-i18n="nav.whitepaper">Whitepaper</a>
       <a href="dashboard.html">LP</a>
     </nav>
   </div>
@@ -321,25 +1345,25 @@
 
 <main>
   <div class="wrap hero">
-    <p class="eyebrow">Community signal</p>
-    <h1>You hold it.<br><em>You pick</em> who's next.</h1>
-    <p class="lede">$RWI holders signal which vetted charity should receive the next donation. Your vote is a transaction on Robinhood Chain, weighted by the $RWI you hold. Anyone can tally it — including you.</p>
+    <p class="eyebrow" data-i18n="vote.eyebrow">Community signal</p>
+    <h1><span data-i18n="vote.title.a">You hold it.</span><br><em data-i18n="vote.title.b">You pick</em> <span data-i18n="vote.title.c">who's next.</span></h1>
+    <p class="lede" data-i18n="vote.lede">$RWI holders signal which vetted charity should receive the next donation.</p>
 
     <div class="disclaimer">
-      <b>Read this first</b>
-      This is an <strong>advisory signal, not binding governance</strong>. $RWI grants no governance rights and no claim on revenue. The project reads the result and weighs it, but retains final say over every donation — recipients must clear The Giving Block's vetting regardless of how the vote lands. Voting is weighted by token balance, which means larger holders carry more weight. Balances are read live at tally time, so a vote is not locked to a snapshot.
+      <b data-i18n="vote.disclaimer.title">Read this first</b>
+      <span data-i18n="vote.disclaimer.body">This is an advisory signal, not binding governance.</span>
     </div>
   </div>
 
   <section>
     <div class="wrap">
-      <p class="eyebrow">01 — Your wallet</p>
+      <p class="eyebrow" data-i18n="vote.s1.eyebrow">01 — Your wallet</p>
       <div class="wallet-bar">
-        <button class="btn" id="connectBtn" type="button">Connect wallet</button>
+        <button class="btn" id="connectBtn" type="button" data-i18n="vote.connect">Connect wallet</button>
         <span class="chip" id="acctChip" hidden></span>
         <span class="chip" id="chainChip" hidden></span>
         <span class="chip" id="powerChip" hidden></span>
-        <button class="btn ghost" id="disconnectBtn" type="button" hidden>Disconnect</button>
+        <button class="btn ghost" id="disconnectBtn" type="button" hidden data-i18n="vote.disconnect">Disconnect</button>
       </div>
       <p class="status" id="walletStatus"></p>
     </div>
@@ -349,34 +1373,34 @@
     <div class="wrap">
       <div class="results-head">
         <div>
-          <p class="eyebrow" style="margin-bottom:4px">02 — The ballot</p>
-          <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)">Round <span id="roundNo">1</span> · closes <span id="roundClose">when the next donation is made</span></h2>
+          <p class="eyebrow" style="margin-bottom:4px" data-i18n="vote.s2.eyebrow">02 — The ballot</p>
+          <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)"><span data-i18n="vote.round">Round</span> <span id="roundNo">1</span> <span data-i18n="vote.closes">· closes</span> <span id="roundClose" data-i18n="vote.closes.when">when the next donation is made</span></h2>
         </div>
-        <div class="totals" id="tallyTotals">Loading tally…</div>
+        <div class="totals"><span id="tallyTotals">Loading tally…</span><br><span class="livesig" id="liveSignal"></span></div>
       </div>
 
       <div class="ballot" id="ballot"><!-- rendered from ORG_POOL / SLATE --></div>
 
       <div class="wallet-bar" style="margin-top:20px">
-        <button class="btn" id="voteBtn" type="button" disabled>Cast vote</button>
-        <button class="btn ghost" id="refreshBtn" type="button">Refresh tally</button>
+        <button class="btn" id="voteBtn" type="button" disabled data-i18n="vote.cast">Cast vote</button>
+        <button class="btn ghost" id="refreshBtn" type="button" data-i18n="vote.refresh">Refresh tally</button>
         <span class="muted mono" id="myVote"></span>
-        <button class="btn owner-only" id="nextRoundBtn" type="button" aria-controls="ownerSection" aria-expanded="false" hidden>Next round &rarr;</button>
+        <button class="btn owner-only" id="nextRoundBtn" type="button" aria-controls="ownerSection" aria-expanded="false" hidden data-i18n="vote.nextround">Next round &rarr;</button>
       </div>
       <p class="status" id="voteStatus"></p>
 
-      <p class="note">Every vote is a zero-value transaction carrying your choice in its calldata. Nothing is stored on a server — the tally you see is read straight off Robinhood Chain, and re-voting simply replaces your previous choice.</p>
+      <p class="note" data-i18n="vote.note.calldata">Every vote is a zero-value transaction carrying your choice in its calldata.</p>
     </div>
   </section>
 
   <section id="ownerSection" hidden aria-hidden="true">
     <div class="wrap">
-      <p class="eyebrow">Founder controls</p>
-      <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)">Open round <span id="nextRoundNo">2</span>.</h2>
-      <p class="note">Choose the slate. Opening a new round is a transaction from your wallet — it supersedes the current round, and votes cast in earlier rounds stop counting immediately. Only this address can do it; declarations from anyone else are ignored when the page reads the chain.</p>
+      <p class="eyebrow" data-i18n="vote.founder.eyebrow">Founder controls</p>
+      <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)"><span data-i18n="vote.founder.open">Open round</span> <span id="nextRoundNo">2</span>.</h2>
+      <p class="note" data-i18n="vote.founder.note">The slate below is composed automatically.</p>
       <div class="org-picker" id="orgPicker"></div>
       <div class="wallet-bar" style="margin-top:18px">
-        <button class="btn" id="newRoundBtn" type="button" disabled>Open round <span id="nextRoundNo2"></span></button>
+        <button class="btn" id="newRoundBtn" type="button"><span data-i18n="vote.founder.confirm">Confirm &amp; open round</span> <span id="nextRoundNo2"></span></button>
         <span class="muted mono" id="pickCount"></span>
       </div>
       <p class="status" id="ownerStatus"></p>
@@ -385,31 +1409,31 @@
 
   <section>
     <div class="wrap">
-      <p class="eyebrow">03 — How the tally works</p>
-      <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)">Countable by anyone.</h2>
+      <p class="eyebrow" data-i18n="vote.s3.eyebrow">03 — How the tally works</p>
+      <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)" data-i18n="vote.s3.title">Countable by anyone.</h2>
       <div class="how">
-        <div class="s"><b>01</b><p>Your wallet sends a 0-value transaction to the ballot box address with <code id="prefixEg">RWIVOTE:1:&lt;slug&gt;</code> in the data field. You pay only gas.</p></div>
-        <div class="s"><b>02</b><p>The page reads every transaction ever sent to that address, decodes the choices, and keeps the most recent vote per wallet.</p></div>
-        <div class="s"><b>03</b><p>Each wallet's weight is its live $RWI balance, read from the token contract. Wallets holding nothing carry no weight.</p></div>
-        <div class="s"><b>04</b><p>Totals are recomputed in your browser. No server sits in the middle, so you never have to trust this page — re-run the same reads yourself.</p></div>
+        <div class="s"><b>01</b><p><span data-i18n="vote.how1a">Your wallet sends a 0-value transaction to the ballot box address with</span> <code id="prefixEg"></code> <span data-i18n="vote.how1b">in the data field. You pay only gas.</span></p></div>
+        <div class="s"><b>02</b><p data-i18n="vote.how2">.</p></div>
+        <div class="s"><b>03</b><p data-i18n="vote.how3">.</p></div>
+        <div class="s"><b>04</b><p data-i18n="vote.how4">.</p></div>
       </div>
       <p class="note">
-        Ballot box: <code id="boxAddr"></code><br>
-        $RWI token: <code>0x2286397228be256529BE1ae9ed8D7d16549e9C6A</code><br>
-        Round controller: <code id="ownerAddr"></code>
+        <span data-i18n="vote.addr.box">Ballot box:</span> <code id="boxAddr"></code><br>
+        <span data-i18n="vote.addr.token">$RWI token:</span> <code>0x2286397228be256529BE1ae9ed8D7d16549e9C6A</code><br>
+        <span data-i18n="vote.addr.controller">Round controller:</span> <code id="ownerAddr"></code>
       </p>
-      <p class="note">Rounds are opened by a transaction from the round controller above. Declarations sent from any other address are ignored when this page reads the chain — so you can confirm for yourself who can and cannot move the ballot, without taking our word for it.</p>
+      <p class="note" data-i18n="vote.addr.note">Rounds are opened by a transaction from the round controller above.</p>
     </div>
   </section>
 </main>
 
 <footer>
   <div class="wrap">
-    <span>Real World Impact · Community signal</span>
+    <span data-i18n="vote.footer.brand">Real World Impact · Community signal</span>
     <span><a href="/">rwihood.org</a></span>
   </div>
   <div class="wrap">
-    <p class="fine">$RWI is a memecoin with a charitable mission, not an investment product and not a governance token. This poll is advisory. Nothing here is financial advice. Voting costs gas and confers no rights, no revenue share, and no claim on any treasury. Recipients are subject to The Giving Block's vetting; a winning vote is a recommendation, not an instruction.</p>
+    <p class="fine" data-i18n="vote.footer.fine">$RWI is a memecoin with a charitable mission, not an investment product and not a governance token.</p>
   </div>
 </footer>
 
@@ -483,69 +1507,216 @@ const ROUND_TAG = 'RWIROUND:';   // RWIROUND:<round>:<slug>,<slug>,...   (owner 
 const votePrefix = () => VOTE_TAG + ROUND + ':';
 
 /* ---------------------------------------------------------------------------
-   ORG POOL — every organisation that may appear on a ballot.
+   ORG POOL — every organisation a ballot can draw from.
 
-   SELECTION LOGIC (three tiers, in priority order):
-     1. PROVEN LANE  — cause areas this project has actually funded, evidenced by
-        the public ledger: hunger, homelessness, children's health, environment.
-        A winning vote here is always something RWI would plausibly have done.
-     2. ACUTE NEED   — organisations responding to whatever is genuinely worst
-        right now. Anchored to The Giving Block's own emergency response funds,
-        because those are (a) news-driven by design and (b) already vetted.
-     3. RETURNING    — prior recipients, so holders can vote "more of that".
+   VERIFIED. Every `tgb` slug below was read directly off The Giving Block's own
+   public directory, so the links resolve. Do not add an entry without checking
+   its slug there first — a dead link on a page about verifiability is expensive.
 
-   Deliberately excluded: politically contested conflict zones. The Giving Block
-   does run an Israel-Gaza fund, but putting a geopolitical flashpoint on a
-   memecoin ballot splits the holder base whichever way it lands and drags the
-   project into an argument it did not sign up for. That is a judgement call the
-   founder can reverse — the slug just has to be added to this pool.
+   TIERS drive automatic slate composition (see autoSlate):
+     returning — organisations RWI has already funded, evidenced by the ledger.
+     lane      — same cause areas as the ledger: hunger, homelessness, kids, environment.
+     acute     — responding to whatever is worst right now.
 
-   `why` is shown nowhere; it exists so the reasoning stays auditable in source.
-   VERIFY each organisation is currently listed on thegivingblock.com before
-   putting it on a live ballot. Rosters change.
+   ON "CURRENT EVENTS" — READ THIS BEFORE TRUSTING IT:
+   This page is static and has no backend. It cannot read the news. What it does
+   is compose each round automatically from this pool so nobody has to pick, and
+   it rotates so organisations cycle across rounds instead of the same names
+   recurring. Keeping the ACUTE tier genuinely current is editorial work: someone
+   has to revisit this list when the world changes. `crisis` and `checked` below
+   record what each acute entry was chosen for and when, so staleness is visible
+   rather than hidden.
    ------------------------------------------------------------------------- */
 const ORG_POOL = {
-  /* --- tier 1 / tier 3: proven lane + prior recipients ------------------- */
-  nokidhungry: { name:'No Kid Hungry', cause:'Childhood hunger · US', tier:'returning',
-    why:'Largest RWI donation to date ($1,832.22). Proven Giving Block partner.' },
+  /* --- returning: on the RWI ledger already ----------------------------- */
   coalitionhomeless: { name:'Coalition for the Homeless', cause:'Homelessness · US', tier:'returning',
-    why:'Prior recipient ($270.87). Restores the homelessness lane my first slate dropped.' },
+    tgb:'coalition-for-the-homeless-inc' },
   rmhc: { name:'Ronald McDonald House Charities', cause:"Children's health · US", tier:'returning',
-    why:'Prior recipient ($93.47).' },
-  cmnh: { name:"Children's Miracle Network Hospitals", cause:"Children's health · US", tier:'returning',
-    why:'Prior recipient ($74.61).' },
-  treegens: { name:'Treegens', cause:'Reforestation · crypto-native', tier:'returning',
-    why:'Most recent recipient ($210.18). Crypto-native, resonates with the holder base.' },
-  feedingamerica: { name:'Feeding America', cause:'Hunger · US', tier:'lane',
-    why:'Largest US hunger network. Same lane as the biggest donation on the ledger.' },
+    tgb:'ronald-mcdonald-house-charities-of-greater-cincinnati' },
 
-  /* --- tier 2: acute need, tracked to Giving Block emergency campaigns ---- */
-  wck: { name:'World Central Kitchen', cause:'Disaster feeding · global', tier:'acute',
-    why:'Feeds on the ground in active disasters. Bridges the hunger lane to emergency response.' },
-  directrelief: { name:'Direct Relief', cause:'Emergency medical · global', tier:'acute',
-    why:'Recurring participant in Giving Block disaster funds (wildfires, hurricanes, quakes).' },
-  irc: { name:'International Rescue Committee', cause:'Displacement · famine', tier:'acute',
-    why:'2026 Watchlist: Sudan is the largest displacement and hunger crisis on earth.' },
-  concern: { name:'Concern Worldwide', cause:'Famine · Sahel', tier:'acute',
-    why:'Operates in Chad/Lake Chad Basin hosting 3.3M Sudanese refugees; $975M appeal for 2026.' },
-  unhcr: { name:'USA for UNHCR', cause:'Refugees · global', tier:'acute',
-    why:'Refugee agency; long-running crypto donation channel, incl. Ukraine.' },
-  care: { name:'CARE', cause:'Poverty · emergency relief', tier:'acute',
-    why:'Confirmed Giving Block partner and Ukraine Emergency Response Fund participant.' },
-  teamrubicon: { name:'Team Rubicon', cause:'Disaster response · US', tier:'acute',
-    why:'Veteran-led US disaster response — active in flood and wildfire recovery.' },
-  foodforlife: { name:'Food for Life Global', cause:'Food relief · global', tier:'acute',
-    why:'Named by The Giving Block as the largest food relief organisation on the platform.' },
+  /* --- lane: the cause areas the ledger already demonstrates ------------- */
+  atlantafoodbank: { name:'Atlanta Community Food Bank', cause:'Hunger · US', tier:'lane',
+    tgb:'atlanta-community-food-bank' },
+  farmlink: { name:'The Farmlink Project', cause:'Food rescue · US', tier:'lane',
+    tgb:'the-farmlink-project' },
+  bowerymission: { name:'The Bowery Mission', cause:'Homelessness · US', tier:'lane',
+    tgb:'the-bowery-mission' },
+  homestart: { name:'HomeStart', cause:'Homelessness · US', tier:'lane',
+    tgb:'homestart-inc' },
+  sleepheavenly: { name:'Sleep in Heavenly Peace', cause:'Children · beds · US', tier:'lane',
+    tgb:'sleep-in-heavenly-peace' },
+  smiletrain: { name:'Smile Train', cause:"Children's surgery · global", tier:'lane',
+    tgb:'smile-train-inc' },
+  pollinator: { name:'Pollinator Partnership', cause:'Environment · pollinators', tier:'lane',
+    tgb:'pollinator-partnership' },
+  savingnature: { name:'Saving Nature', cause:'Habitat restoration', tier:'lane',
+    tgb:'saving-nature' },
+
+  /* --- acute: chosen against current need ------------------------------- */
+  unhcr: { name:'USA for UNHCR', cause:'Refugees · global', tier:'acute', tgb:'usa-for-unhcr',
+    crisis:'Sudan is the largest displacement crisis on record; ~12M forcibly displaced.', checked:'2026-07',
+    responds:['Complex Emergency','Flood','Drought','Epidemic'] },
+  charityright: { name:'Charity Right', cause:'Famine feeding · Sudan, Sahel', tier:'acute', tgb:'charity-right',
+    crisis:'Famine conditions across Sudan and the Sahel; food-first response.', checked:'2026-07',
+    responds:['Drought','Complex Emergency','Flood'] },
+  globaldisaster: { name:'Global Disaster Relief Team', cause:'Disaster response · global', tier:'acute',
+    tgb:'global-disaster-relief-team',
+    crisis:'Rapid deployment to earthquakes, floods and storms as they happen.', checked:'2026-07',
+    responds:['Earthquake','Flood','Flash Flood','Tropical Cyclone','Tsunami','Land Slide','Volcano','Fire','Heat Wave'] },
+  greghill: { name:'The Greg Hill Foundation', cause:'Disaster relief · US families', tier:'acute',
+    tgb:'the-greg-hill-foundation',
+    crisis:'Direct aid to US families after wildfires and floods.', checked:'2026-07',
+    responds:['Wild Fire','Flood','Flash Flood','Severe Local Storm','Tropical Cyclone','Cold Wave','Heat Wave'] },
+  usukraine: { name:'U.S.-Ukraine Foundation', cause:'Ukraine · humanitarian', tier:'acute',
+    tgb:'u-s-ukraine-foundation',
+    crisis:'Four-plus years of full-scale war; ~10.8M need assistance.', checked:'2026-07',
+    responds:['Complex Emergency'] },
+  chooselove: { name:'Choose Love', cause:'Refugees · displacement', tier:'acute', tgb:'choose-love',
+    crisis:'Frontline refugee support across multiple displacement corridors.', checked:'2026-07',
+    responds:['Complex Emergency','Cold Wave','Flood'] },
+  penny: { name:'Penny Appeal', cause:'Emergency relief · water, food', tier:'acute', tgb:'penny-appeal',
+    crisis:'Emergency food and water in famine- and conflict-affected regions.', checked:'2026-07',
+    responds:['Drought','Flood','Earthquake','Complex Emergency','Epidemic'] },
+  neareast: { name:'Near East Foundation', cause:'Livelihoods · displacement', tier:'acute',
+    tgb:'near-east-foundation',
+    crisis:'Rebuilding livelihoods for displaced communities rather than aid alone.', checked:'2026-07',
+    responds:['Complex Emergency','Drought'] },
 };
 
-/* Fallback slate used until an onchain round declaration exists.
-   Balanced: 3 returning (proven lane) + 3 acute (current need). */
-const DEFAULT_SLATE = ['nokidhungry','coalitionhomeless','treegens','wck','irc','directrelief'];
+const TGB_BASE = 'https://thegivingblock.com/donate/';
 
-/* Live round state — resolved from chain by loadRound(); these are just the
-   pre-chain defaults. Declared after DEFAULT_SLATE so the const is initialised. */
+/* ---------------------------------------------------------------------------
+   LIVE CRISIS SIGNAL — UN OCHA ReliefWeb.
+
+   Public, keyless (an `appname` is all it asks for), returns JSON, and is
+   CORS-open so a static page can call it directly. Content is CC BY 4.0.
+   Quota is ~1000 requests/day across all callers, so:
+     · the feed is read when a ROUND IS OPENED, not on every page view;
+     · page-load reads are cached in localStorage for 6 hours;
+     · every failure path falls back to the deterministic rotation.
+
+   The read happens once, at round open. The resulting slate is written into the
+   onchain round declaration, so every voter sees the same ballot for that round
+   and the selection is fixed rather than shifting under people mid-vote.
+   ------------------------------------------------------------------------- */
+const RW_API = 'https://api.reliefweb.int/v2/disasters';
+const RW_APP = 'rwihood-org';
+const RW_CACHE_KEY = 'rwi_crises_v1';
+const RW_CACHE_MS = 6 * 60 * 60 * 1000;
+
+async function fetchLiveCrises(useCache){
+  if(useCache){
+    try{
+      const raw = localStorage.getItem(RW_CACHE_KEY);
+      if(raw){
+        const c = JSON.parse(raw);
+        if(Date.now() - c.at < RW_CACHE_MS && Array.isArray(c.types)) return c;
+      }
+    }catch(e){}
+  }
+  const url = RW_API
+    + '?appname=' + encodeURIComponent(RW_APP)
+    + '&filter[field]=status&filter[value]=ongoing'
+    + '&fields[include][]=name&fields[include][]=type.name'
+    + '&limit=100&sort[]=date.created:desc';
+  const res = await fetch(url, {headers:{accept:'application/json'}});
+  if(!res.ok) throw new Error('reliefweb ' + res.status);
+  const j = await res.json();
+  const counts = {}, names = [];
+  (j.data || []).forEach(function(d){
+    const f = d.fields || {};
+    if(f.name) names.push(f.name);
+    (f.type || []).forEach(function(t){
+      if(t && t.name) counts[t.name] = (counts[t.name] || 0) + 1;
+    });
+  });
+  const types = Object.keys(counts).sort(function(a,b){ return counts[b] - counts[a]; });
+  const out = { at: Date.now(), types: types, counts: counts, names: names.slice(0,6), n: (j.data||[]).length };
+  try{ localStorage.setItem(RW_CACHE_KEY, JSON.stringify(out)); }catch(e){}
+  return out;
+}
+
+/* Rank acute organisations by how much of the CURRENT crisis load they cover.
+   The judgement of "this organisation responds to floods" is encoded once in
+   ORG_POOL; which crises are live right now comes from ReliefWeb. */
+function normType(s){
+  return String(s).toLowerCase().replace(/[^a-z]/g, '');   // "Wild Fire" -> "wildfire"
+}
+/* ReliefWeb's taxonomy has drifted before and its exact casing/spacing is not
+   guaranteed. Match on a normalised key plus a small alias table so "Wild Fire"
+   / "Wildfire" / "Forest Fire" all land on the same bucket. */
+const TYPE_ALIASES = {
+  wildfire:'fire', forestfire:'fire', bushfire:'fire',
+  landslide:'landslide', mudslide:'landslide', mudslides:'landslide',
+  flashflood:'flood', stormsurge:'flood',
+  tropicalcyclone:'storm', extratropicalcyclone:'storm', severelocalstorm:'storm',
+  hurricane:'storm', typhoon:'storm', cyclone:'storm',
+  foodinsecurity:'drought', famine:'drought',
+  complexemergency:'conflict', conflict:'conflict',
+  coldwave:'coldwave', heatwave:'heatwave',
+  epidemic:'epidemic', pandemic:'epidemic', diseaseoutbreak:'epidemic',
+};
+function canonType(s){
+  const n = normType(s);
+  return TYPE_ALIASES[n] || n;
+}
+/* Rank acute organisations by how much of the CURRENT crisis load they cover.
+   Returns null when NOTHING matches — that means the taxonomy drifted, and the
+   caller must fall back rather than silently serve an alphabetical ordering
+   dressed up as a live ranking. */
+function rankAcuteByCrises(counts){
+  const canon = {};
+  Object.keys(counts || {}).forEach(function(t){
+    const c = canonType(t);
+    canon[c] = (canon[c] || 0) + counts[t];
+  });
+  const acute = Object.keys(ORG_POOL).filter(function(s){ return ORG_POOL[s].tier === 'acute'; });
+  const scored = acute.map(function(s){
+    const responds = ORG_POOL[s].responds || [];
+    let score = 0;
+    responds.forEach(function(t){ score += (canon[canonType(t)] || 0); });
+    return { slug:s, score:score };
+  });
+  if(!scored.some(function(x){ return x.score > 0; })) return null;   // no overlap at all
+  return scored.sort(function(a,b){
+    if(b.score !== a.score) return b.score - a.score;
+    return a.slug < b.slug ? -1 : 1;
+  }).map(function(x){ return x.slug; });
+}
+
+/* Slate composition.
+   autoSlate()     — deterministic rotation. No network. Always works.
+   composeSlate()  — same shape, but the ACUTE picks are ranked against the live
+                     ReliefWeb crisis load instead of rotated. Falls back to
+                     autoSlate on any failure, so the button never dead-ends. */
+function tierPool(t){ return Object.keys(ORG_POOL).filter(function(s){ return ORG_POOL[s].tier === t; }); }
+function rotate(t, n, round){
+  const pool = tierPool(t), out = [];
+  if(!pool.length) return out;
+  for(let i = 0; i < n; i++) out.push(pool[((round - 1) * n + i) % pool.length]);
+  return out;
+}
+function autoSlate(round){
+  return [...new Set([...rotate('returning',1,round), ...rotate('lane',2,round), ...rotate('acute',3,round)])];
+}
+async function composeSlate(round){
+  const base = [...rotate('returning',1,round), ...rotate('lane',2,round)];
+  try{
+    const live = await fetchLiveCrises(false);
+    if(!live || !live.types || !live.types.length) throw new Error('empty feed');
+    const rankedAll = rankAcuteByCrises(live.counts);
+    if(!rankedAll) throw new Error('no taxonomy overlap');   // drifted vocabulary
+    const ranked = rankedAll.slice(0,3);
+    if(ranked.length < 3) throw new Error('thin ranking');
+    return { slate:[...new Set([...base, ...ranked])], live:live, source:'reliefweb' };
+  }catch(e){
+    return { slate: autoSlate(round), live:null, source:'rotation' };
+  }
+}
+
+
 let ROUND = 1;
-let SLATE = DEFAULT_SLATE.slice();
+let SLATE = autoSlate(1);
 
 /* ---------------------------------------------------------------- utilities */
 const $ = id => document.getElementById(id);
@@ -623,7 +1794,7 @@ function voteStatus(msg, isErr){
 async function connect(){
   const list = providers.length ? providers
     : (window.ethereum ? [{info:{name:'Injected wallet',rdns:'window.ethereum'},provider:window.ethereum}] : []);
-  if(!list.length){ walletStatus('No wallet detected. Install a browser wallet, then reload.', true); return; }
+  if(!list.length){ walletStatus(t('vote.st.noWallet'), true); return; }
   if(list.length === 1) return connectWith(list[0]);
   // more than one wallet: pick the last one the user used, else just take the first
   let saved=null; try{ saved = localStorage.getItem('rwi_wallet_rdns'); }catch(e){}
@@ -645,7 +1816,7 @@ async function connectWith(d){
       p.on('chainChanged', () => ensureChain());
     }
   }catch(e){
-    walletStatus(e && e.code === 4001 ? 'Connection rejected.' : 'Could not connect to that wallet.', true);
+    walletStatus(t(e && e.code === 4001 ? 'vote.st.rejected' : 'vote.st.connFail'), true);
   }
 }
 function disconnect(){
@@ -676,11 +1847,11 @@ async function ensureChain(){
     const cid = await wallet.request({method:'eth_chainId'});
     if(cid === CHAIN.idHex){
       walletOnChain = true;
-      $('chainChip').textContent = 'Robinhood Chain'; $('chainChip').className='chip ok'; $('chainChip').hidden=false;
+      $('chainChip').textContent = t('vote.chain.ok'); $('chainChip').className='chip ok'; $('chainChip').hidden=false;
       await refreshPower(); updateVoteButton(); return true;
     }
     walletOnChain = false;
-    $('chainChip').textContent = 'Wrong network'; $('chainChip').className='chip warn'; $('chainChip').hidden=false;
+    $('chainChip').textContent = t('vote.chain.wrong'); $('chainChip').className='chip warn'; $('chainChip').hidden=false;
     try{
       await wallet.request({method:'wallet_switchEthereumChain',params:[{chainId:CHAIN.idHex}]});
     }catch(sw){
@@ -691,7 +1862,7 @@ async function ensureChain(){
     const again = await wallet.request({method:'eth_chainId'});
     walletOnChain = (again === CHAIN.idHex);
     if(walletOnChain){
-      $('chainChip').textContent='Robinhood Chain'; $('chainChip').className='chip ok';
+      $('chainChip').textContent=t('vote.chain.ok'); $('chainChip').className='chip ok';
       await refreshPower();
     }
     updateVoteButton();
@@ -723,14 +1894,15 @@ function renderBallot(){
     <button class="cand" type="button" role="radio" aria-pressed="false" data-slug="${esc(c.slug)}">
       <span class="radio" aria-hidden="true"></span>
       <span class="who">
-        <span class="name">${esc(c.name)}</span>
+        <span class="name">${esc(c.name)}<a class="tgb-link" href="${TGB_BASE}${esc(c.tgb)}/" target="_blank" rel="noopener" title="View on The Giving Block" aria-label="${esc(c.name)} on The Giving Block">Giving Block &#8599;</a></span>
         <span class="cause">${esc(c.cause)}</span>
       </span>
       <span class="tally"><span class="pct" data-pct>—</span><br><span class="muted" data-wt></span></span>
       <span class="bar" data-bar></span>
     </button>`).join('');
   $('ballot').querySelectorAll('.cand').forEach(el => {
-    el.addEventListener('click', () => {
+    el.addEventListener('click', (e) => {
+      if(e.target.closest('.tgb-link')) return;   // let the link through
       selected = el.dataset.slug;
       $('ballot').querySelectorAll('.cand').forEach(x => x.setAttribute('aria-pressed', String(x === el)));
       updateVoteButton();
@@ -741,8 +1913,8 @@ function renderBallot(){
 function updateVoteButton(){
   const ok = !!(account && walletOnChain && selected && myPower > 0n);
   $('voteBtn').disabled = !ok;
-  if(account && myPower === 0n) voteStatus('This wallet holds no $RWI, so a vote from it would carry zero weight.');
-  else if(account && !walletOnChain) voteStatus('Switch to Robinhood Chain to vote.');
+  if(account && myPower === 0n) voteStatus(t('vote.st.noRwi'));
+  else if(account && !walletOnChain) voteStatus(t('vote.st.switchChain'));
   else voteStatus('');
 }
 
@@ -752,17 +1924,17 @@ async function castVote(){
   const payload = votePrefix() + selected;
   try{
     $('voteBtn').disabled = true;
-    voteStatus('Confirm the transaction in your wallet…');
+    voteStatus(t('vote.st.confirmVote'));
     const txHash = await wallet.request({
       method:'eth_sendTransaction',
       params:[{ from:account, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) }]
     });
-    voteStatus('Vote sent. Waiting for it to settle…');
+    voteStatus(t('vote.st.voteSent'));
     await waitForTx(txHash);
-    voteStatus('Vote recorded onchain.');
+    voteStatus(t('vote.st.voteOk'));
     setTimeout(() => refreshAll(), 1200);
   }catch(e){
-    voteStatus(e && e.code === 4001 ? 'Vote cancelled.' : 'Vote failed to send.', true);
+    voteStatus(t(e && e.code === 4001 ? 'vote.st.voteCancel' : 'vote.st.voteFail'), true);
   }finally{
     updateVoteButton();
   }
@@ -805,7 +1977,7 @@ async function loadRound(txs){
     if(!best || n > best.n || (n === best.n && bn >= best.bn)) best = {n, slugs, bn};
   }
   if(best){ ROUND = best.n; SLATE = best.slugs; }
-  else { ROUND = 1; SLATE = DEFAULT_SLATE.slice(); }
+  else { ROUND = 1; SLATE = autoSlate(1); }
   $('roundNo').textContent = String(ROUND);
   $('prefixEg').textContent = votePrefix() + '<slug>';
 }
@@ -814,11 +1986,10 @@ async function loadRound(txs){
 let picked = new Set();
 function isOwner(){ return !!account && account.toLowerCase() === OWNER_LC; }
 let ownerPanelOpen = false;
+function isOwner(){ return !!account && account.toLowerCase() === OWNER_LC; }
 function renderOwnerPanel(){
-  const sec = $('ownerSection');
-  const trigger = $('nextRoundBtn');
+  const sec = $('ownerSection'), trigger = $('nextRoundBtn');
   if(!sec) return;
-  // The trigger only appears for the controller; the panel only appears once asked for.
   if(trigger) trigger.hidden = !isOwner();
   sec.hidden = !(isOwner() && ownerPanelOpen);
   sec.setAttribute('aria-hidden', String(sec.hidden));
@@ -828,54 +1999,56 @@ function renderOwnerPanel(){
   const nx = String(ROUND + 1);
   $('nextRoundNo').textContent = nx;
   const nx2 = $('nextRoundNo2'); if(nx2) nx2.textContent = nx;
-  const tierLabel = {returning:'Returning', lane:'Proven lane', acute:'Acute need'};
-  $('orgPicker').innerHTML = Object.keys(ORG_POOL).map(slug => {
-    const o = ORG_POOL[slug];
-    const on = picked.has(slug);
-    return `<button type="button" class="pick${on?' on':''}" data-slug="${esc(slug)}" aria-pressed="${on}">
-      <span class="pname">${esc(o.name)}</span>
-      <span class="pmeta">${esc(tierLabel[o.tier]||o.tier)} · ${esc(o.cause)}</span>
-    </button>`;
-  }).join('');
-  $('orgPicker').querySelectorAll('.pick').forEach(b => {
-    b.addEventListener('click', () => {
-      const s = b.dataset.slug;
-      if(picked.has(s)) picked.delete(s); else picked.add(s);
-      renderOwnerPanel();
-    });
+  // Preview of the auto-composed slate, ranked against live crises. Read-only.
+  $('orgPicker').innerHTML = '<div class="pick"><span class="pname">' + esc(t('vote.st.reliefweb')) + '</span></div>';
+  $('pickCount').textContent = '';
+  composeSlate(ROUND + 1).then(function(c){
+    if(!ownerPanelOpen) return;
+    $('orgPicker').innerHTML = c.slate.map(function(s){
+      const o = ORG_POOL[s];
+      const why = (c.source === 'reliefweb' && o.tier === 'acute' && o.responds)
+        ? o.responds.filter(function(t){ return c.live.counts[t]; }).slice(0,3).join(', ')
+        : '';
+      return '<div class="pick on"><span class="pname">' + esc(o.name) + '</span>'
+        + '<span class="pmeta">' + esc(o.tier) + ' · ' + esc(why || o.cause) + '</span></div>';
+    }).join('');
+    $('pickCount').textContent = c.source === 'reliefweb'
+      ? t('vote.st.slateLive', {n:c.slate.length, c:c.live.n})
+      : t('vote.st.slateRot', {n:c.slate.length});
   });
-  $('pickCount').textContent = picked.size + ' selected' + (picked.size < 2 ? ' — pick at least 2' : '');
-  $('newRoundBtn').disabled = picked.size < 2;
 }
+
 async function openNewRound(){
-  if(picked.size < 2) return;
-  // Re-read the live account rather than trusting cached state, and refuse to
-  // even broadcast from a non-owner wallet. (A bypass would be ignored by
-  // loadRound anyway — this just avoids wasting someone's gas.)
+  // The slate is composed automatically from ORG_POOL — nothing to choose.
+  const n = ROUND + 1;
+  $('ownerStatus').textContent = t('vote.st.readingCrises');
+  const composed = await composeSlate(n);
+  const slate = composed.slate;
+  if(!slate.length) return;
   let live = account;
   try{ const a = await wallet.request({method:'eth_accounts'}); if(a && a[0]) live = a[0]; }catch(e){}
   if(!live || live.toLowerCase() !== OWNER_LC){
-    $('ownerStatus').textContent = 'Only the round controller can open a round.';
+    $('ownerStatus').textContent = t('vote.st.notOwner');
     return;
   }
-  const n = ROUND + 1;
-  const payload = ROUND_TAG + n + ':' + [...picked].join(',');
+  const payload = ROUND_TAG + n + ':' + slate.join(',');
   try{
-    $('newRoundBtn').disabled = true;
-    $('ownerStatus').textContent = 'Confirm in your wallet…';
+    $('nextRoundBtn').disabled = true;
+    $('ownerStatus').textContent = t('vote.st.confirmRound',{n:n});
     const hash = await wallet.request({
       method:'eth_sendTransaction',
       params:[{ from:live, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) }]
     });
-    $('ownerStatus').textContent = 'Opening round ' + n + '…';
     await waitForTx(hash);
-    picked = new Set();
     ownerPanelOpen = false;
-    $('ownerStatus').textContent = 'Round ' + n + ' is open. Previous votes no longer count.';
+    $('ownerStatus').textContent = t(composed.source === 'reliefweb' ? 'vote.st.roundLive' : 'vote.st.roundRot', {n:n});
     await refreshAll();
   }catch(e){
-    $('ownerStatus').textContent = (e && e.code === 4001) ? 'Cancelled.' : 'Could not open the round.';
-  }finally{ renderOwnerPanel(); }
+    $('ownerStatus').textContent = t((e && e.code === 4001) ? 'vote.st.cancelled' : 'vote.st.roundFail');
+  }finally{
+    const b=$('nextRoundBtn'); if(b) b.disabled = false;
+    renderOwnerPanel();
+  }
 }
 
 async function refreshAll(){
@@ -907,11 +2080,11 @@ async function fetchVoteTxs(){
 }
 async function loadTally(cached){
   const totalsEl = $('tallyTotals');
-  totalsEl.textContent = 'Reading votes from chain…';
+  totalsEl.textContent = t('vote.st.tallyReading');
   let txs = cached;
   if(!txs){
     try{ txs = await fetchVoteTxs(); }
-    catch(e){ totalsEl.textContent = 'Could not read the tally right now.'; return; }
+    catch(e){ totalsEl.textContent = t('vote.st.tallyErr'); return; }
   }
   const pfx = votePrefix();
   // only the slate for the CURRENT round counts; older rounds fall away
@@ -963,12 +2136,31 @@ function paintTally(){
     el.querySelector('[data-bar]').style.width = (total > 0n ? pct : 0) + '%';
   });
   $('tallyTotals').textContent = counted
-    ? counted + (counted===1?' wallet · ':' wallets · ') + fmtToken(total) + ' $RWI voting'
-    : 'No votes cast yet — be the first.';
+    ? t(counted===1 ? 'vote.st.wallet1' : 'vote.st.wallets', {n:counted, w:fmtToken(total)})
+    : t('vote.st.noVotes');
 }
 function showMyVote(){
   if(!account || !lastTally) { $('myVote').textContent=''; return; }
-  $('myVote').textContent = myPower > 0n ? 'Your weight: ' + fmtToken(myPower) + ' $RWI' : '';
+  $('myVote').textContent = myPower > 0n ? t('vote.st.weight',{w:fmtToken(myPower)}) : '';
+}
+
+/* Re-render anything written by JS rather than data-i18n, after a lang change. */
+function repaintDynamic(){
+  try{
+    if(lastTally) paintTally(); else { const e=$('tallyTotals'); if(e&&!e.textContent.trim()) e.textContent=t('vote.st.tallyReading'); }
+    showMyVote();
+    updateVoteButton();
+    renderBallot();
+    if(account && walletOnChain) $('chainChip').textContent=t('vote.chain.ok');
+    else if(account) $('chainChip').textContent=t('vote.chain.wrong');
+    renderOwnerPanel();
+    const ls=$('liveSignal');
+    if(ls && ls.textContent.trim()){
+      fetchLiveCrises(true).then(function(c){
+        if(c&&c.types&&c.types.length) ls.textContent=t('vote.st.liveSignal',{c:c.n,t:c.types.slice(0,4).join(' · ')});
+      }).catch(function(){});
+    }
+  }catch(e){}
 }
 
 /* --------------------------------------------------------------------- boot */
@@ -994,6 +2186,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   refreshAll();
+  // Live crisis context — cached 6h, purely informational, failure is silent.
+  (function(){
+    const el = $('liveSignal'); if(!el) return;
+    fetchLiveCrises(true).then(function(c){
+      if(!c || !c.types || !c.types.length) return;
+      el.textContent = t('vote.st.liveSignal', {c:c.n, t:c.types.slice(0,4).join(' · ')});
+    }).catch(function(){ /* silent */ });
+  })();
   // resume a previous session silently if the wallet is still authorised
   (async () => {
     let saved=null; try{ saved = localStorage.getItem('rwi_wallet_rdns'); }catch(e){}
@@ -1015,19 +2215,19 @@ document.addEventListener('DOMContentLoaded', () => {
      language pill; its offset is measured at runtime so the two never overlap. -->
 <button type="button" id="chartBtn" aria-haspopup="dialog" aria-controls="chartModal">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><path d="M6 16V9"/><path d="M11 16V4"/><path d="M16 16v-5"/><path d="M21 16v-9"/></svg>
-  <span data-i18n="index.chart.btn">Chart</span>
+  <span data-i18n="chart.btn">Chart</span>
 </button>
 <div id="chartModal" role="dialog" aria-modal="true" aria-labelledby="chartModalTitle">
   <div class="chart-panel">
     <div class="chart-head">
-      <span><span id="chartModalTitle" data-i18n="index.chart.title">Live chart</span> <span class="pair">· $RWI / $WETH</span></span>
+      <span><span id="chartModalTitle" data-i18n="chart.title">Live chart</span> <span class="pair">· $RWI / $WETH</span></span>
       <span class="chart-actions">
-        <a href="https://www.geckoterminal.com/robinhood/pools/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697" target="_blank" rel="noopener" data-i18n="index.chart.open">Open on GeckoTerminal &#8599;</a>
+        <a href="https://www.geckoterminal.com/robinhood/pools/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697" target="_blank" rel="noopener" data-i18n="chart.open">Open on GeckoTerminal &#8599;</a>
         <button type="button" id="chartClose" aria-label="Close">&#10005;</button>
       </span>
     </div>
     <div class="chart-body">
-      <div class="chart-loading" id="chartLoading" data-i18n="index.chart.title">Live chart</div>
+      <div class="chart-loading" id="chartLoading" data-i18n="chart.title">Live chart</div>
       <iframe id="chartFrame" title="GeckoTerminal price chart" loading="lazy" allow="clipboard-write" allowfullscreen></iframe>
     </div>
   </div>
@@ -1084,6 +2284,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+})();
+</script>
+<button id="langBtn" aria-haspopup="true" aria-expanded="false" aria-controls="langSel" aria-label="Change language" type="button"><span id="langBtnLabel">EN</span><span class="caret" aria-hidden="true">&#9662;</span></button>
+<div id="langPanel" role="menu" aria-label="Language">
+  <button data-lang="en" role="menuitemradio">EN</button><button data-lang="es" role="menuitemradio">ES</button><button data-lang="zh" role="menuitemradio">&#20013;&#25991;</button><button data-lang="ja" role="menuitemradio">&#26085;&#26412;&#35486;</button><button data-lang="ko" role="menuitemradio">&#54620;&#44397;&#50612;</button><button data-lang="pt" role="menuitemradio">PT</button><button data-lang="fr" role="menuitemradio">FR</button><button data-lang="ru" role="menuitemradio">RU</button><button data-lang="tr" role="menuitemradio">TR</button><button data-lang="vi" role="menuitemradio">VI</button><button data-lang="hi" role="menuitemradio">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;</button><button data-lang="de" role="menuitemradio">DE</button><button data-lang="id" role="menuitemradio">ID</button>
+</div>
+<script>
+(function(){
+  const btn=document.getElementById('langBtn'), panel=document.getElementById('langPanel');
+  if(!btn||!panel) return;
+  panel.id='langSel';
+  const SHORT={en:'EN',es:'ES',zh:'\u4e2d',ja:'\u65e5',ko:'\ud55c',pt:'PT',fr:'FR',ru:'RU',tr:'TR',vi:'VI',hi:'\u0939\u093f',de:'DE',id:'ID'};
+  const label=document.getElementById('langBtnLabel');
+  function syncLabel(){ const a=panel.querySelector('button.on'); if(a) label.textContent=SHORT[a.dataset.lang]||a.dataset.lang.toUpperCase(); }
+  function open(){ panel.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+  function close(){ panel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+  btn.addEventListener('click', function(e){ e.stopPropagation(); panel.classList.contains('open')?close():open(); });
+  document.addEventListener('click', function(e){ if(!panel.contains(e.target)&&e.target!==btn) close(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+  panel.addEventListener('click', function(e){
+    const b=e.target.closest('button[data-lang]'); if(!b) return;
+    e.preventDefault(); e.stopPropagation();
+    try{ if(typeof setLang==='function') setLang(b.dataset.lang); }catch(err){}
+    syncLabel(); close();
+  });
+  document.addEventListener('DOMContentLoaded', syncLabel);
+  if(document.readyState!=='loading') syncLabel();
 })();
 </script>
 </body>
