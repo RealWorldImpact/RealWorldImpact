@@ -2323,6 +2323,9 @@ async function doConnect(d){
    not prompt the user in response to their own wallet's event. */
 function softReset(){
   teardownProviderEvents();
+  // A pending vote belongs to the wallet that cast it. Leaving it behind meant a
+  // disconnected wallet kept being counted, and its poll timers kept running.
+  clearPendingVote();
   wallet=null; account=null; walletOnChain=false; myPower=0n; selected=null;
   ['acctChip','chainChip','powerChip','disconnectBtn'].forEach(function(id){ const e=$(id); if(e) e.hidden=true; });
   const os=$('ownerSection'); if(os) os.hidden = true;
@@ -2335,6 +2338,9 @@ function softReset(){
   clearVoteStatus();
   const ow=$('ownerStatus'); if(ow) ow.textContent='';
   document.querySelectorAll('.cand').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+  // Dropping the pending vote changes the numbers, so recompute from the cached
+  // chain data rather than leaving the old figures on screen.
+  if(voteTxCache) { try{ loadTally(voteTxCache); }catch(e){} }
 }
 
 /* User-initiated disconnect: also ask the wallet to drop the permission, so a
@@ -2526,7 +2532,7 @@ async function castVote(){
 
     // Show it straight away. The vote is confirmed onchain; the indexer simply
     // has not caught up, so waiting on it would leave the page looking dead.
-    pendingVote = { addr: account.toLowerCase(), slug: chosen, at: Date.now() };
+    pendingVote = { addr: account.toLowerCase(), slug: chosen, round: ROUND, at: Date.now() };
     voteStatus(t('vote.st.voteOk'), false, {hold:true});
     await refreshAll({keepChoice: chosen});
     schedulePendingReconcile();
@@ -2567,8 +2573,13 @@ let voteTxCache = null;
    several seconds, so re-reading immediately after voting returns the OLD tally
    and the page appears to do nothing. We therefore fold the voter's own vote in
    locally, mark it pending, and keep polling until the indexer catches up. */
-let pendingVote = null;          // { addr, slug, at }
+let pendingVote = null;          // { addr, slug, round, at }
 let pendingTimers = [];
+function clearPendingVote(){
+  pendingVote = null;
+  pendingTimers.forEach(clearTimeout);
+  pendingTimers = [];
+}
 let votePagesTruncated = false;
 let staleSlugs = [];
 let slateRecovered = false;
@@ -2704,16 +2715,25 @@ function schedulePendingReconcile(){
   });
 }
 
+let refreshSeq = 0;
 async function refreshAll(opts){
   opts = opts || {};
-  voteTxCache = await fetchVoteTxs().catch(function(){ return []; });
+  // Polling, manual refresh and post-vote reloads can overlap. Without a
+  // sequence guard a slower earlier call can finish last and repaint stale data
+  // over fresher data.
+  const seq = ++refreshSeq;
+  const txs = await fetchVoteTxs().catch(function(){ return []; });
+  if(seq !== refreshSeq) return;                 // superseded
+  voteTxCache = txs;
   await loadRound(voteTxCache);
+  if(seq !== refreshSeq) return;
   // Keep the ballot showing what this wallet chose rather than resetting to
   // nothing the instant they vote.
   selected = opts.keepChoice && SLATE.indexOf(opts.keepChoice) !== -1 ? opts.keepChoice : null;
   renderBallot();
   renderOwnerPanel();
   await loadTally(voteTxCache);
+  if(seq !== refreshSeq) return;
   updateVoteButton();
 }
 
@@ -2776,12 +2796,14 @@ async function loadTally(cached){
   // Infinity for block/index guarantees it supersedes anything older from the
   // same wallet, which is exactly what a re-vote should do.
   if(pendingVote){
-    if(Date.now() - pendingVote.at > 240000){
-      pendingVote = null;                                   // give up after 4 min
+    if(pendingVote.round !== ROUND){
+      clearPendingVote();          // a new ballot opened; the old vote is moot
+    } else if(Date.now() - pendingVote.at > 240000){
+      clearPendingVote();                                   // give up after 4 min
     } else {
       const seen = latest.get(pendingVote.addr);
       if(seen && seen.slug === pendingVote.slug){
-        pendingVote = null;                                 // indexed — reconciled
+        clearPendingVote();                                 // indexed — reconciled
       } else if(valid.has(pendingVote.slug)){
         latest.set(pendingVote.addr, {slug:pendingVote.slug, block:Infinity, index:Infinity});
       }
