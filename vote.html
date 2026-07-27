@@ -106,6 +106,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'The ballot box address holds contract code, so it rejects the vote data and every transaction reverts. It must be a plain wallet address. Nothing was sent — no gas was spent.',
     'vote.st.wouldRevert':'This transaction would fail on chain, so it was not sent. No gas was spent.',
     'vote.st.voteReverted':'The transaction was mined but reverted — your vote was not recorded.'
+  ,
+    'vote.st.ownerContract':'The round controller address holds contract code. A contract cannot be the sender of a transaction, so it can never open a ballot. Set it to the wallet address you actually sign with.'
   },
   es: {
     'nav.home.arrow':'← rwihood.org',
@@ -194,6 +196,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'La direccion de la urna contiene codigo de contrato, por lo que rechaza los datos del voto y toda transaccion revierte. Debe ser una direccion de billetera simple. No se envio nada — no se gasto gas.',
     'vote.st.wouldRevert':'Esta transaccion fallaria en la cadena, asi que no se envio. No se gasto gas.',
     'vote.st.voteReverted':'La transaccion se mino pero revirtio — tu voto no se registro.'
+  ,
+    'vote.st.ownerContract':'La direccion del controlador de ronda contiene codigo de contrato. Un contrato no puede ser el emisor de una transaccion, asi que nunca podra abrir una votacion. Configurala con la direccion de billetera con la que realmente firmas.'
   },
   zh: {
     'nav.home.arrow':'← rwihood.org',
@@ -282,6 +286,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'投票箱地址含有合约代码,会拒绝投票数据,导致每笔交易回滚。它必须是普通钱包地址。未发送任何交易 — 未消耗 gas。',
     'vote.st.wouldRevert':'该交易在链上会失败,因此未发送。未消耗 gas。',
     'vote.st.voteReverted':'交易已被打包但已回滚 — 你的投票未被记录。'
+  ,
+    'vote.st.ownerContract':'轮次控制者地址含有合约代码。合约不能作为交易发送方,因此永远无法开启投票。请将其设置为你实际用于签名的钱包地址。'
   },
   ja: {
     'nav.home.arrow':'← rwihood.org',
@@ -370,6 +376,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'投票箱アドレスにコントラクトコードがあるため投票データが拒否され、すべてのトランザクションが失敗します。通常のウォレットアドレスである必要があります。送信していません — ガスは消費されていません。',
     'vote.st.wouldRevert':'このトランザクションはチェーン上で失敗するため送信しませんでした。ガスは消費されていません。',
     'vote.st.voteReverted':'トランザクションは採掘されましたが失敗しました — 投票は記録されていません。'
+  ,
+    'vote.st.ownerContract':'ラウンド管理者アドレスにコントラクトコードがあります。コントラクトはトランザクションの送信者になれないため、投票を開くことはできません。実際に署名するウォレットアドレスを設定してください。'
   },
   ko: {
     'nav.home.arrow':'← rwihood.org',
@@ -458,6 +466,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'투표함 주소에 컨트랙트 코드가 있어 투표 데이터를 거부하고 모든 거래가 되돌려집니다. 일반 지갑 주소여야 합니다. 아무것도 전송되지 않았습니다 — 가스가 소모되지 않았습니다.',
     'vote.st.wouldRevert':'이 거래는 체인에서 실패하므로 전송하지 않았습니다. 가스가 소모되지 않았습니다.',
     'vote.st.voteReverted':'거래가 채굴되었으나 되돌려졌습니다 — 투표가 기록되지 않았습니다.'
+  ,
+    'vote.st.ownerContract':'라운드 관리자 주소에 컨트랙트 코드가 있습니다. 컨트랙트는 거래의 발신자가 될 수 없으므로 투표를 열 수 없습니다. 실제로 서명하는 지갑 주소로 설정하세요.'
   },
   pt: {
     'nav.home.arrow':'← rwihood.org',
@@ -546,6 +556,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'O endereco da urna contem codigo de contrato, entao rejeita os dados do voto e toda transacao reverte. Precisa ser um endereco de carteira comum. Nada foi enviado — nenhum gas foi gasto.',
     'vote.st.wouldRevert':'Esta transacao falharia na cadeia, entao nao foi enviada. Nenhum gas foi gasto.',
     'vote.st.voteReverted':'A transacao foi minerada mas reverteu — seu voto nao foi registrado.'
+  ,
+    'vote.st.ownerContract':'O endereco do controlador de rodada contem codigo de contrato. Um contrato nao pode ser o remetente de uma transacao, entao nunca podera abrir uma votacao. Defina o endereco de carteira com o qual voce realmente assina.'
   },
   fr: {
     'nav.home.arrow':'← rwihood.org',
@@ -634,6 +646,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'L adresse de l urne contient du code de contrat : elle rejette les donnees du vote et chaque transaction echoue. Ce doit etre une adresse de portefeuille simple. Rien n a ete envoye — aucun gas depense.',
     'vote.st.wouldRevert':'Cette transaction echouerait sur la chaine, elle n a donc pas ete envoyee. Aucun gas depense.',
     'vote.st.voteReverted':'La transaction a ete minee mais a echoue — votre vote n a pas ete enregistre.'
+  ,
+    'vote.st.ownerContract':'L adresse du controleur de tour contient du code de contrat. Un contrat ne peut pas etre l emetteur d une transaction, il ne pourra donc jamais ouvrir un scrutin. Indiquez l adresse de portefeuille avec laquelle vous signez reellement.'
   },
   ru: {
     'nav.home.arrow':'← rwihood.org',
@@ -722,6 +736,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'По адресу урны размещён код контракта, поэтому данные голоса отклоняются и каждая транзакция откатывается. Нужен обычный адрес кошелька. Ничего не отправлено — газ не потрачен.',
     'vote.st.wouldRevert':'Эта транзакция не прошла бы в сети, поэтому не была отправлена. Газ не потрачен.',
     'vote.st.voteReverted':'Транзакция попала в блок, но откатилась — ваш голос не записан.'
+  ,
+    'vote.st.ownerContract':'По адресу управляющего раундом размещён код контракта. Контракт не может быть отправителем транзакции, поэтому он никогда не откроет голосование. Укажите адрес кошелька, которым вы действительно подписываете.'
   },
   tr: {
     'nav.home.arrow':'← rwihood.org',
@@ -810,6 +826,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'Oy sandigi adresinde sozlesme kodu var; oy verisini reddediyor ve her islem geri aliniyor. Duz bir cuzdan adresi olmali. Hicbir sey gonderilmedi — gas harcanmadi.',
     'vote.st.wouldRevert':'Bu islem zincirde basarisiz olurdu, bu yuzden gonderilmedi. Gas harcanmadi.',
     'vote.st.voteReverted':'Islem madenlendi ama geri alindi — oyunuz kaydedilmedi.'
+  ,
+    'vote.st.ownerContract':'Tur denetleyicisi adresinde sozlesme kodu var. Bir sozlesme islemin gondericisi olamaz, bu yuzden asla oylama acamaz. Gercekten imzaladiginiz cuzdan adresini ayarlayin.'
   },
   vi: {
     'nav.home.arrow':'← rwihood.org',
@@ -898,6 +916,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'Địa chỉ hòm phiếu chứa mã hợp đồng nên từ chối dữ liệu phiếu và mọi giao dịch đều bị hoàn. Nó phải là địa chỉ ví thường. Không gửi gì cả — không tốn gas.',
     'vote.st.wouldRevert':'Giao dịch này sẽ thất bại trên chuỗi nên đã không được gửi. Không tốn gas.',
     'vote.st.voteReverted':'Giao dịch đã được khai thác nhưng bị hoàn — phiếu của bạn chưa được ghi.'
+  ,
+    'vote.st.ownerContract':'Địa chỉ người kiểm soát vòng chứa mã hợp đồng. Hợp đồng không thể là người gửi giao dịch nên không bao giờ mở được lá phiếu. Hãy đặt thành địa chỉ ví bạn thực sự dùng để ký.'
   },
   hi: {
     'nav.home.arrow':'← rwihood.org',
@@ -986,6 +1006,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'मतपेटी पते में अनुबंध कोड है, इसलिए वह वोट डेटा अस्वीकार करता है और हर लेनदेन वापस हो जाता है। यह एक सामान्य वॉलेट पता होना चाहिए। कुछ नहीं भेजा गया — कोई gas खर्च नहीं हुआ।',
     'vote.st.wouldRevert':'यह लेनदेन चेन पर विफल होता, इसलिए भेजा नहीं गया। कोई gas खर्च नहीं हुआ।',
     'vote.st.voteReverted':'लेनदेन माइन हुआ लेकिन वापस हो गया — आपका वोट दर्ज नहीं हुआ।'
+  ,
+    'vote.st.ownerContract':'दौर नियंत्रक पते में अनुबंध कोड है। अनुबंध किसी लेनदेन का प्रेषक नहीं हो सकता, इसलिए वह कभी मतपत्र नहीं खोल सकता। इसे उस वॉलेट पते पर सेट करें जिससे आप वास्तव में हस्ताक्षर करते हैं।'
   },
   de: {
     'nav.home.arrow':'← rwihood.org',
@@ -1074,6 +1096,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'Die Wahlurnen-Adresse enthaelt Vertragscode, lehnt die Stimmdaten ab und jede Transaktion schlaegt fehl. Es muss eine normale Wallet-Adresse sein. Nichts gesendet — kein Gas verbraucht.',
     'vote.st.wouldRevert':'Diese Transaktion wuerde onchain fehlschlagen und wurde nicht gesendet. Kein Gas verbraucht.',
     'vote.st.voteReverted':'Die Transaktion wurde aufgenommen, aber rueckabgewickelt — deine Stimme wurde nicht erfasst.'
+  ,
+    'vote.st.ownerContract':'Die Adresse des Runden-Controllers enthaelt Vertragscode. Ein Vertrag kann nicht Absender einer Transaktion sein und daher nie eine Abstimmung oeffnen. Trage die Wallet-Adresse ein, mit der du tatsaechlich signierst.'
   },
   id: {
     'nav.home.arrow':'← rwihood.org',
@@ -1162,6 +1186,8 @@ const TRANSLATIONS = {
     'vote.st.boxContract':'Alamat kotak suara memuat kode kontrak, sehingga menolak data suara dan setiap transaksi dibatalkan. Harus berupa alamat dompet biasa. Tidak ada yang dikirim — tidak ada gas terpakai.',
     'vote.st.wouldRevert':'Transaksi ini akan gagal di rantai, jadi tidak dikirim. Tidak ada gas terpakai.',
     'vote.st.voteReverted':'Transaksi ditambang tetapi dibatalkan — suara Anda tidak tercatat.'
+  ,
+    'vote.st.ownerContract':'Alamat pengendali putaran memuat kode kontrak. Kontrak tidak bisa menjadi pengirim transaksi, jadi tidak akan pernah bisa membuka surat suara. Setel ke alamat dompet yang benar-benar Anda gunakan untuk menandatangani.'
   }
 };
 
@@ -1691,15 +1717,32 @@ const SCAN = 'https://robinhoodchain.blockscout.com';
 const RWI = '0x2286397228be256529BE1ae9ed8D7d16549e9C6A';
 const RWI_DECIMALS = 18;
 
-/* Address that receives vote transactions. Defaults to the project's active dev
-   wallet so the page works out of the box. A separate, dedicated address would
-   keep the vote log easier to audit, but is not required. */
-const BALLOT_BOX = '0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5';
+/* ---------------------------------------------------------------------------
+   BALLOT BOX — where vote transactions are logged.
+
+   This MUST be an address with no contract code. Calldata sent to a contract
+   runs its fallback; with no matching function the transaction reverts, which
+   is exactly what happened when this pointed at the project's dev wallet —
+   every vote failed and voters paid gas for nothing.
+
+   0x5257490000000000000000000000000000000000 is a dedicated null inbox:
+     · prefix 0x525749 is "RWI" in ASCII, so it is recognisable in an explorer
+     · nothing is deployed there, so calldata can never revert
+     · no unrelated traffic, so the vote history stays readable
+     · nobody holds the key, which is fine — the box only ever receives
+       zero-value logging transactions and never needs to spend
+
+   Votes carry no value. The only cost to a voter is gas, which goes to
+   validators, not to this address.                                          */
+const BALLOT_BOX = '0x5257490000000000000000000000000000000000';
 
 /* ---------------------------------------------------------------------------
    ROUND CONTROLLER — the only address whose round declarations are honoured.
 
-   The project's active dev wallet, confirmed by the owner. EIP-55 checksum verified.
+   This must be the address you SIGN WITH — an ordinary wallet address.
+   A contract (a Safe or other smart-contract wallet) cannot appear as the
+   `from` of an eth_sendTransaction, so it can never open a round from this
+   page. The page verifies this at load and says so if it is wrong.
 
    HOW THE GATE ACTUALLY WORKS. Hiding the button when a different wallet is
    connected is cosmetic — anyone can call openNewRound() from a console. The
@@ -2377,12 +2420,23 @@ async function preflightGas(txParams){
 /* An address holding code will run its fallback on our calldata and, absent a
    matching function, revert. The ballot box must therefore be a plain account. */
 let ballotBoxIsContract = null;
-async function checkBallotBox(){
+let ownerIsContract = null;
+async function hasCode(addr){
   try{
-    const code = await rpc('eth_getCode', [BALLOT_BOX, 'latest']);
-    ballotBoxIsContract = !!(code && code !== '0x' && code !== '0x0');
-  }catch(e){ ballotBoxIsContract = null; }
+    const code = await rpc('eth_getCode', [addr, 'latest']);
+    return !!(code && code !== '0x' && code !== '0x0');
+  }catch(e){ return null; }
+}
+async function checkBallotBox(){
+  ballotBoxIsContract = await hasCode(BALLOT_BOX);
   return ballotBoxIsContract;
+}
+/* A contract cannot be the sender of a transaction, so a contract OWNER can
+   never open a round. Worth surfacing before anyone waits on a button that
+   cannot work. */
+async function checkOwner(){
+  ownerIsContract = await hasCode(OWNER);
+  return ownerIsContract;
 }
 
 async function castVote(){
@@ -2393,9 +2447,12 @@ async function castVote(){
   try{
     $('voteBtn').disabled = true;
 
-    // Pre-flight. If the node says this reverts, sending it just burns the
-    // voter's gas and records a failed transaction that will never be counted.
+    // Two independent guards. estimateGas alone is not enough: some nodes
+    // estimate leniently and would let a doomed transaction through, so the
+    // ballot box is also checked for code directly.
     voteStatus(t('vote.st.checking'));
+    const boxHasCode = ballotBoxIsContract === null ? await checkBallotBox() : ballotBoxIsContract;
+    if(boxHasCode){ voteStatus(t('vote.st.boxContract'), true); return; }
     const gas = await preflightGas(tx);
     if(gas === null){
       const isContract = ballotBoxIsContract === null ? await checkBallotBox() : ballotBoxIsContract;
@@ -2532,13 +2589,18 @@ async function openNewRound(){
   let live = account;
   try{ const a = await wallet.request({method:'eth_accounts'}); if(a && a[0]) live = a[0]; }catch(e){}
   if(!live || live.toLowerCase() !== OWNER_LC){
-    $('ownerStatus').textContent = t('vote.st.notOwner');
+    // If OWNER holds code it can never be a transaction sender, so no wallet
+    // will ever match it. Say that, rather than implying the user is not you.
+    const oc = ownerIsContract === null ? await checkOwner() : ownerIsContract;
+    $('ownerStatus').textContent = t(oc ? 'vote.st.ownerContract' : 'vote.st.notOwner');
     return;
   }
   const payload = ROUND_TAG + n + ':' + slate.join(',');
   try{
     $('nextRoundBtn').disabled = true;
     $('ownerStatus').textContent = t('vote.st.confirmRound');
+    const rboxCode = ballotBoxIsContract === null ? await checkBallotBox() : ballotBoxIsContract;
+    if(rboxCode){ $('ownerStatus').textContent = t('vote.st.boxContract'); return; }
     const rtx = { from:live, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) };
     const rgas = await preflightGas(rtx);
     if(rgas === null){
@@ -2751,11 +2813,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   refreshAll();
   // Surface a mis-configured ballot box before anyone spends gas on it.
-  checkBallotBox().then(function(isC){
-    if(isC){
-      const w = $('slateWarn');
-      if(w) w.textContent = t('vote.st.boxContract');
-    }
+  Promise.all([checkBallotBox(), checkOwner()]).then(function(r){
+    const w = $('slateWarn'); if(!w) return;
+    if(r[0])      w.textContent = t('vote.st.boxContract');
+    else if(r[1]) w.textContent = t('vote.st.ownerContract');
   });
   // Live crisis context — cached 6h, purely informational, failure is silent.
   (function(){
