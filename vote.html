@@ -101,6 +101,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'{n} balance(s) could not be read — this tally is incomplete. Refresh to retry.',
     'vote.st.tallyTruncated':'Vote history is long enough that older votes may not be shown.'
+  ,
+    'vote.st.checking':'Checking the transaction…',
+    'vote.st.boxContract':'The ballot box address holds contract code, so it rejects the vote data and every transaction reverts. It must be a plain wallet address. Nothing was sent — no gas was spent.',
+    'vote.st.wouldRevert':'This transaction would fail on chain, so it was not sent. No gas was spent.',
+    'vote.st.voteReverted':'The transaction was mined but reverted — your vote was not recorded.'
   },
   es: {
     'nav.home.arrow':'← rwihood.org',
@@ -184,6 +189,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'No se pudieron leer {n} saldo(s) — este recuento esta incompleto. Actualiza para reintentar.',
     'vote.st.tallyTruncated':'El historial de votos es tan largo que los votos antiguos podrian no mostrarse.'
+  ,
+    'vote.st.checking':'Comprobando la transaccion…',
+    'vote.st.boxContract':'La direccion de la urna contiene codigo de contrato, por lo que rechaza los datos del voto y toda transaccion revierte. Debe ser una direccion de billetera simple. No se envio nada — no se gasto gas.',
+    'vote.st.wouldRevert':'Esta transaccion fallaria en la cadena, asi que no se envio. No se gasto gas.',
+    'vote.st.voteReverted':'La transaccion se mino pero revirtio — tu voto no se registro.'
   },
   zh: {
     'nav.home.arrow':'← rwihood.org',
@@ -267,6 +277,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'有 {n} 个余额无法读取 — 本次统计不完整。请刷新重试。',
     'vote.st.tallyTruncated':'投票记录较长,较早的投票可能未显示。'
+  ,
+    'vote.st.checking':'正在检查交易…',
+    'vote.st.boxContract':'投票箱地址含有合约代码,会拒绝投票数据,导致每笔交易回滚。它必须是普通钱包地址。未发送任何交易 — 未消耗 gas。',
+    'vote.st.wouldRevert':'该交易在链上会失败,因此未发送。未消耗 gas。',
+    'vote.st.voteReverted':'交易已被打包但已回滚 — 你的投票未被记录。'
   },
   ja: {
     'nav.home.arrow':'← rwihood.org',
@@ -350,6 +365,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'{n} 件の残高を読み取れませんでした — この集計は不完全です。更新して再試行してください。',
     'vote.st.tallyTruncated':'投票履歴が長いため、古い投票が表示されていない可能性があります。'
+  ,
+    'vote.st.checking':'トランザクションを確認中…',
+    'vote.st.boxContract':'投票箱アドレスにコントラクトコードがあるため投票データが拒否され、すべてのトランザクションが失敗します。通常のウォレットアドレスである必要があります。送信していません — ガスは消費されていません。',
+    'vote.st.wouldRevert':'このトランザクションはチェーン上で失敗するため送信しませんでした。ガスは消費されていません。',
+    'vote.st.voteReverted':'トランザクションは採掘されましたが失敗しました — 投票は記録されていません。'
   },
   ko: {
     'nav.home.arrow':'← rwihood.org',
@@ -433,6 +453,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'{n}개의 잔액을 읽지 못했습니다 — 이 집계는 불완전합니다. 새로고침하여 다시 시도하세요.',
     'vote.st.tallyTruncated':'투표 기록이 길어 오래된 투표가 표시되지 않을 수 있습니다.'
+  ,
+    'vote.st.checking':'거래를 확인하는 중…',
+    'vote.st.boxContract':'투표함 주소에 컨트랙트 코드가 있어 투표 데이터를 거부하고 모든 거래가 되돌려집니다. 일반 지갑 주소여야 합니다. 아무것도 전송되지 않았습니다 — 가스가 소모되지 않았습니다.',
+    'vote.st.wouldRevert':'이 거래는 체인에서 실패하므로 전송하지 않았습니다. 가스가 소모되지 않았습니다.',
+    'vote.st.voteReverted':'거래가 채굴되었으나 되돌려졌습니다 — 투표가 기록되지 않았습니다.'
   },
   pt: {
     'nav.home.arrow':'← rwihood.org',
@@ -516,6 +541,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'Nao foi possivel ler {n} saldo(s) — esta contagem esta incompleta. Atualize para tentar de novo.',
     'vote.st.tallyTruncated':'O historico de votos e longo o bastante para que votos antigos possam nao aparecer.'
+  ,
+    'vote.st.checking':'Verificando a transacao…',
+    'vote.st.boxContract':'O endereco da urna contem codigo de contrato, entao rejeita os dados do voto e toda transacao reverte. Precisa ser um endereco de carteira comum. Nada foi enviado — nenhum gas foi gasto.',
+    'vote.st.wouldRevert':'Esta transacao falharia na cadeia, entao nao foi enviada. Nenhum gas foi gasto.',
+    'vote.st.voteReverted':'A transacao foi minerada mas reverteu — seu voto nao foi registrado.'
   },
   fr: {
     'nav.home.arrow':'← rwihood.org',
@@ -599,6 +629,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'{n} solde(s) n ont pas pu etre lus — ce decompte est incomplet. Actualisez pour reessayer.',
     'vote.st.tallyTruncated':'L historique des votes est assez long pour que d anciens votes ne soient pas affiches.'
+  ,
+    'vote.st.checking':'Verification de la transaction…',
+    'vote.st.boxContract':'L adresse de l urne contient du code de contrat : elle rejette les donnees du vote et chaque transaction echoue. Ce doit etre une adresse de portefeuille simple. Rien n a ete envoye — aucun gas depense.',
+    'vote.st.wouldRevert':'Cette transaction echouerait sur la chaine, elle n a donc pas ete envoyee. Aucun gas depense.',
+    'vote.st.voteReverted':'La transaction a ete minee mais a echoue — votre vote n a pas ete enregistre.'
   },
   ru: {
     'nav.home.arrow':'← rwihood.org',
@@ -682,6 +717,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'Не удалось прочитать {n} баланс(ов) — подсчёт неполный. Обновите, чтобы повторить.',
     'vote.st.tallyTruncated':'История голосов настолько длинная, что старые голоса могут не отображаться.'
+  ,
+    'vote.st.checking':'Проверка транзакции…',
+    'vote.st.boxContract':'По адресу урны размещён код контракта, поэтому данные голоса отклоняются и каждая транзакция откатывается. Нужен обычный адрес кошелька. Ничего не отправлено — газ не потрачен.',
+    'vote.st.wouldRevert':'Эта транзакция не прошла бы в сети, поэтому не была отправлена. Газ не потрачен.',
+    'vote.st.voteReverted':'Транзакция попала в блок, но откатилась — ваш голос не записан.'
   },
   tr: {
     'nav.home.arrow':'← rwihood.org',
@@ -765,6 +805,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'{n} bakiye okunamadi — bu sayim eksik. Yenileyip tekrar deneyin.',
     'vote.st.tallyTruncated':'Oy gecmisi uzun oldugundan eski oylar gosterilmiyor olabilir.'
+  ,
+    'vote.st.checking':'Islem kontrol ediliyor…',
+    'vote.st.boxContract':'Oy sandigi adresinde sozlesme kodu var; oy verisini reddediyor ve her islem geri aliniyor. Duz bir cuzdan adresi olmali. Hicbir sey gonderilmedi — gas harcanmadi.',
+    'vote.st.wouldRevert':'Bu islem zincirde basarisiz olurdu, bu yuzden gonderilmedi. Gas harcanmadi.',
+    'vote.st.voteReverted':'Islem madenlendi ama geri alindi — oyunuz kaydedilmedi.'
   },
   vi: {
     'nav.home.arrow':'← rwihood.org',
@@ -848,6 +893,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'Không đọc được {n} số dư — kiểm đếm này chưa đầy đủ. Làm mới để thử lại.',
     'vote.st.tallyTruncated':'Lịch sử bỏ phiếu đủ dài nên các phiếu cũ có thể không được hiển thị.'
+  ,
+    'vote.st.checking':'Đang kiểm tra giao dịch…',
+    'vote.st.boxContract':'Địa chỉ hòm phiếu chứa mã hợp đồng nên từ chối dữ liệu phiếu và mọi giao dịch đều bị hoàn. Nó phải là địa chỉ ví thường. Không gửi gì cả — không tốn gas.',
+    'vote.st.wouldRevert':'Giao dịch này sẽ thất bại trên chuỗi nên đã không được gửi. Không tốn gas.',
+    'vote.st.voteReverted':'Giao dịch đã được khai thác nhưng bị hoàn — phiếu của bạn chưa được ghi.'
   },
   hi: {
     'nav.home.arrow':'← rwihood.org',
@@ -931,6 +981,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'{n} शेष नहीं पढ़े जा सके — यह गणना अधूरी है। पुनः प्रयास हेतु ताज़ा करें।',
     'vote.st.tallyTruncated':'वोट इतिहास इतना लंबा है कि पुराने वोट शायद न दिखें।'
+  ,
+    'vote.st.checking':'लेनदेन की जाँच हो रही है…',
+    'vote.st.boxContract':'मतपेटी पते में अनुबंध कोड है, इसलिए वह वोट डेटा अस्वीकार करता है और हर लेनदेन वापस हो जाता है। यह एक सामान्य वॉलेट पता होना चाहिए। कुछ नहीं भेजा गया — कोई gas खर्च नहीं हुआ।',
+    'vote.st.wouldRevert':'यह लेनदेन चेन पर विफल होता, इसलिए भेजा नहीं गया। कोई gas खर्च नहीं हुआ।',
+    'vote.st.voteReverted':'लेनदेन माइन हुआ लेकिन वापस हो गया — आपका वोट दर्ज नहीं हुआ।'
   },
   de: {
     'nav.home.arrow':'← rwihood.org',
@@ -1014,6 +1069,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'{n} Guthaben konnten nicht gelesen werden — diese Auszaehlung ist unvollstaendig. Aktualisieren zum Wiederholen.',
     'vote.st.tallyTruncated':'Der Stimmverlauf ist lang genug, dass aeltere Stimmen moeglicherweise nicht angezeigt werden.'
+  ,
+    'vote.st.checking':'Transaktion wird geprueft…',
+    'vote.st.boxContract':'Die Wahlurnen-Adresse enthaelt Vertragscode, lehnt die Stimmdaten ab und jede Transaktion schlaegt fehl. Es muss eine normale Wallet-Adresse sein. Nichts gesendet — kein Gas verbraucht.',
+    'vote.st.wouldRevert':'Diese Transaktion wuerde onchain fehlschlagen und wurde nicht gesendet. Kein Gas verbraucht.',
+    'vote.st.voteReverted':'Die Transaktion wurde aufgenommen, aber rueckabgewickelt — deine Stimme wurde nicht erfasst.'
   },
   id: {
     'nav.home.arrow':'← rwihood.org',
@@ -1097,6 +1157,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.tallyPartial':'{n} saldo tidak dapat dibaca — hitungan ini belum lengkap. Segarkan untuk mencoba lagi.',
     'vote.st.tallyTruncated':'Riwayat suara cukup panjang sehingga suara lama mungkin tidak ditampilkan.'
+  ,
+    'vote.st.checking':'Memeriksa transaksi…',
+    'vote.st.boxContract':'Alamat kotak suara memuat kode kontrak, sehingga menolak data suara dan setiap transaksi dibatalkan. Harus berupa alamat dompet biasa. Tidak ada yang dikirim — tidak ada gas terpakai.',
+    'vote.st.wouldRevert':'Transaksi ini akan gagal di rantai, jadi tidak dikirim. Tidak ada gas terpakai.',
+    'vote.st.voteReverted':'Transaksi ditambang tetapi dibatalkan — suara Anda tidak tercatat.'
   }
 };
 
@@ -2046,10 +2111,19 @@ function walletStatus(msg, isErr){
   const el = $('walletStatus'); if(!el) return;
   el.textContent = msg || ''; el.classList.toggle('err', !!isErr);
 }
-function voteStatus(msg, isErr){
+/* An error explaining WHY a vote could not be sent has to outlive the
+   updateVoteButton() call in castVote's finally block — otherwise the message
+   is written and immediately wiped, and the user sees nothing at all. */
+let voteStatusSticky = false;
+function voteStatus(msg, isErr, opts){
   const el = $('voteStatus'); if(!el) return;
+  const force = opts && opts.force;
+  const hold  = opts && opts.hold;
+  if(voteStatusSticky && !force) return;              // keep the standing message up
   el.textContent = msg || ''; el.classList.toggle('err', !!isErr);
+  voteStatusSticky = !!isErr || !!hold;               // errors AND confirmations persist
 }
+function clearVoteStatus(){ voteStatusSticky = false; voteStatus('', false, {force:true}); }
 
 function knownProviders(){
   if(providers.length) return providers;
@@ -2165,7 +2239,7 @@ function softReset(){
   const wp=$('walletPicker'); if(wp){ wp.hidden = true; wp.innerHTML=''; }
   $('voteBtn').disabled = true;
   $('myVote').textContent = '';
-  voteStatus('');
+  clearVoteStatus();
   const ow=$('ownerStatus'); if(ow) ow.textContent='';
   document.querySelectorAll('.cand').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
 }
@@ -2263,6 +2337,7 @@ function renderBallot(){
     el.addEventListener('click', (e) => {
       if(e.target.closest('.tgb-link')) return;   // let the link through
       selected = el.dataset.slug;
+      clearVoteStatus();
       $('ballot').querySelectorAll('.cand').forEach(x => x.setAttribute('aria-pressed', String(x === el)));
       updateVoteButton();
     });
@@ -2277,20 +2352,65 @@ function updateVoteButton(){
 }
 
 /* ------------------------------------------------------------------ voting */
+/* Intrinsic cost of a plain value transfer plus its calldata. Used as a floor
+   when the node will not estimate — under-estimating here is an out-of-gas
+   failure the voter still pays for. */
+function intrinsicGasFor(dataHex){
+  const body = (dataHex || '0x').replace(/^0x/, '');
+  let gas = 21000;
+  for(let i = 0; i < body.length; i += 2){
+    gas += (body.substr(i, 2) === '00') ? 4 : 16;
+  }
+  return gas;
+}
+/* Ask the node what the transaction would cost. A throw here means it would
+   REVERT — so we stop rather than let someone pay gas for a guaranteed failure. */
+async function preflightGas(txParams){
+  try{
+    const est = await wallet.request({ method:'eth_estimateGas', params:[txParams] });
+    const n = BigInt(est);
+    return '0x' + ((n * 13n) / 10n).toString(16);      // +30% headroom
+  }catch(e){
+    return null;                                       // would revert
+  }
+}
+/* An address holding code will run its fallback on our calldata and, absent a
+   matching function, revert. The ballot box must therefore be a plain account. */
+let ballotBoxIsContract = null;
+async function checkBallotBox(){
+  try{
+    const code = await rpc('eth_getCode', [BALLOT_BOX, 'latest']);
+    ballotBoxIsContract = !!(code && code !== '0x' && code !== '0x0');
+  }catch(e){ ballotBoxIsContract = null; }
+  return ballotBoxIsContract;
+}
+
 async function castVote(){
   if(!account || !selected) return;
+  clearVoteStatus();
   const payload = votePrefix() + selected;
+  const tx = { from:account, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) };
   try{
     $('voteBtn').disabled = true;
+
+    // Pre-flight. If the node says this reverts, sending it just burns the
+    // voter's gas and records a failed transaction that will never be counted.
+    voteStatus(t('vote.st.checking'));
+    const gas = await preflightGas(tx);
+    if(gas === null){
+      const isContract = ballotBoxIsContract === null ? await checkBallotBox() : ballotBoxIsContract;
+      voteStatus(t(isContract ? 'vote.st.boxContract' : 'vote.st.wouldRevert'), true);
+      return;
+    }
+    tx.gas = gas;
+
     voteStatus(t('vote.st.confirmVote'));
-    const txHash = await wallet.request({
-      method:'eth_sendTransaction',
-      params:[{ from:account, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) }]
-    });
+    const txHash = await wallet.request({ method:'eth_sendTransaction', params:[tx] });
     voteStatus(t('vote.st.voteSent'));
-    await waitForTx(txHash);
-    voteStatus(t('vote.st.voteOk'));
-    setTimeout(() => refreshAll(), 1200);
+    const receipt = await waitForTx(txHash);
+    if(receipt && !txSucceeded(receipt)){ voteStatus(t('vote.st.voteReverted'), true); return; }
+    voteStatus(t('vote.st.voteOk'), false, {hold:true});
+    setTimeout(function(){ refreshAll(); }, 1200);
   }catch(e){
     voteStatus(t(e && e.code === 4001 ? 'vote.st.voteCancel' : 'vote.st.voteFail'), true);
   }finally{
@@ -2304,9 +2424,17 @@ async function waitForTx(hash, tries){
       const r = await rpc('eth_getTransactionReceipt',[hash]);
       if(r && r.blockNumber) return r;
     }catch(e){}
-    await new Promise(r => setTimeout(r, 1500));
+    await new Promise(function(r){ setTimeout(r, 1500); });
   }
   return null;
+}
+/* A mined transaction is not a successful one. status 0x0 means it reverted —
+   reporting that as "recorded" is how a page ends up claiming votes it never got. */
+function txSucceeded(receipt){
+  if(!receipt) return false;
+  const s = receipt.status;
+  if(s === undefined || s === null) return true;      // pre-Byzantium shape
+  return s === '0x1' || s === 1 || s === true;
 }
 
 /* ------------------------------------------------------- rounds (owner-gated)
@@ -2407,11 +2535,17 @@ async function openNewRound(){
   try{
     $('nextRoundBtn').disabled = true;
     $('ownerStatus').textContent = t('vote.st.confirmRound');
-    const hash = await wallet.request({
-      method:'eth_sendTransaction',
-      params:[{ from:live, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) }]
-    });
-    await waitForTx(hash);
+    const rtx = { from:live, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) };
+    const rgas = await preflightGas(rtx);
+    if(rgas === null){
+      const isC = ballotBoxIsContract === null ? await checkBallotBox() : ballotBoxIsContract;
+      $('ownerStatus').textContent = t(isC ? 'vote.st.boxContract' : 'vote.st.wouldRevert');
+      return;
+    }
+    rtx.gas = rgas;
+    const hash = await wallet.request({ method:'eth_sendTransaction', params:[rtx] });
+    const rrec = await waitForTx(hash);
+    if(rrec && !txSucceeded(rrec)){ $('ownerStatus').textContent = t('vote.st.voteReverted'); return; }
     ownerPanelOpen = false;
     $('ownerStatus').textContent = t(composed.source === 'reliefweb' ? 'vote.st.roundLive' : 'vote.st.roundRot')
       + (composed.reason ? ' (' + composed.reason + ')' : '');
@@ -2586,6 +2720,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   refreshAll();
+  // Surface a mis-configured ballot box before anyone spends gas on it.
+  checkBallotBox().then(function(isC){
+    if(isC){
+      const w = $('slateWarn');
+      if(w) w.textContent = t('vote.st.boxContract');
+    }
+  });
   // Live crisis context — cached 6h, purely informational, failure is silent.
   (function(){
     const el = $('liveSignal'); if(!el) return;
