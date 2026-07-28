@@ -129,7 +129,10 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'Something failed. Completed steps stand; re-open to finish the rest.',
     'vote.st.writeInConnect':'Connect a wallet first.',
     'vote.st.writeInNoPrice':'Cannot read the $RWI price right now, so the fee cannot be quoted.',
-    'vote.st.writeInNote':'Three separate transactions: a token transfer carries no message, so the nomination and each payment are signed individually. The directory is a verified subset of The Giving Block, not its full listing.'
+    'vote.st.writeInNote':'Three separate transactions: a token transfer carries no message, so the nomination and each payment are signed individually. The directory is a verified subset of The Giving Block, not its full listing.',
+    'vote.st.wiShort':'This wallet holds {have} $RWI but this step needs {need}. Top up, then press Submit — completed steps are kept.',
+    'vote.st.wiNoLog':'The transaction was mined but no $RWI actually moved — the token contract accepted the call without transferring. Inspect it on the explorer: {h}',
+    'vote.st.wiRetry':'Step {n} hit a snag — retrying automatically…'
   ,
     'vote.st.openSlot':'Open slot',
     'vote.st.openSlotHint':'Reserved for a holder write-in',
@@ -4382,8 +4385,55 @@ function repaintDynamic(){
       throw new Error('wallet returned no transaction hash');
     }
     const rec = await waitForTx(hash);
-    if(rec && !txSucceeded(rec)) throw new Error('reverted on chain');
-    return hash;
+    if(rec && !txSucceeded(rec)) throw new Error('reverted on chain — ' + hash);
+    return { hash: hash, receipt: rec };
+  }
+  /* Confirm a mined transaction actually emitted an ERC-20 Transfer to `dest`.
+     "status: success" is not that: a token with a silent no-op path, a wallet
+     that rewrote the calldata, or a transfer(0) all mine successfully while
+     moving nothing. The Transfer event is the ground truth the verifier reads
+     later, so check the same thing here and fail the step now instead of
+     discovering it when the write-in never appears. */
+  const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+  function receiptMovedRwiTo(receipt, dest){
+    if(!receipt || !Array.isArray(receipt.logs)) return null;   // unknown, not false
+    const want = dest.toLowerCase().replace(/^0x/,'').padStart(64,'0');
+    return receipt.logs.some(function(lg){
+      if(((lg.address||'')+'').toLowerCase() !== RWI.toLowerCase()) return false;
+      const tp = lg.topics || [];
+      return tp[0] === TRANSFER_TOPIC
+        && ((tp[2]||'')+'').toLowerCase().replace(/^0x/,'') === want;
+    });
+  }
+  /* One payment step, hardened:
+       · balance is re-read and checked against the EXACT units first, so a
+         shortfall names the numbers instead of surfacing as a revert;
+       · the mined receipt must contain a matching Transfer log;
+       · one automatic retry on a non-cancel failure — transient node and
+         wallet hiccups are common enough on this chain that bouncing the
+         whole flow for one was most of the support burden. */
+  async function sendRwiStep(stepN, dest, units){
+    const bal = await erc20BalanceOf(RWI, account).catch(function(){ return null; });
+    if(bal !== null && bal < units){
+      throw new Error(t('vote.st.wiShort', { have: fmtToken(bal), need: fmtToken(units) }));
+    }
+    const data = encodeRwiTransfer(dest, units);
+    for(let attempt = 0; attempt < 2; attempt++){
+      try{
+        const r = await sendTx({ from: account, to: RWI, data: data }, 1000000);
+        const moved = receiptMovedRwiTo(r.receipt, dest);
+        if(moved === false) throw new Error(t('vote.st.wiNoLog', { h: r.hash }));
+        return r.hash;   // moved === true, or null (receipt shape unknown — trust status)
+      }catch(e){
+        if(e && e.code === 4001) throw e;               // user cancelled: never retry
+        if(attempt === 0){
+          wiStatus(t('vote.st.wiRetry', { n: stepN }));
+          await pause(1200);
+          continue;
+        }
+        throw e;
+      }
+    }
   }
   function encodeRwiTransfer(to, units){
     return '0xa9059cbb'
@@ -4427,8 +4477,6 @@ function repaintDynamic(){
     const nomData   = toHexUtf8(WRITEIN_TAG + ROUND + ':' + chosen);
     const devUnits  = usdToRwiUnits(WRITEIN_DEV_USD,  price);
     const burnUnits = usdToRwiUnits(WRITEIN_BURN_USD, price);
-    const devData   = encodeRwiTransfer(WRITEIN_DEV,  devUnits);
-    const burnData  = encodeRwiTransfer(WRITEIN_BURN, burnUnits);
 
     let currentStep = 0;
     try{
@@ -4444,7 +4492,7 @@ function repaintDynamic(){
       if(!stepsDone[2]){
         currentStep = 2;
         markStep(2,'doing'); wiStatus(t('vote.st.wiSigning', {n:2}));
-        await sendTx({ from: account, to: RWI, data: devData }, 1000000);
+        await sendRwiStep(2, WRITEIN_DEV, devUnits);
         stepsDone[2] = true; markStep(2,'done');
         await pause(400);
       }
@@ -4452,7 +4500,7 @@ function repaintDynamic(){
       if(!stepsDone[3]){
         currentStep = 3;
         markStep(3,'doing'); wiStatus(t('vote.st.wiSigning', {n:3}));
-        await sendTx({ from: account, to: RWI, data: burnData }, 1000000);
+        await sendRwiStep(3, WRITEIN_BURN, burnUnits);
         stepsDone[3] = true; markStep(3,'done');
       }
 
