@@ -3073,7 +3073,7 @@ function fromHexUtf8(hex){
   for(let i=0;i<arr.length;i++) arr[i] = parseInt(h.substr(i*2,2),16);
   try{ return new TextDecoder('utf-8',{fatal:false}).decode(arr); }catch(e){ return ''; }
 }
-/* loadRound, loadTally, and loadWriteIns each iterate the same tx list and each
+/* loadRound, loadTally, and loadNominations each iterate the same tx list and each
    decoded its raw_input. Same tx, same bytes, three TextDecoder allocations.
    Cache the decoded string on the tx object once — later passes just read it. */
 function txText(t){
@@ -3732,28 +3732,41 @@ async function loadRound(txs){
     }
   } else { ROUND = 1; SLATE = autoSlate(1); }
   // Holder write-ins fill the remaining slots on top of the auto-composed half.
+  // Paint immediately from any nominations visible in the tx list (so the seat
+  // is never blank), then let the burn verification run in the background and
+  // update on the next reconcile pass.
   try{
-    const wi = await loadWriteIns(rows, ROUND);
-    // Optimistic: the moment a wallet just submitted a write-in, show it in
-    // its seat instead of leaving the slot blank for 10+ seconds while the
-    // indexer catches up. `orgRecord` marks it as 'confirming' via
-    // pendingWriteIn; the reconcile check (see refreshAll) uses the verified
-    // cache, not SLATE membership, so the pending state clears only when the
-    // burn payment is actually observed onchain.
+    // Fast synchronous pass: collect any write-in nominations in the tx list
+    // and add them to SLATE right away, even before the burn is verified. The
+    // seat is marked "confirming" if the burn is not yet confirmed; the
+    // background verification (below) will flip them to verified on the next
+    // refresh without another network round-trip.
+    const nominations = loadNominations(rows, ROUND);
+    // Union the nominated slugs with whatever is already verified — never show
+    // fewer seats than the verified set already confirmed.
+    const alreadyVerified = verifiedWriteInsByRound.get(ROUND) || new Set();
+    // On subsequent passes (after verifyWriteInsAsync has run) we know which
+    // nominations are real. Only show unverified slugs if verification hasn't
+    // run yet for this round — once we have burn data, don't show unpaid seats.
+    const verificationComplete = verifiedWriteInsByRound.has(ROUND);
+    const slugsToShow = nominations
+      .map(n => n.slug)
+      .filter(slug => !verificationComplete || alreadyVerified.has(slug));
+    const declared = SLATE.slice();
+    const room = Math.max(0, TOTAL_SLOTS - declared.length);
+    if(slugsToShow.length){
+      SLATE = [...new Set([...declared, ...slugsToShow.slice(0, room)])];
+    }
+    // Optimistic pending write-in from this session
     if(pendingWriteIn && pendingWriteIn.round === ROUND
        && TGB_BY_SLUG[pendingWriteIn.slug] && !ORG_POOL[pendingWriteIn.slug]
-       && wi.indexOf(pendingWriteIn.slug) === -1){
-      wi.push(pendingWriteIn.slug);
+       && SLATE.indexOf(pendingWriteIn.slug) === -1){
+      SLATE = [...SLATE, pendingWriteIn.slug];
     }
-    if(wi.length){
-      // Everything the round declared onchain stays on the ballot. Truncating
-      // it to make room for write-ins dropped candidates people may already
-      // have voted for, and loadTally validates against SLATE — so those votes
-      // vanished without a word. Write-ins take whatever seats are left.
-      const declared = SLATE.slice();
-      const room = Math.max(0, TOTAL_SLOTS - declared.length);
-      SLATE = [...new Set([...declared, ...wi.slice(0, room)])];
-    }
+    // Background: verify burns and update the cache without blocking paint.
+    // When it resolves, the next repaint trims any unverified slugs (or
+    // confirms them), with no further UX delay.
+    verifyWriteInsAsync(nominations, ROUND);
   }catch(e){ /* write-ins are additive; a failure must not empty the ballot */ }
   $('prefixEg').textContent = 'RWIVOTE:\u2039n\u203a:\u2039slug\u203a';
 }
@@ -3936,6 +3949,87 @@ function sumRwiBySender(transfers, sinceByWallet){
   });
   return by;
 }
+/* loadNominations — sync, no network. Extracts write-in nominations from the
+   already-fetched tx list. Returns [{slug, from, block, index}] in newest-first
+   order, deduplicated to one per wallet and one per slug, capped at WRITEIN_SLOTS.
+   Same filtering rules the burn verifier applies, so the two stay in sync. */
+function loadNominations(rows, round){
+  const nominations = [];
+  (rows || []).forEach(function(t){
+    const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
+    const text = txText(t);
+    if(!from || !text.startsWith(WRITEIN_TAG)) return;
+    const body = text.slice(WRITEIN_TAG.length);
+    const sep = body.indexOf(':');
+    if(sep < 0) return;
+    if(parseInt(body.slice(0, sep), 10) !== round) return;
+    const slug = body.slice(sep + 1).trim().toLowerCase();
+    if(!TGB_BY_SLUG[slug] || ORG_POOL[slug]) return;
+    nominations.push({
+      slug, from,
+      block: Number(t.block_number || t.block || 0),
+      index: Number(t.index !== undefined ? t.index : (t.position !== undefined ? t.position : 0)),
+    });
+  });
+  // newest first; one per wallet, one per slug, capped at WRITEIN_SLOTS
+  nominations.sort(function(a,b){ return b.block !== a.block ? b.block - a.block : b.index - a.index; });
+  const seenWallet = new Set(), seenSlug = new Set(), out = [];
+  for(const n of nominations){
+    if(seenWallet.has(n.from) || seenSlug.has(n.slug)) continue;
+    seenWallet.add(n.from); seenSlug.add(n.slug);
+    out.push(n);
+    if(out.length >= WRITEIN_SLOTS) break;
+  }
+  return out;
+}
+
+/* verifyWriteInsAsync — fire-and-forget background burn verification.
+   Verifies only nominations NOT already in the verified cache, updates
+   verifiedWriteInsByRound, and triggers ONE refreshAll only if the verified
+   set actually changed. Three guards prevent a refresh loop (loadRound calls
+   this on every pass, and refreshAll re-enters loadRound):
+     1. skip when every nominated slug is already verified — nothing to learn
+     2. an in-flight flag coalesces overlapping calls
+     3. refreshAll fires only on a genuine state change
+   Failures are silent; the reconcile schedule will retry. */
+let _wiVerifyInflight = false;
+async function verifyWriteInsAsync(nominations, round){
+  if(!nominations.length) return;
+  const cached = verifiedWriteInsByRound.get(round) || new Set();
+  const unverified = nominations.filter(function(n){ return !cached.has(n.slug); });
+  if(!unverified.length) return;                       // guard 1: all known
+  if(_wiVerifyInflight) return;                        // guard 2: coalesce
+  _wiVerifyInflight = true;
+  try{
+    const since = new Map();
+    unverified.forEach(function(n){
+      const cur = since.get(n.from);
+      if(cur === undefined || n.block < cur) since.set(n.from, n.block);
+    });
+    const transfers = await fetchTokenTransfersTo(WRITEIN_BURN);
+    const burnPaid = sumRwiBySender(transfers, since);
+    const price = rwiUsdPrice || await fetchRwiPrice();
+    if(!price){
+      // Price feed down: mark the round as checked (so unpaid seats don't
+      // linger forever behind a dead feed) but add nothing.
+      if(!verifiedWriteInsByRound.has(round)) verifiedWriteInsByRound.set(round, cached);
+      return;
+    }
+    const needBurn = usdToRwiUnits(WRITEIN_BURN_USD * WRITEIN_TOLERANCE, price);
+    let changed = false;
+    unverified.forEach(function(n){
+      if((burnPaid.get(n.from) || 0n) >= needBurn){ cached.add(n.slug); changed = true; }
+    });
+    const firstCheck = !verifiedWriteInsByRound.has(round);
+    verifiedWriteInsByRound.set(round, cached);
+    // guard 3: repaint only when something changed — either a slug got
+    // verified, or this was the first check (an unpaid nomination now needs
+    // trimming from the optimistic slate).
+    if(changed || firstCheck) refreshAll();
+  }catch(e){ /* silent; reconcile timers will retry */ }
+  finally{ _wiVerifyInflight = false; }
+}
+
 /* Once a nomination + burn have been observed on-chain for a given
    (round, slug), the write-in stays on the ballot for that round. Both are
    permanent chain facts; a later transient failure fetching burn transfers
@@ -3943,72 +4037,6 @@ function sumRwiBySender(transfers, sinceByWallet){
    must not silently drop the write-in and erase every vote already cast
    for it. Keyed by round so a new ballot starts with a clean slate. */
 const verifiedWriteInsByRound = new Map();
-
-async function loadWriteIns(txs, round){
-  const rows = txs || [];
-  const nominations = [];
-  rows.forEach(function(t){
-    const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
-    const text = txText(t);
-    if(!from || !text.startsWith(WRITEIN_TAG)) return;
-    const body = text.slice(WRITEIN_TAG.length);
-    const sep = body.indexOf(':');
-    if(sep < 0) return;
-    if(parseInt(body.slice(0, sep), 10) !== round) return;      // scoped to this ballot
-    const slug = body.slice(sep + 1).trim().toLowerCase();
-    if(!TGB_BY_SLUG[slug]) return;                              // must be a directory entry
-    if(ORG_POOL[slug]) return;                                  // already a standing candidate
-    nominations.push({
-      slug: slug, from: from,
-      block: Number(t.block_number || t.block || 0),
-      index: Number(t.index !== undefined ? t.index : (t.position !== undefined ? t.position : 0))
-    });
-  });
-  if(!nominations.length) return [];
-
-  // Already-verified slugs need no burn re-check on this pass — the
-  // nomination and payment are chain-permanent, and re-checking exposes them
-  // to transient failures that would drop the write-in from the ballot.
-  const cached = verifiedWriteInsByRound.get(round) || new Set();
-  const stillNeedsCheck = nominations.filter(function(n){ return !cached.has(n.slug); });
-
-  const newlyVerified = new Set();
-  if(stillNeedsCheck.length){
-    try{
-      // earliest nomination block per wallet — payments before it do not count
-      const since = new Map();
-      stillNeedsCheck.forEach(function(n){
-        const cur = since.get(n.from);
-        if(cur === undefined || n.block < cur) since.set(n.from, n.block);
-      });
-      const transfers = await fetchTokenTransfersTo(WRITEIN_BURN);
-      const burnPaid = sumRwiBySender(transfers, since);
-      const price = rwiUsdPrice || await fetchRwiPrice();
-      if(price){
-        const needBurn = usdToRwiUnits(WRITEIN_BURN_USD * WRITEIN_TOLERANCE, price);
-        stillNeedsCheck.forEach(function(n){
-          if((burnPaid.get(n.from) || 0n) >= needBurn) newlyVerified.add(n.slug);
-        });
-      }
-    }catch(e){ /* transient failure — fall through with whatever the cache knows */ }
-  }
-
-  // Union of previously-verified (still permanent) and newly-verified.
-  const allVerified = new Set([...cached, ...newlyVerified]);
-  verifiedWriteInsByRound.set(round, allVerified);
-
-  const paid = nominations.filter(function(n){ return allVerified.has(n.slug); });
-  // newest first; one slot per wallet so a single payer cannot take the whole board
-  paid.sort(function(a,b){ return b.block !== a.block ? b.block - a.block : b.index - a.index; });
-  const seenWallet = new Set(), seenSlug = new Set(), out = [];
-  for(const n of paid){
-    if(seenWallet.has(n.from) || seenSlug.has(n.slug)) continue;
-    seenWallet.add(n.from); seenSlug.add(n.slug);
-    out.push(n.slug);
-    if(out.length >= WRITEIN_SLOTS) break;
-  }
-  return out;
-}
 
 /* ------------------------------------------------------------------- tally */
 let lastTally = null;
