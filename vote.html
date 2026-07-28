@@ -3854,9 +3854,9 @@ async function refreshAll(opts){
 
 /* --------------------------------------------------------------- write-ins
    A nomination only counts if it was PAID FOR. We read the token transfers
-   into both destinations and require the nominating wallet to appear in both,
-   for at least the quoted amount. An unpaid RWIWRITEIN transaction is free to
-   broadcast, so without this check the fee would be decorative. */
+   into the burn address and require the nominating wallet to appear there
+   for at least the quoted amount. An unpaid RWIWRITEIN transaction is free
+   to broadcast, so without this check the fee would be decorative. */
 let writeInCache = [];
 async function fetchTokenTransfersTo(addr){
   const out = [];
@@ -3893,6 +3893,14 @@ function sumRwiBySender(transfers, sinceByWallet){
   });
   return by;
 }
+/* Once a nomination + burn have been observed on-chain for a given
+   (round, slug), the write-in stays on the ballot for that round. Both are
+   permanent chain facts; a later transient failure fetching burn transfers
+   (Blockscout rate-limit, network hiccup) or a temporary price-feed outage
+   must not silently drop the write-in and erase every vote already cast
+   for it. Keyed by round so a new ballot starts with a clean slate. */
+const verifiedWriteInsByRound = new Map();
+
 async function loadWriteIns(txs, round){
   const rows = txs || [];
   const nominations = [];
@@ -3915,25 +3923,38 @@ async function loadWriteIns(txs, round){
   });
   if(!nominations.length) return [];
 
-  let burnPaid;
-  try{
-    // earliest nomination block per wallet — payments before it do not count
-    const since = new Map();
-    nominations.forEach(function(n){
-      const cur = since.get(n.from);
-      if(cur === undefined || n.block < cur) since.set(n.from, n.block);
-    });
-    const transfers = await fetchTokenTransfersTo(WRITEIN_BURN);
-    burnPaid = sumRwiBySender(transfers, since);
-  }catch(e){ return []; }                                        // cannot verify -> count nothing
+  // Already-verified slugs need no burn re-check on this pass — the
+  // nomination and payment are chain-permanent, and re-checking exposes them
+  // to transient failures that would drop the write-in from the ballot.
+  const cached = verifiedWriteInsByRound.get(round) || new Set();
+  const stillNeedsCheck = nominations.filter(function(n){ return !cached.has(n.slug); });
 
-  const price = rwiUsdPrice || await fetchRwiPrice();
-  if(!price) return [];
-  const needBurn = usdToRwiUnits(WRITEIN_BURN_USD * WRITEIN_TOLERANCE, price);
+  const newlyVerified = new Set();
+  if(stillNeedsCheck.length){
+    try{
+      // earliest nomination block per wallet — payments before it do not count
+      const since = new Map();
+      stillNeedsCheck.forEach(function(n){
+        const cur = since.get(n.from);
+        if(cur === undefined || n.block < cur) since.set(n.from, n.block);
+      });
+      const transfers = await fetchTokenTransfersTo(WRITEIN_BURN);
+      const burnPaid = sumRwiBySender(transfers, since);
+      const price = rwiUsdPrice || await fetchRwiPrice();
+      if(price){
+        const needBurn = usdToRwiUnits(WRITEIN_BURN_USD * WRITEIN_TOLERANCE, price);
+        stillNeedsCheck.forEach(function(n){
+          if((burnPaid.get(n.from) || 0n) >= needBurn) newlyVerified.add(n.slug);
+        });
+      }
+    }catch(e){ /* transient failure — fall through with whatever the cache knows */ }
+  }
 
-  const paid = nominations.filter(function(n){
-    return (burnPaid.get(n.from) || 0n) >= needBurn;
-  });
+  // Union of previously-verified (still permanent) and newly-verified.
+  const allVerified = new Set([...cached, ...newlyVerified]);
+  verifiedWriteInsByRound.set(round, allVerified);
+
+  const paid = nominations.filter(function(n){ return allVerified.has(n.slug); });
   // newest first; one slot per wallet so a single payer cannot take the whole board
   paid.sort(function(a,b){ return b.block !== a.block ? b.block - a.block : b.index - a.index; });
   const seenWallet = new Set(), seenSlug = new Set(), out = [];
@@ -4483,13 +4504,12 @@ function repaintDynamic(){
       $w('wiChosen').hidden = true;
       $w('wiSearch').value = '';
       wiStatus(t('vote.st.writeInDone'));
-      // A write-in needs three separate indexes: the nomination tx to the
-      // ballot box, and the two RWI transfers (dev + burn). Token transfers
-      // are decoded from event logs and trail the tx list by a couple of
-      // seconds. Same backoff the vote flow uses — each timer checks if the
-      // pick has actually landed and cancels the rest if it has, instead of
-      // walking Blockscout five times for a write-in that surfaced on the
-      // first pass.
+      // A write-in needs two separate indexes: the nomination tx to the
+      // ballot box and the RWI burn transfer. Token transfers are decoded
+      // from event logs and trail the tx list by a couple of seconds. Same
+      // backoff the vote flow uses — each timer checks if the pick has
+      // actually landed and cancels the rest if it has, instead of walking
+      // Blockscout five times for a write-in that surfaced on the first pass.
       clearPendingWriteIn();
       pendingWriteIn = { slug: pickedSlug, round: ROUND, at: Date.now() };
       [1500, 4000, 9000, 18000, 35000].forEach(function(ms){
