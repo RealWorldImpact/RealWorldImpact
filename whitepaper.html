@@ -407,11 +407,16 @@ const TRANSLATIONS = {
     'wp.works.eyebrow':'02 — How it works','wp.works.title':'Fees in, receipts out.',
     'wp.burn.eyebrow':'03 — The burn','wp.burn.title':'Extending the Pons flywheel.',
     'wp.ledger.eyebrow':'04 — The ledger','wp.ledger.title':'Proof, not promises.',
-    'wp.token.eyebrow':'05 — Token & contract','wp.token.title':'What exists, what does not.',
+    'wp.signal.eyebrow':'05 — Community signal','wp.signal.title':'Advisory, holder-weighted, onchain.',
+    'wp.signal.body1':'Section 02 described the donation flow. Section 04 shows where those donations have landed so far. This section covers how the community feeds the next one.',
+    'wp.signal.body2':'The ballot at rwihood.org/vote presents six seats per round. Three are auto-composed from the project\'s cause areas and ranked against live crisis data from ReliefWeb; three are reserved for holder write-ins from The Giving Block directory. A vote is a zero-value transaction sent to a dedicated ballot address, weighted by the voter\'s live $RWI balance at read time. Anyone can walk the same transactions and reproduce the tally exactly — the site does no server-side counting.',
+    'wp.signal.body3':'The outcome is advisory. $RWI grants no governance rights, no claim on revenue, and no contractual obligation on the recipient list. The project reads the result, weighs it, and retains final say — every recipient must clear The Giving Block\'s vetting regardless of how the vote lands. A winning vote is a recommendation, not an instruction.',
+    'wp.signal.body4':'Write-ins carry a $5 fee, paid in $RWI and sent to the burn address 0x000000000000000000000000000000000000dEaD — the same address section 03 covers. The fee is not revenue. It goes to permanent supply reduction in the same direction as the earn-and-burn pool, and the site verifies the burn onchain before crediting a nominated organisation to a ballot seat.',
+    'wp.token.eyebrow':'06 — Token & contract','wp.token.title':'What exists, what does not.',
     'wp.token.deployment':'Deployment','wp.token.supply':'Supply','wp.token.notwhat':'What RWI is not','wp.token.fees':'Fee revenue',
-    'wp.change.eyebrow':"06 — What changes, what doesn't",'wp.change.title':'The load-bearing parts stay.',
-    'wp.founder.eyebrow':'07 — The founder','wp.founder.title':'The person behind it.',
-    'wp.risks.eyebrow':'08 — Risks & disclaimers','wp.risks.title':'Read this part carefully.',
+    'wp.change.eyebrow':"07 — What changes, what doesn't",'wp.change.title':'The load-bearing parts stay.',
+    'wp.founder.eyebrow':'08 — The founder','wp.founder.title':'The person behind it.',
+    'wp.risks.eyebrow':'09 — Risks & disclaimers','wp.risks.title':'Read this part carefully.',
     'wp.refs.eyebrow':'References — Addresses & links','wp.refs.title':'Everything, verifiable.'
   ,
     'index.pons.burnedBy':'$PONS burned by',
@@ -456,7 +461,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'Total to date',
     'wp.token.deployment.body':'$RWI was deployed on Robinhood Chain (chain ID 4663) on July 18, 2026. The token contract is 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. The main liquidity pool pairs $RWI with $WETH on Uniswap at 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. A second, dedicated $RWI/$PONS pool at 0x62a9e7cf94049dded854c26ff6204079a1c8caed operates as the earn-and-burn pool described in section 03 — separate from the main venue and designed so that everything the project earns from it is destroyed.',
     'wp.token.supply.body':'Total supply is 1,000,000,000 $RWI, fixed at deployment. There is no mint function, and no owner privileges to change balances or freeze accounts. What was deployed is what exists, and it will not be changed. Any tokens sent to a burn address are removed from circulation permanently and can be counted onchain against total supply.',
-    'wp.token.notwhat.body':'$RWI is not a security, is not a claim on a treasury, and is not a governance token. Holders do not vote on donation targets and are not entitled to any share of fee revenue directly. The project\'s charitable output is committed procedurally — through published donations against a public ledger — rather than contractually. This is a design choice: procedural commitments can be verified in the moment, while contractual ones require legal enforcement no memecoin can credibly provide.',
+    'wp.token.notwhat.body':'$RWI is not a security, is not a claim on a treasury, and is not a governance token. The onchain signal described in section 05 is advisory — it carries no contractual weight and confers no share of fee revenue. The project\'s charitable output is committed procedurally — through published donations against a public ledger — rather than contractually. This is a design choice: procedural commitments can be verified in the moment, while contractual ones require legal enforcement no memecoin can credibly provide.',
     'wp.token.fees.body':'Trading fees accrue to the project wallet on an ongoing basis. Fees earned in the main $RWI/$WETH pool are converted to $ETH and donated. Fees earned in the earn-and-burn $RWI/$PONS pool are burned in full. No portion of either stream is retained as personal compensation to the founder, and there is no development treasury being carved out for future spending.',
     'wp.change.body1':'The site will evolve, the receipts list will grow, and the front-end tooling around the project will keep improving. What will not change is the mechanism at the center: fee revenue is either donated to a vetted charity or burned. That is the whole product.',
     'wp.change.body2':'Because the mechanism is procedural, so are its failure states. RWI has stopped being RWI if any of the following occurs — and each is observable directly, by anyone, without permission.',
@@ -586,17 +591,22 @@ const TRANSLATIONS = {
     'wp.burn.title':'Memperluas roda gila Pons.',
     'wp.ledger.eyebrow':'04 — Buku besar',
     'wp.ledger.title':'Bukti, bukan janji.',
+    'wp.signal.eyebrow':'05 — Sinyal komunitas','wp.signal.title':'Bersifat penasihat, ditimbang oleh pemegang, onchain.',
+    'wp.signal.body1':'Bagian 02 menjelaskan alur donasi. Bagian 04 menunjukkan ke mana donasi tersebut telah mengalir sejauh ini. Bagian ini membahas bagaimana komunitas memberi masukan untuk donasi berikutnya.',
+    'wp.signal.body2':'Kertas suara di rwihood.org/vote menampilkan enam kursi per putaran. Tiga disusun otomatis dari area penyebab proyek dan diperingkat terhadap data krisis langsung dari ReliefWeb; tiga disediakan untuk write-in pemegang dari direktori The Giving Block. Suara adalah transaksi bernilai nol yang dikirim ke alamat kertas suara khusus, dibobot oleh saldo $RWI pemegang saat dibaca. Siapa pun dapat menelusuri transaksi yang sama dan mereproduksi penghitungan dengan tepat — situs tidak melakukan penghitungan di sisi server.',
+    'wp.signal.body3':'Hasilnya bersifat penasihat. $RWI tidak memberikan hak tata kelola, tidak ada klaim atas pendapatan, dan tidak ada kewajiban kontraktual atas daftar penerima. Proyek membaca hasilnya, menimbangnya, dan mempertahankan keputusan akhir — setiap penerima harus lolos verifikasi The Giving Block terlepas dari bagaimana suara jatuh. Suara pemenang adalah rekomendasi, bukan instruksi.',
+    'wp.signal.body4':'Write-in memiliki biaya $5, dibayar dalam $RWI dan dikirim ke alamat pembakaran 0x000000000000000000000000000000000000dEaD — alamat yang sama yang dibahas bagian 03. Biaya bukan pendapatan. Itu menuju pengurangan pasokan permanen dalam arah yang sama dengan pool earn-and-burn, dan situs memverifikasi pembakaran onchain sebelum mengkredit organisasi yang dinominasikan ke kursi kertas suara.',
     'wp.token.eyebrow':'05 — Token & kontrak',
     'wp.token.title':'Apa yang ada, apa yang tidak.',
     'wp.token.deployment':'Deployment',
     'wp.token.supply':'Pasokan',
     'wp.token.notwhat':'Apa yang bukan RWI',
     'wp.token.fees':'Pendapatan biaya',
-    'wp.change.eyebrow':'06 — Apa yang berubah, apa yang tidak',
+    'wp.change.eyebrow':'07 — Apa yang berubah, apa yang tidak',
     'wp.change.title':'Bagian penyangga tetap.',
-    'wp.founder.eyebrow':'07 — Pendiri',
+    'wp.founder.eyebrow':'08 — Pendiri',
     'wp.founder.title':'Orang di baliknya.',
-    'wp.risks.eyebrow':'08 — Risiko & penafian',
+    'wp.risks.eyebrow':'09 — Risiko & penafian',
     'wp.risks.title':'Baca bagian ini dengan saksama.',
     'wp.refs.eyebrow':'Referensi — Alamat & tautan',
     'wp.refs.title':'Semuanya, dapat diverifikasi.',
@@ -642,7 +652,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'Total hingga kini',
     'wp.token.deployment.body':'$RWI di-deploy di Robinhood Chain (chain ID 4663) pada 18 Juli 2026. Kontrak token adalah 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. Pool likuiditas utama memasangkan $RWI dengan $WETH di Uniswap di 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Pool $RWI/$PONS kedua yang khusus di 0x62a9e7cf94049dded854c26ff6204079a1c8caed beroperasi sebagai pool earn-and-burn yang dijelaskan di bagian 03 — terpisah dari tempat utama dan dirancang agar semua yang diperoleh proyek darinya dihancurkan.',
     'wp.token.supply.body':'Total pasokan adalah 1.000.000.000 $RWI, tetap saat deployment. Tidak ada fungsi mint, dan tidak ada hak istimewa pemilik untuk mengubah saldo atau membekukan akun. Apa yang di-deploy adalah apa yang ada, dan tidak akan diubah. Token apa pun yang dikirim ke alamat pembakaran dihapus dari peredaran secara permanen dan dapat dihitung onchain terhadap total pasokan.',
-    'wp.token.notwhat.body':'$RWI bukan sekuritas, bukan klaim atas perbendaharaan, dan bukan token tata kelola. Pemegang tidak memilih target donasi dan tidak berhak atas bagian pendapatan biaya secara langsung. Output amal proyek berkomitmen secara prosedural — melalui donasi yang dipublikasikan terhadap buku besar publik — bukan secara kontraktual. Ini adalah pilihan desain: komitmen prosedural dapat diverifikasi saat itu juga, sementara yang kontraktual memerlukan penegakan hukum yang tidak dapat diberikan secara kredibel oleh memecoin mana pun.',
+    'wp.token.notwhat.body':'$RWI bukan sekuritas, bukan klaim atas perbendaharaan, dan bukan token tata kelola. Sinyal onchain yang dijelaskan di bagian 05 bersifat penasihat — tidak membawa bobot kontraktual dan tidak memberikan bagian pendapatan biaya. Output amal proyek berkomitmen secara prosedural — melalui donasi yang dipublikasikan terhadap buku besar publik — bukan secara kontraktual. Ini adalah pilihan desain: komitmen prosedural dapat diverifikasi saat itu juga, sementara yang kontraktual memerlukan penegakan hukum yang tidak dapat diberikan secara kredibel oleh memecoin mana pun.',
     'wp.token.fees.body':'Biaya trading terakumulasi ke dompet proyek secara berkelanjutan. Biaya yang diperoleh di pool utama $RWI/$WETH diubah menjadi $ETH dan didonasikan. Biaya yang diperoleh di pool earn-and-burn $RWI/$PONS dibakar sepenuhnya. Tidak ada bagian dari aliran mana pun yang ditahan sebagai kompensasi pribadi untuk pendiri, dan tidak ada perbendaharaan pengembangan yang disisihkan untuk pengeluaran masa depan.',
     'wp.change.body1':'Situs akan berkembang, daftar tanda terima akan bertambah, dan perkakas front-end di sekitar proyek akan terus membaik. Yang tidak akan berubah adalah mekanisme di pusatnya: pendapatan biaya didonasikan ke lembaga amal terverifikasi atau dibakar. Itulah keseluruhan produk.',
     'wp.change.body2':'Karena mekanismenya prosedural, demikian pula keadaan kegagalannya. RWI telah berhenti menjadi RWI jika salah satu dari berikut terjadi — dan masing-masing dapat diamati langsung, oleh siapa saja, tanpa izin.',
@@ -772,17 +782,22 @@ const TRANSLATIONS = {
     'wp.burn.title':'Das Pons-Schwungrad erweitern.',
     'wp.ledger.eyebrow':'04 — Das Hauptbuch',
     'wp.ledger.title':'Beweise, keine Versprechen.',
+    'wp.signal.eyebrow':'05 — Community-Signal','wp.signal.title':'Beratend, holder-gewichtet, onchain.',
+    'wp.signal.body1':'Abschnitt 02 beschrieb den Spendenfluss. Abschnitt 04 zeigt, wohin diese Spenden bisher geflossen sind. Dieser Abschnitt behandelt, wie die Community die nächste einspeist.',
+    'wp.signal.body2':'Der Stimmzettel auf rwihood.org/vote präsentiert sechs Plätze pro Runde. Drei werden automatisch aus den Themenfeldern des Projekts zusammengestellt und gegen Live-Krisendaten von ReliefWeb gewichtet; drei sind für Holder-Write-Ins aus dem Verzeichnis von The Giving Block reserviert. Eine Stimme ist eine Transaktion mit Nullwert an eine dedizierte Stimmzetteladresse, gewichtet mit dem Live-$RWI-Guthaben des Wählers zum Auslesezeitpunkt. Jeder kann dieselben Transaktionen durchgehen und die Zählung exakt reproduzieren — die Seite führt keine serverseitige Zählung durch.',
+    'wp.signal.body3':'Das Ergebnis ist beratend. $RWI gewährt keine Governance-Rechte, keinen Anspruch auf Einnahmen und keine vertragliche Verpflichtung zur Empfängerliste. Das Projekt liest das Ergebnis, wägt es ab und behält die endgültige Entscheidung — jeder Empfänger muss die Prüfung von The Giving Block bestehen, unabhängig davon, wie die Abstimmung ausfällt. Ein gewinnender Vote ist eine Empfehlung, keine Anweisung.',
+    'wp.signal.body4':'Write-Ins tragen eine Gebühr von 5 $, gezahlt in $RWI und an die Burn-Adresse 0x000000000000000000000000000000000000dEaD gesendet — dieselbe Adresse, die Abschnitt 03 behandelt. Die Gebühr ist keine Einnahme. Sie fließt in dauerhafte Angebotsreduktion in dieselbe Richtung wie der Earn-and-Burn-Pool, und die Seite verifiziert das Verbrennen onchain, bevor eine nominierte Organisation einem Stimmzettelsitz gutgeschrieben wird.',
     'wp.token.eyebrow':'05 — Token & Vertrag',
     'wp.token.title':'Was existiert, was nicht.',
     'wp.token.deployment':'Deployment',
     'wp.token.supply':'Angebot',
     'wp.token.notwhat':'Was RWI nicht ist',
     'wp.token.fees':'Gebühreneinnahmen',
-    'wp.change.eyebrow':'06 — Was sich ändert, was nicht',
+    'wp.change.eyebrow':'07 — Was sich ändert, was nicht',
     'wp.change.title':'Die tragenden Teile bleiben.',
-    'wp.founder.eyebrow':'07 — Der Gründer',
+    'wp.founder.eyebrow':'08 — Der Gründer',
     'wp.founder.title':'Die Person dahinter.',
-    'wp.risks.eyebrow':'08 — Risiken & Haftungsausschlüsse',
+    'wp.risks.eyebrow':'09 — Risiken & Haftungsausschlüsse',
     'wp.risks.title':'Lies diesen Teil sorgfältig.',
     'wp.refs.eyebrow':'Referenzen — Adressen & Links',
     'wp.refs.title':'Alles, überprüfbar.',
@@ -828,7 +843,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'Gesamt bis heute',
     'wp.token.deployment.body':'$RWI wurde am 18. Juli 2026 auf der Robinhood Chain (Chain-ID 4663) bereitgestellt. Der Token-Vertrag ist 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. Der Haupt-Liquiditätspool paart $RWI mit $WETH auf Uniswap bei 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Ein zweiter, dedizierter $RWI/$PONS-Pool bei 0x62a9e7cf94049dded854c26ff6204079a1c8caed fungiert als der in Abschnitt 03 beschriebene Earn-and-Burn-Pool — getrennt vom Hauptort und so gestaltet, dass alles, was das Projekt daraus verdient, vernichtet wird.',
     'wp.token.supply.body':'Das Gesamtangebot beträgt 1.000.000.000 $RWI, festgelegt beim Deployment. Es gibt keine Mint-Funktion und keine Eigentümerprivilegien, um Guthaben zu ändern oder Konten einzufrieren. Was bereitgestellt wurde, ist das, was existiert, und es wird nicht geändert. Alle an eine Burn-Adresse gesendeten Token werden dauerhaft aus dem Umlauf entfernt und können onchain gegen das Gesamtangebot gezählt werden.',
-    'wp.token.notwhat.body':'$RWI ist kein Wertpapier, kein Anspruch auf eine Schatzkammer und kein Governance-Token. Inhaber stimmen nicht über Spendenziele ab und haben keinen Anspruch auf einen direkten Anteil an den Gebühreneinnahmen. Der wohltätige Output des Projekts ist prozedural verpflichtet — durch veröffentlichte Spenden gegen ein öffentliches Hauptbuch — statt vertraglich. Dies ist eine Designentscheidung: Prozedurale Verpflichtungen können im Moment überprüft werden, während vertragliche eine rechtliche Durchsetzung erfordern, die kein Memecoin glaubwürdig bieten kann.',
+    'wp.token.notwhat.body':'$RWI ist kein Wertpapier, kein Anspruch auf eine Schatzkammer und kein Governance-Token. Das in Abschnitt 05 beschriebene Onchain-Signal ist beratend — es hat kein vertragliches Gewicht und verleiht keinen Anteil an den Gebühreneinnahmen. Der wohltätige Output des Projekts ist prozedural verpflichtet — durch veröffentlichte Spenden gegen ein öffentliches Hauptbuch — statt vertraglich. Dies ist eine Designentscheidung: Prozedurale Verpflichtungen können im Moment überprüft werden, während vertragliche eine rechtliche Durchsetzung erfordern, die kein Memecoin glaubwürdig bieten kann.',
     'wp.token.fees.body':'Handelsgebühren sammeln sich fortlaufend in der Projekt-Wallet an. Im Haupt-Pool $RWI/$WETH verdiente Gebühren werden in $ETH umgewandelt und gespendet. Im Earn-and-Burn-Pool $RWI/$PONS verdiente Gebühren werden vollständig verbrannt. Kein Teil eines der beiden Ströme wird als persönliche Vergütung für den Gründer einbehalten, und es gibt keine Entwicklungs-Schatzkammer, die für zukünftige Ausgaben abgezweigt wird.',
     'wp.change.body1':'Die Seite wird sich weiterentwickeln, die Belegliste wird wachsen, und die Frontend-Werkzeuge rund um das Projekt werden sich weiter verbessern. Was sich nicht ändern wird, ist der Mechanismus im Zentrum: Gebühreneinnahmen werden entweder an eine geprüfte Wohltätigkeitsorganisation gespendet oder verbrannt. Das ist das gesamte Produkt.',
     'wp.change.body2':'Da der Mechanismus prozedural ist, sind es auch seine Fehlerzustände. RWI hat aufgehört, RWI zu sein, wenn eines der folgenden Dinge eintritt — und jedes ist direkt, von jedem, ohne Erlaubnis beobachtbar.',
@@ -914,11 +929,16 @@ const TRANSLATIONS = {
     'wp.works.eyebrow':'02 — Cómo funciona','wp.works.title':'Comisiones dentro, recibos fuera.',
     'wp.burn.eyebrow':'03 — La quema','wp.burn.title':'Extendiendo el volante de Pons.',
     'wp.ledger.eyebrow':'04 — El registro','wp.ledger.title':'Pruebas, no promesas.',
+    'wp.signal.eyebrow':'05 — Señal comunitaria','wp.signal.title':'Consultiva, ponderada por poseedores, onchain.',
+    'wp.signal.body1':'La sección 02 describió el flujo de donaciones. La sección 04 muestra a dónde han llegado esas donaciones hasta ahora. Esta sección cubre cómo la comunidad alimenta la próxima.',
+    'wp.signal.body2':'La boleta en rwihood.org/vote presenta seis asientos por ronda. Tres se componen automáticamente de las áreas de causa del proyecto y se clasifican contra datos de crisis en vivo de ReliefWeb; tres están reservados para write-ins de poseedores del directorio de The Giving Block. Un voto es una transacción de valor cero enviada a una dirección de boleta dedicada, ponderada por el saldo $RWI en vivo del votante al momento de la lectura. Cualquiera puede recorrer las mismas transacciones y reproducir el conteo exactamente — el sitio no hace conteo del lado del servidor.',
+    'wp.signal.body3':'El resultado es consultivo. $RWI no otorga derechos de gobernanza, ni reclamos sobre ingresos, ni obligación contractual sobre la lista de destinatarios. El proyecto lee el resultado, lo pondera y conserva la última palabra — cada destinatario debe superar la verificación de The Giving Block independientemente de cómo caiga el voto. Un voto ganador es una recomendación, no una instrucción.',
+    'wp.signal.body4':'Los write-ins tienen una tarifa de $5, pagada en $RWI y enviada a la dirección de quema 0x000000000000000000000000000000000000dEaD — la misma dirección que cubre la sección 03. La tarifa no es ingreso. Va a la reducción permanente de oferta en la misma dirección que el pool ganar-y-quemar, y el sitio verifica la quema onchain antes de acreditar una organización nominada a un asiento de boleta.',
     'wp.token.eyebrow':'05 — Token y contrato','wp.token.title':'Lo que existe, lo que no.',
     'wp.token.deployment':'Despliegue','wp.token.supply':'Suministro','wp.token.notwhat':'Lo que RWI no es','wp.token.fees':'Ingresos por comisiones',
-    'wp.change.eyebrow':'06 — Qué cambia, qué no','wp.change.title':'Las partes estructurales permanecen.',
-    'wp.founder.eyebrow':'07 — El fundador','wp.founder.title':'La persona detrás.',
-    'wp.risks.eyebrow':'08 — Riesgos y descargos','wp.risks.title':'Lee esta parte con cuidado.',
+    'wp.change.eyebrow':'07 — Qué cambia, qué no','wp.change.title':'Las partes estructurales permanecen.',
+    'wp.founder.eyebrow':'08 — El fundador','wp.founder.title':'La persona detrás.',
+    'wp.risks.eyebrow':'09 — Riesgos y descargos','wp.risks.title':'Lee esta parte con cuidado.',
     'wp.refs.eyebrow':'Referencias — Direcciones y enlaces','wp.refs.title':'Todo, verificable.'
   ,
     'index.pons.burnedBy':'$PONS quemado por',
@@ -963,7 +983,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'Total hasta la fecha',
     'wp.token.deployment.body':'$RWI se desplegó en Robinhood Chain (chain ID 4663) el 18 de julio de 2026. El contrato del token es 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. El pool de liquidez principal empareja $RWI con $WETH en Uniswap en 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Un segundo pool dedicado $RWI/$PONS en 0x62a9e7cf94049dded854c26ff6204079a1c8caed opera como el pool de ganar-y-quemar descrito en la sección 03 — separado del lugar principal y diseñado para que todo lo que el proyecto gana de él se destruya.',
     'wp.token.supply.body':'La oferta total es de 1.000.000.000 $RWI, fijada en el despliegue. No hay función de acuñación, ni privilegios de propietario para cambiar saldos o congelar cuentas. Lo que se desplegó es lo que existe, y no se cambiará. Cualquier token enviado a una dirección de quema se retira de la circulación permanentemente y puede contarse on-chain contra la oferta total.',
-    'wp.token.notwhat.body':'$RWI no es un valor, no es un derecho sobre una tesorería y no es un token de gobernanza. Los poseedores no votan sobre objetivos de donación y no tienen derecho a ninguna parte de los ingresos por comisiones directamente. La producción caritativa del proyecto está comprometida de forma procedimental — mediante donaciones publicadas contra un libro público — más que contractualmente. Es una elección de diseño: los compromisos procedimentales pueden verificarse en el momento, mientras que los contractuales requieren una aplicación legal que ninguna memecoin puede proporcionar de forma creíble.',
+    'wp.token.notwhat.body':'$RWI no es un valor, no es un derecho sobre una tesorería y no es un token de gobernanza. La señal onchain descrita en la sección 05 es consultiva — no tiene peso contractual ni confiere participación en los ingresos por comisiones. La producción caritativa del proyecto está comprometida de forma procedimental — mediante donaciones publicadas contra un libro público — más que contractualmente. Es una elección de diseño: los compromisos procedimentales pueden verificarse en el momento, mientras que los contractuales requieren una aplicación legal que ninguna memecoin puede proporcionar de forma creíble.',
     'wp.token.fees.body':'Las comisiones de trading se acumulan en la billetera del proyecto de forma continua. Las comisiones obtenidas en el pool principal $RWI/$WETH se convierten a $ETH y se donan. Las comisiones obtenidas en el pool de ganar-y-quemar $RWI/$PONS se queman por completo. Ninguna parte de ninguno de los flujos se retiene como compensación personal para el fundador, y no hay ninguna tesorería de desarrollo apartada para gastos futuros.',
     'wp.change.body1':'El sitio evolucionará, la lista de recibos crecerá y las herramientas de front-end alrededor del proyecto seguirán mejorando. Lo que no cambiará es el mecanismo en el centro: los ingresos por comisiones se donan a una organización benéfica verificada o se queman. Ese es todo el producto.',
     'wp.change.body2':'Debido a que el mecanismo es procedimental, también lo son sus estados de fallo. RWI ha dejado de ser RWI si ocurre cualquiera de lo siguiente — y cada uno es observable directamente, por cualquiera, sin permiso.',
@@ -1049,11 +1069,16 @@ const TRANSLATIONS = {
     'wp.works.eyebrow':'02 — 工作方式','wp.works.title':'费用进,收据出。',
     'wp.burn.eyebrow':'03 — 销毁','wp.burn.title':'扩展 Pons 飞轮。',
     'wp.ledger.eyebrow':'04 — 账本','wp.ledger.title':'证据,而非承诺。',
+    'wp.signal.eyebrow':'05 — 社区信号','wp.signal.title':'咨询性,由持有者加权,链上。',
+    'wp.signal.body1':'第 02 节描述了捐赠流程。第 04 节显示这些捐赠迄今为止的去向。本节介绍社区如何为下一次捐赠提供输入。',
+    'wp.signal.body2':'rwihood.org/vote 上的选票每轮呈现六个席位。三个从项目的事业领域自动组成,并根据 ReliefWeb 的实时危机数据排名;三个保留给来自 The Giving Block 目录的持有者提名。投票是发送到专用选票地址的零值交易,按投票者读取时的实时 $RWI 余额加权。任何人都可以浏览相同的交易并准确重现统计 — 网站不进行服务器端计数。',
+    'wp.signal.body3':'结果是咨询性的。$RWI 不授予治理权、不主张收入,也不对接收者名单产生合同义务。项目会读取结果、加以权衡,并保留最终决定权 — 每个接收者都必须通过 The Giving Block 的审查,无论投票结果如何。获胜投票是一项建议,而非指令。',
+    'wp.signal.body4':'提名需要 5 美元的费用,以 $RWI 支付并发送到销毁地址 0x000000000000000000000000000000000000dEaD — 与第 03 节所涵盖的地址相同。该费用不是收入。它以与 earn-and-burn 池相同的方式用于永久减少供应,网站会在链上验证销毁,然后才将被提名的组织记入选票席位。',
     'wp.token.eyebrow':'05 — 代币与合约','wp.token.title':'存在什么,不存在什么。',
     'wp.token.deployment':'部署','wp.token.supply':'供应','wp.token.notwhat':'RWI 不是什么','wp.token.fees':'费用收入',
-    'wp.change.eyebrow':'06 — 什么在变,什么不变','wp.change.title':'承重的部分保持不变。',
-    'wp.founder.eyebrow':'07 — 创始人','wp.founder.title':'背后的人。',
-    'wp.risks.eyebrow':'08 — 风险与免责声明','wp.risks.title':'请仔细阅读这一部分。',
+    'wp.change.eyebrow':'07 — 什么在变,什么不变','wp.change.title':'承重的部分保持不变。',
+    'wp.founder.eyebrow':'08 — 创始人','wp.founder.title':'背后的人。',
+    'wp.risks.eyebrow':'09 — 风险与免责声明','wp.risks.title':'请仔细阅读这一部分。',
     'wp.refs.eyebrow':'参考 — 地址与链接','wp.refs.title':'一切皆可验证。'
   ,
     'index.pons.burnedBy':'$PONS 由此销毁',
@@ -1098,7 +1123,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'迄今总计',
     'wp.token.deployment.body':'$RWI 于 2026 年 7 月 18 日部署在 Robinhood 链(chain ID 4663)上。代币合约为 0x2286397228be256529BE1ae9ed8D7d16549e9C6A。主流动性池在 Uniswap 上将 $RWI 与 $WETH 配对,地址为 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697。位于 0x62a9e7cf94049dded854c26ff6204079a1c8caed 的第二个专用 $RWI/$PONS 池作为第 03 节所述的赚取与销毁池运行 — 与主场所分离,并设计为项目从中赚取的一切都被销毁。',
     'wp.token.supply.body':'总供应量为 1,000,000,000 $RWI,在部署时固定。没有铸造功能,也没有所有者更改余额或冻结账户的特权。部署的就是存在的,并且不会被更改。任何发送到销毁地址的代币都被永久移出流通,并可以在链上根据总供应量进行计算。',
-    'wp.token.notwhat.body':'$RWI 不是证券,不是对资金库的索取权,也不是治理代币。持有者不对捐赠目标投票,也无权直接分享任何费用收入。项目的慈善产出是以程序性方式承诺的 — 通过针对公开账本发布的捐赠 — 而非合同性的。这是一个设计选择:程序性承诺可以当场验证,而合同性承诺需要任何 memecoin 都无法可信地提供的法律执行。',
+    'wp.token.notwhat.body':'$RWI 不是证券,不是对资金库的索取权,也不是治理代币。第 05 节所述的链上信号是咨询性的 — 不具有合同效力,也不授予任何费用收入份额。项目的慈善产出是以程序性方式承诺的 — 通过针对公开账本发布的捐赠 — 而非合同性的。这是一个设计选择:程序性承诺可以当场验证,而合同性承诺需要任何 memecoin 都无法可信地提供的法律执行。',
     'wp.token.fees.body':'交易费用持续累积到项目钱包。在主 $RWI/$WETH 池中赚取的费用被转换为 $ETH 并捐赠。在赚取与销毁 $RWI/$PONS 池中赚取的费用被全部销毁。任何一个流的任何部分都不会作为创始人的个人报酬保留,也没有为未来支出划拨的开发资金库。',
     'wp.change.body1':'网站会演进,收据列表会增长,围绕项目的前端工具会不断改进。不会改变的是核心机制:费用收入要么捐给经审查的慈善机构,要么销毁。这就是全部产品。',
     'wp.change.body2':'因为机制是程序性的,其失败状态也是如此。如果发生以下任何情况,RWI 就不再是 RWI — 而且每一项都可以由任何人直接观察到,无需许可。',
@@ -1183,11 +1208,16 @@ const TRANSLATIONS = {
     'wp.works.eyebrow':'02 — 仕組み','wp.works.title':'手数料を受け取り、受領書を出力。',
     'wp.burn.eyebrow':'03 — バーン','wp.burn.title':'Ponsのフライホイールを拡張。',
     'wp.ledger.eyebrow':'04 — 台帳','wp.ledger.title':'約束ではなく、証拠。',
+    'wp.signal.eyebrow':'05 — コミュニティシグナル','wp.signal.title':'諮問的、保有者加重、オンチェーン。',
+    'wp.signal.body1':'セクション 02 では寄付の流れを説明しました。セクション 04 では、これらの寄付がこれまでにどこへ到達したかを示しています。本セクションでは、コミュニティが次の寄付にどう情報を提供するかを扱います。',
+    'wp.signal.body2':'rwihood.org/vote のバロットは、ラウンドごとに 6 席を提示します。3 席はプロジェクトのコーズエリアから自動的に構成され、ReliefWeb のライブ危機データに対してランキングされます。3 席は The Giving Block ディレクトリからの保有者ライトインのために予約されています。投票は専用のバロットアドレスに送信されるゼロ値トランザクションで、読み取り時の投票者のライブ $RWI 残高で重み付けされます。誰でも同じトランザクションを歩き、集計を正確に再現できます — サイトはサーバーサイドでのカウントを行いません。',
+    'wp.signal.body3':'結果は諮問的です。$RWI はガバナンス権利を付与せず、収益への請求権もなく、受取人リストに対する契約上の義務もありません。プロジェクトは結果を読み、それを検討し、最終決定権を保持します — 受取人はすべて、投票結果に関わらず The Giving Block の審査を通過しなければなりません。勝った投票は推奨であり、指示ではありません。',
+    'wp.signal.body4':'ライトインには 5 ドルの手数料があり、$RWI で支払われ、バーンアドレス 0x000000000000000000000000000000000000dEaD に送信されます — セクション 03 でカバーされているのと同じアドレスです。手数料は収益ではありません。それは earn-and-burn プールと同じ方向で永続的な供給削減に向かい、サイトは指名された組織をバロット席にクレジットする前にバーンをオンチェーンで検証します。',
     'wp.token.eyebrow':'05 — トークンと契約','wp.token.title':'存在するもの、存在しないもの。',
     'wp.token.deployment':'デプロイ','wp.token.supply':'供給','wp.token.notwhat':'RWIでないもの','wp.token.fees':'手数料収益',
-    'wp.change.eyebrow':'06 — 変わるもの、変わらないもの','wp.change.title':'荷重を担う部分は残る。',
-    'wp.founder.eyebrow':'07 — 創設者','wp.founder.title':'その背後の人物。',
-    'wp.risks.eyebrow':'08 — リスクと免責事項','wp.risks.title':'この部分は注意深く読んでください。',
+    'wp.change.eyebrow':'07 — 変わるもの、変わらないもの','wp.change.title':'荷重を担う部分は残る。',
+    'wp.founder.eyebrow':'08 — 創設者','wp.founder.title':'その背後の人物。',
+    'wp.risks.eyebrow':'09 — リスクと免責事項','wp.risks.title':'この部分は注意深く読んでください。',
     'wp.refs.eyebrow':'参考 — アドレスとリンク','wp.refs.title':'すべて、検証可能。'
   ,
     'index.pons.burnedBy':'$PONS が焼却された宛先',
@@ -1232,7 +1262,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'現在までの合計',
     'wp.token.deployment.body':'$RWI は 2026 年 7 月 18 日に Robinhood Chain(chain ID 4663)上にデプロイされました。トークンコントラクトは 0x2286397228be256529BE1ae9ed8D7d16549e9C6A です。メイン流動性プールは Uniswap 上で $RWI と $WETH を 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697 でペアリングします。0x62a9e7cf94049dded854c26ff6204079a1c8caed にある 2 つ目の専用 $RWI/$PONS プールは、セクション 03 で説明したアーン&バーンプールとして機能します — メイン会場とは別で、プロジェクトがそこから得たすべてが破壊されるように設計されています。',
     'wp.token.supply.body':'総供給量は 1,000,000,000 $RWI で、デプロイ時に固定されています。ミント関数はなく、残高を変更したりアカウントを凍結したりするオーナー権限もありません。デプロイされたものが存在するものであり、変更されることはありません。バーンアドレスに送られたトークンは永久に流通から除去され、総供給量に対してオンチェーンでカウントできます。',
-    'wp.token.notwhat.body':'$RWI は証券ではなく、財源への請求権でもなく、ガバナンストークンでもありません。保有者は寄付先に投票せず、手数料収入の分け前を直接受け取る権利もありません。プロジェクトの慈善的アウトプットは、契約的ではなく手続き的に — 公開台帳に対して公開された寄付を通じて — コミットされています。これは設計上の選択です:手続き的コミットメントはその場で検証できますが、契約的なものはいかなる memecoin も確実に提供できない法的執行を必要とします。',
+    'wp.token.notwhat.body':'$RWI は証券ではなく、財源への請求権でもなく、ガバナンストークンでもありません。セクション 05 で説明されるオンチェーンシグナルは諮問的です — 契約上の重みはなく、手数料収入の分け前を与えるものでもありません。プロジェクトの慈善的アウトプットは、契約的ではなく手続き的に — 公開台帳に対して公開された寄付を通じて — コミットされています。これは設計上の選択です:手続き的コミットメントはその場で検証できますが、契約的なものはいかなる memecoin も確実に提供できない法的執行を必要とします。',
     'wp.token.fees.body':'取引手数料は継続的にプロジェクトウォレットに蓄積されます。メイン $RWI/$WETH プールで得られた手数料は $ETH に変換され寄付されます。アーン&バーン $RWI/$PONS プールで得られた手数料は全額焼却されます。どちらのストリームの一部も創設者への個人的報酬として保持されず、将来の支出のために切り出される開発財源もありません。',
     'wp.change.body1':'サイトは進化し、領収書リストは増え、プロジェクト周りのフロントエンドツールは改善し続けます。変わらないのは中心にあるメカニズムです:手数料収入は審査済みの慈善団体に寄付されるか、焼却されるかのいずれかです。それが製品のすべてです。',
     'wp.change.body2':'メカニズムが手続き的であるため、その失敗状態も手続き的です。以下のいずれかが発生した場合、RWI は RWI ではなくなります — そしてそれぞれは、許可なく、誰でも直接観察できます。',
@@ -1317,11 +1347,16 @@ const TRANSLATIONS = {
     'wp.works.eyebrow':'02 — 작동 방식','wp.works.title':'수수료 들어가고, 영수증 나가고.',
     'wp.burn.eyebrow':'03 — 소각','wp.burn.title':'Pons 플라이휠 확장.',
     'wp.ledger.eyebrow':'04 — 원장','wp.ledger.title':'약속이 아닌 증거.',
+    'wp.signal.eyebrow':'05 — 커뮤니티 신호','wp.signal.title':'자문적, 홀더 가중, 온체인.',
+    'wp.signal.body1':'섹션 02에서는 기부 흐름을 설명했습니다. 섹션 04는 그 기부가 지금까지 어디로 갔는지 보여줍니다. 이 섹션에서는 커뮤니티가 다음 기부에 어떻게 기여하는지 다룹니다.',
+    'wp.signal.body2':'rwihood.org/vote의 투표용지는 라운드당 6개 자리를 제시합니다. 3개는 프로젝트의 대의 영역에서 자동 구성되어 ReliefWeb의 실시간 위기 데이터에 대해 순위가 매겨집니다. 3개는 The Giving Block 디렉터리의 홀더 라이트인용으로 예약됩니다. 투표는 전용 투표용지 주소로 전송되는 제로 밸류 트랜잭션이며, 읽을 때 투표자의 실시간 $RWI 잔액으로 가중치가 부여됩니다. 누구나 동일한 트랜잭션을 따라가며 집계를 정확히 재현할 수 있습니다 — 사이트는 서버 측 집계를 하지 않습니다.',
+    'wp.signal.body3':'결과는 자문적입니다. $RWI는 거버넌스 권리를 부여하지 않고, 수익에 대한 청구권도 없으며, 수혜자 목록에 대한 계약상 의무도 없습니다. 프로젝트는 결과를 읽고, 검토하며, 최종 결정권을 유지합니다 — 모든 수혜자는 투표 결과와 관계없이 The Giving Block의 검증을 통과해야 합니다. 승리한 투표는 권고이지 지시가 아닙니다.',
+    'wp.signal.body4':'라이트인은 $5 수수료가 있으며, $RWI로 지불되어 소각 주소 0x000000000000000000000000000000000000dEaD로 전송됩니다 — 섹션 03에서 다루는 것과 동일한 주소입니다. 수수료는 수익이 아닙니다. 그것은 earn-and-burn 풀과 같은 방향으로 영구 공급 감소로 향하며, 사이트는 지명된 조직을 투표용지 자리에 크레디트하기 전에 온체인에서 소각을 검증합니다.',
     'wp.token.eyebrow':'05 — 토큰 및 계약','wp.token.title':'존재하는 것과 존재하지 않는 것.',
     'wp.token.deployment':'배포','wp.token.supply':'공급','wp.token.notwhat':'RWI가 아닌 것','wp.token.fees':'수수료 수익',
-    'wp.change.eyebrow':'06 — 변하는 것과 변하지 않는 것','wp.change.title':'하중을 지탱하는 부분은 유지됩니다.',
-    'wp.founder.eyebrow':'07 — 창립자','wp.founder.title':'그 뒤의 사람.',
-    'wp.risks.eyebrow':'08 — 위험과 면책 조항','wp.risks.title':'이 부분을 주의 깊게 읽으세요.',
+    'wp.change.eyebrow':'07 — 변하는 것과 변하지 않는 것','wp.change.title':'하중을 지탱하는 부분은 유지됩니다.',
+    'wp.founder.eyebrow':'08 — 창립자','wp.founder.title':'그 뒤의 사람.',
+    'wp.risks.eyebrow':'09 — 위험과 면책 조항','wp.risks.title':'이 부분을 주의 깊게 읽으세요.',
     'wp.refs.eyebrow':'참고 — 주소 및 링크','wp.refs.title':'모든 것, 검증 가능.'
   ,
     'index.pons.burnedBy':'$PONS 소각 주소',
@@ -1366,7 +1401,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'현재까지 총계',
     'wp.token.deployment.body':'$RWI는 2026년 7월 18일 Robinhood Chain(chain ID 4663)에 배포되었습니다. 토큰 컨트랙트는 0x2286397228be256529BE1ae9ed8D7d16549e9C6A입니다. 메인 유동성 풀은 Uniswap에서 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697에서 $RWI를 $WETH와 페어링합니다. 0x62a9e7cf94049dded854c26ff6204079a1c8caed에 있는 두 번째 전용 $RWI/$PONS 풀은 섹션 03에서 설명한 획득-및-소각 풀로 작동합니다 — 메인 장소와 분리되어 있고 프로젝트가 그것에서 얻는 모든 것이 파괴되도록 설계되었습니다.',
     'wp.token.supply.body':'총 공급량은 1,000,000,000 $RWI로, 배포 시 고정됩니다. 민트 함수가 없으며, 잔액을 변경하거나 계정을 동결할 소유자 권한도 없습니다. 배포된 것이 존재하는 것이며, 변경되지 않습니다. 소각 주소로 전송된 모든 토큰은 영구적으로 유통에서 제거되며 총 공급량 대비 온체인에서 계산할 수 있습니다.',
-    'wp.token.notwhat.body':'$RWI는 증권이 아니며, 재무에 대한 청구권이 아니고, 거버넌스 토큰도 아닙니다. 보유자는 기부 대상에 투표하지 않으며 수수료 수익의 어떤 몫도 직접 받을 권리가 없습니다. 프로젝트의 자선적 산출물은 계약적이 아니라 절차적으로 — 공개 원장에 대해 게시된 기부를 통해 — 약속됩니다. 이것은 설계 선택입니다: 절차적 약속은 즉시 검증할 수 있지만, 계약적 약속은 어떤 밈코인도 신뢰할 수 있게 제공할 수 없는 법적 집행을 필요로 합니다.',
+    'wp.token.notwhat.body':'$RWI는 증권이 아니며, 재무에 대한 청구권이 아니고, 거버넌스 토큰도 아닙니다. 섹션 05에 설명된 온체인 신호는 자문적입니다 — 계약상 무게가 없으며 수수료 수익의 몫을 부여하지 않습니다. 프로젝트의 자선적 산출물은 계약적이 아니라 절차적으로 — 공개 원장에 대해 게시된 기부를 통해 — 약속됩니다. 이것은 설계 선택입니다: 절차적 약속은 즉시 검증할 수 있지만, 계약적 약속은 어떤 밈코인도 신뢰할 수 있게 제공할 수 없는 법적 집행을 필요로 합니다.',
     'wp.token.fees.body':'거래 수수료는 지속적으로 프로젝트 지갑에 누적됩니다. 메인 $RWI/$WETH 풀에서 얻은 수수료는 $ETH로 변환되어 기부됩니다. 획득-및-소각 $RWI/$PONS 풀에서 얻은 수수료는 전액 소각됩니다. 어느 흐름의 어떤 부분도 창립자에 대한 개인 보상으로 보유되지 않으며, 미래 지출을 위해 마련된 개발 재무도 없습니다.',
     'wp.change.body1':'사이트는 진화하고, 영수증 목록은 늘어나며, 프로젝트 주변의 프론트엔드 도구는 계속 개선될 것입니다. 변하지 않을 것은 중심에 있는 메커니즘입니다: 수수료 수익은 검증된 자선단체에 기부되거나 소각됩니다. 그것이 제품의 전부입니다.',
     'wp.change.body2':'메커니즘이 절차적이기 때문에 그 실패 상태도 절차적입니다. 다음 중 하나라도 발생하면 RWI는 더 이상 RWI가 아닙니다 — 그리고 각각은 허가 없이 누구나 직접 관찰할 수 있습니다.',
@@ -1451,11 +1486,16 @@ const TRANSLATIONS = {
     'wp.works.eyebrow':'02 — Como funciona','wp.works.title':'Taxas entram, recibos saem.',
     'wp.burn.eyebrow':'03 — A queima','wp.burn.title':'Estendendo o volante da Pons.',
     'wp.ledger.eyebrow':'04 — O registro','wp.ledger.title':'Provas, não promessas.',
+    'wp.signal.eyebrow':'05 — Sinal comunitário','wp.signal.title':'Consultivo, ponderado pelos detentores, onchain.',
+    'wp.signal.body1':'A seção 02 descreveu o fluxo de doações. A seção 04 mostra para onde essas doações foram até agora. Esta seção cobre como a comunidade alimenta a próxima.',
+    'wp.signal.body2':'A cédula em rwihood.org/vote apresenta seis assentos por rodada. Três são compostos automaticamente das áreas de causa do projeto e classificados contra dados de crise ao vivo do ReliefWeb; três são reservados para write-ins de detentores do diretório da The Giving Block. Um voto é uma transação de valor zero enviada a um endereço de cédula dedicado, ponderado pelo saldo $RWI ao vivo do votante no momento da leitura. Qualquer pessoa pode percorrer as mesmas transações e reproduzir a contagem exatamente — o site não faz contagem do lado do servidor.',
+    'wp.signal.body3':'O resultado é consultivo. $RWI não concede direitos de governança, nenhuma reivindicação sobre receita e nenhuma obrigação contratual sobre a lista de destinatários. O projeto lê o resultado, o pondera e mantém a palavra final — cada destinatário deve passar pela verificação da The Giving Block independentemente de como o voto caia. Um voto vencedor é uma recomendação, não uma instrução.',
+    'wp.signal.body4':'Write-ins têm uma taxa de $5, pagos em $RWI e enviados ao endereço de queima 0x000000000000000000000000000000000000dEaD — o mesmo endereço que a seção 03 cobre. A taxa não é receita. Ela vai para redução permanente de oferta na mesma direção do pool earn-and-burn, e o site verifica a queima onchain antes de creditar uma organização nomeada a um assento de cédula.',
     'wp.token.eyebrow':'05 — Token e contrato','wp.token.title':'O que existe, o que não existe.',
     'wp.token.deployment':'Implantação','wp.token.supply':'Suprimento','wp.token.notwhat':'O que RWI não é','wp.token.fees':'Receita de taxas',
-    'wp.change.eyebrow':'06 — O que muda, o que não muda','wp.change.title':'As partes estruturais permanecem.',
-    'wp.founder.eyebrow':'07 — O fundador','wp.founder.title':'A pessoa por trás.',
-    'wp.risks.eyebrow':'08 — Riscos e isenções','wp.risks.title':'Leia esta parte com cuidado.',
+    'wp.change.eyebrow':'07 — O que muda, o que não muda','wp.change.title':'As partes estruturais permanecem.',
+    'wp.founder.eyebrow':'08 — O fundador','wp.founder.title':'A pessoa por trás.',
+    'wp.risks.eyebrow':'09 — Riscos e isenções','wp.risks.title':'Leia esta parte com cuidado.',
     'wp.refs.eyebrow':'Referências — Endereços e links','wp.refs.title':'Tudo, verificável.'
   ,
     'index.pons.burnedBy':'$PONS queimado por',
@@ -1500,7 +1540,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'Total até o momento',
     'wp.token.deployment.body':'$RWI foi implantado na Robinhood Chain (chain ID 4663) em 18 de julho de 2026. O contrato do token é 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. A pool de liquidez principal emparelha $RWI com $WETH na Uniswap em 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Uma segunda pool dedicada $RWI/$PONS em 0x62a9e7cf94049dded854c26ff6204079a1c8caed opera como a pool ganhar-e-queimar descrita na seção 03 — separada do local principal e projetada para que tudo o que o projeto ganha dela seja destruído.',
     'wp.token.supply.body':'A oferta total é de 1.000.000.000 $RWI, fixada na implantação. Não há função de cunhagem, nem privilégios de proprietário para alterar saldos ou congelar contas. O que foi implantado é o que existe, e não será alterado. Quaisquer tokens enviados a um endereço de queima são removidos de circulação permanentemente e podem ser contados onchain em relação à oferta total.',
-    'wp.token.notwhat.body':'$RWI não é um valor mobiliário, não é um direito sobre uma tesouraria e não é um token de governança. Os detentores não votam em alvos de doação e não têm direito a qualquer parcela da receita de taxas diretamente. A produção beneficente do projeto é comprometida procedimentalmente — através de doações publicadas contra um livro-razão público — em vez de contratualmente. Esta é uma escolha de design: compromissos procedimentais podem ser verificados no momento, enquanto os contratuais exigem uma aplicação legal que nenhuma memecoin pode fornecer de forma credível.',
+    'wp.token.notwhat.body':'$RWI não é um valor mobiliário, não é um direito sobre uma tesouraria e não é um token de governança. O sinal onchain descrito na seção 05 é consultivo — não tem peso contratual nem confere participação nas receitas de taxas. A produção beneficente do projeto é comprometida procedimentalmente — através de doações publicadas contra um livro-razão público — em vez de contratualmente. Esta é uma escolha de design: compromissos procedimentais podem ser verificados no momento, enquanto os contratuais exigem uma aplicação legal que nenhuma memecoin pode fornecer de forma credível.',
     'wp.token.fees.body':'As taxas de negociação se acumulam na carteira do projeto de forma contínua. As taxas obtidas na pool principal $RWI/$WETH são convertidas em $ETH e doadas. As taxas obtidas na pool ganhar-e-queimar $RWI/$PONS são queimadas integralmente. Nenhuma parcela de qualquer um dos fluxos é retida como compensação pessoal ao fundador, e não há tesouraria de desenvolvimento sendo reservada para gastos futuros.',
     'wp.change.body1':'O site evoluirá, a lista de recibos crescerá e as ferramentas de front-end em torno do projeto continuarão melhorando. O que não mudará é o mecanismo no centro: a receita de taxas é doada a uma instituição beneficente verificada ou queimada. Esse é o produto inteiro.',
     'wp.change.body2':'Como o mecanismo é procedimental, também o são seus estados de falha. RWI deixou de ser RWI se qualquer um dos seguintes ocorrer — e cada um é observável diretamente, por qualquer pessoa, sem permissão.',
@@ -1585,11 +1625,16 @@ const TRANSLATIONS = {
     'wp.works.eyebrow':'02 — Comment ça marche','wp.works.title':'Frais entrent, reçus sortent.',
     'wp.burn.eyebrow':'03 — Le burn','wp.burn.title':'Étendre le volant de Pons.',
     'wp.ledger.eyebrow':'04 — Le registre','wp.ledger.title':'Des preuves, pas des promesses.',
+    'wp.signal.eyebrow':'05 — Signal communautaire','wp.signal.title':'Consultatif, pondéré par les détenteurs, onchain.',
+    'wp.signal.body1':'La section 02 décrivait le flux de dons. La section 04 montre où ces dons ont atterri jusqu\'à présent. Cette section couvre comment la communauté alimente le prochain.',
+    'wp.signal.body2':'Le bulletin sur rwihood.org/vote présente six sièges par tour. Trois sont composés automatiquement des domaines de cause du projet et classés contre les données de crise en direct de ReliefWeb; trois sont réservés aux write-ins de détenteurs depuis l\'annuaire de The Giving Block. Un vote est une transaction de valeur nulle envoyée à une adresse de bulletin dédiée, pondérée par le solde $RWI en direct du votant au moment de la lecture. N\'importe qui peut parcourir les mêmes transactions et reproduire le décompte exactement — le site ne fait aucun décompte côté serveur.',
+    'wp.signal.body3':'Le résultat est consultatif. $RWI ne confère aucun droit de gouvernance, aucune revendication sur les revenus et aucune obligation contractuelle sur la liste des destinataires. Le projet lit le résultat, le pèse et conserve le dernier mot — chaque destinataire doit passer la vérification de The Giving Block indépendamment du résultat du vote. Un vote gagnant est une recommandation, pas une instruction.',
+    'wp.signal.body4':'Les write-ins portent des frais de 5 $, payés en $RWI et envoyés à l\'adresse de destruction 0x000000000000000000000000000000000000dEaD — la même adresse que la section 03 couvre. Les frais ne sont pas des revenus. Ils vont à la réduction permanente de l\'offre dans la même direction que le pool earn-and-burn, et le site vérifie la destruction onchain avant de créditer une organisation nommée à un siège de bulletin.',
     'wp.token.eyebrow':'05 — Token et contrat','wp.token.title':'Ce qui existe, ce qui n\u2019existe pas.',
     'wp.token.deployment':'Déploiement','wp.token.supply':'Offre','wp.token.notwhat':'Ce que RWI n\u2019est pas','wp.token.fees':'Revenus des frais',
-    'wp.change.eyebrow':'06 — Ce qui change, ce qui ne change pas','wp.change.title':'Les parties porteuses restent.',
-    'wp.founder.eyebrow':'07 — Le fondateur','wp.founder.title':'La personne derrière.',
-    'wp.risks.eyebrow':'08 — Risques et clauses de non-responsabilité','wp.risks.title':'Lisez cette partie attentivement.',
+    'wp.change.eyebrow':'07 — Ce qui change, ce qui ne change pas','wp.change.title':'Les parties porteuses restent.',
+    'wp.founder.eyebrow':'08 — Le fondateur','wp.founder.title':'La personne derrière.',
+    'wp.risks.eyebrow':'09 — Risques et clauses de non-responsabilité','wp.risks.title':'Lisez cette partie attentivement.',
     'wp.refs.eyebrow':'Références — Adresses et liens','wp.refs.title':'Tout, vérifiable.'
   ,
     'index.pons.burnedBy':'$PONS burné par',
@@ -1634,7 +1679,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'Total à ce jour',
     'wp.token.deployment.body':'$RWI a été déployé sur Robinhood Chain (chain ID 4663) le 18 juillet 2026. Le contrat du token est 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. Le pool de liquidité principal apparie $RWI avec $WETH sur Uniswap à 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Un deuxième pool dédié $RWI/$PONS à 0x62a9e7cf94049dded854c26ff6204079a1c8caed opère comme le pool gagner-et-burn décrit dans la section 03 — séparé du lieu principal et conçu pour que tout ce que le projet en tire soit détruit.',
     'wp.token.supply.body':'L\'offre totale est de 1 000 000 000 $RWI, fixée au déploiement. Il n\'y a pas de fonction de mint, ni de privilèges de propriétaire pour modifier les soldes ou geler les comptes. Ce qui a été déployé est ce qui existe, et cela ne sera pas modifié. Tout token envoyé à une adresse de burn est retiré de la circulation de manière permanente et peut être compté onchain par rapport à l\'offre totale.',
-    'wp.token.notwhat.body':'$RWI n\'est pas un titre, n\'est pas une créance sur une trésorerie, et n\'est pas un token de gouvernance. Les détenteurs ne votent pas sur les cibles de dons et n\'ont pas droit à une part des revenus de frais directement. La production caritative du projet est engagée de manière procédurale — via des dons publiés contre un registre public — plutôt que contractuelle. C\'est un choix de conception : les engagements procéduraux peuvent être vérifiés sur le moment, tandis que les contractuels nécessitent une application légale qu\'aucun memecoin ne peut fournir de manière crédible.',
+    'wp.token.notwhat.body':'$RWI n\'est pas un titre, n\'est pas une créance sur une trésorerie, et n\'est pas un token de gouvernance. Le signal onchain décrit dans la section 05 est consultatif — il n\'a aucun poids contractuel et ne confère aucune part des revenus de frais. La production caritative du projet est engagée de manière procédurale — via des dons publiés contre un registre public — plutôt que contractuelle. C\'est un choix de conception : les engagements procéduraux peuvent être vérifiés sur le moment, tandis que les contractuels nécessitent une application légale qu\'aucun memecoin ne peut fournir de manière crédible.',
     'wp.token.fees.body':'Les frais de trading s\'accumulent dans le portefeuille du projet de manière continue. Les frais gagnés dans le pool principal $RWI/$WETH sont convertis en $ETH et donnés. Les frais gagnés dans le pool gagner-et-burn $RWI/$PONS sont brûlés intégralement. Aucune portion de l\'un ou l\'autre flux n\'est retenue comme compensation personnelle au fondateur, et il n\'y a pas de trésorerie de développement mise de côté pour des dépenses futures.',
     'wp.change.body1':'Le site évoluera, la liste des reçus grandira, et les outils front-end autour du projet continueront de s\'améliorer. Ce qui ne changera pas, c\'est le mécanisme au centre : les revenus de frais sont soit donnés à une œuvre caritative vérifiée, soit brûlés. C\'est le produit entier.',
     'wp.change.body2':'Parce que le mécanisme est procédural, ses états de défaillance le sont aussi. RWI a cessé d\'être RWI si l\'un des cas suivants se produit — et chacun est observable directement, par quiconque, sans permission.',
@@ -1719,11 +1764,16 @@ const TRANSLATIONS = {
     'wp.works.eyebrow':'02 — Как это работает','wp.works.title':'Комиссии внутрь, квитанции наружу.',
     'wp.burn.eyebrow':'03 — Сжигание','wp.burn.title':'Расширение маховика Pons.',
     'wp.ledger.eyebrow':'04 — Реестр','wp.ledger.title':'Доказательства, а не обещания.',
+    'wp.signal.eyebrow':'05 — Общественный сигнал','wp.signal.title':'Консультативный, взвешенный по держателям, on-chain.',
+    'wp.signal.body1':'В разделе 02 описан поток пожертвований. Раздел 04 показывает, куда эти пожертвования пришли на данный момент. Этот раздел охватывает то, как сообщество питает следующее.',
+    'wp.signal.body2':'Бюллетень на rwihood.org/vote представляет шесть мест за раунд. Три составляются автоматически из тематических областей проекта и ранжируются относительно живых кризисных данных ReliefWeb; три зарезервированы для вписаний держателей из каталога The Giving Block. Голос — это транзакция с нулевой стоимостью, отправленная на выделенный адрес бюллетеня, взвешенная по текущему балансу $RWI голосующего на момент чтения. Любой может пройти по тем же транзакциям и точно воспроизвести подсчёт — сайт не ведёт подсчёт на стороне сервера.',
+    'wp.signal.body3':'Результат является консультативным. $RWI не даёт прав управления, никаких претензий на доходы и никаких договорных обязательств по списку получателей. Проект читает результат, взвешивает его и оставляет за собой последнее слово — каждый получатель должен пройти проверку The Giving Block независимо от того, как пройдёт голосование. Победивший голос — это рекомендация, а не инструкция.',
+    'wp.signal.body4':'Вписания несут комиссию в 5 $, оплачиваемую в $RWI и отправляемую на адрес сжигания 0x000000000000000000000000000000000000dEaD — тот же адрес, что и в разделе 03. Комиссия не является доходом. Она идёт на постоянное сокращение предложения в том же направлении, что и пул earn-and-burn, и сайт проверяет сжигание on-chain, прежде чем зачислить номинированную организацию на место в бюллетене.',
     'wp.token.eyebrow':'05 — Токен и контракт','wp.token.title':'Что существует, чего нет.',
     'wp.token.deployment':'Развёртывание','wp.token.supply':'Предложение','wp.token.notwhat':'Чем RWI не является','wp.token.fees':'Доход от комиссий',
-    'wp.change.eyebrow':'06 — Что меняется, что нет','wp.change.title':'Несущие части остаются.',
-    'wp.founder.eyebrow':'07 — Основатель','wp.founder.title':'Человек за проектом.',
-    'wp.risks.eyebrow':'08 — Риски и отказы от ответственности','wp.risks.title':'Прочтите эту часть внимательно.',
+    'wp.change.eyebrow':'07 — Что меняется, что нет','wp.change.title':'Несущие части остаются.',
+    'wp.founder.eyebrow':'08 — Основатель','wp.founder.title':'Человек за проектом.',
+    'wp.risks.eyebrow':'09 — Риски и отказы от ответственности','wp.risks.title':'Прочтите эту часть внимательно.',
     'wp.refs.eyebrow':'Ссылки — Адреса и ссылки','wp.refs.title':'Всё, проверяемо.'
   ,
     'index.pons.burnedBy':'$PONS сожжено адресом',
@@ -1768,7 +1818,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'Итого на сегодня',
     'wp.token.deployment.body':'$RWI был развёрнут на Robinhood Chain (chain ID 4663) 18 июля 2026 года. Контракт токена — 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. Основной пул ликвидности объединяет $RWI с $WETH на Uniswap по адресу 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Второй специализированный пул $RWI/$PONS по адресу 0x62a9e7cf94049dded854c26ff6204079a1c8caed работает как пул «заработай и сожги», описанный в разделе 03 — отдельно от основной площадки и спроектирован так, чтобы всё, что проект зарабатывает на нём, уничтожалось.',
     'wp.token.supply.body':'Общее предложение составляет 1 000 000 000 $RWI, зафиксировано при развёртывании. Нет функции чеканки и нет привилегий владельца для изменения балансов или заморозки счетов. Что было развёрнуто, то и существует, и это не будет изменено. Любые токены, отправленные на адрес сжигания, навсегда изымаются из обращения и могут быть подсчитаны в блокчейне относительно общего предложения.',
-    'wp.token.notwhat.body':'$RWI не является ценной бумагой, не является требованием к казне и не является токеном управления. Держатели не голосуют по целям пожертвований и не имеют права на какую-либо долю дохода от комиссий напрямую. Благотворительный результат проекта закреплён процедурно — через опубликованные пожертвования против публичного реестра — а не контрактно. Это выбор дизайна: процедурные обязательства можно проверить в момент, тогда как контрактные требуют юридического принуждения, которое ни один мемкоин не может достоверно обеспечить.',
+    'wp.token.notwhat.body':'$RWI не является ценной бумагой, не является требованием к казне и не является токеном управления. Описанный в разделе 05 сигнал on-chain является консультативным — он не имеет договорного веса и не даёт доли в доходах от комиссий. Благотворительный результат проекта закреплён процедурно — через опубликованные пожертвования против публичного реестра — а не контрактно. Это выбор дизайна: процедурные обязательства можно проверить в момент, тогда как контрактные требуют юридического принуждения, которое ни один мемкоин не может достоверно обеспечить.',
     'wp.token.fees.body':'Торговые комиссии накапливаются в кошельке проекта на постоянной основе. Комиссии, полученные в основном пуле $RWI/$WETH, конвертируются в $ETH и жертвуются. Комиссии, полученные в пуле «заработай и сожги» $RWI/$PONS, сжигаются полностью. Никакая часть ни одного из потоков не удерживается в качестве личной компенсации основателю, и нет казны разработки, выделяемой для будущих расходов.',
     'wp.change.body1':'Сайт будет развиваться, список квитанций будет расти, а фронтенд-инструменты вокруг проекта будут продолжать улучшаться. Что не изменится, так это механизм в центре: доход от комиссий либо жертвуется проверенной благотворительной организации, либо сжигается. Это весь продукт.',
     'wp.change.body2':'Поскольку механизм процедурный, таковы и его состояния отказа. RWI перестал быть RWI, если произошло любое из следующего — и каждое наблюдаемо напрямую, кем угодно, без разрешения.',
@@ -1853,11 +1903,16 @@ const TRANSLATIONS = {
     'wp.works.eyebrow':'02 — Nasıl çalışır','wp.works.title':'Komisyonlar içeri, makbuzlar dışarı.',
     'wp.burn.eyebrow':'03 — Yakma','wp.burn.title':'Pons volan çarkını genişletmek.',
     'wp.ledger.eyebrow':'04 — Defter','wp.ledger.title':'Vaatler değil, kanıtlar.',
+    'wp.signal.eyebrow':'05 — Topluluk sinyali','wp.signal.title':'Danışman nitelikli, holder ağırlıklı, zincir üstü.',
+    'wp.signal.body1':'Bölüm 02 bağış akışını açıkladı. Bölüm 04 bu bağışların şimdiye kadar nereye gittiğini gösterir. Bu bölüm topluluğun bir sonrakini nasıl beslediğini ele alır.',
+    'wp.signal.body2':'rwihood.org/vote adresindeki oy pusulası her turda altı koltuk sunar. Üçü projenin sebep alanlarından otomatik olarak oluşturulur ve ReliefWeb\'in canlı kriz verilerine göre sıralanır; üçü The Giving Block dizininden holder write-in için ayrılmıştır. Oy, özel bir oy pusulası adresine gönderilen sıfır değerli bir işlemdir ve oy verenin okuma anındaki canlı $RWI bakiyesine göre ağırlıklandırılır. Herkes aynı işlemleri gezip sayımı tam olarak yeniden üretebilir — site sunucu tarafında sayım yapmaz.',
+    'wp.signal.body3':'Sonuç danışman niteliktedir. $RWI yönetim hakkı vermez, gelir üzerinde hak talep etmez ve alıcı listesine dair sözleşmesel bir yükümlülük getirmez. Proje sonucu okur, tartar ve son sözü saklar — her alıcı, oyun nasıl düştüğünden bağımsız olarak The Giving Block\'un doğrulamasını geçmelidir. Kazanan oy bir tavsiyedir, bir talimat değil.',
+    'wp.signal.body4':'Write-in\'ler 5 $ ücret taşır, $RWI olarak ödenir ve 0x000000000000000000000000000000000000dEaD ölü adresine gönderilir — bölüm 03\'ün kapsadığı aynı adres. Ücret gelir değildir. Kalıcı arz azaltmaya, earn-and-burn havuzuyla aynı yönde gider ve site aday gösterilen bir kuruluşu oy pusulası koltuğuna kredi etmeden önce yakmayı zincir üstünde doğrular.',
     'wp.token.eyebrow':'05 — Token ve sözleşme','wp.token.title':'Var olan ve var olmayan.',
     'wp.token.deployment':'Dağıtım','wp.token.supply':'Arz','wp.token.notwhat':'RWI’nin ne olmadığı','wp.token.fees':'Komisyon geliri',
-    'wp.change.eyebrow':'06 — Ne değişir, ne değişmez','wp.change.title':'Yük taşıyan kısımlar kalır.',
-    'wp.founder.eyebrow':'07 — Kurucu','wp.founder.title':'Arkasındaki kişi.',
-    'wp.risks.eyebrow':'08 — Riskler ve feragatnameler','wp.risks.title':'Bu kısmı dikkatlice okuyun.',
+    'wp.change.eyebrow':'07 — Ne değişir, ne değişmez','wp.change.title':'Yük taşıyan kısımlar kalır.',
+    'wp.founder.eyebrow':'08 — Kurucu','wp.founder.title':'Arkasındaki kişi.',
+    'wp.risks.eyebrow':'09 — Riskler ve feragatnameler','wp.risks.title':'Bu kısmı dikkatlice okuyun.',
     'wp.refs.eyebrow':'Referanslar — Adresler ve bağlantılar','wp.refs.title':'Her şey doğrulanabilir.'
   ,
     'index.pons.burnedBy':'$PONS yakan adres',
@@ -1902,7 +1957,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'Bugüne kadar toplam',
     'wp.token.deployment.body':'$RWI, 18 Temmuz 2026\'da Robinhood Chain (chain ID 4663) üzerinde dağıtıldı. Token sözleşmesi 0x2286397228be256529BE1ae9ed8D7d16549e9C6A\'dır. Ana likidite havuzu, Uniswap\'te 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697 adresinde $RWI\'yi $WETH ile eşleştirir. 0x62a9e7cf94049dded854c26ff6204079a1c8caed adresindeki ikinci, özel bir $RWI/$PONS havuzu, bölüm 03\'te açıklanan kazan-ve-yak havuzu olarak çalışır — ana mekandan ayrı ve projenin ondan kazandığı her şeyin yok edilmesi için tasarlanmıştır.',
     'wp.token.supply.body':'Toplam arz, dağıtımda sabitlenmiş 1.000.000.000 $RWI\'dir. Mint fonksiyonu yoktur ve bakiyeleri değiştirmek veya hesapları dondurmak için sahip ayrıcalıkları yoktur. Dağıtılan, var olandır ve değiştirilmeyecektir. Bir yakma adresine gönderilen herhangi bir token kalıcı olarak dolaşımdan çıkarılır ve toplam arza karşı zincir üstünde sayılabilir.',
-    'wp.token.notwhat.body':'$RWI bir menkul kıymet değildir, bir hazine üzerinde bir talep değildir ve bir yönetişim token\'ı değildir. Sahipleri bağış hedefleri üzerinde oy kullanmaz ve komisyon gelirinin herhangi bir payına doğrudan hak sahibi değildir. Projenin hayırsever çıktısı, sözleşmesel olarak değil, prosedürel olarak — halka açık bir deftere karşı yayınlanan bağışlar aracılığıyla — taahhüt edilir. Bu bir tasarım tercihidir: prosedürel taahhütler anında doğrulanabilirken, sözleşmesel olanlar hiçbir memecoin\'in güvenilir bir şekilde sağlayamayacağı yasal uygulama gerektirir.',
+    'wp.token.notwhat.body':'$RWI bir menkul kıymet değildir, bir hazine üzerinde bir talep değildir ve bir yönetişim token\'ı değildir. Bölüm 05\'te açıklanan zincir üstü sinyal danışman niteliktedir — sözleşmesel ağırlık taşımaz ve ücret gelirinden pay vermez. Projenin hayırsever çıktısı, sözleşmesel olarak değil, prosedürel olarak — halka açık bir deftere karşı yayınlanan bağışlar aracılığıyla — taahhüt edilir. Bu bir tasarım tercihidir: prosedürel taahhütler anında doğrulanabilirken, sözleşmesel olanlar hiçbir memecoin\'in güvenilir bir şekilde sağlayamayacağı yasal uygulama gerektirir.',
     'wp.token.fees.body':'İşlem komisyonları sürekli olarak proje cüzdanında birikir. Ana $RWI/$WETH havuzunda kazanılan komisyonlar $ETH\'ye dönüştürülür ve bağışlanır. Kazan-ve-yak $RWI/$PONS havuzunda kazanılan komisyonlar tamamen yakılır. Her iki akışın hiçbir kısmı kurucuya kişisel tazminat olarak alıkonmaz ve gelecekteki harcamalar için ayrılan bir geliştirme hazinesi yoktur.',
     'wp.change.body1':'Site gelişecek, makbuz listesi büyüyecek ve proje etrafındaki ön uç araçları gelişmeye devam edecek. Değişmeyecek olan, merkezdeki mekanizmadır: komisyon geliri ya doğrulanmış bir hayır kurumuna bağışlanır ya da yakılır. Ürünün tamamı budur.',
     'wp.change.body2':'Mekanizma prosedürel olduğu için, başarısızlık durumları da öyledir. Aşağıdakilerden herhangi biri meydana gelirse RWI, RWI olmaktan çıkmıştır — ve her biri izin olmadan herkes tarafından doğrudan gözlemlenebilir.',
@@ -1987,11 +2042,16 @@ const TRANSLATIONS = {
     'wp.works.eyebrow':'02 — Cách hoạt động','wp.works.title':'Phí vào, biên lai ra.',
     'wp.burn.eyebrow':'03 — Đốt','wp.burn.title':'Mở rộng bánh đà Pons.',
     'wp.ledger.eyebrow':'04 — Sổ cái','wp.ledger.title':'Bằng chứng, không phải lời hứa.',
+    'wp.signal.eyebrow':'05 — Tín hiệu cộng đồng','wp.signal.title':'Có tính tư vấn, được cân theo người nắm giữ, onchain.',
+    'wp.signal.body1':'Phần 02 đã mô tả dòng quyên góp. Phần 04 cho thấy những khoản quyên góp đó đã đến đâu cho đến nay. Phần này bao gồm cách cộng đồng cung cấp cho lần tiếp theo.',
+    'wp.signal.body2':'Lá phiếu tại rwihood.org/vote trình bày sáu chỗ mỗi vòng. Ba chỗ được tự động cấu tạo từ các lĩnh vực nguyên nhân của dự án và xếp hạng theo dữ liệu khủng hoảng trực tiếp từ ReliefWeb; ba chỗ dành riêng cho các đề cử của người nắm giữ từ thư mục The Giving Block. Một phiếu bầu là một giao dịch giá trị bằng không được gửi đến địa chỉ lá phiếu chuyên dụng, được cân theo số dư $RWI trực tiếp của người bỏ phiếu tại thời điểm đọc. Bất kỳ ai cũng có thể duyệt qua cùng các giao dịch và tái tạo kiểm phiếu chính xác — trang web không kiểm phiếu ở phía máy chủ.',
+    'wp.signal.body3':'Kết quả có tính tư vấn. $RWI không cấp quyền quản trị, không có yêu cầu về doanh thu và không có nghĩa vụ hợp đồng đối với danh sách người nhận. Dự án đọc kết quả, cân nhắc và giữ quyền quyết định cuối cùng — mọi người nhận đều phải vượt qua kiểm định của The Giving Block bất kể phiếu bầu ra sao. Một phiếu thắng là một khuyến nghị, không phải một chỉ thị.',
+    'wp.signal.body4':'Đề cử có phí $5, được trả bằng $RWI và gửi đến địa chỉ đốt 0x000000000000000000000000000000000000dEaD — cùng địa chỉ mà phần 03 đề cập. Phí không phải là doanh thu. Nó dùng để giảm nguồn cung vĩnh viễn theo cùng hướng với pool earn-and-burn, và trang web xác minh việc đốt onchain trước khi ghi nhận một tổ chức được đề cử vào một chỗ trên lá phiếu.',
     'wp.token.eyebrow':'05 — Token và hợp đồng','wp.token.title':'Những gì tồn tại, những gì không.',
     'wp.token.deployment':'Triển khai','wp.token.supply':'Nguồn cung','wp.token.notwhat':'RWI không phải là gì','wp.token.fees':'Doanh thu phí',
-    'wp.change.eyebrow':'06 — Cái gì thay đổi, cái gì không','wp.change.title':'Các bộ phận chịu lực vẫn giữ nguyên.',
-    'wp.founder.eyebrow':'07 — Người sáng lập','wp.founder.title':'Người đứng sau.',
-    'wp.risks.eyebrow':'08 — Rủi ro và tuyên bố từ chối trách nhiệm','wp.risks.title':'Đọc phần này cẩn thận.',
+    'wp.change.eyebrow':'07 — Cái gì thay đổi, cái gì không','wp.change.title':'Các bộ phận chịu lực vẫn giữ nguyên.',
+    'wp.founder.eyebrow':'08 — Người sáng lập','wp.founder.title':'Người đứng sau.',
+    'wp.risks.eyebrow':'09 — Rủi ro và tuyên bố từ chối trách nhiệm','wp.risks.title':'Đọc phần này cẩn thận.',
     'wp.refs.eyebrow':'Tài liệu tham khảo — Địa chỉ và liên kết','wp.refs.title':'Mọi thứ, có thể xác minh.'
   ,
     'index.pons.burnedBy':'$PONS được đốt bởi',
@@ -2036,7 +2096,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'Tổng đến nay',
     'wp.token.deployment.body':'$RWI được triển khai trên Robinhood Chain (chain ID 4663) vào ngày 18 tháng 7 năm 2026. Hợp đồng token là 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. Pool thanh khoản chính ghép $RWI với $WETH trên Uniswap tại 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Một pool $RWI/$PONS chuyên dụng thứ hai tại 0x62a9e7cf94049dded854c26ff6204079a1c8caed hoạt động như pool kiếm-và-đốt được mô tả trong phần 03 — tách biệt với nơi chính và được thiết kế để mọi thứ dự án kiếm được từ nó đều bị tiêu hủy.',
     'wp.token.supply.body':'Tổng cung là 1.000.000.000 $RWI, cố định khi triển khai. Không có hàm mint, và không có đặc quyền chủ sở hữu để thay đổi số dư hoặc đóng băng tài khoản. Những gì được triển khai là những gì tồn tại, và nó sẽ không bị thay đổi. Bất kỳ token nào được gửi đến địa chỉ đốt đều bị loại khỏi lưu thông vĩnh viễn và có thể được đếm onchain so với tổng cung.',
-    'wp.token.notwhat.body':'$RWI không phải là chứng khoán, không phải là quyền đòi hỏi đối với kho bạc, và không phải là token quản trị. Người nắm giữ không bỏ phiếu về mục tiêu quyên góp và không có quyền hưởng bất kỳ phần nào của doanh thu phí một cách trực tiếp. Đầu ra từ thiện của dự án được cam kết theo thủ tục — thông qua các khoản quyên góp được công bố đối chiếu với một sổ cái công khai — thay vì theo hợp đồng. Đây là một lựa chọn thiết kế: các cam kết theo thủ tục có thể được xác minh ngay lập tức, trong khi các cam kết theo hợp đồng đòi hỏi việc thực thi pháp lý mà không memecoin nào có thể cung cấp một cách đáng tin cậy.',
+    'wp.token.notwhat.body':'$RWI không phải là chứng khoán, không phải là quyền đòi hỏi đối với kho bạc, và không phải là token quản trị. Tín hiệu onchain được mô tả trong phần 05 có tính tư vấn — không có trọng số hợp đồng và không cấp phần chia sẻ doanh thu phí. Đầu ra từ thiện của dự án được cam kết theo thủ tục — thông qua các khoản quyên góp được công bố đối chiếu với một sổ cái công khai — thay vì theo hợp đồng. Đây là một lựa chọn thiết kế: các cam kết theo thủ tục có thể được xác minh ngay lập tức, trong khi các cam kết theo hợp đồng đòi hỏi việc thực thi pháp lý mà không memecoin nào có thể cung cấp một cách đáng tin cậy.',
     'wp.token.fees.body':'Phí giao dịch tích lũy vào ví dự án trên cơ sở liên tục. Phí kiếm được trong pool $RWI/$WETH chính được chuyển đổi thành $ETH và quyên góp. Phí kiếm được trong pool kiếm-và-đốt $RWI/$PONS được đốt toàn bộ. Không phần nào của cả hai dòng được giữ lại làm khoản bồi thường cá nhân cho người sáng lập, và không có kho bạc phát triển nào được dành riêng cho chi tiêu tương lai.',
     'wp.change.body1':'Trang web sẽ phát triển, danh sách biên lai sẽ tăng lên, và công cụ front-end xung quanh dự án sẽ tiếp tục cải thiện. Điều sẽ không thay đổi là cơ chế ở trung tâm: doanh thu phí hoặc được quyên góp cho một tổ chức từ thiện đã được kiểm định hoặc bị đốt. Đó là toàn bộ sản phẩm.',
     'wp.change.body2':'Vì cơ chế mang tính thủ tục, nên các trạng thái thất bại của nó cũng vậy. RWI đã ngừng là RWI nếu bất kỳ điều nào sau đây xảy ra — và mỗi điều đều có thể quan sát trực tiếp, bởi bất kỳ ai, mà không cần cho phép.',
@@ -2121,11 +2181,16 @@ const TRANSLATIONS = {
     'wp.works.eyebrow':'02 — यह कैसे काम करता है','wp.works.title':'शुल्क अंदर, रसीदें बाहर।',
     'wp.burn.eyebrow':'03 — बर्न','wp.burn.title':'Pons फ्लाईव्हील का विस्तार।',
     'wp.ledger.eyebrow':'04 — बहीखाता','wp.ledger.title':'सबूत, वादे नहीं।',
+    'wp.signal.eyebrow':'05 — समुदाय संकेत','wp.signal.title':'सलाहकारी, धारक-भारित, ऑनचेन।',
+    'wp.signal.body1':'खंड 02 ने दान प्रवाह का वर्णन किया। खंड 04 दिखाता है कि वे दान अब तक कहाँ पहुँचे हैं। यह खंड बताता है कि समुदाय अगले को कैसे पोषित करता है।',
+    'wp.signal.body2':'rwihood.org/vote पर मतपत्र प्रति दौर छह सीटें प्रस्तुत करता है। तीन परियोजना के कारण क्षेत्रों से स्वतः बनाए जाते हैं और ReliefWeb के लाइव संकट डेटा के विरुद्ध रैंक किए जाते हैं; तीन The Giving Block निर्देशिका से धारक राइट-इन के लिए आरक्षित हैं। एक वोट एक समर्पित मतपत्र पते पर भेजा गया शून्य-मूल्य लेनदेन है, पढ़ने के समय मतदाता के लाइव $RWI शेष के अनुसार भारित। कोई भी उन्हीं लेनदेनों पर चल सकता है और मिलान को ठीक से पुन: उत्पन्न कर सकता है — साइट कोई सर्वर-साइड गिनती नहीं करती।',
+    'wp.signal.body3':'परिणाम सलाहकारी है। $RWI कोई शासन अधिकार नहीं देता, राजस्व पर कोई दावा नहीं, और प्राप्तकर्ता सूची पर कोई अनुबंधात्मक बाध्यता नहीं। परियोजना परिणाम पढ़ती है, तौलती है, और अंतिम निर्णय बनाए रखती है — प्रत्येक प्राप्तकर्ता को वोट कैसे भी हो, The Giving Block की जाँच पास करनी होगी। जीतने वाला वोट एक सिफारिश है, एक निर्देश नहीं।',
+    'wp.signal.body4':'राइट-इन में $5 शुल्क है, $RWI में भुगतान किया जाता है और बर्न पते 0x000000000000000000000000000000000000dEaD पर भेजा जाता है — वही पता जो खंड 03 कवर करता है। शुल्क राजस्व नहीं है। यह earn-and-burn पूल की तरह उसी दिशा में स्थायी आपूर्ति कमी की ओर जाता है, और साइट नामांकित संगठन को मतपत्र सीट पर श्रेय देने से पहले बर्न को ऑनचेन सत्यापित करती है।',
     'wp.token.eyebrow':'05 — टोकन और अनुबंध','wp.token.title':'क्या मौजूद है, क्या नहीं।',
     'wp.token.deployment':'तैनाती','wp.token.supply':'आपूर्ति','wp.token.notwhat':'RWI क्या नहीं है','wp.token.fees':'शुल्क राजस्व',
-    'wp.change.eyebrow':'06 — क्या बदलता है, क्या नहीं','wp.change.title':'भार-वहन करने वाले भाग बने रहते हैं।',
-    'wp.founder.eyebrow':'07 — संस्थापक','wp.founder.title':'इसके पीछे का व्यक्ति।',
-    'wp.risks.eyebrow':'08 — जोखिम और अस्वीकरण','wp.risks.title':'इस भाग को ध्यान से पढ़ें।',
+    'wp.change.eyebrow':'07 — क्या बदलता है, क्या नहीं','wp.change.title':'भार-वहन करने वाले भाग बने रहते हैं।',
+    'wp.founder.eyebrow':'08 — संस्थापक','wp.founder.title':'इसके पीछे का व्यक्ति।',
+    'wp.risks.eyebrow':'09 — जोखिम और अस्वीकरण','wp.risks.title':'इस भाग को ध्यान से पढ़ें।',
     'wp.refs.eyebrow':'संदर्भ — पते और लिंक','wp.refs.title':'सब कुछ, सत्यापन योग्य।'
   ,
     'index.pons.burnedBy':'$PONS बर्न किया गया',
@@ -2170,7 +2235,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.total':'आज तक कुल',
     'wp.token.deployment.body':'$RWI को 18 जुलाई 2026 को Robinhood Chain (chain ID 4663) पर तैनात किया गया। टोकन अनुबंध 0x2286397228be256529BE1ae9ed8D7d16549e9C6A है। मुख्य लिक्विडिटी पूल Uniswap पर 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697 पर $RWI को $WETH के साथ जोड़ता है। 0x62a9e7cf94049dded854c26ff6204079a1c8caed पर एक दूसरा समर्पित $RWI/$PONS पूल खंड 03 में वर्णित कमाओ-और-बर्न पूल के रूप में संचालित होता है — मुख्य स्थल से अलग और इस तरह डिज़ाइन किया गया कि परियोजना इससे जो कुछ भी कमाती है वह नष्ट हो जाए।',
     'wp.token.supply.body':'कुल आपूर्ति 1,000,000,000 $RWI है, जो तैनाती पर निश्चित है। कोई mint फ़ंक्शन नहीं है, और शेष बदलने या खातों को फ़्रीज़ करने के लिए कोई स्वामी विशेषाधिकार नहीं है। जो तैनात किया गया वही मौजूद है, और इसे बदला नहीं जाएगा। बर्न पते पर भेजे गए किसी भी टोकन को स्थायी रूप से प्रचलन से हटा दिया जाता है और कुल आपूर्ति के विरुद्ध ऑनचेन गिना जा सकता है।',
-    'wp.token.notwhat.body':'$RWI कोई प्रतिभूति नहीं है, किसी ट्रेजरी पर दावा नहीं है, और कोई शासन टोकन नहीं है। धारक दान लक्ष्यों पर वोट नहीं करते और सीधे शुल्क राजस्व के किसी हिस्से के हकदार नहीं हैं। परियोजना का धर्मार्थ उत्पादन प्रक्रियात्मक रूप से प्रतिबद्ध है — एक सार्वजनिक बहीखाते के विरुद्ध प्रकाशित दान के माध्यम से — न कि संविदात्मक रूप से। यह एक डिज़ाइन विकल्प है: प्रक्रियात्मक प्रतिबद्धताएँ उसी क्षण सत्यापित की जा सकती हैं, जबकि संविदात्मक प्रतिबद्धताओं के लिए कानूनी प्रवर्तन की आवश्यकता होती है जिसे कोई memecoin विश्वसनीय रूप से प्रदान नहीं कर सकता।',
+    'wp.token.notwhat.body':'$RWI कोई प्रतिभूति नहीं है, किसी ट्रेजरी पर दावा नहीं है, और कोई शासन टोकन नहीं है। खंड 05 में वर्णित ऑनचेन संकेत सलाहकारी है — इसका कोई अनुबंधात्मक भार नहीं है और शुल्क राजस्व का कोई हिस्सा नहीं देता। परियोजना का धर्मार्थ उत्पादन प्रक्रियात्मक रूप से प्रतिबद्ध है — एक सार्वजनिक बहीखाते के विरुद्ध प्रकाशित दान के माध्यम से — न कि संविदात्मक रूप से। यह एक डिज़ाइन विकल्प है: प्रक्रियात्मक प्रतिबद्धताएँ उसी क्षण सत्यापित की जा सकती हैं, जबकि संविदात्मक प्रतिबद्धताओं के लिए कानूनी प्रवर्तन की आवश्यकता होती है जिसे कोई memecoin विश्वसनीय रूप से प्रदान नहीं कर सकता।',
     'wp.token.fees.body':'ट्रेडिंग शुल्क निरंतर आधार पर परियोजना वॉलेट में जमा होते हैं। मुख्य $RWI/$WETH पूल में अर्जित शुल्क $ETH में परिवर्तित होकर दान किए जाते हैं। कमाओ-और-बर्न $RWI/$PONS पूल में अर्जित शुल्क पूरी तरह बर्न किए जाते हैं। किसी भी धारा का कोई हिस्सा संस्थापक के व्यक्तिगत मुआवजे के रूप में नहीं रखा जाता, और भविष्य के खर्च के लिए कोई विकास ट्रेजरी अलग नहीं रखी जा रही है।',
     'wp.change.body1':'साइट विकसित होगी, रसीदों की सूची बढ़ेगी, और परियोजना के आसपास के फ्रंट-एंड उपकरण बेहतर होते रहेंगे। जो नहीं बदलेगा वह केंद्र में तंत्र है: शुल्क राजस्व या तो एक सत्यापित धर्मार्थ संगठन को दान किया जाता है या बर्न किया जाता है। यही पूरा उत्पाद है।',
     'wp.change.body2':'चूँकि तंत्र प्रक्रियात्मक है, इसलिए इसके विफलता अवस्थाएँ भी हैं। यदि निम्नलिखित में से कोई भी घटित होता है तो RWI, RWI नहीं रह गया है — और प्रत्येक को बिना अनुमति के, किसी के द्वारा भी, सीधे देखा जा सकता है।',
@@ -2494,10 +2559,22 @@ document.addEventListener('DOMContentLoaded', ()=>{
   </div>
 </section>
 
-<!-- ================= 05 · TOKENOMICS ================= -->
+<!-- ================= 05 · COMMUNITY SIGNAL ================= -->
 <section>
   <div class="wrap sec-inner">
-    <p class="eyebrow" data-i18n="wp.token.eyebrow">05 — Token &amp; contract</p>
+    <p class="eyebrow" data-i18n="wp.signal.eyebrow">05 — Community signal</p>
+    <h2 data-i18n="wp.signal.title">Advisory, holder-weighted, onchain.</h2>
+    <p data-i18n="wp.signal.body1">Section 02 described the donation flow. Section 04 shows where those donations have landed so far. This section covers how the community feeds the next one.</p>
+    <p data-i18n="wp.signal.body2">The ballot at rwihood.org/vote presents six seats per round. Three are auto-composed from the project's cause areas and ranked against live crisis data from ReliefWeb; three are reserved for holder write-ins from The Giving Block directory. A vote is a zero-value transaction sent to a dedicated ballot address, weighted by the voter's live $RWI balance at read time. Anyone can walk the same transactions and reproduce the tally exactly — the site does no server-side counting.</p>
+    <p data-i18n="wp.signal.body3">The outcome is advisory. $RWI grants no governance rights, no claim on revenue, and no contractual obligation on the recipient list. The project reads the result, weighs it, and retains final say — every recipient must clear The Giving Block's vetting regardless of how the vote lands. A winning vote is a recommendation, not an instruction.</p>
+    <p data-i18n="wp.signal.body4">Write-ins carry a $5 fee, paid in $RWI and sent to the burn address 0x000000000000000000000000000000000000dEaD — the same address section 03 covers. The fee is not revenue. It goes to permanent supply reduction in the same direction as the earn-and-burn pool, and the site verifies the burn onchain before crediting a nominated organisation to a ballot seat.</p>
+  </div>
+</section>
+
+<!-- ================= 06 · TOKENOMICS ================= -->
+<section>
+  <div class="wrap sec-inner">
+    <p class="eyebrow" data-i18n="wp.token.eyebrow">06 — Token &amp; contract</p>
     <h2 data-i18n="wp.token.title">What exists, what does not.</h2>
 
     <h3 data-i18n="wp.token.deployment">Deployment</h3>
@@ -2507,17 +2584,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
     <p data-i18n="wp.token.supply.body">Total supply is 1,000,000,000 $RWI, fixed at deployment. There is no mint function, and no owner privileges to change balances or freeze accounts. What was deployed is what exists, and it will not be changed. Any tokens sent to a burn address are removed from circulation permanently and can be counted onchain against total supply.</p>
 
     <h3 data-i18n="wp.token.notwhat">What RWI is not</h3>
-    <p data-i18n="wp.token.notwhat.body">$RWI is not a security, is not a claim on a treasury, and is not a governance token. Holders do not vote on donation targets and are not entitled to any share of fee revenue directly. The project's charitable output is committed procedurally — through published donations against a public ledger — rather than contractually. This is a design choice: procedural commitments can be verified in the moment, while contractual ones require legal enforcement no memecoin can credibly provide.</p>
+    <p data-i18n="wp.token.notwhat.body">$RWI is not a security, is not a claim on a treasury, and is not a governance token. The onchain signal described in section 05 is advisory — it carries no contractual weight and confers no share of fee revenue. The project's charitable output is committed procedurally — through published donations against a public ledger — rather than contractually. This is a design choice: procedural commitments can be verified in the moment, while contractual ones require legal enforcement no memecoin can credibly provide.</p>
 
     <h3 data-i18n="wp.token.fees">Fee revenue</h3>
     <p data-i18n="wp.token.fees.body">Trading fees accrue to the project wallet on an ongoing basis. Fees earned in the main $RWI/$WETH pool are converted to $ETH and donated. Fees earned in the earn-and-burn $RWI/$PONS pool are burned in full. No portion of either stream is retained as personal compensation to the founder, and there is no development treasury being carved out for future spending.</p>
   </div>
 </section>
 
-<!-- ================= 06 · WHAT CHANGES ================= -->
+<!-- ================= 07 · WHAT CHANGES ================= -->
 <section>
   <div class="wrap sec-inner">
-    <p class="eyebrow" data-i18n="wp.change.eyebrow">06 — What changes, what doesn't</p>
+    <p class="eyebrow" data-i18n="wp.change.eyebrow">07 — What changes, what doesn't</p>
     <h2 data-i18n="wp.change.title">The load-bearing parts stay.</h2>
     <p data-i18n="wp.change.body1">The site will evolve, the receipts list will grow, and the front-end tooling around the project will keep improving. What will not change is the mechanism at the center: fee revenue is either donated to a vetted charity or burned. That is the whole product.</p>
     <p data-i18n="wp.change.body2">Because the mechanism is procedural, so are its failure states. RWI has stopped being RWI if any of the following occurs — and each is observable directly, by anyone, without permission.</p>
@@ -2534,20 +2611,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
   </div>
 </section>
 
-<!-- ================= 07 · FOUNDER ================= -->
+<!-- ================= 08 · FOUNDER ================= -->
 <section>
   <div class="wrap sec-inner">
-    <p class="eyebrow" data-i18n="wp.founder.eyebrow">07 — The founder</p>
+    <p class="eyebrow" data-i18n="wp.founder.eyebrow">08 — The founder</p>
     <h2 data-i18n="wp.founder.title">The person behind it.</h2>
     <p data-i18n="wp.founder.body1">Louis S. was born and raised in Northwest Florida. He has worked in customer service since 2012 and in finance since 2020 — over a decade helping people, and years understanding how money actually moves. RWI is where those two threads meet: the helping isn't the marketing, it's the mechanism, and every bit of it settles on a public ledger under his name.</p>
     <p data-i18n="wp.founder.body2">The founder operates publicly as @Burgers_Louis and @BurgersOnBase on X, and as burgersonbase.base.eth onchain. RWI is not the founder's first onchain project, and the working patterns established across those projects — small, self-contained, verifiable, no backend — carry through here.</p>
   </div>
 </section>
 
-<!-- ================= 08 · RISKS ================= -->
+<!-- ================= 09 · RISKS ================= -->
 <section>
   <div class="wrap sec-inner">
-    <p class="eyebrow" data-i18n="wp.risks.eyebrow">08 — Risks &amp; disclaimers</p>
+    <p class="eyebrow" data-i18n="wp.risks.eyebrow">09 — Risks &amp; disclaimers</p>
     <h2 data-i18n="wp.risks.title">Read this part carefully.</h2>
     <p data-i18n="wp.risks.body1">$RWI is a memecoin. It is a highly volatile digital asset with no earnings, no cash flows accruing to holders, and no intrinsic value floor. It is entirely possible for it to trade to zero, and holders should not purchase it with capital they are unwilling to lose entirely.</p>
     <p data-i18n="wp.risks.body2">Nothing in this document is investment, tax, or legal advice. The charitable activity described here is a feature of how project revenue is deployed; it does not make $RWI a security, a donation-tax vehicle, or a substitute for direct giving. Purchasers do not receive a tax deduction for buying the token, and the project does not act as a fiscal agent or intermediary for donors seeking one — donations are made from project revenue after it accrues.</p>
