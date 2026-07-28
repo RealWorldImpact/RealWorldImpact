@@ -3208,7 +3208,8 @@ function pickDiverse(tier, n, round, used){
 }
 /* Half the ballot is composed automatically, half is nominated by holders.
    The auto half keeps a ballot valid even when nobody has written anything in. */
-const AUTO_SLOTS = 6 - WRITEIN_SLOTS;
+const TOTAL_SLOTS = 6;
+const AUTO_SLOTS  = TOTAL_SLOTS - WRITEIN_SLOTS;
 function autoSlate(round){
   const used = new Set();
   return [...new Set([
@@ -3218,8 +3219,12 @@ function autoSlate(round){
   ])].slice(0, AUTO_SLOTS);
 }
 async function composeSlate(round){
+  // Must yield exactly AUTO_SLOTS, the same as autoSlate. It previously
+  // returned 1 returning + 2 lane + 3 acute = six, which filled the whole
+  // ballot and left no write-in seats — so a round opened with the live feed
+  // working looked nothing like one opened with it down.
   const usedThemes = new Set();
-  const base = [...pickDiverse('returning',1,round,usedThemes), ...pickDiverse('lane',2,round,usedThemes)];
+  const base = [...pickDiverse('returning',1,round,usedThemes), ...pickDiverse('lane',1,round,usedThemes)];
   try{
     const live = await fetchLiveCrises(false);
     if(!live || !live.types || !live.types.length) throw new Error('empty feed');
@@ -3227,16 +3232,17 @@ async function composeSlate(round){
     if(!rankedAll) throw new Error('no taxonomy overlap');   // drifted vocabulary
     // Take the highest-ranked acute orgs, but still avoid repeating a theme
     // already on the ballot.
+    const need = Math.max(0, AUTO_SLOTS - base.length);
     const ranked = [];
     for(const s of rankedAll){
-      if(ranked.length >= 3) break;
+      if(ranked.length >= need) break;
       const th = ORG_POOL[s].theme || s;
       if(usedThemes.has(th)) continue;
       ranked.push(s); usedThemes.add(th);
     }
-    for(const s of rankedAll){ if(ranked.length >= 3) break; if(ranked.indexOf(s)===-1) ranked.push(s); }
-    if(ranked.length < 3) throw new Error('thin ranking');
-    return { slate:[...new Set([...base, ...ranked])], live:live, source:'reliefweb' };
+    for(const s of rankedAll){ if(ranked.length >= need) break; if(ranked.indexOf(s)===-1) ranked.push(s); }
+    if(ranked.length < need) throw new Error('thin ranking');
+    return { slate:[...new Set([...base, ...ranked])].slice(0, AUTO_SLOTS), live:live, source:'reliefweb' };
   }catch(e){
     return { slate: autoSlate(round), live:null, source:'rotation', reason:(e && e.rwReason) || (e && e.message) || '' };
   }
@@ -3563,7 +3569,7 @@ function activeOrgs(){
   const filled = SLATE.map(orgRecord).filter(Boolean);
   // Show the unclaimed write-in slots rather than a short ballot. An empty seat
   // reads as an invitation; a five-item list just looks like the list.
-  const open = Math.max(0, (AUTO_SLOTS + WRITEIN_SLOTS) - filled.length);
+  const open = Math.max(0, TOTAL_SLOTS - filled.length);
   for(let i = 0; i < open; i++) filled.push({ slug:'__open' + i, placeholder:true });
   return filled;
 }
@@ -3818,8 +3824,13 @@ async function loadRound(txs){
   try{
     const wi = await loadWriteIns(rows, ROUND);
     if(wi.length){
-      const base = SLATE.filter(function(s){ return ORG_POOL[s]; }).slice(0, AUTO_SLOTS);
-      SLATE = [...new Set([...base, ...wi])];
+      // Everything the round declared onchain stays on the ballot. Truncating
+      // it to make room for write-ins dropped candidates people may already
+      // have voted for, and loadTally validates against SLATE — so those votes
+      // vanished without a word. Write-ins take whatever seats are left.
+      const declared = SLATE.slice();
+      const room = Math.max(0, TOTAL_SLOTS - declared.length);
+      SLATE = [...new Set([...declared, ...wi.slice(0, room)])];
     }
   }catch(e){ /* write-ins are additive; a failure must not empty the ballot */ }
   $('prefixEg').textContent = 'RWIVOTE:\u2039n\u203a:\u2039slug\u203a';
