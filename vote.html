@@ -4335,7 +4335,15 @@ function repaintDynamic(){
       $w('wiChosen').hidden = true;
       $w('wiSearch').value = '';
       wiStatus(t('vote.st.writeInDone'));
-      setTimeout(function(){ refreshAll(); }, 1500);
+      // A write-in needs three separate indexes: the nomination tx to the ballot
+      // box, and the two RWI transfers (dev + burn). Token transfers are decoded
+      // from event logs and trail the tx list by a couple of seconds. A single
+      // reload at 1.5s often runs before all three are indexed — loadWriteIns
+      // then returns [] and the seat stays empty. Same backoff the vote flow
+      // uses, forced so each pass beats the 8s tx cache.
+      [1500, 4000, 9000, 18000, 35000].forEach(function(ms){
+        setTimeout(function(){ refreshAll({force:true}); }, ms);
+      });
     }catch(e){
       const cancelled = e && e.code === 4001;
       wiStatus(t(cancelled ? 'vote.st.writeInCancel' : 'vote.st.writeInFail'), true);
