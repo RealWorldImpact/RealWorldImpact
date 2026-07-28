@@ -4271,10 +4271,20 @@ function repaintDynamic(){
     const data = '0xa9059cbb'
       + to.toLowerCase().replace(/^0x/,'').padStart(64,'0')
       + units.toString(16).padStart(64,'0');
-    const tx = { from: from, to: RWI, data: data };
+    // value:'0x0' explicit — some wallets are strict about the field being
+    // present on a contract call, and its absence has been observed to make
+    // eth_estimateGas throw where the transaction itself would succeed.
+    const tx = { from: from, to: RWI, value:'0x0', data: data };
+    // Preflight is best-effort here. Some wallet-provided nodes cannot estimate
+    // an ERC-20 transfer on this chain even when the transfer would succeed,
+    // and the previous code treated that as a guaranteed revert and bailed
+    // BEFORE the wallet was asked — the user never saw a prompt. Fall back to
+    // a fixed limit generous enough for any plain OZ 5.x transfer and let the
+    // wallet's own simulator decide: if it really would revert, the wallet
+    // refuses with a specific reason; if not, the transfer goes through. A
+    // reverted transfer only costs gas, not tokens.
     const gas = await preflightGas(tx);
-    if(gas === null) throw new Error('would revert');
-    tx.gas = gas;
+    tx.gas = gas !== null ? gas : '0x' + (100000).toString(16);
     const hash = await wallet.request({ method:'eth_sendTransaction', params:[tx] });
     const rec = await waitForTx(hash);
     if(rec && !txSucceeded(rec)) throw new Error('reverted');
