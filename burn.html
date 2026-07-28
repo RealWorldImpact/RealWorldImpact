@@ -14,7 +14,7 @@
     nav a { color:var(--ink); text-decoration:none; } .dot { color:var(--acid); font-size:18px; line-height:0; }
     .rwi-brand { display:flex; align-items:center; gap:10px; color:var(--ink); font-size:11px; font-weight:800; letter-spacing:.1em; }
     .rwi-brand:hover { color:var(--acid); }
-    .rwi-logo { display:block; width:76px; height:38px; overflow:hidden; background:var(--acid); }
+    .rwi-logo { display:block; width:82px; height:32px; overflow:hidden; flex:0 0 auto; border-radius:2px; background:#c9ff00; }
     .rwi-logo img { display:block; width:100%; height:100%; object-fit:cover; object-position:center; }
     .hero { display:grid; grid-template-columns:1.25fr .75fr; gap:32px; padding:60px 0 42px; border-bottom:1px solid var(--line); }
     h1 { margin:0; font:clamp(58px, 10vw, 136px)/.8 Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; text-transform:uppercase; letter-spacing:-.055em; max-width:800px; }
@@ -29,6 +29,7 @@
     input { width:190px; } input:focus, select:focus { border-color:var(--acid); } select { cursor:pointer; }
     .status { color:var(--muted); font-size:12px; min-height:17px; }.status strong { color:var(--acid); font-weight:500; }
     button { font:inherit; border:1px solid var(--acid); background:var(--acid); color:#15170f; padding:10px 14px; text-transform:uppercase; letter-spacing:.05em; font-size:11px; font-weight:800; cursor:pointer; } button:hover { background:#ecff9d; } button:disabled { opacity:.55; cursor:wait; }
+    .add-token { border:1px solid var(--line); background:rgba(255,255,255,.015); padding:15px; margin:4px 0 10px; display:flex; gap:9px; align-items:center; flex-wrap:wrap; }.add-token p{margin:0;flex:1 0 180px;color:var(--muted);font-size:11px;line-height:1.45}.add-token input{width:min(360px,100%)}.add-token .add-status{width:100%;font-size:11px;color:var(--muted)}
     .table-wrap { border:1px solid var(--line); overflow:auto; background:rgba(255,255,255,.015); }.table { min-width:730px; width:100%; border-collapse:collapse; }
     th { color:var(--muted); font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:.1em; text-align:left; padding:14px 16px; border-bottom:1px solid var(--line); } th.num, td.num{text-align:right;}
     td { padding:17px 16px; border-bottom:1px solid var(--line); font-size:13px; } tr:last-child td{border-bottom:0;} tbody tr:hover{background:rgba(213,255,63,.05);}
@@ -36,7 +37,16 @@
     .burn { font-weight:700; }.bar { height:4px; width:92px; background:#2c2e29; display:inline-block; vertical-align:middle; margin-left:8px; }.bar i { display:block; height:100%; background:var(--acid); min-width:1px; }
     .empty { padding:54px 20px; text-align:center; color:var(--muted); font-size:13px; }.error { color:#ff9a7a; }
     footer { color:var(--muted); font-size:11px; line-height:1.6; margin-top:22px; max-width:760px; } footer a{color:var(--acid);}
-    @media(max-width:680px){ main{width:min(100% - 24px,1180px)} .hero{grid-template-columns:1fr;padding:42px 0 32px;gap:22px}.stats{grid-template-columns:1fr}.stat,.stat+.stat{border-right:0;border-bottom:1px solid var(--line);padding:17px 0}.stat:last-child{border-bottom:0}h1{font-size:74px;} }
+    @media(max-width:680px){
+      main{width:min(100% - 24px,1180px);padding-top:16px}
+      nav{align-items:flex-start;gap:12px;padding-bottom:16px} nav>span:last-child{font-size:9px;line-height:1.45;text-align:right;max-width:110px}
+      .rwi-brand{gap:7px;font-size:9px;letter-spacing:.06em;white-space:nowrap}.rwi-logo{width:76px;height:28px}
+      .hero{grid-template-columns:1fr;padding:38px 0 28px;gap:20px}.hero h1{font-size:62px;line-height:.82}.intro{font-size:13px;margin:0;max-width:100%}
+      .stats{grid-template-columns:1fr}.stat,.stat+.stat{border-right:0;border-bottom:1px solid var(--line);padding:16px 0}.stat:last-child{border-bottom:0}.value{font-size:25px}
+      .toolbar{align-items:stretch;padding:18px 0 12px;gap:12px}.status{width:100%;line-height:1.45}.controls{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}.controls input{grid-column:1 / -1;width:100%}.controls button{grid-column:1 / -1;width:100%}.add-token{padding:13px}.add-token input,.add-token button{width:100%}
+      .table-wrap{border:0;background:transparent;overflow:visible}.table{min-width:0;display:block}.table thead{display:none}.table tbody{display:grid;gap:10px}.table tr{position:relative;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);background:rgba(255,255,255,.015);padding:4px 12px}.table td{display:flex;align-items:center;justify-content:space-between;gap:10px;border:0;padding:11px 0;font-size:12px;text-align:right!important}.table td::before{content:attr(data-label);color:var(--muted);font-size:9px;letter-spacing:.08em;text-transform:uppercase;text-align:left}.table td[data-label="Project"]{grid-column:1 / -1;justify-content:flex-start;padding:12px 0 14px;border-bottom:1px solid var(--line);text-align:left!important}.table td[data-label="Project"]::before{display:none}.table td[data-label="Rank"]{position:absolute;right:14px;top:8px;padding:0;color:var(--acid)}.table td[data-label="Rank"]::before{display:none}.table td[data-label="Token"]{grid-column:1 / -1;border-top:1px solid var(--line);padding-top:10px}.bar{width:66px}.address{font-size:10px}
+      footer{margin-top:18px;font-size:10px}
+    }
   </style>
 </head>
 <body>
@@ -46,6 +56,7 @@
     <section class="hero"><h1>Pons<br>Family<br><span>Burn List.</span></h1><p class="intro">Pons tokens with a verified on-chain burn, ranked by tokens permanently removed from circulation. GeckoTerminal pools are scanned in volume order for a fast, complete discovery pass.</p></section>
     <section class="stats"><div class="stat"><span class="label">Burned coins indexed</span><span class="value" id="projects">—</span></div><div class="stat"><span class="label">Total tokens burned</span><span class="value" id="totalBurned">—</span></div><div class="stat"><span class="label">Last updated</span><span class="value" id="updated">—</span></div></section>
     <section class="toolbar"><div class="status" id="status">Loading the Pons Family Burn List…</div><div class="controls"><input id="search" type="search" placeholder="Search name or symbol"><select id="sort" aria-label="Sort list"><option value="burned">Highest burn</option><option value="marketCap">Market cap</option><option value="volume24h">24h volume</option><option value="name">Name</option></select><button id="refresh">Update list</button></div></section>
+    <section class="add-token"><p>Missing a token? Paste its contract address. Only tokens launched through the official pons factories can be added.</p><input id="token-address" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x… token address"><button id="add-token">Add pons token</button><div class="add-status" id="add-status"></div></section>
     <div class="table-wrap"><table class="table"><thead><tr><th>#</th><th>Project</th><th class="num">Market cap / FDV</th><th class="num">24h volume</th><th class="num">Burned supply</th><th class="num">% of supply</th><th class="num">Token</th></tr></thead><tbody id="rows"><tr><td class="empty" colspan="7">Building the live list…</td></tr></tbody></table></div>
     <footer>Market data and volume come from GeckoTerminal’s Pons Family pool index. Burned supply is read on-chain from the canonical zero and dead addresses. This is an activity dashboard, not financial advice.</footer>
   </main>
@@ -55,10 +66,12 @@
     const RPC = LIVE_RWI ? '/api/rpc' : 'https://rpc.mainnet.chain.robinhood.com';
     const GECKO_API = 'https://api.geckoterminal.com/api/v2/networks/robinhood/dexes/pons-dot-family/pools?include=base_token%2Cquote_token&sort=h24_volume_usd_desc&page=';
     const GECKO_POOL_API = 'https://api.geckoterminal.com/api/v2/networks/robinhood/pools/';
-    const VERIFIED_POOLS = [
-      '0xff6aa24815d1274a9be0cfd17c7c7489cd40a697', // RWI / WETH
-      '0xca6aa177b14482a3e56ae395146461e3aec1de73', // XENO / WETH
-      '0x52fcb1d83191e06ef2d2d9f460609ca22a923558'  // YOLO / WETH
+    const VERIFIED_POOL_SEEDS = [
+      {pool:'0xff6aa24815d1274a9be0cfd17c7c7489cd40a697',address:'0x2286397228be256529be1ae9ed8d7d16549e9c6a',name:'Real World Impact',symbol:'RWI',image:'https://assets.geckoterminal.com/caxlvtu7q4kzn1mznh6ec2c8c9i6',marketCap:74330,volume24h:50990},
+      {pool:'0xca6aa177b14482a3e56ae395146461e3aec1de73',address:'0xf11168ec379efd20a35006f1d44cc5f9e4e94e67',name:'Xeno',symbol:'XENO',image:'https://coin-images.coingecko.com/coins/images/102174795/large/epjr5bp1jx8di81aa5yyhglyqgvj.?1784883172',marketCap:14615,volume24h:2689},
+      {pool:'0x52fcb1d83191e06ef2d2d9f460609ca22a923558',address:'0x62c71cd34a52c30d894419cbcc55db2afa8032ea',name:'YOLO',symbol:'YOLO',image:'https://coin-images.coingecko.com/coins/images/102174641/large/fzvhldxmvphx85ls235mclk6bf3x.?1784363718',marketCap:2546636,volume24h:545616},
+      {pool:'0x835e4b15d72029866108393f1bbcb34d7bc04399',address:'0xe6864e4630d4d7a0cad2e61f6bc2c0dcad777712',name:'Link',symbol:'LINK',image:'https://cryptologos.cc/logos/chainlink-link-logo.png?v=040',marketCap:124033,volume24h:117941},
+      {pool:'0x10cc6bd38112cac182db90b6a71d8bb5939526ba',address:'0x39dbed3a2bd333467115de45665cc57f813c4571',name:'pons',symbol:'PONS',image:'https://coin-images.coingecko.com/coins/images/102174571/large/jhitvkisdq8fhxvimdkpcw7y3dx5.?1784093932',marketCap:34600000,volume24h:3890000}
     ];
     const FACTORIES = [
       { address:'0x0c37a24F5D23A486FA692d1500881d698B1F77a4', from:8600612 },
@@ -68,8 +81,11 @@
     const SWAP_TOPIC = '0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67';
     const ZERO = '0x0000000000000000000000000000000000000000';
     const DEAD = '0x000000000000000000000000000000000000dead';
-    const CACHE = 'pons-burn-list-v10';
-    const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v2';
+    const CACHE = 'pons-burn-list-v17';
+    const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v9';
+    const USER_TOKENS_CACHE = 'pons-burn-list-user-tokens-v1';
+    const SCAN_LOCK = 'pons-burn-list-scan-lock-v1';
+    const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
     const MARKET_INDEX_TTL = 5 * 60 * 1000;
     const DISCOVERY_BLOCKS = 300000;
     const $ = id => document.getElementById(id);
@@ -136,6 +152,25 @@
       const asNum = value => Number(BigInt(value) / 1000000000000n) / 1e6;
       return markets.map((market,index)=>({...market,supply:1000000000,burned:asNum(values[index*2])+asNum(values[index*2+1])}));
     };
+    const userTokens = () => { try { return JSON.parse(localStorage.getItem(USER_TOKENS_CACHE)) || []; } catch { return []; } };
+    const saveUserTokens = tokens => localStorage.setItem(USER_TOKENS_CACHE,JSON.stringify(tokens));
+    async function verifyPonsToken(address) {
+      const topicAddress='0x'+address.slice(2).padStart(64,'0');
+      const logs=await rpcBatch(FACTORIES.map(factory=>({method:'eth_getLogs',params:[{address:factory.address,fromBlock:'0x'+factory.from.toString(16),toBlock:'latest',topics:[LAUNCH_TOPIC,topicAddress]}]})));
+      const launch=logs.flat()[0];
+      if(!launch) throw new Error('This address is not a token launched through an official pons factory.');
+      return {address,pool:('0x'+launch.data.slice(2+64+24,2+128)).toLowerCase()};
+    }
+    async function readUserToken(token) {
+      const [nameRaw,symbolRaw,zeroRaw,deadRaw]=await rpcBatch([
+        {method:'eth_call',params:[{to:token.address,data:'0x06fdde03'},'latest']},
+        {method:'eth_call',params:[{to:token.address,data:'0x95d89b41'},'latest']},
+        {method:'eth_call',params:[{to:token.address,data:'0x70a08231'+padAddress(ZERO)},'latest']},
+        {method:'eth_call',params:[{to:token.address,data:'0x70a08231'+padAddress(DEAD)},'latest']}
+      ]);
+      const asNum = value => Number(BigInt(value) / 1000000000000n) / 1e6;
+      return {...token,name:decodeString(nameRaw)||'Pons token',symbol:decodeString(symbolRaw)||'—',image:'',marketCap:0,volume24h:0,supply:1000000000,burned:asNum(zeroRaw)+asNum(deadRaw)};
+    }
     async function geckoMarkets(onBatch, maxPages=Infinity) {
       const markets=new Map();
       let complete=true;
@@ -153,21 +188,30 @@
         if(!prior || candidate.volume24h>prior.volume24h) { markets.set(candidate.address,candidate); return candidate; }
         return null;
       };
-      const verified=await Promise.all(VERIFIED_POOLS.map(async address => {
-        let lastError;
-        for(let attempt=0;attempt<4;attempt++) {
-          try {
-            const response=await fetch(geckoPoolUrl(address));
-            if(!response.ok) throw new Error(`GeckoTerminal returned ${response.status}`);
-            return await response.json();
-          } catch(error) { lastError=error; if(attempt<3) await pause(1200*(attempt+1)); }
+      const seededMarkets=[];
+      for(const seed of VERIFIED_POOL_SEEDS) {
+        const candidate={...seed,marketCap:seed.marketCap||0,volume24h:seed.volume24h||0};
+        markets.set(candidate.address,candidate);
+        seededMarkets.push(candidate);
+      }
+      await emit(seededMarkets);
+      const loadVerifiedPools = async () => {
+        const verifiedMarkets=[];
+        for(const {pool:address} of VERIFIED_POOL_SEEDS) {
+          let result=null;
+          for(let attempt=0;attempt<3;attempt++) {
+            try {
+              const response=await fetch(geckoPoolUrl(address));
+              if(!response.ok) throw new Error(`GeckoTerminal returned ${response.status}`);
+              result=await response.json();
+              break;
+            } catch(error) { if(attempt<2) await pause(1800*(attempt+1)); else console.warn(`Verified GeckoTerminal pool ${address} could not be loaded.`,error); }
+          }
+          if(result) { const candidate=addPool(result.data,new Map((result.included||[]).map(item=>[item.id,item.attributes]))); if(candidate) verifiedMarkets.push(candidate); }
+          await pause(2200);
         }
-        console.warn(`Verified GeckoTerminal pool ${address} could not be loaded.`,lastError);
-        return null;
-      }));
-      const verifiedMarkets=[];
-      verified.filter(Boolean).forEach(result => { const candidate=addPool(result.data,new Map((result.included||[]).map(item=>[item.id,item.attributes]))); if(candidate) verifiedMarkets.push(candidate); });
-      await emit(verifiedMarkets);
+        await emit(verifiedMarkets);
+      };
       let pageNumber=1;
       while(true) {
         setStatus(`Scanning GeckoTerminal pools · page ${pageNumber}`);
@@ -201,6 +245,7 @@
         pageNumber++;
         await pause(2200);
       }
+      await loadVerifiedPools();
       return {markets:[...markets.values()],complete};
     }
     const setStatus = (message, bad=false) => $('status').innerHTML = bad ? `<span class="error">${message}</span>` : message;
@@ -217,7 +262,7 @@
       $('totalBurned').textContent = fmt(visible.reduce((n,t)=>n+t.burned,0));
       $('updated').textContent = timestamp ? new Date(timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '—';
       const max = Math.max(...visible.map(t=>t.burned),1);
-      $('rows').innerHTML = visible.length ? visible.map((t,i) => `<tr><td class="rank">${String(i+1).padStart(2,'0')}</td><td><div class="token"><span class="mark">${t.symbol.slice(0,2).toUpperCase()}${t.image ? `<img src="${escapeHtml(t.image)}" alt="" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(t.name)}</div><div class="sym">$${escapeHtml(t.symbol)}</div></div></div></td><td class="num">${t.marketCap ? `$${fmt(t.marketCap)}` : '—'}</td><td class="num">${t.volume24h ? `$${fmt(t.volume24h)}` : '—'}</td><td class="num"><span class="burn">${fmt(t.burned)}</span><span class="bar"><i style="width:${(t.burned/max)*100}%"></i></span></td><td class="num">${t.supply ? (t.burned/t.supply*100).toFixed(4) : '0.0000'}%</td><td class="num"><span class="address"><a target="_blank" rel="noreferrer" href="https://robinhoodchain.blockscout.com/token/${t.address}">${short(t.address)}</a></span></td></tr>`).join('') : '<tr><td class="empty" colspan="7">No discovered Pons tokens currently have a positive burn balance.</td></tr>';
+      $('rows').innerHTML = visible.length ? visible.map((t,i) => `<tr><td class="rank" data-label="Rank">${String(i+1).padStart(2,'0')}</td><td data-label="Project"><div class="token"><span class="mark">${t.symbol.slice(0,2).toUpperCase()}${t.image ? `<img src="${escapeHtml(t.image)}" alt="" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(t.name)}</div><div class="sym">$${escapeHtml(t.symbol)}</div></div></div></td><td class="num" data-label="Market cap / FDV">${t.marketCap ? `$${fmt(t.marketCap)}` : '—'}</td><td class="num" data-label="24h volume">${t.volume24h ? `$${fmt(t.volume24h)}` : '—'}</td><td class="num" data-label="Burned supply"><span class="burn">${fmt(t.burned)}</span><span class="bar"><i style="width:${(t.burned/max)*100}%"></i></span></td><td class="num" data-label="Burn rate">${t.supply ? (t.burned/t.supply*100).toFixed(4) : '0.0000'}%</td><td class="num" data-label="Token"><span class="address"><a target="_blank" rel="noreferrer" href="https://robinhoodchain.blockscout.com/token/${t.address}">${short(t.address)}</a></span></td></tr>`).join('') : '<tr><td class="empty" colspan="7">No discovered Pons tokens currently have a positive burn balance.</td></tr>';
     };
     const escapeHtml = s => String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     async function launches() {
@@ -260,6 +305,21 @@
     async function refresh() {
       const run=++activeRefresh;
       const button=$('refresh'); button.disabled=true;
+      let currentLock;
+      try { currentLock=JSON.parse(localStorage.getItem(SCAN_LOCK)); } catch {}
+      if(currentLock?.id!==TAB_ID && currentLock?.timestamp && Date.now()-currentLock.timestamp<90000) {
+        setStatus(`<strong>Shared scan in progress.</strong> Another tab is loading the GeckoTerminal catalog; this tab will reuse its result.`);
+        button.disabled=false;
+        setTimeout(()=>{
+          try {
+            const saved=JSON.parse(localStorage.getItem(CACHE));
+            if(saved?.tokens?.length) { allTokens=saved.tokens; lastCompleteTokens=saved.tokens; lastUpdated=saved.timestamp; render(allTokens,lastUpdated); setStatus(`<strong>Shared scan complete.</strong> Loaded the latest cached list.`); return; }
+          } catch {}
+          refresh();
+        },6000);
+        return;
+      }
+      localStorage.setItem(SCAN_LOCK,JSON.stringify({id:TAB_ID,timestamp:Date.now()}));
       try {
         let results=[];
         let complete=true;
@@ -273,6 +333,8 @@
             results=[...burnByAddress.values()].filter(token=>token.burned>0);
             if(results.length) render(results,Date.now());
           };
+          const savedUserTokens=userTokens();
+          if(savedUserTokens.length) await ingest(await Promise.all(savedUserTokens.map(token=>readUserToken(token).catch(()=>null))).then(tokens=>tokens.filter(Boolean)));
           let markets;
           let cachedIndex;
           try { cachedIndex=JSON.parse(localStorage.getItem(MARKET_INDEX_CACHE)); } catch {}
@@ -334,9 +396,30 @@
           setStatus(`<strong>Partial live list.</strong> Refresh again for a complete market scan.`);
         }
       } catch(err) { console.error(err); setStatus(`Could not complete the scan: ${escapeHtml(err.message)}. Check your connection and try again.`,true); }
-      finally { if(run===activeRefresh) button.disabled=false; }
+      finally {
+        if(run===activeRefresh) button.disabled=false;
+        try { const lock=JSON.parse(localStorage.getItem(SCAN_LOCK)); if(lock?.id===TAB_ID) localStorage.removeItem(SCAN_LOCK); } catch {}
+      }
     }
     $('refresh').addEventListener('click',refresh);
+    $('add-token').addEventListener('click',async()=>{
+      const input=$('token-address');
+      const status=$('add-status');
+      const address=input.value.trim().toLowerCase();
+      if(!/^0x[a-f0-9]{40}$/.test(address)) { status.textContent='Enter a valid 0x token contract address.'; return; }
+      $('add-token').disabled=true; status.textContent='Verifying official pons launch…';
+      try {
+        const token=await verifyPonsToken(address);
+        const details=await readUserToken(token);
+        if(details.burned<=0) throw new Error('This is a valid pons token, but it has no burned supply yet and does not meet the Burn List rule.');
+        const tokens=userTokens();
+        if(!tokens.some(item=>item.address===token.address)) saveUserTokens([...tokens,token]);
+        allTokens=[...allTokens.filter(item=>item.address!==details.address),details];
+        lastCompleteTokens=[...lastCompleteTokens.filter(item=>item.address!==details.address),details];
+        render(allTokens,Date.now()); input.value=''; status.textContent=`Added ${details.symbol}. It will remain in future scans.`;
+      } catch(error) { status.textContent=error.message||'Could not add this token.'; }
+      finally { $('add-token').disabled=false; }
+    });
     $('search').addEventListener('input',()=>render(allTokens,lastUpdated));
     $('sort').addEventListener('change',()=>render(allTokens,lastUpdated));
     try { const saved=JSON.parse(localStorage.getItem(CACHE)); if(saved?.tokens?.length){ allTokens=saved.tokens; lastCompleteTokens=saved.tokens; lastUpdated=saved.timestamp; render(allTokens,lastUpdated); setStatus(`<strong>Cached full list shown.</strong> Updating from the market…`); } } catch {}
