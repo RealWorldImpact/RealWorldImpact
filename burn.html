@@ -38,6 +38,7 @@
     .label { color:var(--muted); font-size:8px; text-transform:uppercase; letter-spacing:.08em; }.value { font:18px/1 Impact, sans-serif; letter-spacing:.02em; text-align:right; }
     .toolbar { padding:23px 0 15px; display:flex; gap:14px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
     .controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .refresh-icon { width:34px; height:34px; padding:0; display:grid; place-items:center; font-size:19px; line-height:1; }
     input, select { appearance:none; border:1px solid var(--line); background:var(--panel); color:var(--ink); padding:10px 12px; font:11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; letter-spacing:.03em; outline:none; }
     input { width:190px; } input:focus, select:focus { border-color:var(--acid); } select { cursor:pointer; }
     .status { color:var(--muted); font-size:12px; min-height:17px; }.status strong { color:var(--acid); font-weight:500; }
@@ -55,7 +56,7 @@
       nav{align-items:flex-start;gap:12px;padding-bottom:16px}.nav-actions{gap:8px;align-items:flex-end;flex-direction:column}.chain{font-size:8px;line-height:1.2;text-align:right}.buy-rwi{font-size:8px!important;min-height:26px!important;padding:7px 8px!important}
       .rwi-brand{gap:7px;font-size:9px;letter-spacing:.06em;white-space:nowrap}.rwi-logo{width:30px;height:30px;flex-basis:30px}
       .hero{grid-template-columns:1fr;padding:38px 0 28px;gap:24px}.hero h1{font-size:30px;line-height:.9}.intro{font-size:9px;margin:13px 0 0;max-width:100%}.stats{grid-template-columns:1fr}.stat{padding:8px 0}.value{font-size:18px}
-      .toolbar{align-items:stretch;padding:18px 0 12px;gap:12px}.status{width:100%;line-height:1.45}.controls{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}.controls input{grid-column:1 / -1;width:100%}.controls button{grid-column:1 / -1;width:100%}.add-token{padding:13px}.add-token input,.add-token button{width:100%}
+      .toolbar{align-items:stretch;padding:18px 0 12px;gap:12px}.status{width:100%;line-height:1.45}.controls{width:100%;display:grid;grid-template-columns:1fr auto;gap:8px}.controls input{grid-column:1 / -1;width:100%}.controls .refresh-icon{grid-column:2;width:34px;justify-self:end}.add-token{padding:13px}.add-token input,.add-token button{width:100%}
       .table-wrap{border:0;background:transparent;overflow:visible}.table{min-width:0;display:block}.table thead{display:none}.table tbody{display:grid;gap:5px}.table tr{position:relative;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);background:rgba(255,255,255,.015);padding:1px 9px}.table td{display:flex;align-items:center;justify-content:space-between;gap:7px;border:0;padding:5px 0;font-size:10px;text-align:right!important}.table td::before{content:attr(data-label);color:var(--muted);font-size:7px;letter-spacing:.07em;text-transform:uppercase;text-align:left}.table td[data-label="Project"]{grid-column:1 / -1;justify-content:flex-start;padding:6px 0 7px;border-bottom:1px solid var(--line);text-align:left!important}.table td[data-label="Project"]::before{display:none}.table td[data-label="Rank"]{position:absolute;right:10px;top:5px;padding:0;color:var(--acid)}.table td[data-label="Rank"]::before{display:none}.table td[data-label="Token"]{grid-column:1 / -1;border-top:1px solid var(--line);padding-top:5px}.token{gap:7px}.mark{width:21px;height:21px;flex-basis:21px}.sym{font-size:9px;margin-top:1px}.bar{width:46px}.address{font-size:9px}
       footer{margin-top:18px;font-size:10px}
     }
@@ -66,7 +67,7 @@
   <main>
     <nav><a class="rwi-brand" href="https://www.rwihood.org" target="_blank" rel="noreferrer"><span class="rwi-logo"><img src="rwi-badge.png" alt="RWI logo"></span><span>Real World Impact</span></a><div class="nav-actions"><span class="chain">Robinhood Chain / 4663</span><a class="buy-rwi" href="https://www.ponsfamily.com/launchpad/0x2286397228be256529be1ae9ed8d7d16549e9c6a" target="_blank" rel="noreferrer">Buy $RWI on Pons</a></div></nav>
     <section class="hero"><div class="hero-copy"><h1>Pons Family <span>Burn List.</span></h1><p class="intro">Pons tokens with a verified on-chain burn, ranked by tokens permanently removed from circulation. Pools are scanned in GeckoTerminal volume order for fast discovery; tokens without a GeckoTerminal logo are not shown.</p></div><div class="hero-side"><section class="stats"><div class="stat"><span class="label">Tokens indexed</span><span class="value" id="projects">—</span></div><div class="stat"><span class="label">Updated</span><span class="value" id="updated">—</span></div></section></div></section>
-    <section class="toolbar"><div class="status" id="status">Loading the Pons Family Burn List…</div><div class="controls"><input id="search" type="search" placeholder="Search name or symbol"><button id="refresh">Update list</button></div></section>
+    <section class="toolbar"><div class="status" id="status">Loading the Pons Family Burn List…</div><div class="controls"><button id="refresh" class="refresh-icon" type="button" title="Refresh list" aria-label="Refresh list">↻</button></div></section>
     <section class="add-token"><p>Missing a token? Paste its contract address. Only tokens launched through the official pons factories can be added.</p><input id="token-address" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x… token address"><button id="add-token">Add pons token</button><div class="add-status" id="add-status"></div></section>
     <div class="table-wrap"><table class="table"><thead><tr><th>#</th><th>Project</th><th class="num">Market cap / FDV</th><th class="num">24h volume</th><th class="num">Burned supply</th><th class="num">% of supply</th><th class="num">Token</th></tr></thead><tbody id="rows"><tr><td class="empty" colspan="7">Building the live list…</td></tr></tbody></table></div>
     <footer>Market data and volume come from GeckoTerminal’s Pons Family pool index. Burned supply is read on-chain from the canonical zero and dead addresses. This is an activity dashboard, not financial advice.</footer>
@@ -107,14 +108,22 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
     const geckoDexUrl = page => LIVE_RWI ? `/api/gecko?kind=dex&page=${page}` : GECKO_API+page;
     const geckoPoolUrl = address => LIVE_RWI ? `/api/gecko?kind=pool&address=${address}` : `${GECKO_POOL_API}${address}?include=base_token%2Cquote_token`;
     const geckoTokenUrl = address => LIVE_RWI ? `/api/gecko?kind=token&address=${address}` : `${GECKO_TOKEN_API}${address}`;
-    const fmt = n => new Intl.NumberFormat('en-US',{maximumFractionDigits:n >= 1e6 ? 0 : 2}).format(n);
+    const numberFormat=new Intl.NumberFormat('en-US',{maximumFractionDigits:2});
+    const wholeNumberFormat=new Intl.NumberFormat('en-US',{maximumFractionDigits:0});
+    const fmt = n => (n>=1e6 ? wholeNumberFormat : numberFormat).format(n);
     const short = a => `${a.slice(0,6)}…${a.slice(-4)}`;
     const pause = ms => new Promise(resolve => setTimeout(resolve,ms));
+    const fetchWithTimeout = async (url, options={}, timeout=10000) => {
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),timeout);
+      try { return await fetch(url,{...options,signal:controller.signal}); }
+      finally { clearTimeout(timer); }
+    };
     const requestRpc = async payload => {
       let lastError;
       for (let attempt=0; attempt<4; attempt++) {
         try {
-          const r=await fetch(RPC,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
+          const r=await fetchWithTimeout(RPC,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)},12000);
           if (!r.ok) throw new Error(`RPC returned ${r.status}`);
           return await r.json();
         } catch(error) { lastError=error; if(attempt<3) await pause(350*2**attempt); }
@@ -187,7 +196,7 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
       const asNum = value => Number(BigInt(value) / 1000000000000n) / 1e6;
       const details={...token,name:decodeString(nameRaw)||token.name||'Pons token',symbol:decodeString(symbolRaw)||token.symbol||'—',image:token.image||'',marketCap:token.marketCap||0,volume24h:token.volume24h||0,supply:token.supply||1000000000,burned:asNum(zeroRaw)+asNum(deadRaw)};
       for(let attempt=0;attempt<3;attempt++) try {
-        const response=await fetch(geckoTokenUrl(token.address));
+        const response=await fetchWithTimeout(geckoTokenUrl(token.address));
         if(response.ok) {
           const attrs=(await response.json()).data?.attributes||{};
           details.image=attrs.image_url||'';
@@ -200,7 +209,7 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
         if(!details.image && attempt<2) await pause(750*(attempt+1));
       } catch { if(attempt<2) await pause(750*(attempt+1)); }
       if(!details.image) try {
-        const response=await fetch(geckoPoolUrl(token.pool));
+        const response=await fetchWithTimeout(geckoPoolUrl(token.pool));
         if(response.ok) {
           const market=await response.json();
           const geckoToken=(market.included||[]).find(item=>item.type==='token' && item.attributes?.address?.toLowerCase()===token.address)?.attributes;
@@ -217,7 +226,13 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
       const markets=new Map();
       let complete=true;
       const emit = async batch => { if(batch.length && onBatch) await onBatch(batch); };
-      const pendingBurnReads=[];
+      const pendingBurnReads=new Set();
+      const queueBurnRead = async batch => {
+        const task=emit(batch);
+        pendingBurnReads.add(task);
+        task.then(()=>pendingBurnReads.delete(task),()=>pendingBurnReads.delete(task));
+        if(pendingBurnReads.size>=2) await Promise.race(pendingBurnReads);
+      };
       const addPool = (pool, included) => {
         const attrs=pool.attributes||{};
         const base=included.get(pool.relationships?.base_token?.data?.id);
@@ -246,7 +261,7 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
           let lastError;
           for(let attempt=0;attempt<3;attempt++) {
             try {
-              const response=await fetch(geckoDexUrl(pageNumber));
+              const response=await fetchWithTimeout(geckoDexUrl(pageNumber));
               if(!response.ok) throw new Error(`GeckoTerminal returned ${response.status}`);
               page=await response.json();
               break;
@@ -264,14 +279,14 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
         const included=new Map((page.included||[]).map(item=>[item.id,item.attributes]));
         const pageMarkets=[];
         for(const pool of page.data||[]) { const candidate=addPool(pool,included); if(candidate) pageMarkets.push(candidate); }
-        pendingBurnReads.push(emit(pageMarkets));
+        await queueBurnRead(pageMarkets);
         if(pageNumber>=maxPages) { complete=false; break; }
         const hasNextPage=Boolean(page.links?.next) || page.data?.length===20;
         if(!hasNextPage) break;
         pageNumber++;
         await pause(2200);
       }
-      await Promise.all(pendingBurnReads);
+      await Promise.all([...pendingBurnReads]);
       return {markets:[...markets.values()],complete};
     }
     const setStatus = (message, bad=false) => $('status').innerHTML = bad ? `<span class="error">${message}</span>` : message;
@@ -280,13 +295,12 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
     let activeRefresh=0;
     let lastUpdated=0;
     const render = (tokens, timestamp) => {
-      const query=$('search').value.trim().toLowerCase();
-      const visible=tokens.filter(token=>!query || `${token.name} ${token.symbol}`.toLowerCase().includes(query));
+      const visible=[...tokens];
       visible.sort((a,b)=>b.burned-a.burned || a.name.localeCompare(b.name));
       $('projects').textContent = fmt(visible.length);
       $('updated').textContent = timestamp ? new Date(timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '—';
       const max = Math.max(...visible.map(t=>t.burned),1);
-      $('rows').innerHTML = visible.length ? visible.map((t,i) => `<tr><td class="rank" data-label="Rank">${String(i+1).padStart(2,'0')}</td><td data-label="Project"><a class="token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${t.address}"><div class="token"><span class="mark">${t.symbol.slice(0,2).toUpperCase()}${t.image ? `<img src="${escapeHtml(t.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(t.name)}</div><div class="sym">$${escapeHtml(t.symbol)} · View on pons</div></div></div></a></td><td class="num" data-label="Market cap / FDV">${t.marketCap ? `$${fmt(t.marketCap)}` : '—'}</td><td class="num" data-label="24h volume">${t.volume24h ? `$${fmt(t.volume24h)}` : '—'}</td><td class="num" data-label="Burned supply"><span class="burn">${fmt(t.burned)}</span><span class="bar"><i style="width:${(t.burned/max)*100}%"></i></span></td><td class="num" data-label="Burn rate">${t.supply ? (t.burned/t.supply*100).toFixed(4) : '0.0000'}%</td><td class="num" data-label="Token"><span class="address"><button class="copy-address" type="button" data-address="${t.address}" data-label="${short(t.address)}" title="Copy contract address">${short(t.address)}</button></span></td></tr>`).join('') : '<tr><td class="empty" colspan="7">No discovered Pons tokens currently have a positive burn balance.</td></tr>';
+      $('rows').innerHTML = visible.length ? visible.map((t,i) => `<tr><td class="rank" data-label="Rank">${String(i+1).padStart(2,'0')}</td><td data-label="Project"><a class="token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${encodeURIComponent(t.address)}"><div class="token"><span class="mark">${escapeHtml(t.symbol.slice(0,2).toUpperCase())}${t.image ? `<img src="${escapeHtml(t.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(t.name)}</div><div class="sym">$${escapeHtml(t.symbol)} · View on pons</div></div></div></a></td><td class="num" data-label="Market cap / FDV">${t.marketCap ? `$${fmt(t.marketCap)}` : '—'}</td><td class="num" data-label="24h volume">${t.volume24h ? `$${fmt(t.volume24h)}` : '—'}</td><td class="num" data-label="Burned supply"><span class="burn">${fmt(t.burned)}</span><span class="bar"><i style="width:${(t.burned/max)*100}%"></i></span></td><td class="num" data-label="Burn rate">${t.supply ? (t.burned/t.supply*100).toFixed(4) : '0.0000'}%</td><td class="num" data-label="Token"><span class="address"><button class="copy-address" type="button" data-address="${escapeHtml(t.address)}" data-label="${escapeHtml(short(t.address))}" title="Copy contract address">${escapeHtml(short(t.address))}</button></span></td></tr>`).join('') : '<tr><td class="empty" colspan="7">No discovered Pons tokens currently have a positive burn balance.</td></tr>';
     };
     const escapeHtml = s => String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     async function launches() {
@@ -395,7 +409,7 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
           if(run!==activeRefresh) return;
           const launchesFound=await withVolume(discovery.tokens,discovery.latest);
           setStatus('Getting the current ETH/USD reference price');
-          const ethResponse=await fetch('https://coins.llama.fi/prices/current/coingecko:ethereum');
+          const ethResponse=await fetchWithTimeout('https://coins.llama.fi/prices/current/coingecko:ethereum');
           const ethUsd=(await ethResponse.json()).coins['coingecko:ethereum'].price;
           for(let i=0;i<launchesFound.length;i+=5) {
             setStatus(`Reading market caps & burns · ${Math.min(i+5,launchesFound.length)} / ${launchesFound.length}`);
@@ -444,12 +458,14 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
         saveUserTokens([...tokens,details]);
         allTokens=[...allTokens.filter(item=>item.address!==details.address),details];
         lastCompleteTokens=[...lastCompleteTokens.filter(item=>item.address!==details.address),details];
-        localStorage.setItem(CACHE,JSON.stringify({tokens:lastCompleteTokens,timestamp:Date.now(),complete:true}));
+        const preserved=new Map();
+        try { (JSON.parse(localStorage.getItem(CACHE))?.tokens||[]).forEach(item=>preserved.set(item.address,item)); } catch {}
+        [...allTokens,...lastCompleteTokens,details].forEach(item=>preserved.set(item.address,item));
+        localStorage.setItem(CACHE,JSON.stringify({tokens:[...preserved.values()],timestamp:Date.now(),complete:true}));
         render(allTokens,Date.now()); input.value=''; status.textContent=`Added ${details.symbol}. It will remain in future scans.`;
       } catch(error) { status.textContent=error.message||'Could not add this token.'; }
       finally { $('add-token').disabled=false; }
     });
-    $('search').addEventListener('input',()=>render(allTokens,lastUpdated));
     $('rows').addEventListener('click',async event=>{
       const button=event.target.closest('.copy-address');
       if(!button) return;
