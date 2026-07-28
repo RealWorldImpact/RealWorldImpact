@@ -83,7 +83,10 @@
       {pool:'0xca6aa177b14482a3e56ae395146461e3aec1de73',address:'0xf11168ec379efd20a35006f1d44cc5f9e4e94e67',name:'Xeno',symbol:'XENO',image:'https://coin-images.coingecko.com/coins/images/102174795/large/epjr5bp1jx8di81aa5yyhglyqgvj.?1784883172',marketCap:14615,volume24h:2689},
       {pool:'0x52fcb1d83191e06ef2d2d9f460609ca22a923558',address:'0x62c71cd34a52c30d894419cbcc55db2afa8032ea',name:'YOLO',symbol:'YOLO',image:'https://coin-images.coingecko.com/coins/images/102174641/large/fzvhldxmvphx85ls235mclk6bf3x.?1784363718',marketCap:2546636,volume24h:545616},
       {pool:'0x835e4b15d72029866108393f1bbcb34d7bc04399',address:'0xe6864e4630d4d7a0cad2e61f6bc2c0dcad777712',name:'Link',symbol:'LINK',image:'https://assets.geckoterminal.com/dcvnhyenu8pa2q3qwnra8byvq8kz',marketCap:124033,volume24h:117941},
-      {pool:'0x10cc6bd38112cac182db90b6a71d8bb5939526ba',address:'0x39dbed3a2bd333467115de45665cc57f813c4571',name:'pons',symbol:'PONS',image:'https://coin-images.coingecko.com/coins/images/102174571/large/jhitvkisdq8fhxvimdkpcw7y3dx5.?1784093932',marketCap:34600000,volume24h:3890000}
+      {pool:'0x10cc6bd38112cac182db90b6a71d8bb5939526ba',address:'0x39dbed3a2bd333467115de45665cc57f813c4571',name:'pons',symbol:'PONS',image:'https://coin-images.coingecko.com/coins/images/102174571/large/jhitvkisdq8fhxvimdkpcw7y3dx5.?1784093932',marketCap:34600000,volume24h:3890000},
+      {pool:'0x3f6e8bf03169bc63d2c05500c7ebe8d406ed3093',address:'0xf05babb8172bea20e974b458c593399be11250dd',name:'Grace',symbol:'GRACE',image:'https://assets.geckoterminal.com/m7wz49sw78x0ng0609l3e7ipsj61',marketCap:121566,volume24h:90259},
+      {pool:'0xdec8f541ff159d2b4abd3c3b041cd739bd7c486f',address:'0xedaee44320107caa714baaec486261a87f27022d',name:'PONGO',symbol:'PONGO',image:'https://assets.geckoterminal.com/52hr48l6z4kqtfyswqbn9sodd8zz',marketCap:421111,volume24h:269899},
+      {pool:'0xe87bc675ad3d597c82858301cfcdae1dc613c75a',address:'0xc9e7c34fa156a235e8b8601171a543bc9c84a1b9',name:'tamPons',symbol:'TAMPONS',image:'https://coin-images.coingecko.com/coins/images/102174729/large/3feil5y7kqcu4kdtw2x05q6gpcel.?1784703134',marketCap:228186,volume24h:243625}
     ];
     const FACTORIES = [
       { address:'0x0c37a24F5D23A486FA692d1500881d698B1F77a4', from:8600612 },
@@ -404,8 +407,11 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
           render(allTokens,stamp);
           setStatus(`<strong>Live.</strong> ${results.length} discovered Pons tokens with positive burned supply, ranked by burned supply.`);
         } else if(lastCompleteTokens.length) {
-          render(lastCompleteTokens,lastUpdated);
-          setStatus(`<strong>Cached full list retained.</strong> The latest market scan was partial, so no coins were removed.`);
+          const retained=new Map(lastCompleteTokens.map(token=>[token.address,token]));
+          results.forEach(token=>retained.set(token.address,token));
+          allTokens=[...retained.values()];
+          render(allTokens,lastUpdated);
+          setStatus(`<strong>Cached full list retained.</strong> Verified additions from the partial scan were included; no coins were removed.`);
         } else {
           allTokens=results; lastUpdated=stamp; render(allTokens,stamp);
           setStatus(`<strong>Partial live list.</strong> Refresh again for a complete market scan.`);
