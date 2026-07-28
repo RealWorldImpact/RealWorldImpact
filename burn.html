@@ -190,8 +190,10 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
         const response=await fetch(geckoPoolUrl(token.pool));
         if(response.ok) {
           const market=await response.json();
-          const image=(market.included||[]).find(item=>item.type==='token' && item.attributes?.address?.toLowerCase()===token.address)?.attributes?.image_url;
-          details.image=image||'';
+          const geckoToken=(market.included||[]).find(item=>item.type==='token' && item.attributes?.address?.toLowerCase()===token.address)?.attributes;
+          details.image=geckoToken?.image_url||'';
+          details.name=geckoToken?.name||details.name;
+          details.symbol=geckoToken?.symbol||details.symbol;
           details.marketCap=Number(market.data?.attributes?.market_cap_usd ?? market.data?.attributes?.fdv_usd)||0;
           details.volume24h=Number(market.data?.attributes?.volume_usd?.h24)||0;
         }
@@ -201,6 +203,8 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
         if(response.ok) {
           const attrs=(await response.json()).data?.attributes||{};
           details.image=attrs.image_url||'';
+          details.name=attrs.name||details.name;
+          details.symbol=attrs.symbol||details.symbol;
           details.marketCap=Number(attrs.market_cap_usd ?? attrs.fdv_usd)||details.marketCap;
           details.volume24h=Number(attrs.volume_usd?.h24)||details.volume24h;
         }
