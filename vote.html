@@ -3402,12 +3402,13 @@ function renderBallot(){
   const sig = LANG + '|' + orgs.map(function(c){ return c.placeholder ? '_open' : c.slug; }).join(',');
   if(sig === lastBallotSig){
     // Same slate & language — dynamic state (selected, tally numbers) is
-    // painted separately. No need to churn the DOM.
-    if(selected){
-      $('ballot').querySelectorAll('.cand').forEach(function(x){
-        x.setAttribute('aria-pressed', String(x.dataset.slug === selected));
-      });
-    }
+    // painted separately. No need to churn the DOM. aria-pressed must sync
+    // unconditionally: when `selected` is null every row clears, otherwise a
+    // stale highlight survives from before the refresh.
+    $('ballot').querySelectorAll('.cand').forEach(function(x){
+      if(x.dataset.open) return;               // open seats are not radios
+      x.setAttribute('aria-pressed', String(!!selected && x.dataset.slug === selected));
+    });
     return;
   }
   lastBallotSig = sig;
@@ -3840,8 +3841,13 @@ async function refreshAll(opts){
   if(bootFallbackTimer){ clearTimeout(bootFallbackTimer); bootFallbackTimer = null; }
   updateSlateNotice();                           // runs whether or not votes exist
   // Keep the ballot showing what this wallet chose rather than resetting to
-  // nothing the instant they vote.
-  selected = opts.keepChoice && SLATE.indexOf(opts.keepChoice) !== -1 ? opts.keepChoice : null;
+  // nothing the instant they vote — and ALSO preserve a live selection through
+  // background refreshes (write-in reconcile, pending-vote polls). Clearing it
+  // meant tapping a candidate and having the choice silently wiped a second
+  // later by a timer the user never asked for. Only drop the selection if the
+  // slug genuinely left the slate.
+  const keep = opts.keepChoice || selected;
+  selected = keep && SLATE.indexOf(keep) !== -1 ? keep : null;
   renderBallot();
   renderOwnerPanel();
   // If a write-in reconcile is running, cancel the remaining timers as soon
@@ -4343,7 +4349,12 @@ function repaintDynamic(){
      "step 2 never prompts" shape.
 
      txBase — { from, to, data } (value defaults to 0x0)
-     fallbackGas — used only if the wallet's node refuses to estimate.
+     fallbackGas — used only if the wallet's node refuses to estimate. On an
+     Arbitrum Orbit chain (Robinhood Chain is one) gas units include the L1
+     data-posting component, so an ERC-20 transfer routinely estimates at
+     200k-700k — a 100k fallback gets rejected by the wallet BEFORE any prompt
+     appears. Oversized limits are harmless here: only gas actually used is
+     charged, the rest is refunded.
   */
   async function sendTx(txBase, fallbackGas){
     if(!wallet) throw new Error('wallet gone');
@@ -4425,7 +4436,7 @@ function repaintDynamic(){
       if(!stepsDone[1]){
         currentStep = 1;
         markStep(1,'doing'); wiStatus(t('vote.st.wiSigning', {n:1}));
-        await sendTx({ from: account, to: BALLOT_BOX, data: nomData }, 100000);
+        await sendTx({ from: account, to: BALLOT_BOX, data: nomData }, 500000);
         stepsDone[1] = true; markStep(1,'done');
         await pause(400);           // breathing room for the wallet
       }
@@ -4433,7 +4444,7 @@ function repaintDynamic(){
       if(!stepsDone[2]){
         currentStep = 2;
         markStep(2,'doing'); wiStatus(t('vote.st.wiSigning', {n:2}));
-        await sendTx({ from: account, to: RWI, data: devData }, 100000);
+        await sendTx({ from: account, to: RWI, data: devData }, 1000000);
         stepsDone[2] = true; markStep(2,'done');
         await pause(400);
       }
@@ -4441,13 +4452,13 @@ function repaintDynamic(){
       if(!stepsDone[3]){
         currentStep = 3;
         markStep(3,'doing'); wiStatus(t('vote.st.wiSigning', {n:3}));
-        await sendTx({ from: account, to: RWI, data: burnData }, 100000);
+        await sendTx({ from: account, to: RWI, data: burnData }, 1000000);
         stepsDone[3] = true; markStep(3,'done');
       }
 
       // All three landed — clear the flow and start the reconcile schedule.
       resetSteps();
-      const picked = chosen;
+      const pickedSlug = chosen;
       chosen = null;
       $w('wiChosen').hidden = true;
       $w('wiSearch').value = '';
@@ -4460,7 +4471,7 @@ function repaintDynamic(){
       // walking Blockscout five times for a write-in that surfaced on the
       // first pass.
       clearPendingWriteIn();
-      pendingWriteIn = { slug: picked, round: ROUND, at: Date.now() };
+      pendingWriteIn = { slug: pickedSlug, round: ROUND, at: Date.now() };
       [1500, 4000, 9000, 18000, 35000].forEach(function(ms){
         writeInTimers.push(setTimeout(function(){
           if(pendingWriteIn) refreshAll({force:true});
