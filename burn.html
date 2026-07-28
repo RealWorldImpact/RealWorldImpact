@@ -51,7 +51,8 @@
   </main>
   <script>
   (() => {
-    const RPC = 'https://rpc.mainnet.chain.robinhood.com';
+    const LIVE_RWI = location.hostname === 'www.rwihood.org' || location.hostname === 'rwihood.org';
+    const RPC = LIVE_RWI ? '/api/rpc' : 'https://rpc.mainnet.chain.robinhood.com';
     const GECKO_API = 'https://api.geckoterminal.com/api/v2/networks/robinhood/dexes/pons-dot-family/pools?include=base_token%2Cquote_token&sort=h24_volume_usd_desc&page=';
     const GECKO_POOL_API = 'https://api.geckoterminal.com/api/v2/networks/robinhood/pools/';
     const VERIFIED_POOLS = [
@@ -72,6 +73,8 @@
     const MARKET_INDEX_TTL = 5 * 60 * 1000;
     const DISCOVERY_BLOCKS = 300000;
     const $ = id => document.getElementById(id);
+    const geckoDexUrl = page => LIVE_RWI ? `/api/gecko?kind=dex&page=${page}` : GECKO_API+page;
+    const geckoPoolUrl = address => LIVE_RWI ? `/api/gecko?kind=pool&address=${address}` : `${GECKO_POOL_API}${address}?include=base_token%2Cquote_token`;
     const fmt = n => new Intl.NumberFormat('en-US',{maximumFractionDigits:n >= 1e6 ? 0 : 2}).format(n);
     const short = a => `${a.slice(0,6)}…${a.slice(-4)}`;
     const pause = ms => new Promise(resolve => setTimeout(resolve,ms));
@@ -154,7 +157,7 @@
         let lastError;
         for(let attempt=0;attempt<4;attempt++) {
           try {
-            const response=await fetch(`${GECKO_POOL_API}${address}?include=base_token%2Cquote_token`);
+            const response=await fetch(geckoPoolUrl(address));
             if(!response.ok) throw new Error(`GeckoTerminal returned ${response.status}`);
             return await response.json();
           } catch(error) { lastError=error; if(attempt<3) await pause(1200*(attempt+1)); }
@@ -173,7 +176,7 @@
           let lastError;
           for(let attempt=0;attempt<3;attempt++) {
             try {
-              const response=await fetch(GECKO_API+pageNumber);
+              const response=await fetch(geckoDexUrl(pageNumber));
               if(!response.ok) throw new Error(`GeckoTerminal returned ${response.status}`);
               page=await response.json();
               break;
