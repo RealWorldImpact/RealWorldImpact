@@ -2,6 +2,7 @@ const CACHE_MS = 60_000;
 const cache = new Map();
 const DEX_BASE = 'https://api.geckoterminal.com/api/v2/networks/robinhood/dexes/pons-dot-family/pools?include=base_token%2Cquote_token&sort=h24_volume_usd_desc&page=';
 const POOL_BASE = 'https://api.geckoterminal.com/api/v2/networks/robinhood/pools/';
+const TOKEN_BASE = 'https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/';
 
 function cacheKey(req) {
   return `${req.query.kind || ''}:${req.query.page || ''}:${req.query.address || ''}`;
@@ -15,6 +16,9 @@ function upstreamUrl(req) {
   }
   if (req.query.kind === 'pool' && /^0x[a-fA-F0-9]{40}$/.test(req.query.address || '')) {
     return `${POOL_BASE}${req.query.address.toLowerCase()}?include=base_token%2Cquote_token`;
+  }
+  if (req.query.kind === 'token' && /^0x[a-fA-F0-9]{40}$/.test(req.query.address || '')) {
+    return `${TOKEN_BASE}${req.query.address.toLowerCase()}`;
   }
   return null;
 }

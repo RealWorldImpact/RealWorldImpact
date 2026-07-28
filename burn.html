@@ -4,9 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pons Family Burn List</title>
+  <meta name="description" content="Pons tokens with verified on-chain burns, ranked by burned supply." />
   <meta name="theme-color" content="#c9ff00" />
-  <link rel="icon" type="image/png" href="rwi-badge.png" />
-  <link rel="apple-touch-icon" href="rwi-badge.png" />
+  <link rel="icon" type="image/png" sizes="100x100" href="rwi-badge.png" />
+  <link rel="shortcut icon" type="image/png" href="rwi-badge.png" />
+  <link rel="apple-touch-icon" sizes="100x100" href="rwi-badge.png" />
+  <link rel="preconnect" href="https://api.geckoterminal.com" crossorigin />
   <style>
     :root { --ink:#f6f4e8; --muted:#a8aa9d; --line:rgba(246,244,232,.13); --acid:#d5ff3f; --coal:#11120f; --panel:#1a1c17; }
     * { box-sizing:border-box; }
@@ -52,7 +55,7 @@
       .rwi-brand{gap:7px;font-size:9px;letter-spacing:.06em;white-space:nowrap}.rwi-logo{width:30px;height:30px;flex-basis:30px}
       .hero{grid-template-columns:1fr;padding:38px 0 28px;gap:24px}.hero h1{font-size:30px;line-height:.9}.intro{font-size:9px;margin:13px 0 0;max-width:100%}.stats{grid-template-columns:1fr}.stat{padding:8px 0}.value{font-size:18px}
       .toolbar{align-items:stretch;padding:18px 0 12px;gap:12px}.status{width:100%;line-height:1.45}.controls{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}.controls input{grid-column:1 / -1;width:100%}.controls button{grid-column:1 / -1;width:100%}.add-token{padding:13px}.add-token input,.add-token button{width:100%}
-      .table-wrap{border:0;background:transparent;overflow:visible}.table{min-width:0;display:block}.table thead{display:none}.table tbody{display:grid;gap:10px}.table tr{position:relative;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);background:rgba(255,255,255,.015);padding:4px 12px}.table td{display:flex;align-items:center;justify-content:space-between;gap:10px;border:0;padding:11px 0;font-size:12px;text-align:right!important}.table td::before{content:attr(data-label);color:var(--muted);font-size:9px;letter-spacing:.08em;text-transform:uppercase;text-align:left}.table td[data-label="Project"]{grid-column:1 / -1;justify-content:flex-start;padding:12px 0 14px;border-bottom:1px solid var(--line);text-align:left!important}.table td[data-label="Project"]::before{display:none}.table td[data-label="Rank"]{position:absolute;right:14px;top:8px;padding:0;color:var(--acid)}.table td[data-label="Rank"]::before{display:none}.table td[data-label="Token"]{grid-column:1 / -1;border-top:1px solid var(--line);padding-top:10px}.bar{width:66px}.address{font-size:10px}
+      .table-wrap{border:0;background:transparent;overflow:visible}.table{min-width:0;display:block}.table thead{display:none}.table tbody{display:grid;gap:7px}.table tr{position:relative;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);background:rgba(255,255,255,.015);padding:2px 10px}.table td{display:flex;align-items:center;justify-content:space-between;gap:8px;border:0;padding:7px 0;font-size:11px;text-align:right!important}.table td::before{content:attr(data-label);color:var(--muted);font-size:8px;letter-spacing:.08em;text-transform:uppercase;text-align:left}.table td[data-label="Project"]{grid-column:1 / -1;justify-content:flex-start;padding:8px 0 9px;border-bottom:1px solid var(--line);text-align:left!important}.table td[data-label="Project"]::before{display:none}.table td[data-label="Rank"]{position:absolute;right:12px;top:6px;padding:0;color:var(--acid)}.table td[data-label="Rank"]::before{display:none}.table td[data-label="Token"]{grid-column:1 / -1;border-top:1px solid var(--line);padding-top:7px}.token{gap:8px}.mark{width:24px;height:24px;flex-basis:24px}.bar{width:54px}.address{font-size:10px}
       footer{margin-top:18px;font-size:10px}
     }
   </style>
@@ -73,6 +76,7 @@
     const RPC = LIVE_RWI ? '/api/rpc' : 'https://rpc.mainnet.chain.robinhood.com';
     const GECKO_API = 'https://api.geckoterminal.com/api/v2/networks/robinhood/dexes/pons-dot-family/pools?include=base_token%2Cquote_token&sort=h24_volume_usd_desc&page=';
     const GECKO_POOL_API = 'https://api.geckoterminal.com/api/v2/networks/robinhood/pools/';
+    const GECKO_TOKEN_API = 'https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/';
     const VERIFIED_POOL_SEEDS = [
       {pool:'0xff6aa24815d1274a9be0cfd17c7c7489cd40a697',address:'0x2286397228be256529be1ae9ed8d7d16549e9c6a',name:'Real World Impact',symbol:'RWI',image:'https://assets.geckoterminal.com/caxlvtu7q4kzn1mznh6ec2c8c9i6',marketCap:74330,volume24h:50990},
       {pool:'0xca6aa177b14482a3e56ae395146461e3aec1de73',address:'0xf11168ec379efd20a35006f1d44cc5f9e4e94e67',name:'Xeno',symbol:'XENO',image:'https://coin-images.coingecko.com/coins/images/102174795/large/epjr5bp1jx8di81aa5yyhglyqgvj.?1784883172',marketCap:14615,volume24h:2689},
@@ -98,6 +102,7 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
     const $ = id => document.getElementById(id);
     const geckoDexUrl = page => LIVE_RWI ? `/api/gecko?kind=dex&page=${page}` : GECKO_API+page;
     const geckoPoolUrl = address => LIVE_RWI ? `/api/gecko?kind=pool&address=${address}` : `${GECKO_POOL_API}${address}?include=base_token%2Cquote_token`;
+    const geckoTokenUrl = address => LIVE_RWI ? `/api/gecko?kind=token&address=${address}` : `${GECKO_TOKEN_API}${address}`;
     const fmt = n => new Intl.NumberFormat('en-US',{maximumFractionDigits:n >= 1e6 ? 0 : 2}).format(n);
     const short = a => `${a.slice(0,6)}…${a.slice(-4)}`;
     const pause = ms => new Promise(resolve => setTimeout(resolve,ms));
@@ -187,6 +192,15 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
           details.volume24h=Number(market.data?.attributes?.volume_usd?.h24)||0;
         }
       } catch {}
+      if(!details.image) try {
+        const response=await fetch(geckoTokenUrl(token.address));
+        if(response.ok) {
+          const attrs=(await response.json()).data?.attributes||{};
+          details.image=attrs.image_url||'';
+          details.marketCap=Number(attrs.market_cap_usd ?? attrs.fdv_usd)||details.marketCap;
+          details.volume24h=Number(attrs.volume_usd?.h24)||details.volume24h;
+        }
+      } catch {}
       return details;
     }
     async function geckoMarkets(onBatch, maxPages=Infinity) {
@@ -213,23 +227,6 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
         seededMarkets.push(candidate);
       }
       await emit(seededMarkets);
-      const loadVerifiedPools = async () => {
-        const verifiedMarkets=[];
-        for(const {pool:address} of VERIFIED_POOL_SEEDS) {
-          let result=null;
-          for(let attempt=0;attempt<3;attempt++) {
-            try {
-              const response=await fetch(geckoPoolUrl(address));
-              if(!response.ok) throw new Error(`GeckoTerminal returned ${response.status}`);
-              result=await response.json();
-              break;
-            } catch(error) { if(attempt<2) await pause(1800*(attempt+1)); else console.warn(`Verified GeckoTerminal pool ${address} could not be loaded.`,error); }
-          }
-          if(result) { const candidate=addPool(result.data,new Map((result.included||[]).map(item=>[item.id,item.attributes]))); if(candidate) verifiedMarkets.push(candidate); }
-          await pause(2200);
-        }
-        await emit(verifiedMarkets);
-      };
       let pageNumber=1;
       while(true) {
         setStatus(`Scanning GeckoTerminal pools · page ${pageNumber}`);
@@ -263,7 +260,6 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
         pageNumber++;
         await pause(2200);
       }
-      await loadVerifiedPools();
       return {markets:[...markets.values()],complete};
     }
     const setStatus = (message, bad=false) => $('status').innerHTML = bad ? `<span class="error">${message}</span>` : message;
@@ -278,7 +274,7 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
       $('projects').textContent = fmt(visible.length);
       $('updated').textContent = timestamp ? new Date(timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '—';
       const max = Math.max(...visible.map(t=>t.burned),1);
-      $('rows').innerHTML = visible.length ? visible.map((t,i) => `<tr><td class="rank" data-label="Rank">${String(i+1).padStart(2,'0')}</td><td data-label="Project"><a class="token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${t.address}"><div class="token"><span class="mark">${t.symbol.slice(0,2).toUpperCase()}${t.image ? `<img src="${escapeHtml(t.image)}" alt="" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(t.name)}</div><div class="sym">$${escapeHtml(t.symbol)} · View on pons</div></div></div></a></td><td class="num" data-label="Market cap / FDV">${t.marketCap ? `$${fmt(t.marketCap)}` : '—'}</td><td class="num" data-label="24h volume">${t.volume24h ? `$${fmt(t.volume24h)}` : '—'}</td><td class="num" data-label="Burned supply"><span class="burn">${fmt(t.burned)}</span><span class="bar"><i style="width:${(t.burned/max)*100}%"></i></span></td><td class="num" data-label="Burn rate">${t.supply ? (t.burned/t.supply*100).toFixed(4) : '0.0000'}%</td><td class="num" data-label="Token"><span class="address"><button class="copy-address" type="button" data-address="${t.address}" data-label="${short(t.address)}" title="Copy contract address">${short(t.address)}</button></span></td></tr>`).join('') : '<tr><td class="empty" colspan="7">No discovered Pons tokens currently have a positive burn balance.</td></tr>';
+      $('rows').innerHTML = visible.length ? visible.map((t,i) => `<tr><td class="rank" data-label="Rank">${String(i+1).padStart(2,'0')}</td><td data-label="Project"><a class="token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${t.address}"><div class="token"><span class="mark">${t.symbol.slice(0,2).toUpperCase()}${t.image ? `<img src="${escapeHtml(t.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(t.name)}</div><div class="sym">$${escapeHtml(t.symbol)} · View on pons</div></div></div></a></td><td class="num" data-label="Market cap / FDV">${t.marketCap ? `$${fmt(t.marketCap)}` : '—'}</td><td class="num" data-label="24h volume">${t.volume24h ? `$${fmt(t.volume24h)}` : '—'}</td><td class="num" data-label="Burned supply"><span class="burn">${fmt(t.burned)}</span><span class="bar"><i style="width:${(t.burned/max)*100}%"></i></span></td><td class="num" data-label="Burn rate">${t.supply ? (t.burned/t.supply*100).toFixed(4) : '0.0000'}%</td><td class="num" data-label="Token"><span class="address"><button class="copy-address" type="button" data-address="${t.address}" data-label="${short(t.address)}" title="Copy contract address">${short(t.address)}</button></span></td></tr>`).join('') : '<tr><td class="empty" colspan="7">No discovered Pons tokens currently have a positive burn balance.</td></tr>';
     };
     const escapeHtml = s => String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     async function launches() {
