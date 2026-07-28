@@ -185,8 +185,21 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
         {method:'eth_call',params:[{to:token.address,data:'0x70a08231'+padAddress(DEAD)},'latest']}
       ]);
       const asNum = value => Number(BigInt(value) / 1000000000000n) / 1e6;
-      const details={...token,name:decodeString(nameRaw)||'Pons token',symbol:decodeString(symbolRaw)||'—',image:'',marketCap:0,volume24h:0,supply:1000000000,burned:asNum(zeroRaw)+asNum(deadRaw)};
-      try {
+      const details={...token,name:decodeString(nameRaw)||token.name||'Pons token',symbol:decodeString(symbolRaw)||token.symbol||'—',image:token.image||'',marketCap:token.marketCap||0,volume24h:token.volume24h||0,supply:token.supply||1000000000,burned:asNum(zeroRaw)+asNum(deadRaw)};
+      for(let attempt=0;attempt<3;attempt++) try {
+        const response=await fetch(geckoTokenUrl(token.address));
+        if(response.ok) {
+          const attrs=(await response.json()).data?.attributes||{};
+          details.image=attrs.image_url||'';
+          details.name=attrs.name||details.name;
+          details.symbol=attrs.symbol||details.symbol;
+          details.marketCap=Number(attrs.market_cap_usd ?? attrs.fdv_usd)||details.marketCap;
+          details.volume24h=Number(attrs.volume_usd?.h24)||details.volume24h;
+          break;
+        }
+        if(!details.image && attempt<2) await pause(750*(attempt+1));
+      } catch { if(attempt<2) await pause(750*(attempt+1)); }
+      if(!details.image) try {
         const response=await fetch(geckoPoolUrl(token.pool));
         if(response.ok) {
           const market=await response.json();
@@ -196,17 +209,6 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
           details.symbol=geckoToken?.symbol||details.symbol;
           details.marketCap=Number(market.data?.attributes?.market_cap_usd ?? market.data?.attributes?.fdv_usd)||0;
           details.volume24h=Number(market.data?.attributes?.volume_usd?.h24)||0;
-        }
-      } catch {}
-      if(!details.image) try {
-        const response=await fetch(geckoTokenUrl(token.address));
-        if(response.ok) {
-          const attrs=(await response.json()).data?.attributes||{};
-          details.image=attrs.image_url||'';
-          details.name=attrs.name||details.name;
-          details.symbol=attrs.symbol||details.symbol;
-          details.marketCap=Number(attrs.market_cap_usd ?? attrs.fdv_usd)||details.marketCap;
-          details.volume24h=Number(attrs.volume_usd?.h24)||details.volume24h;
         }
       } catch {}
       return details;
@@ -438,10 +440,11 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
         const details=await readUserToken(token);
         if(details.burned<=0) throw new Error('This is a valid pons token, but it has no burned supply yet and does not meet the Burn List rule.');
         if(!details.image) throw new Error('This is a valid pons token, but it does not have a GeckoTerminal logo yet.');
-        const tokens=userTokens();
-        if(!tokens.some(item=>item.address===token.address)) saveUserTokens([...tokens,token]);
+        const tokens=userTokens().filter(item=>item.address!==token.address);
+        saveUserTokens([...tokens,details]);
         allTokens=[...allTokens.filter(item=>item.address!==details.address),details];
         lastCompleteTokens=[...lastCompleteTokens.filter(item=>item.address!==details.address),details];
+        localStorage.setItem(CACHE,JSON.stringify({tokens:lastCompleteTokens,timestamp:Date.now(),complete:true}));
         render(allTokens,Date.now()); input.value=''; status.textContent=`Added ${details.symbol}. It will remain in future scans.`;
       } catch(error) { status.textContent=error.message||'Could not add this token.'; }
       finally { $('add-token').disabled=false; }
