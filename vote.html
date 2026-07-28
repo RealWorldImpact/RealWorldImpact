@@ -3734,24 +3734,25 @@ async function loadRound(txs){
   // Holder write-ins fill the remaining slots on top of the auto-composed half.
   // Paint immediately from any nominations visible in the tx list (so the seat
   // is never blank), then let the burn verification run in the background and
-  // update on the next reconcile pass.
+  // update on the next repaint.
   try{
-    // Fast synchronous pass: collect any write-in nominations in the tx list
-    // and add them to SLATE right away, even before the burn is verified. The
-    // seat is marked "confirming" if the burn is not yet confirmed; the
-    // background verification (below) will flip them to verified on the next
-    // refresh without another network round-trip.
+    // Sync pass, zero network: every nomination in the tx list. Seats show
+    // unless a COMPLETE verification pass has positively ruled them 'unpaid' —
+    // unknown status (verification pending or failed) keeps the seat, so a
+    // Blockscout hiccup can never blank a legitimate write-in.
     const nominations = loadNominations(rows, ROUND);
-    // Union the nominated slugs with whatever is already verified — never show
-    // fewer seats than the verified set already confirmed.
-    const alreadyVerified = verifiedWriteInsByRound.get(ROUND) || new Set();
-    // On subsequent passes (after verifyWriteInsAsync has run) we know which
-    // nominations are real. Only show unverified slugs if verification hasn't
-    // run yet for this round — once we have burn data, don't show unpaid seats.
-    const verificationComplete = verifiedWriteInsByRound.has(ROUND);
-    const slugsToShow = nominations
-      .map(n => n.slug)
-      .filter(slug => !verificationComplete || alreadyVerified.has(slug));
+    const status = writeInStatusByRound.get(ROUND) || new Map();
+    // Display-time dedup: newest first, one seat per wallet and per slug.
+    // Skip 'unpaid' nominations entirely so a freeloading re-nomination can't
+    // shadow a wallet's older paid one.
+    const seenWallet = new Set(), seenSlug = new Set(), slugsToShow = [];
+    for(const n of nominations){
+      if(status.get(n.slug) === 'unpaid') continue;
+      if(seenWallet.has(n.from) || seenSlug.has(n.slug)) continue;
+      seenWallet.add(n.from); seenSlug.add(n.slug);
+      slugsToShow.push(n.slug);
+      if(slugsToShow.length >= WRITEIN_SLOTS) break;
+    }
     const declared = SLATE.slice();
     const room = Math.max(0, TOTAL_SLOTS - declared.length);
     if(slugsToShow.length){
@@ -3763,9 +3764,9 @@ async function loadRound(txs){
        && SLATE.indexOf(pendingWriteIn.slug) === -1){
       SLATE = [...SLATE, pendingWriteIn.slug];
     }
-    // Background: verify burns and update the cache without blocking paint.
-    // When it resolves, the next repaint trims any unverified slugs (or
-    // confirms them), with no further UX delay.
+    // Background: verify burns and update the verdict map without blocking
+    // paint. When it resolves, the next repaint trims freshly-'unpaid' slugs
+    // or confirms verified ones, with no further UX delay.
     verifyWriteInsAsync(nominations, ROUND);
   }catch(e){ /* write-ins are additive; a failure must not empty the ballot */ }
   $('prefixEg').textContent = 'RWIVOTE:\u2039n\u203a:\u2039slug\u203a';
@@ -3895,8 +3896,8 @@ async function refreshAll(opts){
     if(pendingWriteIn.round !== ROUND || Date.now() - pendingWriteIn.at > 240000){
       clearPendingWriteIn();
     } else {
-      const verified = verifiedWriteInsByRound.get(ROUND);
-      if(verified && verified.has(pendingWriteIn.slug)){
+      const wiStatus = writeInStatusByRound.get(ROUND);
+      if(wiStatus && wiStatus.get(pendingWriteIn.slug) === 'verified'){
         clearPendingWriteIn();
       }
     }
@@ -3913,20 +3914,28 @@ async function refreshAll(opts){
    into the burn address and require the nominating wallet to appear there
    for at least the quoted amount. An unpaid RWIWRITEIN transaction is free
    to broadcast, so without this check the fee would be decorative. */
-let writeInCache = [];
 async function fetchTokenTransfersTo(addr){
+  // token= narrows the read to $RWI transfers only. The dead address takes
+  // continuous unrelated traffic (the $PONS earn-and-burn flywheel lands
+  // there), so without the filter a payment can fall outside the page window.
+  // If the server ignores the param nothing breaks — sumRwiBySender filters
+  // by token again. `truncated` is true when the read did NOT provably cover
+  // the full history (page cap hit, or a request failed mid-walk): callers
+  // must not issue an "unpaid" verdict from a truncated read.
   const out = [];
-  let url = SCAN + '/api/v2/addresses/' + addr + '/token-transfers?type=ERC-20&filter=to';
+  let truncated = false;
+  const base = SCAN + '/api/v2/addresses/' + addr + '/token-transfers?type=ERC-20&filter=to&token=' + RWI;
+  let url = base;
   for(let page = 0; page < 6; page++){
     const res = await fetch(url, {headers:{accept:'application/json'}});
-    if(!res.ok) break;
+    if(!res.ok){ truncated = true; break; }
     const j = await res.json();
     (j.items || []).forEach(function(t){ out.push(t); });
     if(!j.next_page_params) break;
-    url = SCAN + '/api/v2/addresses/' + addr + '/token-transfers?type=ERC-20&filter=to&'
-        + new URLSearchParams(j.next_page_params).toString();
+    if(page === 5){ truncated = true; break; }
+    url = base + '&' + new URLSearchParams(j.next_page_params).toString();
   }
-  return out;
+  return { items: out, truncated: truncated };
 }
 /* Sum of $RWI each wallet has sent to `addr`. */
 /* Sum $RWI sent to `addr`, counting only transfers at or after `sinceBlock`.
@@ -3949,10 +3958,13 @@ function sumRwiBySender(transfers, sinceByWallet){
   });
   return by;
 }
-/* loadNominations — sync, no network. Extracts write-in nominations from the
-   already-fetched tx list. Returns [{slug, from, block, index}] in newest-first
-   order, deduplicated to one per wallet and one per slug, capped at WRITEIN_SLOTS.
-   Same filtering rules the burn verifier applies, so the two stay in sync. */
+/* loadNominations — sync, no network. Extracts ALL write-in nominations from
+   the already-fetched tx list, sorted newest-first. NO dedup and NO cap here:
+   the burn verifier needs every nomination to compute the earliest-nomination
+   block per wallet (a payment made after an older nomination still counts,
+   even when the wallet re-nominated later — the old retry flow re-ran the
+   nomination step, so real wallets have exactly that history). Dedup and the
+   seat cap are display concerns and live in loadRound. */
 function loadNominations(rows, round){
   const nominations = [];
   (rows || []).forEach(function(t){
@@ -3971,72 +3983,84 @@ function loadNominations(rows, round){
       index: Number(t.index !== undefined ? t.index : (t.position !== undefined ? t.position : 0)),
     });
   });
-  // newest first; one per wallet, one per slug, capped at WRITEIN_SLOTS
   nominations.sort(function(a,b){ return b.block !== a.block ? b.block - a.block : b.index - a.index; });
-  const seenWallet = new Set(), seenSlug = new Set(), out = [];
-  for(const n of nominations){
-    if(seenWallet.has(n.from) || seenSlug.has(n.slug)) continue;
-    seenWallet.add(n.from); seenSlug.add(n.slug);
-    out.push(n);
-    if(out.length >= WRITEIN_SLOTS) break;
-  }
-  return out;
+  return nominations;
 }
 
 /* verifyWriteInsAsync — fire-and-forget background burn verification.
-   Verifies only nominations NOT already in the verified cache, updates
-   verifiedWriteInsByRound, and triggers ONE refreshAll only if the verified
-   set actually changed. Three guards prevent a refresh loop (loadRound calls
-   this on every pass, and refreshAll re-enters loadRound):
-     1. skip when every nominated slug is already verified — nothing to learn
+
+   Verdicts are TRI-STATE per (round, slug), stored in writeInStatusByRound:
+     'verified'  — payment observed onchain. Permanent; never re-checked.
+     'unpaid'    — a COMPLETE read of burn transfers found no payment. Trims
+                   the seat, but is upgradeable: the burn indexer trails the
+                   tx list, so a payment can surface later. Re-checked with a
+                   cooldown.
+     (absent)    — unknown. The seat stays visible. Verification failure,
+                   price-feed outage, or a truncated transfer read must NEVER
+                   trim a nomination that is visibly on chain — trimming is
+                   reserved for a positive "checked and found unpaid" verdict.
+
+   Guards against a refresh loop (loadRound calls this every pass, and
+   refreshAll re-enters loadRound):
+     1. skip when there is nothing to learn (all verified, or unpaid slugs
+        inside their re-check cooldown)
      2. an in-flight flag coalesces overlapping calls
-     3. refreshAll fires only on a genuine state change
-   Failures are silent; the reconcile schedule will retry. */
+     3. refreshAll fires only when a verdict actually changed              */
 let _wiVerifyInflight = false;
+let _wiUnpaidRecheckAt = 0;
+const WI_UNPAID_RECHECK_MS = 60000;
 async function verifyWriteInsAsync(nominations, round){
   if(!nominations.length) return;
-  const cached = verifiedWriteInsByRound.get(round) || new Set();
-  const unverified = nominations.filter(function(n){ return !cached.has(n.slug); });
-  if(!unverified.length) return;                       // guard 1: all known
-  if(_wiVerifyInflight) return;                        // guard 2: coalesce
+  const status = writeInStatusByRound.get(round) || new Map();
+  const now = Date.now();
+  // Slugs worth checking: never-checked always; 'unpaid' only past cooldown.
+  const toCheck = nominations.filter(function(n){
+    const v = status.get(n.slug);
+    if(v === 'verified') return false;
+    if(v === 'unpaid')   return now - _wiUnpaidRecheckAt >= WI_UNPAID_RECHECK_MS;
+    return true;
+  });
+  if(!toCheck.length) return;                          // guard 1
+  if(_wiVerifyInflight) return;                        // guard 2
   _wiVerifyInflight = true;
   try{
+    // Earliest nomination block per wallet across the FULL nomination list —
+    // a payment made after ANY of the wallet's nominations counts, even if a
+    // newer re-nomination exists above it in the history.
     const since = new Map();
-    unverified.forEach(function(n){
+    nominations.forEach(function(n){
       const cur = since.get(n.from);
       if(cur === undefined || n.block < cur) since.set(n.from, n.block);
     });
-    const transfers = await fetchTokenTransfersTo(WRITEIN_BURN);
-    const burnPaid = sumRwiBySender(transfers, since);
+    const read = await fetchTokenTransfersTo(WRITEIN_BURN);
+    const burnPaid = sumRwiBySender(read.items, since);
     const price = rwiUsdPrice || await fetchRwiPrice();
-    if(!price){
-      // Price feed down: mark the round as checked (so unpaid seats don't
-      // linger forever behind a dead feed) but add nothing.
-      if(!verifiedWriteInsByRound.has(round)) verifiedWriteInsByRound.set(round, cached);
-      return;
-    }
+    if(!price) return;             // price down → no verdicts, seats untouched
     const needBurn = usdToRwiUnits(WRITEIN_BURN_USD * WRITEIN_TOLERANCE, price);
     let changed = false;
-    unverified.forEach(function(n){
-      if((burnPaid.get(n.from) || 0n) >= needBurn){ cached.add(n.slug); changed = true; }
+    toCheck.forEach(function(n){
+      const paid = (burnPaid.get(n.from) || 0n) >= needBurn;
+      const prev = status.get(n.slug);
+      if(paid){
+        if(prev !== 'verified'){ status.set(n.slug, 'verified'); changed = true; }
+      } else if(!read.truncated){
+        // Only a COMPLETE read can say "unpaid". A truncated window may
+        // simply not reach the payment.
+        if(prev !== 'unpaid'){ status.set(n.slug, 'unpaid'); changed = true; }
+      }
     });
-    const firstCheck = !verifiedWriteInsByRound.has(round);
-    verifiedWriteInsByRound.set(round, cached);
-    // guard 3: repaint only when something changed — either a slug got
-    // verified, or this was the first check (an unpaid nomination now needs
-    // trimming from the optimistic slate).
-    if(changed || firstCheck) refreshAll();
-  }catch(e){ /* silent; reconcile timers will retry */ }
+    _wiUnpaidRecheckAt = now;
+    writeInStatusByRound.set(round, status);
+    if(changed) refreshAll();                          // guard 3
+  }catch(e){ /* silent; verdicts unchanged, seats untouched */ }
   finally{ _wiVerifyInflight = false; }
 }
 
-/* Once a nomination + burn have been observed on-chain for a given
-   (round, slug), the write-in stays on the ballot for that round. Both are
-   permanent chain facts; a later transient failure fetching burn transfers
-   (Blockscout rate-limit, network hiccup) or a temporary price-feed outage
-   must not silently drop the write-in and erase every vote already cast
-   for it. Keyed by round so a new ballot starts with a clean slate. */
-const verifiedWriteInsByRound = new Map();
+/* Per-round, per-slug write-in verdicts — see verifyWriteInsAsync for the
+   tri-state semantics. 'verified' is permanent chain fact; a transient
+   failure can never erase it (and with it every vote already cast for the
+   seat). Keyed by round so a new ballot starts clean. */
+const writeInStatusByRound = new Map();
 
 /* ------------------------------------------------------------------- tally */
 let lastTally = null;
