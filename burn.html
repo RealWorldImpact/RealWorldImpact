@@ -87,7 +87,8 @@
       {pool:'0x10cc6bd38112cac182db90b6a71d8bb5939526ba',address:'0x39dbed3a2bd333467115de45665cc57f813c4571',name:'pons',symbol:'PONS',image:'https://coin-images.coingecko.com/coins/images/102174571/large/jhitvkisdq8fhxvimdkpcw7y3dx5.?1784093932',marketCap:34600000,volume24h:3890000},
       {pool:'0x3f6e8bf03169bc63d2c05500c7ebe8d406ed3093',address:'0xf05babb8172bea20e974b458c593399be11250dd',name:'Grace',symbol:'GRACE',image:'https://assets.geckoterminal.com/m7wz49sw78x0ng0609l3e7ipsj61',marketCap:121566,volume24h:90259},
       {pool:'0xdec8f541ff159d2b4abd3c3b041cd739bd7c486f',address:'0xedaee44320107caa714baaec486261a87f27022d',name:'PONGO',symbol:'PONGO',image:'https://assets.geckoterminal.com/52hr48l6z4kqtfyswqbn9sodd8zz',marketCap:421111,volume24h:269899},
-      {pool:'0xe87bc675ad3d597c82858301cfcdae1dc613c75a',address:'0xc9e7c34fa156a235e8b8601171a543bc9c84a1b9',name:'tamPons',symbol:'TAMPONS',image:'https://coin-images.coingecko.com/coins/images/102174729/large/3feil5y7kqcu4kdtw2x05q6gpcel.?1784703134',marketCap:228186,volume24h:243625}
+      {pool:'0xe87bc675ad3d597c82858301cfcdae1dc613c75a',address:'0xc9e7c34fa156a235e8b8601171a543bc9c84a1b9',name:'tamPons',symbol:'TAMPONS',image:'https://coin-images.coingecko.com/coins/images/102174729/large/3feil5y7kqcu4kdtw2x05q6gpcel.?1784703134',marketCap:228186,volume24h:243625},
+      {pool:'0x9870c395bfa68c9f23d7c232fa5a37bf063aae35',address:'0x45f82ac5d507e988f7406935da8eefe495a360e0',name:'Robinhood Dog',symbol:'BRODIE',image:'https://assets.geckoterminal.com/796y2muqi172ujhakpb7lmbat1b0',marketCap:2217291,volume24h:1970294}
     ];
     const FACTORIES = [
       { address:'0x0c37a24F5D23A486FA692d1500881d698B1F77a4', from:8600612 },
@@ -194,7 +195,8 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
         {method:'eth_call',params:[{to:token.address,data:'0x70a08231'+padAddress(DEAD)},'latest']}
       ]);
       const asNum = value => Number(BigInt(value) / 1000000000000n) / 1e6;
-      const details={...token,name:decodeString(nameRaw)||token.name||'Pons token',symbol:decodeString(symbolRaw)||token.symbol||'—',image:token.image||'',marketCap:token.marketCap||0,volume24h:token.volume24h||0,supply:token.supply||1000000000,burned:asNum(zeroRaw)+asNum(deadRaw)};
+      const verified=VERIFIED_POOL_SEEDS.find(item=>item.address===token.address);
+      const details={...token,name:verified?.name||token.name||decodeString(nameRaw)||'Pons token',symbol:verified?.symbol||token.symbol||decodeString(symbolRaw)||'—',image:verified?.image||token.image||'',marketCap:verified?.marketCap||token.marketCap||0,volume24h:verified?.volume24h||token.volume24h||0,supply:token.supply||1000000000,burned:asNum(zeroRaw)+asNum(deadRaw)};
       for(let attempt=0;attempt<3;attempt++) try {
         const response=await fetchWithTimeout(geckoTokenUrl(token.address));
         if(response.ok) {
