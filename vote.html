@@ -2298,11 +2298,23 @@ document.addEventListener('DOMContentLoaded', function(){
 
   .wi-inline{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap}
   .wi-tag{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;opacity:.6;white-space:nowrap}
-  .cand.open-slot{border-style:dashed;opacity:.55;cursor:pointer}
-  .cand.open-slot:hover,.cand.open-slot:focus-visible{opacity:.95;border-style:solid;outline:none}
-  .cand.open-slot .radio{opacity:.4}
-  .cand.open-slot .name{opacity:.9}
-  .cand.open-slot .pct{opacity:.4}
+  /* An empty seat has to read as an invitation, which means it has to be
+     visible. The old rule stacked opacity:.55 on a border that was already
+     rgba(...,.4) — an effective alpha of 0.22, and dashed on top of that. It
+     survived on a phone and disappeared on a desktop panel. Dim the parts
+     individually instead of fading the whole row. */
+  .cand.open-slot{
+    border:1px dashed rgba(204,254,6,.75);
+    background:rgba(204,254,6,.05);
+    cursor:pointer;
+  }
+  .cand.open-slot:hover,.cand.open-slot:focus-visible{
+    border-color:var(--lime);border-style:solid;background:rgba(204,254,6,.12);outline:none;
+  }
+  .cand.open-slot .radio{border-style:dashed;opacity:.7}
+  .cand.open-slot .name{opacity:.85}
+  .cand.open-slot .cause{opacity:.6}
+  .cand.open-slot .pct{opacity:.45}
   @media (max-width:640px){ .wi-tag{white-space:normal} }
 
   .wi-count{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
@@ -4265,7 +4277,17 @@ function repaintDynamic(){
         });
       }
     });
-    if(FINE_POINTER) box.addEventListener('mouseleave', hidePreview);
+    // Bind the hide to the container that holds BOTH the list and the card.
+    // Bound to the list alone, moving toward the card left the list first and
+    // the card vanished before it could be clicked.
+    if(FINE_POINTER){
+      const shell = box.closest('.wi-scroll') || box;
+      if(!shell._pvBound){
+        shell._pvBound = true;
+        shell.addEventListener('mouseleave', scheduleHide);
+        shell.addEventListener('mouseenter', cancelHide);
+      }
+    }
   }
 
   /* ---- preview -------------------------------------------------------------
@@ -4293,10 +4315,17 @@ function repaintDynamic(){
           + esc(t('vote.st.pvChoose')) + '</button>');
   }
   function showPreview(slug, anchorEl){
+    cancelHide();
     const box = $w('wiPreview'); if(!box) return;
     previewSlug = slug;
     box.innerHTML = previewHTML(slug);
     box.hidden = false;
+    cancelHide();
+    if(!box._pvHoverBound){
+      box._pvHoverBound = true;
+      box.addEventListener('mouseenter', cancelHide);
+      box.addEventListener('mouseleave', scheduleHide);
+    }
     const ch = box.querySelector('[data-choose]');
     if(ch) ch.addEventListener('click', function(){ pick(ch.dataset.choose); hidePreview(); });
     if(FINE_POINTER && anchorEl){
@@ -4306,7 +4335,11 @@ function repaintDynamic(){
       box.style.top = Math.max(0, Math.min(r.top - pr.top, panel.clientHeight - 150)) + 'px';
     }
   }
+  let hideTimer = null;
+  function cancelHide(){ if(hideTimer){ clearTimeout(hideTimer); hideTimer = null; } }
+  function scheduleHide(){ cancelHide(); hideTimer = setTimeout(hidePreview, 260); }
   function hidePreview(){
+    cancelHide();
     const box = $w('wiPreview'); if(!box) return;
     box.hidden = true; box.innerHTML = ''; previewSlug = null;
   }

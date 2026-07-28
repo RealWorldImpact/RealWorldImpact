@@ -2415,7 +2415,11 @@ const REGISTRY = [
   { pair:'0x62a9e7cf94049dded854c26ff6204079a1c8caed', note:'RWI earn-and-burn pool — project fees burned in full.', v2:false },
   { pair:'0xeb1bb09e2906773F1227C920A622aFcd9e068c29', note:'$USDG / $RWI pool.', v2:false },
   { pair:'0xd53cC9Fb4E73ED216046F827A8a32F2fA31d5eFF', note:'$BURGERS pool.', v2:false },
-  // { pair:'0x…', note:'USDG/WETH', v2:false },
+  // Added from Uniswap's Robinhood Chain explorer. No note: the pair, its
+  // reserves and its fee tier are all read from the pool contract at runtime,
+  // so labelling them here by hand would only risk contradicting the chain.
+  { pair:'0x07ca318a34459cfb200f3bd31badb309341d535a', v2:false },
+  { pair:'0xbc78c1f26a0febc9b49e5372ceab59a31813e40e', v2:false },
 ];
 
 /* ==========================================================================
