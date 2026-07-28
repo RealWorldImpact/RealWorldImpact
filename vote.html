@@ -3771,6 +3771,29 @@ let voteTxCache = null;
    several seconds, so re-reading immediately after voting returns the OLD tally
    and the page appears to do nothing. We therefore fold the voter's own vote in
    locally, mark it pending, and keep polling until the indexer catches up. */
+/* A newly opened round has the same indexer lag as a vote, but with one extra
+   requirement: it must survive a page reload. Without that, the owner opens a
+   ballot, refreshes, Blockscout has not indexed the declaration yet, and the
+   page reads the PREVIOUS round back — the ballot appears to revert. So this
+   one lives in localStorage, not memory, and is dropped the moment the chain
+   catches up or it ages out. */
+const PENDING_ROUND_KEY = 'rwi_pending_round_v1';
+const PENDING_ROUND_TTL = 30 * 60 * 1000;          // 30 min: generous for an indexer
+function readPendingRound(){
+  try{
+    const raw = localStorage.getItem(PENDING_ROUND_KEY);
+    if(!raw) return null;
+    const p = JSON.parse(raw);
+    if(!p || !Number.isFinite(p.round) || !Array.isArray(p.slugs) || !p.slugs.length) return null;
+    if(Date.now() - p.at > PENDING_ROUND_TTL){ clearPendingRound(); return null; }
+    return p;
+  }catch(e){ return null; }
+}
+function writePendingRound(round, slugs){
+  try{ localStorage.setItem(PENDING_ROUND_KEY, JSON.stringify({round:round, slugs:slugs, at:Date.now()})); }catch(e){}
+}
+function clearPendingRound(){ try{ localStorage.removeItem(PENDING_ROUND_KEY); }catch(e){} }
+
 let pendingVote = null;          // { addr, slug, round, at }
 let pendingTimers = [];
 function clearPendingVote(){
@@ -3805,6 +3828,14 @@ async function loadRound(txs){
     if(newer) best = {n, slugs, bn, ix};
   }
   staleSlugs = [];
+  // A declaration we sent but the indexer has not surfaced yet still counts.
+  const pr = readPendingRound();
+  if(pr && (!best || pr.round > best.n)){
+    best = { n: pr.round, slugs: pr.slugs, bn: Infinity, ix: Infinity, pending: true };
+  } else if(pr && best && best.n >= pr.round){
+    clearPendingRound();                            // chain caught up
+  }
+
   if(best){
     ROUND = best.n;
     // A declaration may name slugs this build no longer knows. Resolve what we
@@ -3903,6 +3934,7 @@ async function openNewRound(){
     const rrec = await waitForTx(hash);
     if(rrec && !txSucceeded(rrec)){ $('ownerStatus').textContent = t('vote.st.voteReverted'); return; }
     ownerPanelOpen = false;
+    writePendingRound(n, slate);      // survives the reload the indexer will lose
     $('ownerStatus').textContent = t(composed.source === 'reliefweb' ? 'vote.st.roundLive' : 'vote.st.roundRot')
       + (composed.reason ? ' (' + composed.reason + ')' : '');
     await refreshAll();
@@ -3933,7 +3965,7 @@ async function refreshAll(opts){
   // sequence guard a slower earlier call can finish last and repaint stale data
   // over fresher data.
   const seq = ++refreshSeq;
-  const txs = await fetchVoteTxs().catch(function(){ return []; });
+  const txs = await fetchVoteTxs(opts.force).catch(function(){ return []; });
   if(seq !== refreshSeq) return;                 // superseded
   voteTxCache = txs;
   await loadRound(voteTxCache);
@@ -4032,7 +4064,26 @@ async function loadWriteIns(txs, round){
 
 /* ------------------------------------------------------------------- tally */
 let lastTally = null;
-async function fetchVoteTxs(){
+/* The page can call this several times in quick succession — a manual refresh,
+   the post-vote poll and a language repaint can overlap. Each call walked up to
+   twenty pages of history. A short TTL collapses that burst into one read while
+   staying far below the pace at which the ballot actually changes. */
+let _txCache = { at:0, rows:null, inflight:null };
+const TX_TTL = 8000;
+async function fetchVoteTxs(force){
+  const fresh = !force && _txCache.rows && (Date.now() - _txCache.at < TX_TTL);
+  if(fresh) return _txCache.rows;
+  if(_txCache.inflight) return _txCache.inflight;     // coalesce concurrent callers
+  _txCache.inflight = (async function(){
+    try{
+      const rows = await fetchVoteTxsUncached();
+      _txCache = { at:Date.now(), rows:rows, inflight:null };
+      return rows;
+    }catch(e){ _txCache.inflight = null; throw e; }
+  })();
+  return _txCache.inflight;
+}
+async function fetchVoteTxsUncached(){
   // Blockscout v2, cursor-paginated. Only transactions *to* the ballot box matter.
   // The ballot box shares an address with an active wallet, so vote transactions
   // compete with unrelated traffic for the pagination window. Walk further, and
@@ -4054,6 +4105,25 @@ async function fetchVoteTxs(){
   }
   return out;
 }
+/* Rebuild the totals from weights we already read, and paint. Used when the
+   set of voters and their choices is unchanged — there is nothing new to
+   learn from the chain, so re-reading every balance would only add latency. */
+function paintFrom(weights, latest, sig){
+  const byslug = new Map(SLATE.map(function(s){ return [s, 0n]; }));
+  let total = 0n, counted = 0;
+  for(const [addr, v] of latest){
+    const w = weights.get(addr) || 0n;
+    if(w <= 0n) continue;
+    byslug.set(v.slug, (byslug.get(v.slug) || 0n) + w);
+    total += w; counted++;
+  }
+  lastTally = { byslug:byslug, total:total, counted:counted, wallets:latest.size,
+                unreadable:(lastTally && lastTally.unreadable) || 0,
+                truncated:votePagesTruncated, latestMap:latest, weights:weights, sig:sig };
+  paintTally();
+  showMyVote();
+}
+
 async function loadTally(cached){
   const totalsEl = $('tallyTotals');
   totalsEl.textContent = t('vote.st.tallyReading');
@@ -4110,6 +4180,14 @@ async function loadTally(cached){
   // presenting a wrong number as final.
   const weights = new Map();
   const voters = [...latest.keys()];
+  // Balances are the expensive part — one eth_call per voter, with retries.
+  // If neither the voters nor their choices changed since the last pass, the
+  // previous weights are still valid and there is nothing to re-read.
+  const sig = voters.map(function(a){ return a + ':' + latest.get(a).slug; }).sort().join('|');
+  if(lastTally && lastTally.sig === sig && lastTally.weights){
+    paintFrom(lastTally.weights, latest, sig);
+    return;
+  }
   const CONCURRENCY = 4;
   let unreadable = 0;
   async function balanceWithRetry(addr){
@@ -4139,7 +4217,7 @@ async function loadTally(cached){
   // connected at PAINT time, not at read time. Freezing it here meant a vote
   // cast in an earlier session never got marked when you reconnected.
   lastTally = {byslug, total, counted, wallets:latest.size, unreadable:unreadable,
-               truncated:votePagesTruncated, latestMap:latest};
+               truncated:votePagesTruncated, latestMap:latest, weights:weights, sig:sig};
   paintTally();
 }
 /* The connected wallet's current choice, so the ballot can show it back. */
@@ -4477,7 +4555,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $('connectBtn').addEventListener('click', connect);
   $('disconnectBtn').addEventListener('click', disconnect);
   $('voteBtn').addEventListener('click', castVote);
-  $('refreshBtn').addEventListener('click', () => refreshAll());
+  $('refreshBtn').addEventListener('click', () => refreshAll({force:true}));
   const nrb = $('newRoundBtn'); if(nrb) nrb.addEventListener('click', openNewRound);
   const trg = $('nextRoundBtn');
   if(trg) trg.addEventListener('click', () => {
