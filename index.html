@@ -3411,7 +3411,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   function open(){ panel.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
   function close(){ panel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
   btn.addEventListener('click', e => { e.stopPropagation(); panel.classList.contains('open') ? close() : open(); });
-  document.addEventListener('click', e => { if(!panel.contains(e.target) && e.target!==btn) close(); });
+  document.addEventListener('click', e => {
+    const path = (e.composedPath && e.composedPath()) || [e.target];
+    if(path.indexOf(panel) === -1 && path.indexOf(btn) === -1) close();
+  });
   document.addEventListener('keydown', e => { if(e.key==='Escape') close(); });
   // Authoritative language-switch via event delegation — one handler on the panel catches
   // every button click, calls setLang directly (doesn't depend on per-button listeners being
@@ -3524,7 +3527,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     btn.addEventListener('click', function(e){ e.stopPropagation(); open(); });
     if(closeBtn) closeBtn.addEventListener('click', close);
-    modal.addEventListener('click', function(e){ if(!panel.contains(e.target)) close(); });
+    modal.addEventListener('click', function(e){ if(e.target === modal) close(); });   // backdrop only
     document.addEventListener('keydown', function(e){ if(e.key==='Escape'&&modal.classList.contains('open')) close(); });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
@@ -3608,7 +3611,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
     btn.addEventListener('click', function(e){ e.stopPropagation(); open(); });
     var cl = $('donateClose'); if(cl) cl.addEventListener('click', close);
-    modal.addEventListener('click', function(e){ if(panel && !panel.contains(e.target)) close(); });
+    modal.addEventListener('click', function(e){ if(e.target === modal) close(); });   // backdrop only
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modal.classList.contains('open')) close(); });
 
     var copy = $('donateCopy');
