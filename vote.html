@@ -2584,13 +2584,14 @@ async function fetchOneSource(src){
   return null;
 }
 
+let lastLiveCrises = null;
 async function fetchLiveCrises(useCache){
   if(useCache){
     try{
       const raw = localStorage.getItem(RW_CACHE_KEY);
       if(raw){
         const c = JSON.parse(raw);
-        if(Date.now() - c.at < RW_CACHE_MS && c.types && c.types.length) return c;
+        if(Date.now() - c.at < RW_CACHE_MS && c.types && c.types.length){ lastLiveCrises = c; return c; }
       }
     }catch(e){}
   }
@@ -2609,6 +2610,7 @@ async function fetchLiveCrises(useCache){
     sources: live.map(function(s){ return s.name; })
   };
   try{ localStorage.setItem(RW_CACHE_KEY, JSON.stringify(out)); }catch(e){}
+  lastLiveCrises = out;
   return out;
 }
 
@@ -3066,6 +3068,13 @@ function fromHexUtf8(hex){
   for(let i=0;i<arr.length;i++) arr[i] = parseInt(h.substr(i*2,2),16);
   try{ return new TextDecoder('utf-8',{fatal:false}).decode(arr); }catch(e){ return ''; }
 }
+/* loadRound, loadTally, and loadWriteIns each iterate the same tx list and each
+   decoded its raw_input. Same tx, same bytes, three TextDecoder allocations.
+   Cache the decoded string on the tx object once — later passes just read it. */
+function txText(t){
+  if(t._decoded !== undefined) return t._decoded;
+  return t._decoded = fromHexUtf8(t.raw_input || t.input || '');
+}
 function fmtToken(bi){
   const d = 10n ** BigInt(RWI_DECIMALS);
   const whole = bi / d;
@@ -3369,6 +3378,12 @@ function activeOrgs(){
   for(let i = 0; i < open; i++) filled.push({ slug:'__open' + i, placeholder:true });
   return filled;
 }
+/* The 5-step reconcile schedule after a write-in calls renderBallot up to five
+   times with an unchanged slate. innerHTML= then trashes six DOM nodes and
+   re-attaches listeners each pass for no reason. Track a signature and skip
+   the rebuild when nothing meaningful has changed. Language is in the sig
+   because placeholder rows carry translated copy. */
+let lastBallotSig = null;
 function renderBallot(){
   if(!ballotResolved){
     // Placeholder rows sized like real ones, so nothing jumps when they land.
@@ -3379,10 +3394,23 @@ function renderBallot(){
         + '<span class="tally"><span class="sk-line sk-c"></span></span></div>';
     }).join('');
     $('ballot').setAttribute('aria-busy','true');
+    lastBallotSig = null;
     return;
   }
   $('ballot').removeAttribute('aria-busy');
   const orgs = activeOrgs();
+  const sig = LANG + '|' + orgs.map(function(c){ return c.placeholder ? '_open' : c.slug; }).join(',');
+  if(sig === lastBallotSig){
+    // Same slate & language — dynamic state (selected, tally numbers) is
+    // painted separately. No need to churn the DOM.
+    if(selected){
+      $('ballot').querySelectorAll('.cand').forEach(function(x){
+        x.setAttribute('aria-pressed', String(x.dataset.slug === selected));
+      });
+    }
+    return;
+  }
+  lastBallotSig = sig;
   $('ballot').innerHTML = orgs.map(c => {
     if(c.placeholder){
       // Not a radio: there is nothing to choose yet. It is a prompt.
@@ -3411,7 +3439,13 @@ function renderBallot(){
     const cur = $('ballot').querySelector('.cand[data-slug="' + selected + '"]');
     if(cur) cur.setAttribute('aria-pressed','true');
   }
+  // Cache the four inner refs on each row now, so paintTally does not run
+  // four querySelectors per candidate on every repaint.
   $('ballot').querySelectorAll('.cand').forEach(el => {
+    el._pct   = el.querySelector('[data-pct]');
+    el._wt    = el.querySelector('[data-wt]');
+    el._bar   = el.querySelector('[data-bar]');
+    el._yours = el.querySelector('[data-yours]');
     el.addEventListener('click', (e) => {
       if(e.target.closest('.tgb-link')) return;
       if(el.dataset.open){                       // an empty seat opens the write-in flow
@@ -3609,6 +3643,20 @@ function clearPendingVote(){
   pendingTimers.forEach(clearTimeout);
   pendingTimers = [];
 }
+/* Same idea for write-ins: after submit we don't know when the token transfers
+   will finish indexing, so we poll with backoff. Track {slug, round} so each
+   pass can check whether the slate finally contains the pick, and cancel the
+   remaining timers as soon as it does — five forced Blockscout walks per
+   write-in was wasteful. */
+let pendingWriteIn = null;       // { slug, round, at }
+let writeInTimers = [];
+function clearPendingWriteIn(){
+  pendingWriteIn = null;
+  writeInTimers.forEach(clearTimeout);
+  writeInTimers = [];
+}
+/* Boot timer handle; cleared by refreshAll on the first successful load. */
+let bootFallbackTimer = null;
 let votePagesTruncated = false;
 let staleSlugs = [];
 let slateRecovered = false;
@@ -3621,7 +3669,7 @@ async function loadRound(txs){
   for(const t of rows){
     const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
     if(from !== OWNER_LC) continue;                         // <-- the gate
-    const text = fromHexUtf8(t.raw_input || t.input || '');
+    const text = txText(t);
     if(!text.startsWith(ROUND_TAG)) continue;
     const body = text.slice(ROUND_TAG.length);
     const sep = body.indexOf(':');
@@ -3787,12 +3835,24 @@ async function refreshAll(opts){
   await loadRound(voteTxCache);
   if(seq !== refreshSeq) return;
   ballotResolved = true;                         // the chain has spoken
+  // Boot fallback timer is redundant once the chain answered — clear it so
+  // it does not fire a needless renderBallot four seconds later.
+  if(bootFallbackTimer){ clearTimeout(bootFallbackTimer); bootFallbackTimer = null; }
   updateSlateNotice();                           // runs whether or not votes exist
   // Keep the ballot showing what this wallet chose rather than resetting to
   // nothing the instant they vote.
   selected = opts.keepChoice && SLATE.indexOf(opts.keepChoice) !== -1 ? opts.keepChoice : null;
   renderBallot();
   renderOwnerPanel();
+  // If a write-in reconcile is running, cancel the remaining timers as soon
+  // as the pick lands in SLATE (or after 4 min, whichever comes first).
+  if(pendingWriteIn){
+    if(pendingWriteIn.round !== ROUND || Date.now() - pendingWriteIn.at > 240000){
+      clearPendingWriteIn();
+    } else if(SLATE.indexOf(pendingWriteIn.slug) !== -1){
+      clearPendingWriteIn();
+    }
+  }
   await loadTally(voteTxCache);
   if(seq !== refreshSeq) return;
   updateVoteButton();
@@ -3845,7 +3905,7 @@ async function loadWriteIns(txs, round){
   const nominations = [];
   rows.forEach(function(t){
     const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
-    const text = fromHexUtf8(t.raw_input || t.input || '');
+    const text = txText(t);
     if(!from || !text.startsWith(WRITEIN_TAG)) return;
     const body = text.slice(WRITEIN_TAG.length);
     const sep = body.indexOf(':');
@@ -3986,8 +4046,7 @@ async function loadTally(cached){
   const latest = new Map(); // addr -> {slug, block}
   for(const t of txs){
     const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
-    const raw = t.raw_input || t.input || '';
-    const text = fromHexUtf8(raw);
+    const text = txText(t);
     if(!from || !text.startsWith(pfx)) continue;
     const slug = text.slice(pfx.length).trim().toLowerCase();
     if(!valid.has(slug)) continue;
@@ -4104,11 +4163,17 @@ function paintTally(){
     const slug = el.dataset.slug;
     const w = byslug.get(slug) || 0n;
     const pct = total > 0n ? (tenths.get(slug) || 0) / 10 : 0;
-    el.querySelector('[data-pct]').textContent = total > 0n ? pct.toFixed(1)+'%' : '—';
-    el.querySelector('[data-wt]').textContent  = total > 0n ? fmtToken(w)+' $RWI' : '';
-    el.querySelector('[data-bar]').style.width = (total > 0n ? pct : 0) + '%';
+    // Row refs cached by renderBallot; fall back to a lookup if renderBallot
+    // was bypassed on this pass and the row is fresh from a diff we did not
+    // do — belt and braces.
+    const pctEl = el._pct   || el.querySelector('[data-pct]');
+    const wtEl  = el._wt    || el.querySelector('[data-wt]');
+    const barEl = el._bar   || el.querySelector('[data-bar]');
+    const yours = el._yours || el.querySelector('[data-yours]');
+    pctEl.textContent = total > 0n ? pct.toFixed(1)+'%' : '—';
+    wtEl.textContent  = total > 0n ? fmtToken(w)+' $RWI' : '';
+    barEl.style.width = (total > 0n ? pct : 0) + '%';
     const mine = myChoice && myChoice === slug;
-    const yours = el.querySelector('[data-yours]');
     if(yours){
       yours.hidden = !mine;
       yours.textContent = mine ? (pendingVote ? t('vote.st.yoursPending') : t('vote.st.yours')) : '';
@@ -4140,10 +4205,12 @@ function repaintDynamic(){
     renderOwnerPanel();
     const ls=$('liveSignal');
     if(ls && ls.textContent.trim()){
-      fetchLiveCrises(true).then(function(c){
-        if(c&&c.types&&c.types.length) ls.textContent=t('vote.st.liveSignal',{c:c.n,t:c.types.slice(0,4).join(' · ')})
+      // Language switch — no fetch. Same data, new label.
+      const c = lastLiveCrises;
+      if(c && c.types && c.types.length){
+        ls.textContent = t('vote.st.liveSignal',{c:c.n,t:c.types.slice(0,4).join(' · ')})
           + (c.sources&&c.sources.length?'  ·  '+c.sources.join(' + '):'');
-      }).catch(function(){});
+      }
     }
   }catch(e){}
 }
@@ -4380,6 +4447,7 @@ function repaintDynamic(){
 
       // All three landed — clear the flow and start the reconcile schedule.
       resetSteps();
+      const picked = chosen;
       chosen = null;
       $w('wiChosen').hidden = true;
       $w('wiSearch').value = '';
@@ -4387,11 +4455,16 @@ function repaintDynamic(){
       // A write-in needs three separate indexes: the nomination tx to the
       // ballot box, and the two RWI transfers (dev + burn). Token transfers
       // are decoded from event logs and trail the tx list by a couple of
-      // seconds. A single reload at 1.5s often runs before all three are
-      // indexed. Same backoff the vote flow uses, forced so each pass beats
-      // the 8s tx cache.
+      // seconds. Same backoff the vote flow uses — each timer checks if the
+      // pick has actually landed and cancels the rest if it has, instead of
+      // walking Blockscout five times for a write-in that surfaced on the
+      // first pass.
+      clearPendingWriteIn();
+      pendingWriteIn = { slug: picked, round: ROUND, at: Date.now() };
       [1500, 4000, 9000, 18000, 35000].forEach(function(ms){
-        setTimeout(function(){ refreshAll({force:true}); }, ms);
+        writeInTimers.push(setTimeout(function(){
+          if(pendingWriteIn) refreshAll({force:true});
+        }, ms));
       });
     }catch(e){
       const cancelled = e && e.code === 4001;
@@ -4466,7 +4539,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   refreshAll().catch(function(){ ballotResolved = true; renderBallot(); });
   // Never leave a skeleton up indefinitely if the network is unreachable.
-  setTimeout(function(){ if(!ballotResolved){ ballotResolved = true; renderBallot(); } }, 12000);
+  // Handle is stored so refreshAll can clear it as soon as the chain answers,
+  // instead of sitting idle for the full 12s in the common case.
+  bootFallbackTimer = setTimeout(function(){
+    bootFallbackTimer = null;
+    if(!ballotResolved){ ballotResolved = true; renderBallot(); }
+  }, 12000);
   // Surface a mis-configured ballot box before anyone spends gas on it.
   Promise.all([checkBallotBox(), checkOwner()]).then(function(r){
     const w = $('slateWarn'); if(!w) return;
