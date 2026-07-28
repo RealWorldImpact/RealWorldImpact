@@ -4219,6 +4219,7 @@ function repaintDynamic(){
   function pick(slug){
     if(ORG_POOL[slug]){ wiStatus(t('vote.st.writeInDup'), true); return; }
     chosen = slug;
+    resetSteps();     // fresh pick, fresh flow
     const box = $w('wiChosen');
     box.hidden = false;
     box.innerHTML = esc(TGB_BY_SLUG[slug]) + '<span class="sl">thegivingblock.com/donate/' + esc(slug) + '/</span>';
@@ -4266,30 +4267,59 @@ function repaintDynamic(){
     const note = $w('wiBlock');
     if(note) note.textContent = (b === 'funds' || b === 'price') ? t(label) : '';
   }
-  /* transfer(address,uint256) */
-  async function sendRwi(to, units, from){
-    const data = '0xa9059cbb'
-      + to.toLowerCase().replace(/^0x/,'').padStart(64,'0')
-      + units.toString(16).padStart(64,'0');
-    // value:'0x0' explicit — some wallets are strict about the field being
-    // present on a contract call, and its absence has been observed to make
-    // eth_estimateGas throw where the transaction itself would succeed.
-    const tx = { from: from, to: RWI, value:'0x0', data: data };
-    // Preflight is best-effort here. Some wallet-provided nodes cannot estimate
-    // an ERC-20 transfer on this chain even when the transfer would succeed,
-    // and the previous code treated that as a guaranteed revert and bailed
-    // BEFORE the wallet was asked — the user never saw a prompt. Fall back to
-    // a fixed limit generous enough for any plain OZ 5.x transfer and let the
-    // wallet's own simulator decide: if it really would revert, the wallet
-    // refuses with a specific reason; if not, the transfer goes through. A
-    // reverted transfer only costs gas, not tokens.
-    const gas = await preflightGas(tx);
-    tx.gas = gas !== null ? gas : '0x' + (100000).toString(16);
-    const hash = await wallet.request({ method:'eth_sendTransaction', params:[tx] });
+  /* One place where "send a transaction" is defined. Every write-in step goes
+     through here. The old sendRwi bailed before the wallet was ever asked if
+     preflight refused, and never checked what the wallet actually returned —
+     so a wallet that answered eth_sendTransaction with null or an empty string
+     silently "succeeded" (waitForTx spun on a bogus hash for 36s, the code
+     moved on, and the next step failed the same way). That is exactly the
+     "step 2 never prompts" shape.
+
+     txBase — { from, to, data } (value defaults to 0x0)
+     fallbackGas — used only if the wallet's node refuses to estimate.
+  */
+  async function sendTx(txBase, fallbackGas){
+    if(!wallet) throw new Error('wallet gone');
+    if(!txBase.from) throw new Error('no from');
+    if(!txBase.to)   throw new Error('no to');
+    const tx = { value:'0x0', from: txBase.from, to: txBase.to, data: txBase.data || '0x' };
+    // Preflight is advisory. Wallet-provided nodes on some chains refuse to
+    // estimate ERC-20 transfers even when the transfer would succeed. If it
+    // refuses, fall back to a fixed generous limit and let the wallet's own
+    // simulator decide when it prompts.
+    const est = await preflightGas(tx);
+    tx.gas = est !== null ? est : '0x' + fallbackGas.toString(16);
+    let hash;
+    try{
+      hash = await wallet.request({ method:'eth_sendTransaction', params:[tx] });
+    }catch(e){
+      // Pass through the wallet's own reason so the caller can surface it.
+      if(e && e.code === 4001) throw e;
+      throw new Error((e && (e.message || e.data || e.reason)) || 'wallet refused');
+    }
+    if(typeof hash !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(hash)){
+      // Some providers answer with a placeholder or null when the user's app
+      // sends a second tx without a fresh gesture. Fail loudly rather than
+      // silently proceeding to the next step.
+      throw new Error('wallet returned no transaction hash');
+    }
     const rec = await waitForTx(hash);
-    if(rec && !txSucceeded(rec)) throw new Error('reverted');
+    if(rec && !txSucceeded(rec)) throw new Error('reverted on chain');
     return hash;
   }
+  function encodeRwiTransfer(to, units){
+    return '0xa9059cbb'
+      + to.toLowerCase().replace(/^0x/,'').padStart(64,'0')
+      + units.toString(16).padStart(64,'0');
+  }
+  const pause = function(ms){ return new Promise(function(r){ setTimeout(r, ms); }); };
+
+  /* Per-flow progress. A step-2 failure used to force the retry to re-run
+     step 1, paying nomination gas twice. Tracking completion means retry
+     picks up where it stopped. Reset when the user picks a different org. */
+  let stepsDone = { 1:false, 2:false, 3:false };
+  function resetSteps(){ stepsDone = { 1:false, 2:false, 3:false }; }
+
   async function submit(){
     if(busy) return;
     // Resolve what is missing rather than bouncing the click back at the user.
@@ -4313,50 +4343,67 @@ function repaintDynamic(){
       wiStatus(t('vote.st.writeInFunds'), true); updateSubmitState(); return;
     }
     busy = true; updateSubmitState();
+
+    // Pre-encode everything so nothing computed lives inside the try; if the
+    // wallet is slow, the intent is fixed at submit time.
+    const nomData   = toHexUtf8(WRITEIN_TAG + ROUND + ':' + chosen);
+    const devUnits  = usdToRwiUnits(WRITEIN_DEV_USD,  price);
+    const burnUnits = usdToRwiUnits(WRITEIN_BURN_USD, price);
+    const devData   = encodeRwiTransfer(WRITEIN_DEV,  devUnits);
+    const burnData  = encodeRwiTransfer(WRITEIN_BURN, burnUnits);
+
+    let currentStep = 0;
     try{
       // 1 — the nomination itself
-      markStep(1,'doing');
-      wiStatus(t('vote.st.wiSigning', {n:1}));
-      const nomTx = { from: account, to: BALLOT_BOX, value:'0x0',
-                      data: toHexUtf8(WRITEIN_TAG + ROUND + ':' + chosen) };
-      const nomGas = await preflightGas(nomTx);
-      if(nomGas === null) throw new Error('nomination would revert');
-      nomTx.gas = nomGas;
-      const h1 = await wallet.request({ method:'eth_sendTransaction', params:[nomTx] });
-      const r1 = await waitForTx(h1);
-      if(r1 && !txSucceeded(r1)) throw new Error('nomination reverted');
-      markStep(1,'done');
-
+      if(!stepsDone[1]){
+        currentStep = 1;
+        markStep(1,'doing'); wiStatus(t('vote.st.wiSigning', {n:1}));
+        await sendTx({ from: account, to: BALLOT_BOX, data: nomData }, 100000);
+        stepsDone[1] = true; markStep(1,'done');
+        await pause(400);           // breathing room for the wallet
+      }
       // 2 — the dev share
-      markStep(2,'doing');
-      wiStatus(t('vote.st.wiSigning', {n:2}));
-      await sendRwi(WRITEIN_DEV, usdToRwiUnits(WRITEIN_DEV_USD, price), account);
-      markStep(2,'done');
-
+      if(!stepsDone[2]){
+        currentStep = 2;
+        markStep(2,'doing'); wiStatus(t('vote.st.wiSigning', {n:2}));
+        await sendTx({ from: account, to: RWI, data: devData }, 100000);
+        stepsDone[2] = true; markStep(2,'done');
+        await pause(400);
+      }
       // 3 — the burn
-      markStep(3,'doing');
-      wiStatus(t('vote.st.wiSigning', {n:3}));
-      await sendRwi(WRITEIN_BURN, usdToRwiUnits(WRITEIN_BURN_USD, price), account);
-      markStep(3,'done');
+      if(!stepsDone[3]){
+        currentStep = 3;
+        markStep(3,'doing'); wiStatus(t('vote.st.wiSigning', {n:3}));
+        await sendTx({ from: account, to: RWI, data: burnData }, 100000);
+        stepsDone[3] = true; markStep(3,'done');
+      }
 
-      // Clear the selection so the very next click cannot pay the fee twice for
-      // the same organisation. Nominating a second one is deliberate: search again.
+      // All three landed — clear the flow and start the reconcile schedule.
+      resetSteps();
       chosen = null;
       $w('wiChosen').hidden = true;
       $w('wiSearch').value = '';
       wiStatus(t('vote.st.writeInDone'));
-      // A write-in needs three separate indexes: the nomination tx to the ballot
-      // box, and the two RWI transfers (dev + burn). Token transfers are decoded
-      // from event logs and trail the tx list by a couple of seconds. A single
-      // reload at 1.5s often runs before all three are indexed — loadWriteIns
-      // then returns [] and the seat stays empty. Same backoff the vote flow
-      // uses, forced so each pass beats the 8s tx cache.
+      // A write-in needs three separate indexes: the nomination tx to the
+      // ballot box, and the two RWI transfers (dev + burn). Token transfers
+      // are decoded from event logs and trail the tx list by a couple of
+      // seconds. A single reload at 1.5s often runs before all three are
+      // indexed. Same backoff the vote flow uses, forced so each pass beats
+      // the 8s tx cache.
       [1500, 4000, 9000, 18000, 35000].forEach(function(ms){
         setTimeout(function(){ refreshAll({force:true}); }, ms);
       });
     }catch(e){
       const cancelled = e && e.code === 4001;
-      wiStatus(t(cancelled ? 'vote.st.writeInCancel' : 'vote.st.writeInFail'), true);
+      const reason = cancelled ? '' : (e && e.message ? e.message : 'unknown');
+      // Roll the visual indicator back so a failed step looks failed, not
+      // stuck at "doing".
+      if(currentStep && !stepsDone[currentStep]) markStep(currentStep, '');
+      wiStatus(
+        (cancelled ? t('vote.st.writeInCancel') : t('vote.st.writeInFail'))
+        + (currentStep ? ' (step ' + currentStep + (reason ? ': ' + reason : '') + ')' : ''),
+        true
+      );
     }finally{
       busy = false; updateSubmitState();
     }
@@ -4370,7 +4417,7 @@ function repaintDynamic(){
       lastFocus = document.activeElement;
       modal.classList.add('open'); document.body.style.overflow = 'hidden';
       refreshCost();
-      $w('wiSearch').value = ''; chosen = null;
+      $w('wiSearch').value = ''; chosen = null; resetSteps();
       $w('wiChosen').hidden = true; $w('wiSteps').hidden = true; $w('wiSubmit').disabled = true;
       renderResults('');                       // full list, ready to browse
       $w('wiSearch').focus();
@@ -4385,7 +4432,7 @@ function repaintDynamic(){
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modal.classList.contains('open')) close(); });
     let deb = null;
     $w('wiSearch').addEventListener('input', function(e){
-      chosen = null; $w('wiChosen').hidden = true; $w('wiSteps').hidden = true; updateSubmitState();
+      chosen = null; resetSteps(); $w('wiChosen').hidden = true; $w('wiSteps').hidden = true; updateSubmitState();
       clearTimeout(deb);
       deb = setTimeout(function(){ renderResults(e.target.value); }, 90);
     });
