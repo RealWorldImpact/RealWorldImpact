@@ -208,6 +208,7 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
       const markets=new Map();
       let complete=true;
       const emit = async batch => { if(batch.length && onBatch) await onBatch(batch); };
+      const pendingBurnReads=[];
       const addPool = (pool, included) => {
         const attrs=pool.attributes||{};
         const base=included.get(pool.relationships?.base_token?.data?.id);
@@ -254,13 +255,14 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
         const included=new Map((page.included||[]).map(item=>[item.id,item.attributes]));
         const pageMarkets=[];
         for(const pool of page.data||[]) { const candidate=addPool(pool,included); if(candidate) pageMarkets.push(candidate); }
-        await emit(pageMarkets);
+        pendingBurnReads.push(emit(pageMarkets));
         if(pageNumber>=maxPages) { complete=false; break; }
         const hasNextPage=Boolean(page.links?.next) || page.data?.length===20;
         if(!hasNextPage) break;
         pageNumber++;
         await pause(2200);
       }
+      await Promise.all(pendingBurnReads);
       return {markets:[...markets.values()],complete};
     }
     const setStatus = (message, bad=false) => $('status').innerHTML = bad ? `<span class="error">${message}</span>` : message;
@@ -358,8 +360,8 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
             priority.markets.forEach(market=>merged.set(market.address,market));
             markets=[...merged.values()];
             const uncachedBurns=markets.filter(market=>!burnByAddress.has(market.address));
-            for(let i=0;i<uncachedBurns.length;i+=25) {
-              await ingest(uncachedBurns.slice(i,i+25));
+            for(let i=0;i<uncachedBurns.length;i+=40) {
+              await ingest(uncachedBurns.slice(i,i+40));
               if(run!==activeRefresh) return;
             }
           } else {
@@ -371,9 +373,9 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
           }
           if(run!==activeRefresh) return;
           const missing=markets.filter(market=>!burnByAddress.has(market.address));
-          for(let i=0;i<missing.length;i+=25) {
-            setStatus(`Retrying missing burn balances · ${Math.min(i+25,missing.length)} / ${missing.length}`);
-            const batch=await readBurnBatch(missing.slice(i,i+25)).catch(()=>[]); batch.forEach(token=>burnByAddress.set(token.address,token));
+          for(let i=0;i<missing.length;i+=40) {
+            setStatus(`Retrying missing burn balances · ${Math.min(i+40,missing.length)} / ${missing.length}`);
+            const batch=await readBurnBatch(missing.slice(i,i+40)).catch(()=>[]); batch.forEach(token=>burnByAddress.set(token.address,token));
             if(run!==activeRefresh) return;
           }
           results=[...burnByAddress.values()];
