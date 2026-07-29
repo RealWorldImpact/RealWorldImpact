@@ -78,6 +78,7 @@ const TRANSLATIONS = {
     'vote.st.noWallet':'No wallet detected. Install a browser wallet, then reload.',
     'vote.st.rejected':'Connection rejected.',
     'vote.st.connFail':'Could not connect to that wallet.',
+    'vote.st.disconnected':'Wallet disconnected. Connect again to vote.',
     'vote.st.readingCrises':'Reading live crisis feeds…',
     'vote.st.notOwner':'Only the round controller can open a round.',
     'vote.st.confirmRound':'Confirm in your wallet — opening a new ballot…',
@@ -1866,7 +1867,9 @@ document.addEventListener('DOMContentLoaded', function(){
   .note{font-size:14.5px;opacity:.82;margin-top:16px;max-width:70ch}
   .status{font-family:var(--mono);font-size:12px;margin-top:14px;min-height:1.4em}
   .status.err{color:#8f2f2f}
+  .status.ok{color:var(--lime)}
   .band .status.err{color:#ff8a8a}
+  .wallet-bar.is-disconnected #connectBtn{border-color:var(--lime);box-shadow:0 0 0 3px rgba(204,254,6,.12)}
 
   .how{display:grid;gap:12px;margin-top:18px}
   .how .s{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
@@ -3161,9 +3164,9 @@ window.addEventListener('eip6963:announceProvider', onAnnounce);
 function requestProviders(){ try{ window.dispatchEvent(new Event('eip6963:requestProvider')); }catch(e){} }
 requestProviders();
 
-function walletStatus(msg, isErr){
+function walletStatus(msg, isErr, isOk){
   const el = $('walletStatus'); if(!el) return;
-  el.textContent = msg || ''; el.classList.toggle('err', !!isErr);
+  el.textContent = msg || ''; el.classList.toggle('err', !!isErr); el.classList.toggle('ok', !!isOk);
 }
 /* An error explaining WHY a vote could not be sent has to outlive the
    updateVoteButton() call in castVote's finally block — otherwise the message
@@ -3288,7 +3291,7 @@ function softReset(){
   // disconnected wallet kept being counted, and its poll timers kept running.
   clearPendingVote();
   wallet=null; account=null; walletOnChain=false; myPower=0n; selected=null;
-  ['acctChip','chainChip','powerChip','disconnectBtn'].forEach(function(id){ const e=$(id); if(e) e.hidden=true; });
+  ['acctChip','chainChip','powerChip','disconnectBtn'].forEach(function(id){ const e=$(id); if(e){ e.hidden=true; e.textContent=''; } });
   const os=$('ownerSection'); if(os) os.hidden = true;
   const nb=$('nextRoundBtn'); if(nb) nb.hidden = true;
   ownerPanelOpen = false;
@@ -3307,10 +3310,16 @@ function softReset(){
 /* User-initiated disconnect: also ask the wallet to drop the permission, so a
    later reconnect prompts again instead of silently re-authorising. */
 async function disconnect(){
+  if(!wallet && !account){
+    const cb=$('connectBtn'); if(cb){ cb.hidden=false; cb.disabled=false; }
+    const db=$('disconnectBtn'); if(db) db.hidden=true;
+    return;
+  }
   userDisconnected = true;
   const p = wallet;
   softReset();
-  walletStatus('');
+  const bar=$('connectBtn') && $('connectBtn').closest('.wallet-bar'); if(bar) bar.classList.add('is-disconnected');
+  walletStatus(t('vote.st.disconnected'), false, true);
   try{
     if(p && p.request) await p.request({ method:'wallet_revokePermissions', params:[{ eth_accounts:{} }] });
   }catch(e){ /* unsupported in many wallets — local reset already applied */ }
@@ -3322,6 +3331,7 @@ async function setAccount(a){
   account = a;
   $('acctChip').textContent = short(a); $('acctChip').hidden = false;
   const cb=$('connectBtn'); if(cb) cb.hidden = true;
+  const bar=cb && cb.closest('.wallet-bar'); if(bar) bar.classList.remove('is-disconnected');
   $('disconnectBtn').hidden = false;
   const wp=$('walletPicker'); if(wp){ wp.hidden = true; wp.innerHTML=''; }
   walletStatus('');
