@@ -2451,7 +2451,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     transition:transform .15s ease,box-shadow .15s ease;
   }
   #chartBtn:hover,#chartBtn:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}
-  #chartBtn svg{width:12px;height:12px;flex:none}
+  #chartBtn{width:32px;height:30px;justify-content:center;padding:0;touch-action:manipulation}
+  #chartBtn span{display:none}
+  #chartBtn svg{width:14px;height:14px;flex:none}
   #chartModal{
     position:fixed;inset:0;z-index:10000;
     display:none;align-items:center;justify-content:center;
@@ -2494,7 +2496,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;
   }
   @media (max-width:640px){
-    #chartBtn{padding:7px 12px;font-size:10px}
+    #chartBtn{width:32px;height:30px;padding:0;font-size:0}
     .chart-panel{height:min(82vh,640px);border-radius:14px}
     #chartModal{padding:12px}
   }
@@ -3509,7 +3511,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 <!-- Floating chart pill + modal (GeckoTerminal). Sits immediately left of the
      language pill; its offset is measured at runtime so the two never overlap. -->
-<button type="button" id="chartBtn" aria-haspopup="dialog" aria-controls="chartModal">
+<button type="button" id="chartBtn" aria-haspopup="dialog" aria-controls="chartModal" aria-label="Open RWI chart">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><path d="M6 16V9"/><path d="M11 16V4"/><path d="M16 16v-5"/><path d="M21 16v-9"/></svg>
   <span data-i18n="index.chart.btn">Chart</span>
 </button>
@@ -3543,6 +3545,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         loading=document.getElementById('chartLoading'),
         langBtn=document.getElementById('langBtn');
     if(!btn||!modal||!frame) return;
+    btn.setAttribute('aria-expanded','false');
     var loaded=false, lastFocus=null;
 
     // Keep the chart pill clear of the language pill, whose width changes with its label.
