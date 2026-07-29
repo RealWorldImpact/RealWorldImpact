@@ -277,8 +277,7 @@
     transition:transform .15s ease,box-shadow .15s ease;
   }
   #chartBtn:hover,#chartBtn:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}
-  #chartBtn{width:32px;height:30px;min-width:32px;max-width:32px;justify-content:center;padding:0;margin:0;box-sizing:border-box;appearance:none;-webkit-appearance:none;touch-action:manipulation;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border-color:var(--lime, #CCFE06)}
-  #chartBtn::before,#chartBtn::after{content:none!important;display:none!important}
+  #chartBtn{width:32px;height:30px;justify-content:center;padding:0;touch-action:manipulation;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border-color:var(--lime, #CCFE06)}
   #chartBtn:hover,#chartBtn:focus-visible{background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border-color:var(--lime, #CCFE06)}
   #chartBtn span{display:none}
   #chartBtn svg{width:14px;height:14px;flex:none}
@@ -2832,18 +2831,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
     btn.setAttribute('aria-expanded','false');
     var loaded=false, lastFocus=null;
 
-    // Measure the language pill itself rather than assuming its width or
-    // offset. This keeps the compact graph control clear after translation,
-    // zoom, and responsive layout changes.
+    // Keep the chart pill clear of the language pill, whose width changes with its label.
     function place(){
-      if(!langBtn){ btn.style.right='16px'; btn.style.bottom='16px'; return; }
-      var rect=langBtn.getBoundingClientRect();
-      if(!rect.width) return;
-      btn.style.right=Math.round(window.innerWidth-rect.left+10)+'px';
-      btn.style.bottom=Math.round(window.innerHeight-rect.bottom)+'px';
+      if(!langBtn) return;
+      var w=langBtn.getBoundingClientRect().width;
+      if(w) btn.style.right=(16+w+10)+'px';
     }
     window.addEventListener('resize', place);
-    if(window.ResizeObserver) new ResizeObserver(place).observe(langBtn);
     window.updateChartBtnPosition=place;
     place();
 
@@ -2867,7 +2861,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     btn.addEventListener('click', function(e){ e.stopPropagation(); open(); });
     if(closeBtn) closeBtn.addEventListener('click', close);
-    modal.addEventListener('click', function(e){ if(!panel.contains(e.target)) close(); });
+    modal.addEventListener('click', function(e){ if(e.target === modal) close(); });   // backdrop only
     document.addEventListener('keydown', function(e){ if(e.key==='Escape'&&modal.classList.contains('open')) close(); });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
