@@ -2827,6 +2827,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   var POOL='0xff6aa24815d1274a9be0cfd17c7c7489cd40a697';
   var SRC='https://www.geckoterminal.com/robinhood/pools/'+POOL+'?embed=1&info=0&swaps=0';
   function init(){
+    // Defensive cleanup for browsers that keep a prior floating widget during
+    // local-file navigation: retain one chart control only.
+    document.querySelectorAll('#chartBtn').forEach(function(node,index){ if(index>0) node.remove(); });
     var btn=document.getElementById('chartBtn'),
         modal=document.getElementById('chartModal'),
         panel=modal&&modal.querySelector('.chart-panel'),
@@ -2835,6 +2838,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
         loading=document.getElementById('chartLoading'),
         langBtn=document.getElementById('langBtn');
     if(!btn||!modal||!frame) return;
+    Object.assign(btn.style,{
+      position:'fixed',display:'grid',placeItems:'center',width:'30px',height:'30px',
+      minWidth:'30px',maxWidth:'30px',padding:'0',margin:'0',borderRadius:'50%',
+      background:'var(--ink, #0B0B09)',color:'var(--lime, #CCFE06)',
+      border:'1px solid var(--lime, #CCFE06)',boxShadow:'none',outline:'none',
+      transform:'none',filter:'none',transition:'none'
+    });
     btn.setAttribute('aria-expanded','false');
     var loaded=false, lastFocus=null;
 
