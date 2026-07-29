@@ -2691,7 +2691,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     </div>
     <nav class="links" aria-label="Primary">
       <a href="dashboard.html" data-i18n="nav.lp">LP</a>
-      <a href="#whitepaper" id="paperLink" data-i18n="nav.whitepaper">Whitepaper</a>
+      <a href="whitepaper.html" data-i18n="nav.whitepaper">Whitepaper</a>
       <a href="https://dexscreener.com/robinhood/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697" target="_blank" rel="noopener" data-i18n="nav.dexscreener">Dexscreener</a>
     </nav>
   </div>
@@ -3279,10 +3279,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 
 <script>
-  // ---------- Whitepaper in-place swap ----------
+  // Legacy in-page whitepaper loader (disabled: Whitepaper now opens as its own page).
   // Fetches whitepaper.html once and mounts it in a Shadow DOM for perfect CSS isolation.
   // The site's live updaters keep running in the background while the paper is showing.
-  (function(){
+  if(false){ (function(){
     const link = document.getElementById('paperLink');
     const siteTitle = document.title;
     let host = null, cache = null, loading = false;
@@ -3420,7 +3420,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     // Deep-link support: if page loads with #whitepaper, open paper view immediately
     if(location.hash === '#whitepaper') showPaper(false);
-  })();
+  })(); }
 </script>
 <button id="langBtn" aria-haspopup="true" aria-expanded="false" aria-controls="langPanel" aria-label="Change language" type="button"><span id="langBtnLabel">EN</span><span class="caret" aria-hidden="true">▾</span></button>
 <div id="langPanel" role="menu" aria-label="Language">
