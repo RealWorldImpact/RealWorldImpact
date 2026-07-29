@@ -1953,7 +1953,8 @@ document.addEventListener('DOMContentLoaded', function(){
     transition:transform .15s ease,box-shadow .15s ease;
   }
   #chartBtn:hover,#chartBtn:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}
-  #chartBtn{width:32px;height:30px;justify-content:center;padding:0;touch-action:manipulation}
+  #chartBtn{width:32px;height:30px;justify-content:center;padding:0;touch-action:manipulation;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border-color:var(--lime, #CCFE06)}
+  #chartBtn:hover,#chartBtn:focus-visible{background:var(--lime, #CCFE06);color:var(--ink, #0B0B09)}
   #chartBtn span{display:none}
   #chartBtn svg{width:14px;height:14px;flex:none}
   #chartModal{
