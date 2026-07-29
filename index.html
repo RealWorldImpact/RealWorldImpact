@@ -97,9 +97,9 @@ const TRANSLATIONS = {
     'wp.refs.eyebrow':'References — Addresses & links','wp.refs.title':'Everything, verifiable.'
   ,
     'index.pons.burnedBy':'$PONS burned by',
-    'index.pons.earnBurnPool':'Earn & Burn pool',
+ 'index.pons.earnBurnPool':'$RWI / $PONS pool',
     'index.pons.poolLink':'$RWI / $PONS pool ↗',
-    'index.pons.how':'RWI runs two liquidity pools. The main pool pairs $RWI with $WETH — trading fees there fund the donations. The secondary pool pairs $RWI with $PONS: we call it the earn-and-burn pool, because everything the project earns from it is sent straight to the burn address. Pons already routes its platform fees into $PONS buybacks; we take it a step further and destroy our share outright, permanently shrinking the supply of the token behind the launchpad that gave $RWI its start. Rising tide, fewer tokens.',
+ 'index.pons.how':'RWI runs two liquidity pools. The main pool pairs $RWI with $WETH, where trading fees fund donations. We also created a $RWI/$PONS liquidity pool. We frequently collect its rewards and put that revenue back into the liquidity pools to support deeper, healthier markets for both tokens.',
     'index.signal.how':'Holders can also shape which vetted charity gets the next donation. The ballot at rwihood.org/vote presents six seats per round — three auto-composed from cause areas and ranked against ReliefWeb, three reserved for holder write-ins from The Giving Block directory. Every write-in burns $5 in $RWI. The signal is advisory, weighted by live $RWI balance, and reproducible by anyone from onchain data.',
     'index.team.louis.role':'Louis S. — Founder',
     'index.team.louis.bio1':'Louis S. was born and raised in Northwest Florida. He has worked in customer service since 2012 and in finance since 2020 — over a decade spent helping people, and years spent understanding how money actually moves.',
@@ -2102,6 +2102,13 @@ function detectLang(){
   }catch(e){}
   return 'en';
 }
+Object.keys(TRANSLATIONS).forEach(function(lang){
+  Object.assign(TRANSLATIONS[lang], {
+    'index.pons.earnBurnPool':'$RWI / $PONS pool',
+    'index.pons.how':'RWI runs two liquidity pools. The main pool pairs $RWI with $WETH, where trading fees fund donations. We also created a $RWI/$PONS liquidity pool. We frequently collect its rewards and put that revenue back into the liquidity pools to support deeper, healthier markets for both tokens.'
+  });
+});
+
 function t(key, vars){
   const dict = TRANSLATIONS[LANG] || TRANSLATIONS.en;
   let s = dict[key] || TRANSLATIONS.en[key] || key;
@@ -2307,7 +2314,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   .wp-brand{white-space:nowrap}
 
   /* ---------- hero: the logo dissolves into the page ---------- */
-  .hero{padding:3vh 0 4vh;text-align:center}
+  .hero{padding:0 0 4vh;text-align:center}
   .hero img{
     width:min(340px,64vw);height:auto;display:block;margin:0 auto;
     /* same lime as the page — the mark sits directly on the site */
@@ -2584,6 +2591,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   .pons-burn{margin-top:28px;padding-top:20px;border-top:1px solid var(--rule)}
+  .pons-col:has(#ponsAmt){display:none}
   .pons-label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
   .pons-label a{text-decoration:none;border-bottom:1px solid var(--rule)}
   .pons-label a:hover,.pons-label a:focus-visible{border-bottom-color:var(--ink)}
@@ -2649,7 +2657,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
   @media (max-width:560px){
     .wrap{padding:0 42px}
-    .hero{padding:3vh 0 5vh}
+    .hero{padding:0 0 5vh}
     .sec-inner{padding:48px 0}
     .sec-inner>p{margin-top:16px}
     .hero h1{margin-top:22px}
@@ -2813,13 +2821,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
               <p class="pons-usd" id="ponsUsd">&nbsp;</p>
             </div>
             <div class="pons-col">
-              <p class="pons-label" data-i18n="index.pons.earnBurnPool">Earn &amp; Burn pool</p>
+<p class="pons-label" data-i18n="index.pons.earnBurnPool">$RWI / $PONS pool</p>
               <div class="pons-fig"><span id="lpUsd">—</span></div>
               <p class="pons-usd"><a id="lpLink" href="https://www.dextools.io/app/robinhood/pair-explorer/0x62a9e7cf94049dded854c26ff6204079a1c8caed" target="_blank" rel="noopener" data-i18n="index.pons.poolLink">$RWI / $PONS pool ↗</a></p>
             </div>
           </div>
           <div class="pons-how">
-            <p data-i18n="index.pons.how">RWI runs two liquidity pools. The main pool pairs $RWI with $WETH — trading fees there fund the donations. The secondary pool pairs $RWI with $PONS: we call it the earn-and-burn pool, because everything the project earns from it is sent straight to the burn address. Pons already routes its platform fees into $PONS buybacks; we take it a step further and destroy our share outright, permanently shrinking the supply of the token behind the launchpad that gave $RWI its start. Rising tide, fewer tokens.</p>
+<p data-i18n="index.pons.how">RWI runs two liquidity pools. The main pool pairs $RWI with $WETH, where trading fees fund donations. We also created a $RWI/$PONS liquidity pool. We frequently collect its rewards and put that revenue back into the liquidity pools to support deeper, healthier markets for both tokens.</p>
           </div>
           <div class="pons-how">
             <p data-i18n="index.signal.how">Holders can also shape which vetted charity gets the next donation. The ballot at rwihood.org/vote presents six seats per round — three auto-composed from cause areas and ranked against ReliefWeb, three reserved for holder write-ins from The Giving Block directory. Every write-in burns $5 in $RWI. The signal is advisory, weighted by live $RWI balance, and reproducible by anyone from onchain data.</p>
@@ -3273,9 +3281,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
     lpUsd.textContent='$'+Number(c.usd).toLocaleString('en-US',{maximumFractionDigits:0});
   })();
 
-  updateBurn();updatePons();updateLp();
-  setInterval(()=>{if(!document.hidden){updateBurn();updatePons();updateLp()}},60000);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){updateBurn();updatePons();updateLp()}});
+  // This page now reports liquidity-pool value only; the separate PONS-burned card is removed.
+  const ponsBurnCard=document.getElementById('ponsAmt');
+  if(ponsBurnCard)ponsBurnCard.closest('.pons-col').remove();
+  updateBurn();updateLp();
+  setInterval(()=>{if(!document.hidden){updateBurn();updateLp()}},60000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){updateBurn();updateLp()}});
 </script>
 
 <script>
