@@ -3427,15 +3427,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
 <div id="burnListModal" role="dialog" aria-modal="true" aria-labelledby="burnListTitle">
   <div class="burn-list-panel">
     <div class="burn-list-head"><span id="burnListTitle">Pons Family Burn List</span><button id="burnListClose" type="button" aria-label="Close Burn List">&#10005;</button></div>
-    <iframe id="burnListFrame" data-src="burn.html" title="Pons Family Burn List"></iframe>
+    <iframe id="burnListFrame" data-src="https://www.rwihood.org/burn.html" title="Pons Family Burn List"></iframe>
   </div>
 </div>
 <script>
 (function(){
   const trigger=document.getElementById('burnListPill'), modal=document.getElementById('burnListModal'), close=document.getElementById('burnListClose'), frame=document.getElementById('burnListFrame');
   if(!trigger||!modal||!close||!frame)return;
-  function open(){if(!frame.getAttribute('src'))frame.src=frame.dataset.src;modal.classList.add('open');document.body.style.overflow='hidden';close.focus();}
-  function shut(){modal.classList.remove('open');document.body.style.overflow='';trigger.focus();}
+  trigger.setAttribute('aria-expanded','false');
+  let previousFocus=null, previousOverflow='';
+  function open(){previousFocus=document.activeElement;previousOverflow=document.body.style.overflow;if(!frame.getAttribute('src'))frame.src=frame.dataset.src;modal.classList.add('open');trigger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';close.focus();}
+  function shut(){if(!modal.classList.contains('open'))return;modal.classList.remove('open');trigger.setAttribute('aria-expanded','false');document.body.style.overflow=previousOverflow;(previousFocus||trigger).focus();}
   trigger.addEventListener('click',open);close.addEventListener('click',shut);
   modal.addEventListener('click',event=>{if(event.target===modal)shut();});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('open'))shut();});
