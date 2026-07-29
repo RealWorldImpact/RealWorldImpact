@@ -3311,8 +3311,9 @@ function softReset(){
    later reconnect prompts again instead of silently re-authorising. */
 async function disconnect(){
   if(!wallet && !account){
-    const cb=$('connectBtn'); if(cb){ cb.hidden=false; cb.disabled=false; }
-    const db=$('disconnectBtn'); if(db) db.hidden=true;
+    softReset();
+    const bar=$('connectBtn') && $('connectBtn').closest('.wallet-bar'); if(bar) bar.classList.add('is-disconnected');
+    walletStatus(t('vote.st.disconnected'), false, true);
     return;
   }
   userDisconnected = true;
