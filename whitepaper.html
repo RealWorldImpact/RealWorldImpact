@@ -2830,13 +2830,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
     btn.setAttribute('aria-expanded','false');
     var loaded=false, lastFocus=null;
 
-    // Keep the chart pill clear of the language pill, whose width changes with its label.
+    // Measure the language pill itself rather than assuming its width or
+    // offset. This keeps the compact graph control clear after translation,
+    // zoom, and responsive layout changes.
     function place(){
-      if(!langBtn) return;
-      var w=langBtn.getBoundingClientRect().width;
-      if(w) btn.style.right=(16+w+10)+'px';
+      if(!langBtn){ btn.style.right='16px'; btn.style.bottom='16px'; return; }
+      var rect=langBtn.getBoundingClientRect();
+      if(!rect.width) return;
+      btn.style.right=Math.round(window.innerWidth-rect.left+10)+'px';
+      btn.style.bottom=Math.round(window.innerHeight-rect.bottom)+'px';
     }
     window.addEventListener('resize', place);
+    if(window.ResizeObserver) new ResizeObserver(place).observe(langBtn);
     window.updateChartBtnPosition=place;
     place();
 
