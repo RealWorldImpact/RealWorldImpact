@@ -61,6 +61,7 @@
       .toolbar{align-items:stretch;padding:18px 0 12px;gap:12px}.status{width:100%;font-size:10px;line-height:1.35}.controls{width:100%;display:grid;grid-template-columns:1fr auto;gap:8px}.controls input{grid-column:1 / -1;width:100%}.controls .refresh-icon{grid-column:2;width:34px;justify-self:end}.add-token{padding:13px}.add-token input,.add-token button{width:100%}
       .view-tabs{padding-top:9px}.view-tab{font-size:9px;padding:8px 10px}.recent-note{font-size:10px;padding:11px 0 7px}
       #recent-panel .table tbody{gap:7px}#recent-panel .table tr{grid-template-columns:minmax(0,1fr) auto;padding:2px 11px}#recent-panel .table td{min-height:30px;padding:5px 0;font-size:10px}#recent-panel .table td::before{font-size:8px}#recent-panel .table td[data-label="Project"]{padding:8px 0 7px}#recent-panel .table td[data-label="Project"] .mark{width:26px;height:26px;flex-basis:26px}#recent-panel .table td[data-label="Project"] .name{font-size:11px}#recent-panel .table td[data-label="Burned amount"]{display:grid;grid-template-columns:1fr auto auto;align-items:center;column-gap:5px;grid-column:1;border-top:1px solid var(--line)}#recent-panel .table td[data-label="Burned amount"]::before{grid-column:1}#recent-panel .table td[data-label="Block"]{grid-column:2;border-top:1px solid var(--line);padding-left:12px}#recent-panel .table td[data-label="Transaction"]{grid-column:1 / -1;min-height:27px;border-top:1px solid var(--line);padding:5px 0}#recent-panel .table td[data-label="Transaction"]::before{content:'View transaction'}#recent-panel .burn{font-size:12px}#recent-panel .usd{font-size:9px;margin-left:0}#recent-panel .burn-tx{font-size:10px}
+      #ranked-panel .table tbody{gap:7px}#ranked-panel .table tr{padding:3px 11px}#ranked-panel .table td{min-height:29px;padding:5px 0;font-size:10px}#ranked-panel .table td::before{font-size:8px}#ranked-panel .table td[data-label="Project"]{padding:8px 0 7px}#ranked-panel .table td[data-label="Project"] .mark{width:26px;height:26px;flex-basis:26px}#ranked-panel .table td[data-label="Project"] .name{font-size:11px}#ranked-panel .table td[data-label="Burned supply"]{grid-column:1 / -1;min-height:34px;border-top:1px solid var(--line);padding:6px 0;font-size:11px}#ranked-panel .table td[data-label="Burned supply"] .burn{font-size:13px}#ranked-panel .table td[data-label="Burned supply"] .usd{font-size:10px}#ranked-panel .table td[data-label="Burned supply"] .bar{width:62px;margin-left:6px}#ranked-panel .table td[data-label="Token"]{min-height:28px;padding-top:6px}
       .table-wrap{border:0;background:transparent;overflow:visible}.table{min-width:0;display:block}.table thead{display:none}.table tbody{display:grid;gap:5px}.table tr{position:relative;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);background:rgba(255,255,255,.015);padding:1px 9px}.table td{display:flex;align-items:center;justify-content:space-between;gap:7px;border:0;padding:5px 0;font-size:10px;text-align:right!important}.table td::before{content:attr(data-label);color:var(--muted);font-size:7px;letter-spacing:.07em;text-transform:uppercase;text-align:left}.table td[data-label="Project"]{grid-column:1 / -1;justify-content:flex-start;padding:6px 0 7px;border-bottom:1px solid var(--line);text-align:left!important}.table td[data-label="Project"]::before{display:none}.table td[data-label="Rank"]{position:absolute;right:10px;top:5px;padding:0;color:var(--acid)}.table td[data-label="Rank"]::before{display:none}.table td[data-label="Token"]{grid-column:1 / -1;border-top:1px solid var(--line);padding-top:5px}.token{gap:7px}.mark{width:21px;height:21px;flex-basis:21px}.sym{font-size:9px;margin-top:1px}.burn{font-size:11px}.bar{width:46px}.address{font-size:9px}
       footer{margin-top:18px;font-size:10px}
     }
@@ -106,7 +107,7 @@
     const DEAD = '0x000000000000000000000000000000000000dead';
     const CACHE = 'pons-burn-list-v18';
     const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
-    const RECENT_BURN_CACHE = 'pons-recent-burns-v2';
+    const RECENT_BURN_CACHE = 'pons-recent-burns-v3';
     const USER_TOKENS_CACHE = 'pons-burn-list-user-tokens-v1';
     const SCAN_LOCK = 'pons-burn-list-scan-lock-v1';
     const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
@@ -406,7 +407,7 @@
           const key=`${log.transactionHash}:${log.logIndex}:${log.address}`;
           if(seen.has(key)) return null;
           seen.add(key);
-          return {name:token.name,symbol:token.symbol,image:token.image||'',amount,usd:token.marketCap&&token.supply ? amount*token.marketCap/token.supply : 0,block:parseInt(log.blockNumber,16),index:parseInt(log.logIndex,16),hash:log.transactionHash};
+          return {name:token.name,symbol:token.symbol,image:token.image||'',amount,usd:token.marketCap ? amount*token.marketCap/(token.supply||1000000000) : 0,block:parseInt(log.blockNumber,16),index:parseInt(log.logIndex,16),hash:log.transactionHash};
         }).filter(Boolean).sort((a,b)=>b.block-a.block || b.index-a.index).slice(0,30);
         if(run!==recentBurnRun) return;
         renderRecentBurns(events);
