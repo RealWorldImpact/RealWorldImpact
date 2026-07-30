@@ -75,7 +75,7 @@
     <section class="toolbar"><div class="status" id="status">Loading the Pons Family Burn List…</div><div class="controls"><button id="refresh" class="refresh-icon" type="button" title="Refresh list" aria-label="Refresh list">↻</button></div></section>
     <div class="view-tabs" role="tablist" aria-label="Burn List views"><button class="view-tab" id="ranked-tab" type="button" role="tab" aria-selected="true" aria-controls="ranked-panel">Ranked burns</button><button class="view-tab" id="recent-tab" type="button" role="tab" aria-selected="false" aria-controls="recent-panel">Recent burns</button></div>
     <section class="view-panel" id="ranked-panel" role="tabpanel" aria-labelledby="ranked-tab"><section class="add-token" id="add-token-panel" hidden><p>Missing a token? Paste its contract address. Only tokens launched through the official pons factories can be added.</p><input id="token-address" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x… token address"><button id="add-token">Submit token</button><div class="add-status" id="add-status"></div></section><div class="table-wrap"><table class="table"><thead><tr><th>#</th><th>Project</th><th class="num">Market cap / FDV</th><th class="num">24h volume</th><th class="num">Burned supply</th><th class="num">% of supply</th><th class="num">Token</th></tr></thead><tbody id="rows"><tr><td class="empty" colspan="7">Building the live list…<span class="skeleton"></span></td></tr></tbody></table></div></section>
-    <section class="view-panel" id="recent-panel" role="tabpanel" aria-labelledby="recent-tab" hidden><p class="recent-note">Newest verified transfers to the canonical zero or dead address. Every indexed Pons token is checked when this tab is opened.</p><div class="table-wrap"><table class="table"><thead><tr><th>Project</th><th class="num">Burned amount</th><th class="num">Block</th><th class="num">Transaction</th></tr></thead><tbody id="recent-rows"><tr><td class="empty" colspan="4">Open this tab to load the newest burns.</td></tr></tbody></table></div></section>
+    <section class="view-panel" id="recent-panel" role="tabpanel" aria-labelledby="recent-tab" hidden><p class="recent-note">Newest verified transfers to the canonical zero or dead address. Every indexed Pons token is checked when this tab is opened; burns valued below $1 are excluded.</p><div class="table-wrap"><table class="table"><thead><tr><th>Project</th><th class="num">Burned amount</th><th class="num">Block</th><th class="num">Transaction</th></tr></thead><tbody id="recent-rows"><tr><td class="empty" colspan="4">Open this tab to load the newest burns.</td></tr></tbody></table></div></section>
     <footer>Market data and volume come from GeckoTerminal’s Pons Family pool index. Burned supply is read on-chain from the canonical zero and dead addresses. This is an activity dashboard, not financial advice.</footer>
   </main>
   <script>
@@ -94,7 +94,8 @@
       {pool:'0x3f6e8bf03169bc63d2c05500c7ebe8d406ed3093',address:'0xf05babb8172bea20e974b458c593399be11250dd',name:'Grace',symbol:'GRACE',image:'https://assets.geckoterminal.com/m7wz49sw78x0ng0609l3e7ipsj61',marketCap:121566,volume24h:90259},
       {pool:'0xdec8f541ff159d2b4abd3c3b041cd739bd7c486f',address:'0xedaee44320107caa714baaec486261a87f27022d',name:'PONGO',symbol:'PONGO',image:'https://assets.geckoterminal.com/52hr48l6z4kqtfyswqbn9sodd8zz',marketCap:421111,volume24h:269899},
       {pool:'0xe87bc675ad3d597c82858301cfcdae1dc613c75a',address:'0xc9e7c34fa156a235e8b8601171a543bc9c84a1b9',name:'tamPons',symbol:'TAMPONS',image:'https://coin-images.coingecko.com/coins/images/102174729/large/3feil5y7kqcu4kdtw2x05q6gpcel.?1784703134',marketCap:228186,volume24h:243625},
-      {pool:'0x9870c395bfa68c9f23d7c232fa5a37bf063aae35',address:'0x45f82ac5d507e988f7406935da8eefe495a360e0',name:'Robinhood Dog',symbol:'BRODIE',image:'https://assets.geckoterminal.com/796y2muqi172ujhakpb7lmbat1b0',marketCap:2217291,volume24h:1970294}
+      {pool:'0x9870c395bfa68c9f23d7c232fa5a37bf063aae35',address:'0x45f82ac5d507e988f7406935da8eefe495a360e0',name:'Robinhood Dog',symbol:'BRODIE',image:'https://assets.geckoterminal.com/796y2muqi172ujhakpb7lmbat1b0',marketCap:2217291,volume24h:1970294},
+      {pool:'',address:'0x19f862c0cf83a9f65b19c37fd1f4fd5bacb097ae',name:'Robinhood Dog',symbol:'COOPER',image:'',marketCap:108075,volume24h:293553}
     ];
     const FACTORIES = [
       { address:'0x0c37a24F5D23A486FA692d1500881d698B1F77a4', from:8600612 },
@@ -107,7 +108,7 @@
     const DEAD = '0x000000000000000000000000000000000000dead';
     const CACHE = 'pons-burn-list-v18';
     const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
-    const RECENT_BURN_CACHE = 'pons-recent-burns-v5';
+    const RECENT_BURN_CACHE = 'pons-recent-burns-v7';
     const USER_TOKENS_CACHE = 'pons-burn-list-user-tokens-v1';
     const SCAN_LOCK = 'pons-burn-list-scan-lock-v1';
     const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
@@ -281,7 +282,8 @@
         return null;
       };
       const seededMarkets=[];
-      for(const seed of VERIFIED_POOL_SEEDS) {
+      const hydratedSeeds=await Promise.all(VERIFIED_POOL_SEEDS.map(seed=>seed.image ? seed : readUserToken(seed).catch(()=>seed)));
+      for(const seed of hydratedSeeds) {
         const candidate={...seed,marketCap:seed.marketCap||0,volume24h:seed.volume24h||0};
         markets.set(candidate.address,candidate);
         seededMarkets.push(candidate);
@@ -359,6 +361,7 @@
       allTokens.forEach(add);
       return [...candidates.values()];
     };
+    const recentCatalogKey = tokens => tokens.map(token=>token.address.toLowerCase()).sort().join(',');
     const readRecentLogCalls = async (calls, stats) => {
       try { return (await rpcBatch(calls)).flat(); }
       catch(error) {
@@ -377,16 +380,17 @@
       const body=$('recent-rows');
       if(!body || (!force && recentBurnsLoaded)) return;
       const run=++recentBurnRun;
+      const priority=recentCandidates().sort((a,b)=>(b.volume24h||0)-(a.volume24h||0));
+      const catalogKey=recentCatalogKey(priority);
       let savedRecent;
       try {
         savedRecent=JSON.parse(localStorage.getItem(RECENT_BURN_CACHE));
-        if(!force && savedRecent?.events && Date.now()-savedRecent.timestamp<RECENT_BURN_TTL) { renderRecentBurns(savedRecent.events); recentBurnsLoaded=true; return; }
+        if(!force && savedRecent?.events && savedRecent.catalogKey===catalogKey && Date.now()-savedRecent.timestamp<RECENT_BURN_TTL) { renderRecentBurns(savedRecent.events); recentBurnsLoaded=true; return; }
       } catch {}
       body.innerHTML='<tr><td class="empty" colspan="4">Loading the newest verified burns&hellip;</td></tr>';
       try {
         const latest=parseInt(await rpc('eth_blockNumber',[]),16);
         const from=Math.max(0,latest-RECENT_BURN_BLOCKS);
-        const priority=recentCandidates().sort((a,b)=>(b.volume24h||0)-(a.volume24h||0));
         if(!priority.length) throw new Error('No verified Pons tokens are available yet.');
         const byAddress=new Map(priority.map(token=>[token.address.toLowerCase(),token]));
         const calls=[];
@@ -413,12 +417,12 @@
           if(seen.has(key)) return null;
           seen.add(key);
           return {name:token.name,symbol:token.symbol,image:token.image||'',amount,usd:token.marketCap ? amount*token.marketCap/(token.supply||1000000000) : 0,block:parseInt(log.blockNumber,16),index:parseInt(log.logIndex,16),hash:log.transactionHash};
-        }).filter(Boolean).sort((a,b)=>b.block-a.block || b.index-a.index);
+        }).filter(Boolean).filter(event=>event.usd>=1).sort((a,b)=>b.block-a.block || b.index-a.index);
         if(run!==recentBurnRun) return;
         renderRecentBurns(events);
         recentBurnsLoaded=true;
         recentFailures=0;
-        try { localStorage.setItem(RECENT_BURN_CACHE,JSON.stringify({events,timestamp:Date.now()})); } catch {}
+        try { localStorage.setItem(RECENT_BURN_CACHE,JSON.stringify({events,catalogKey,timestamp:Date.now()})); } catch {}
       } catch(error) {
         if(run===recentBurnRun && savedRecent?.events?.length) {
           renderRecentBurns(savedRecent.events);
@@ -653,6 +657,22 @@
         button.textContent='Copied'; button.classList.add('copied');
         setTimeout(()=>{ button.textContent=button.dataset.label; button.classList.remove('copied'); },1200);
       } catch { button.textContent='Copy failed'; setTimeout(()=>button.textContent=button.dataset.label,1200); }
+    });
+    window.addEventListener('storage',event=>{
+      try {
+        if(event.key===CACHE && event.newValue) {
+          const saved=JSON.parse(event.newValue);
+          if(saved?.tokens?.length>allTokens.length) {
+            allTokens=saved.tokens; lastCompleteTokens=saved.tokens; lastUpdated=saved.timestamp;
+            render(allTokens,lastUpdated);
+            if($('recent-tab').getAttribute('aria-selected')==='true') { recentBurnsLoaded=false; loadRecentBurns(true); }
+          }
+        }
+        if(event.key===RECENT_BURN_CACHE && event.newValue && $('recent-tab').getAttribute('aria-selected')==='true') {
+          const saved=JSON.parse(event.newValue);
+          if(saved?.events && saved.catalogKey===recentCatalogKey(recentCandidates())) { renderRecentBurns(saved.events); recentBurnsLoaded=true; }
+        }
+      } catch {}
     });
     try { const saved=JSON.parse(localStorage.getItem(CACHE)); if(saved?.tokens?.length){ allTokens=saved.tokens; lastCompleteTokens=saved.tokens; lastUpdated=saved.timestamp; render(allTokens,lastUpdated); setStatus(`<strong>Cached full list shown.</strong> Updating from the market…`); } } catch {}
     refresh();
