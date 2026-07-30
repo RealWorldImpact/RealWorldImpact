@@ -75,7 +75,7 @@
     <section class="toolbar"><div class="status" id="status">Loading the Pons Family Burn List…</div><div class="controls"><button id="refresh" class="refresh-icon" type="button" title="Refresh list" aria-label="Refresh list">↻</button></div></section>
     <div class="view-tabs" role="tablist" aria-label="Burn List views"><button class="view-tab" id="ranked-tab" type="button" role="tab" aria-selected="true" aria-controls="ranked-panel">Ranked burns</button><button class="view-tab" id="recent-tab" type="button" role="tab" aria-selected="false" aria-controls="recent-panel">Recent burns</button></div>
     <section class="view-panel" id="ranked-panel" role="tabpanel" aria-labelledby="ranked-tab"><section class="add-token" id="add-token-panel" hidden><p>Missing a token? Paste its contract address. Only tokens launched through the official pons factories can be added.</p><input id="token-address" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x… token address"><button id="add-token">Submit token</button><div class="add-status" id="add-status"></div></section><div class="table-wrap"><table class="table"><thead><tr><th>#</th><th>Project</th><th class="num">Market cap / FDV</th><th class="num">24h volume</th><th class="num">Burned supply</th><th class="num">% of supply</th><th class="num">Token</th></tr></thead><tbody id="rows"><tr><td class="empty" colspan="7">Building the live list…<span class="skeleton"></span></td></tr></tbody></table></div></section>
-    <section class="view-panel" id="recent-panel" role="tabpanel" aria-labelledby="recent-tab" hidden><p class="recent-note">Newest verified transfers to the canonical zero or dead address. This begins immediately from verified Pons tokens, then expands with the active scanner catalog.</p><div class="table-wrap"><table class="table"><thead><tr><th>Project</th><th class="num">Burned amount</th><th class="num">Block</th><th class="num">Transaction</th></tr></thead><tbody id="recent-rows"><tr><td class="empty" colspan="4">Open this tab to load the newest burns.</td></tr></tbody></table></div></section>
+    <section class="view-panel" id="recent-panel" role="tabpanel" aria-labelledby="recent-tab" hidden><p class="recent-note">Newest verified transfers to the canonical zero or dead address. Every indexed Pons token is checked when this tab is opened.</p><div class="table-wrap"><table class="table"><thead><tr><th>Project</th><th class="num">Burned amount</th><th class="num">Block</th><th class="num">Transaction</th></tr></thead><tbody id="recent-rows"><tr><td class="empty" colspan="4">Open this tab to load the newest burns.</td></tr></tbody></table></div></section>
     <footer>Market data and volume come from GeckoTerminal’s Pons Family pool index. Burned supply is read on-chain from the canonical zero and dead addresses. This is an activity dashboard, not financial advice.</footer>
   </main>
   <script>
@@ -107,7 +107,7 @@
     const DEAD = '0x000000000000000000000000000000000000dead';
     const CACHE = 'pons-burn-list-v18';
     const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
-    const RECENT_BURN_CACHE = 'pons-recent-burns-v3';
+    const RECENT_BURN_CACHE = 'pons-recent-burns-v4';
     const USER_TOKENS_CACHE = 'pons-burn-list-user-tokens-v1';
     const SCAN_LOCK = 'pons-burn-list-scan-lock-v1';
     const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
@@ -115,7 +115,6 @@
     const GECKO_PAGE_DELAY = 900;
     const RECENT_BURN_TTL = 2 * 60 * 1000;
     const RECENT_BURN_BLOCKS = 75000;
-    const RECENT_BURN_TOKEN_CAP = 80;
     // GeckoTerminal does not consistently expose a last-page link. This cap
     // turns an upstream page limit into a safe partial pass, not an endless scan.
     const MAX_GECKO_PAGES = 99;
@@ -387,7 +386,7 @@
       try {
         const latest=parseInt(await rpc('eth_blockNumber',[]),16);
         const from=Math.max(0,latest-RECENT_BURN_BLOCKS);
-        const priority=recentCandidates().sort((a,b)=>(b.volume24h||0)-(a.volume24h||0)).slice(0,RECENT_BURN_TOKEN_CAP);
+        const priority=recentCandidates().sort((a,b)=>(b.volume24h||0)-(a.volume24h||0));
         if(!priority.length) throw new Error('No verified Pons tokens are available yet.');
         const byAddress=new Map(priority.map(token=>[token.address.toLowerCase(),token]));
         const calls=[];
@@ -408,7 +407,7 @@
           if(seen.has(key)) return null;
           seen.add(key);
           return {name:token.name,symbol:token.symbol,image:token.image||'',amount,usd:token.marketCap ? amount*token.marketCap/(token.supply||1000000000) : 0,block:parseInt(log.blockNumber,16),index:parseInt(log.logIndex,16),hash:log.transactionHash};
-        }).filter(Boolean).sort((a,b)=>b.block-a.block || b.index-a.index).slice(0,30);
+        }).filter(Boolean).sort((a,b)=>b.block-a.block || b.index-a.index);
         if(run!==recentBurnRun) return;
         renderRecentBurns(events);
         recentBurnsLoaded=true;
