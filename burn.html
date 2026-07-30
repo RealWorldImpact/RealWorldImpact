@@ -107,7 +107,7 @@
     const DEAD = '0x000000000000000000000000000000000000dead';
     const CACHE = 'pons-burn-list-v18';
     const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
-    const RECENT_BURN_CACHE = 'pons-recent-burns-v4';
+    const RECENT_BURN_CACHE = 'pons-recent-burns-v5';
     const USER_TOKENS_CACHE = 'pons-burn-list-user-tokens-v1';
     const SCAN_LOCK = 'pons-burn-list-scan-lock-v1';
     const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
@@ -390,7 +390,13 @@
         if(!priority.length) throw new Error('No verified Pons tokens are available yet.');
         const byAddress=new Map(priority.map(token=>[token.address.toLowerCase(),token]));
         const calls=[];
-        for(const token of priority) for(const destination of [ZERO,DEAD]) calls.push({method:'eth_getLogs',params:[{address:token.address,fromBlock:'0x'+from.toString(16),toBlock:'0x'+latest.toString(16),topics:[TRANSFER_TOPIC,null,burnTopicAddress(destination)]}]});
+        // JSON-RPC supports an address array for logs. Querying batches of
+        // Pons contracts avoids one request per token and keeps results
+        // consistent across devices under the hosted RPC rate limit.
+        for(let i=0;i<priority.length;i+=150) {
+          const addresses=priority.slice(i,i+150).map(token=>token.address);
+          for(const destination of [ZERO,DEAD]) calls.push({method:'eth_getLogs',params:[{address:addresses,fromBlock:'0x'+from.toString(16),toBlock:'0x'+latest.toString(16),topics:[TRANSFER_TOPIC,null,burnTopicAddress(destination)]}]});
+        }
         const logs=[];
         const logStats={failed:0};
         for(let i=0;i<calls.length;i+=40) {
