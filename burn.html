@@ -108,7 +108,7 @@
     const DEAD = '0x000000000000000000000000000000000000dead';
     const CACHE = 'pons-burn-list-v18';
     const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
-    const RECENT_BURN_CACHE = 'pons-recent-burns-v7';
+    const RECENT_BURN_CACHE = 'pons-recent-burns-v8';
     const USER_TOKENS_CACHE = 'pons-burn-list-user-tokens-v1';
     const SCAN_LOCK = 'pons-burn-list-scan-lock-v1';
     const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
@@ -368,14 +368,19 @@
     const fmtBurnAmount = amount => amount >= 1 ? fmt(amount) : amount > 0 ? amount.toLocaleString('en-US',{maximumSignificantDigits:4}) : '0';
     const recentCandidates = () => {
       const candidates=new Map();
-      const add=token => { if(token?.address) candidates.set(token.address.toLowerCase(),token); };
+      const add=token => {
+        if(!token?.address) return;
+        const address=token.address.toLowerCase();
+        const prior=candidates.get(address);
+        candidates.set(address,prior ? {...prior,...token,name:token.name||prior.name,symbol:token.symbol||prior.symbol,image:token.image||prior.image,marketCap:Number(token.marketCap)||Number(prior.marketCap)||0,volume24h:Number(token.volume24h)||Number(prior.volume24h)||0,supply:Number(token.supply)||Number(prior.supply)||1000000000} : token);
+      };
       VERIFIED_POOL_SEEDS.forEach(add);
       userTokens().forEach(add);
       try { (JSON.parse(localStorage.getItem(CACHE))?.tokens||[]).forEach(add); } catch {}
       allTokens.forEach(add);
       return [...candidates.values()];
     };
-    const recentCatalogKey = tokens => tokens.map(token=>token.address.toLowerCase()).sort().join(',');
+    const recentCatalogKey = tokens => tokens.map(token=>`${token.address.toLowerCase()}:${Math.round((Number(token.marketCap)||0)*100)/100}`).sort().join(',');
     const readRecentLogCalls = async (calls, stats) => {
       try { return (await rpcBatch(calls)).flat(); }
       catch(error) {
