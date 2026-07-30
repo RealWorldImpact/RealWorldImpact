@@ -37,6 +37,7 @@
     .stat { display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:8px 0; border-bottom:1px solid var(--line); }
     .label { color:var(--muted); font-size:8px; text-transform:uppercase; letter-spacing:.08em; }.value { font:18px/1 Impact, sans-serif; letter-spacing:.02em; text-align:right; }
     .toolbar { padding:23px 0 15px; display:flex; gap:14px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+    .view-tabs{display:flex;gap:5px;padding:14px 0 0;border-bottom:1px solid var(--line)}.view-tab{border:1px solid transparent;border-bottom:0;border-radius:6px 6px 0 0;background:transparent;color:var(--muted);padding:9px 12px}.view-tab:hover{background:rgba(213,255,63,.08);color:var(--acid)}.view-tab[aria-selected="true"]{border-color:var(--line);background:rgba(255,255,255,.02);color:var(--acid)}.view-panel[hidden]{display:none}.recent-note{color:var(--muted);font-size:11px;line-height:1.45;padding:15px 0 10px}.burn-tx{color:var(--acid);font-weight:700;text-decoration:none}.burn-tx:hover{text-decoration:underline}
     .controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
     .refresh-icon { width:34px; height:34px; padding:0; display:grid; place-items:center; border-color:var(--line); background:transparent; color:var(--acid); font-size:19px; line-height:1; }
     .refresh-icon:hover { border-color:var(--acid); background:var(--acid); color:#15170f; }
@@ -58,6 +59,7 @@
       .rwi-brand{gap:7px;font-size:9px;letter-spacing:.06em;white-space:nowrap}.rwi-logo{width:30px;height:30px;flex-basis:30px}
       .hero{grid-template-columns:1fr;padding:38px 0 28px;gap:24px}.hero h1{font-size:30px;line-height:.9}.intro{font-size:9px;margin:13px 0 0;max-width:100%}.stats{grid-template-columns:1fr}.stat{padding:8px 0}.value{font-size:18px}
       .toolbar{align-items:stretch;padding:18px 0 12px;gap:12px}.status{width:100%;font-size:10px;line-height:1.35}.controls{width:100%;display:grid;grid-template-columns:1fr auto;gap:8px}.controls input{grid-column:1 / -1;width:100%}.controls .refresh-icon{grid-column:2;width:34px;justify-self:end}.add-token{padding:13px}.add-token input,.add-token button{width:100%}
+      .view-tabs{padding-top:9px}.view-tab{font-size:9px;padding:8px 10px}.recent-note{font-size:10px;padding:11px 0 7px}
       .table-wrap{border:0;background:transparent;overflow:visible}.table{min-width:0;display:block}.table thead{display:none}.table tbody{display:grid;gap:5px}.table tr{position:relative;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);background:rgba(255,255,255,.015);padding:1px 9px}.table td{display:flex;align-items:center;justify-content:space-between;gap:7px;border:0;padding:5px 0;font-size:10px;text-align:right!important}.table td::before{content:attr(data-label);color:var(--muted);font-size:7px;letter-spacing:.07em;text-transform:uppercase;text-align:left}.table td[data-label="Project"]{grid-column:1 / -1;justify-content:flex-start;padding:6px 0 7px;border-bottom:1px solid var(--line);text-align:left!important}.table td[data-label="Project"]::before{display:none}.table td[data-label="Rank"]{position:absolute;right:10px;top:5px;padding:0;color:var(--acid)}.table td[data-label="Rank"]::before{display:none}.table td[data-label="Token"]{grid-column:1 / -1;border-top:1px solid var(--line);padding-top:5px}.token{gap:7px}.mark{width:21px;height:21px;flex-basis:21px}.sym{font-size:9px;margin-top:1px}.burn{font-size:11px}.bar{width:46px}.address{font-size:9px}
       footer{margin-top:18px;font-size:10px}
     }
@@ -69,8 +71,9 @@
     <nav><a class="rwi-brand" href="https://www.rwihood.org" target="_blank" rel="noreferrer"><span class="rwi-logo"><img src="rwi-badge.png" alt="RWI logo"></span><span>Real World Impact</span></a><div class="nav-actions"><span class="chain">Robinhood Chain / 4663</span><a class="buy-rwi" href="https://www.ponsfamily.com/launchpad/0x2286397228be256529be1ae9ed8d7d16549e9c6a" target="_blank" rel="noreferrer">Buy $RWI on Pons</a></div></nav>
     <section class="hero"><div class="hero-copy"><h1>Pons Family <span>Burn List.</span></h1><p class="intro">Pons tokens with a verified on-chain burn, ranked by tokens permanently removed from circulation. Pools are scanned in GeckoTerminal volume order for fast discovery; tokens without a GeckoTerminal logo are not shown.</p></div><div class="hero-side"><section class="stats"><div class="stat"><span class="label">Tokens indexed</span><span class="value" id="projects">—</span></div><div class="stat"><span class="label">Updated</span><span class="value" id="updated">—</span></div></section></div></section>
     <section class="toolbar"><div class="status" id="status">Loading the Pons Family Burn List…</div><div class="controls"><button id="refresh" class="refresh-icon" type="button" title="Refresh list" aria-label="Refresh list">↻</button></div></section>
-    <section class="add-token"><p>Missing a token? Paste its contract address. Only tokens launched through the official pons factories can be added.</p><input id="token-address" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x… token address"><button id="add-token">Add pons token</button><div class="add-status" id="add-status"></div></section>
-    <div class="table-wrap"><table class="table"><thead><tr><th>#</th><th>Project</th><th class="num">Market cap / FDV</th><th class="num">24h volume</th><th class="num">Burned supply</th><th class="num">% of supply</th><th class="num">Token</th></tr></thead><tbody id="rows"><tr><td class="empty" colspan="7">Building the live list…<span class="skeleton"></span></td></tr></tbody></table></div>
+    <div class="view-tabs" role="tablist" aria-label="Burn List views"><button class="view-tab" id="ranked-tab" type="button" role="tab" aria-selected="true" aria-controls="ranked-panel">Ranked burns</button><button class="view-tab" id="recent-tab" type="button" role="tab" aria-selected="false" aria-controls="recent-panel">Recent burns</button></div>
+    <section class="view-panel" id="ranked-panel" role="tabpanel" aria-labelledby="ranked-tab"><section class="add-token"><p>Missing a token? Paste its contract address. Only tokens launched through the official pons factories can be added.</p><input id="token-address" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x… token address"><button id="add-token">Add pons token</button><div class="add-status" id="add-status"></div></section><div class="table-wrap"><table class="table"><thead><tr><th>#</th><th>Project</th><th class="num">Market cap / FDV</th><th class="num">24h volume</th><th class="num">Burned supply</th><th class="num">% of supply</th><th class="num">Token</th></tr></thead><tbody id="rows"><tr><td class="empty" colspan="7">Building the live list…<span class="skeleton"></span></td></tr></tbody></table></div></section>
+    <section class="view-panel" id="recent-panel" role="tabpanel" aria-labelledby="recent-tab" hidden><p class="recent-note">Newest verified transfers to the canonical zero or dead address. The latest indexed Pons tokens are checked in volume order when this tab is opened.</p><div class="table-wrap"><table class="table"><thead><tr><th>Project</th><th class="num">Burned amount</th><th class="num">Block</th><th class="num">Transaction</th></tr></thead><tbody id="recent-rows"><tr><td class="empty" colspan="4">Open this tab to load the newest burns.</td></tr></tbody></table></div></section>
     <footer>Market data and volume come from GeckoTerminal’s Pons Family pool index. Burned supply is read on-chain from the canonical zero and dead addresses. This is an activity dashboard, not financial advice.</footer>
   </main>
   <script>
@@ -97,14 +100,22 @@
     ];
     const LAUNCH_TOPIC = '0xdb51ea9ad51ab453a65a4cb7e60c3cb378c9501bb002609f8f97778fb6c4235a';
     const SWAP_TOPIC = '0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67';
+    const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
     const ZERO = '0x0000000000000000000000000000000000000000';
     const DEAD = '0x000000000000000000000000000000000000dead';
-const CACHE = 'pons-burn-list-v18';
-const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
+    const CACHE = 'pons-burn-list-v18';
+    const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
+    const RECENT_BURN_CACHE = 'pons-recent-burns-v1';
     const USER_TOKENS_CACHE = 'pons-burn-list-user-tokens-v1';
     const SCAN_LOCK = 'pons-burn-list-scan-lock-v1';
     const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
     const MARKET_INDEX_TTL = 5 * 60 * 1000;
+    const RECENT_BURN_TTL = 2 * 60 * 1000;
+    const RECENT_BURN_BLOCKS = 300000;
+    const RECENT_BURN_TOKEN_CAP = 80;
+    // GeckoTerminal does not consistently expose a last-page link. This cap
+    // turns an upstream page limit into a safe partial pass, not an endless scan.
+    const MAX_GECKO_PAGES = 99;
     const DISCOVERY_BLOCKS = 300000;
     const $ = id => document.getElementById(id);
     const geckoDexUrl = page => LIVE_RWI ? `/api/gecko?kind=dex&page=${page}` : GECKO_API+page;
@@ -225,7 +236,7 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
       } catch {}
       return details;
     }
-    async function geckoMarkets(onBatch, maxPages=Infinity) {
+    async function geckoMarkets(onBatch, maxPages=MAX_GECKO_PAGES) {
       const markets=new Map();
       let complete=true;
       const emit = async batch => { if(batch.length && onBatch) await onBatch(batch); };
@@ -306,6 +317,75 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
       $('rows').innerHTML = visible.length ? visible.map((t,i) => `<tr><td class="rank ${i<3?'top-rank':''}" data-label="Rank">${String(i+1).padStart(2,'0')}</td><td data-label="Project"><a class="token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${encodeURIComponent(t.address)}"><div class="token"><span class="mark">${escapeHtml(t.symbol.slice(0,2).toUpperCase())}${t.image ? `<img src="${escapeHtml(t.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(t.name)}<span class="verified" title="Verified GeckoTerminal logo">Verified</span></div><div class="sym">$${escapeHtml(t.symbol)} · View on pons</div></div></div></a></td><td class="num" data-label="Market cap / FDV">${t.marketCap ? `$${fmt(t.marketCap)}` : '—'}</td><td class="num" data-label="24h volume">${t.volume24h ? `$${fmt(t.volume24h)}` : '—'}</td><td class="num" data-label="Burned supply"><span class="burn">${fmt(t.burned)}</span><span class="bar"><i style="width:${(t.burned/max)*100}%"></i></span></td><td class="num" data-label="Burn rate">${t.supply ? (t.burned/t.supply*100).toFixed(4) : '0.0000'}%</td><td class="num" data-label="Token"><span class="address"><button class="copy-address" type="button" data-address="${escapeHtml(t.address)}" data-label="${escapeHtml(short(t.address))}" title="Copy contract address">${escapeHtml(short(t.address))}</button></span></td></tr>`).join('') : '<tr><td class="empty" colspan="7">No discovered Pons tokens currently have a positive burn balance.</td></tr>';
     };
     const escapeHtml = s => String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    let recentBurnsLoaded=false;
+    let recentBurnRun=0;
+    let pendingRecentBurns=false;
+    const burnTopicAddress = address => '0x'+address.slice(2).padStart(64,'0');
+    const fmtBurnAmount = amount => amount >= 1 ? fmt(amount) : amount > 0 ? amount.toLocaleString('en-US',{maximumSignificantDigits:4}) : '0';
+    const renderRecentBurns = events => {
+      const body=$('recent-rows');
+      if(!body) return;
+      body.innerHTML=events.length ? events.map(event=>`<tr><td data-label="Project"><div class="token"><span class="mark">${escapeHtml(event.symbol.slice(0,2).toUpperCase())}${event.image ? `<img src="${escapeHtml(event.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(event.name)}</div><div class="sym">$${escapeHtml(event.symbol)}</div></div></div></td><td class="num burn" data-label="Burned amount">${fmtBurnAmount(event.amount)}</td><td class="num" data-label="Block">#${event.block.toLocaleString('en-US')}</td><td class="num" data-label="Transaction"><a class="burn-tx" target="_blank" rel="noreferrer" href="https://robinhoodchain.blockscout.com/tx/${escapeHtml(event.hash)}">${escapeHtml(short(event.hash))} &#8599;</a></td></tr>`).join('') : '<tr><td class="empty" colspan="4">No verified burns were found in the recent chain window.</td></tr>';
+    };
+    async function loadRecentBurns(force=false) {
+      const body=$('recent-rows');
+      if(!body || (!force && recentBurnsLoaded)) return;
+      const run=++recentBurnRun;
+      if(!force) try {
+        const saved=JSON.parse(localStorage.getItem(RECENT_BURN_CACHE));
+        if(saved?.events && Date.now()-saved.timestamp<RECENT_BURN_TTL) { renderRecentBurns(saved.events); recentBurnsLoaded=true; return; }
+      } catch {}
+      if(!allTokens.length) {
+        pendingRecentBurns=true;
+        body.innerHTML='<tr><td class="empty" colspan="4">Waiting for the Pons token list, then recent burns will load automatically&hellip;</td></tr>';
+        return;
+      }
+      body.innerHTML='<tr><td class="empty" colspan="4">Loading the newest verified burns&hellip;</td></tr>';
+      try {
+        const latest=parseInt(await rpc('eth_blockNumber',[]),16);
+        const from=Math.max(0,latest-RECENT_BURN_BLOCKS);
+        const priority=[...allTokens].sort((a,b)=>(b.volume24h||0)-(a.volume24h||0)).slice(0,RECENT_BURN_TOKEN_CAP);
+        const byAddress=new Map(priority.map(token=>[token.address.toLowerCase(),token]));
+        const calls=[];
+        for(const token of priority) for(const destination of [ZERO,DEAD]) calls.push({method:'eth_getLogs',params:[{address:token.address,fromBlock:'0x'+from.toString(16),toBlock:'0x'+latest.toString(16),topics:[TRANSFER_TOPIC,null,burnTopicAddress(destination)]}]});
+        const logs=[];
+        for(let i=0;i<calls.length;i+=40) {
+          const batch=await rpcBatch(calls.slice(i,i+40));
+          logs.push(...batch.flat());
+          if(run!==recentBurnRun) return;
+        }
+        const seen=new Set();
+        const events=logs.map(log=>{
+          const token=byAddress.get(log.address?.toLowerCase());
+          const amount=Number(BigInt(log.data||'0x0'))/1e18;
+          if(!token || !Number.isFinite(amount) || amount<=0) return null;
+          const key=`${log.transactionHash}:${log.logIndex}:${log.address}`;
+          if(seen.has(key)) return null;
+          seen.add(key);
+          return {name:token.name,symbol:token.symbol,image:token.image||'',amount,block:parseInt(log.blockNumber,16),index:parseInt(log.logIndex,16),hash:log.transactionHash};
+        }).filter(Boolean).sort((a,b)=>b.block-a.block || b.index-a.index).slice(0,30);
+        if(run!==recentBurnRun) return;
+        renderRecentBurns(events);
+        recentBurnsLoaded=true;
+        localStorage.setItem(RECENT_BURN_CACHE,JSON.stringify({events,timestamp:Date.now()}));
+      } catch(error) {
+        if(run===recentBurnRun) body.innerHTML='<tr><td class="empty" colspan="4">Recent burns could not be loaded right now. Please try again shortly.</td></tr>';
+      }
+    }
+    function selectView(view) {
+      const recent=view==='recent';
+      $('ranked-panel').hidden=recent;
+      $('recent-panel').hidden=!recent;
+      $('ranked-tab').setAttribute('aria-selected',String(!recent));
+      $('recent-tab').setAttribute('aria-selected',String(recent));
+      if(recent) loadRecentBurns();
+    }
+    function startPendingRecentBurns() {
+      if((pendingRecentBurns || $('recent-tab').getAttribute('aria-selected')==='true') && allTokens.length) {
+        pendingRecentBurns=false;
+        loadRecentBurns(true);
+      }
+    }
     async function launches() {
       const latest = parseInt(await rpc('eth_blockNumber',[]),16);
       const tokens = new Map(); const chunk = 25000; const jobs=[];
@@ -428,16 +508,21 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
           allTokens=results; lastCompleteTokens=results; lastUpdated=stamp;
           localStorage.setItem(CACHE,JSON.stringify({tokens:results,timestamp:stamp,complete:true}));
           render(allTokens,stamp);
+          startPendingRecentBurns();
           setStatus(`<strong>Live.</strong> ${results.length} discovered Pons tokens with positive burned supply, ranked by burned supply.`);
-        } else if(lastCompleteTokens.length) {
+        } else {
+          // Never let a later GeckoTerminal rate-limit or a dropped page make
+          // an already verified token vanish from the visible list.
           const retained=new Map(lastCompleteTokens.map(token=>[token.address,token]));
+          try { (JSON.parse(localStorage.getItem(CACHE))?.tokens||[]).forEach(token=>retained.set(token.address,token)); } catch {}
           results.forEach(token=>retained.set(token.address,token));
           allTokens=[...retained.values()];
-          render(allTokens,lastUpdated);
-          setStatus(`<strong>Cached full list retained.</strong> Verified additions from the partial scan were included; no coins were removed.`);
-        } else {
-          allTokens=results; lastUpdated=stamp; render(allTokens,stamp);
-          setStatus(`<strong>Partial live list.</strong> Refresh again for a complete market scan.`);
+          lastCompleteTokens=allTokens;
+          lastUpdated=stamp;
+          localStorage.setItem(CACHE,JSON.stringify({tokens:allTokens,timestamp:stamp,complete:false}));
+          render(allTokens,stamp);
+          startPendingRecentBurns();
+          setStatus(`<strong>Latest verified list retained.</strong> ${results.length} pools were checked this pass; no previously indexed token was removed.`);
         }
       } catch(err) { console.error(err); setStatus(`Could not complete the scan: ${escapeHtml(err.message)}. Check your connection and try again.`,true); }
       finally {
@@ -445,7 +530,13 @@ const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
         try { const lock=JSON.parse(localStorage.getItem(SCAN_LOCK)); if(lock?.id===TAB_ID) localStorage.removeItem(SCAN_LOCK); } catch {}
       }
     }
-    $('refresh').addEventListener('click',refresh);
+    $('ranked-tab').addEventListener('click',()=>selectView('ranked'));
+    $('recent-tab').addEventListener('click',()=>selectView('recent'));
+    $('refresh').addEventListener('click',async()=>{
+      recentBurnsLoaded=false;
+      localStorage.removeItem(RECENT_BURN_CACHE);
+      await refresh();
+    });
     $('add-token').addEventListener('click',async()=>{
       const input=$('token-address');
       const status=$('add-status');
