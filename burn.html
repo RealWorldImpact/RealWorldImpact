@@ -188,9 +188,20 @@
         {method:'eth_call',params:[{to:market.address,data:'0x70a08231'+padAddress(ZERO)},'latest']},
         {method:'eth_call',params:[{to:market.address,data:'0x70a08231'+padAddress(DEAD)},'latest']}
       );
-      const values=await rpcBatch(calls);
-      const asNum = value => Number(BigInt(value) / 1000000000000n) / 1e6;
-      return markets.map((market,index)=>({...market,supply:1000000000,burned:asNum(values[index*2])+asNum(values[index*2+1])}));
+      try {
+        const values=await rpcBatch(calls);
+        const asNum = value => Number(BigInt(value) / 1000000000000n) / 1e6;
+        return markets.map((market,index)=>({...market,supply:1000000000,burned:asNum(values[index*2])+asNum(values[index*2+1])}));
+      } catch(error) {
+        // A single oversized or transiently rejected RPC batch must not make
+        // the whole visible list disappear. Retry smaller independent halves.
+        if(markets.length<2) throw error;
+        const middle=Math.ceil(markets.length/2);
+        const parts=await Promise.allSettled([readBurnBatch(markets.slice(0,middle)),readBurnBatch(markets.slice(middle))]);
+        const recovered=parts.flatMap(part=>part.status==='fulfilled' ? part.value : []);
+        if(!recovered.length) throw error;
+        return recovered;
+      }
     };
     const userTokens = () => { try { return JSON.parse(localStorage.getItem(USER_TOKENS_CACHE)) || []; } catch { return []; } };
     const saveUserTokens = tokens => localStorage.setItem(USER_TOKENS_CACHE,JSON.stringify(tokens));
@@ -346,9 +357,10 @@
       const body=$('recent-rows');
       if(!body || (!force && recentBurnsLoaded)) return;
       const run=++recentBurnRun;
-      if(!force) try {
-        const saved=JSON.parse(localStorage.getItem(RECENT_BURN_CACHE));
-        if(saved?.events && Date.now()-saved.timestamp<RECENT_BURN_TTL) { renderRecentBurns(saved.events); recentBurnsLoaded=true; return; }
+      let savedRecent;
+      try {
+        savedRecent=JSON.parse(localStorage.getItem(RECENT_BURN_CACHE));
+        if(!force && savedRecent?.events && Date.now()-savedRecent.timestamp<RECENT_BURN_TTL) { renderRecentBurns(savedRecent.events); recentBurnsLoaded=true; return; }
       } catch {}
       body.innerHTML='<tr><td class="empty" colspan="4">Loading the newest verified burns&hellip;</td></tr>';
       try {
@@ -378,9 +390,13 @@
         if(run!==recentBurnRun) return;
         renderRecentBurns(events);
         recentBurnsLoaded=true;
-        localStorage.setItem(RECENT_BURN_CACHE,JSON.stringify({events,timestamp:Date.now()}));
+        try { localStorage.setItem(RECENT_BURN_CACHE,JSON.stringify({events,timestamp:Date.now()})); } catch {}
       } catch(error) {
-        if(run===recentBurnRun) body.innerHTML='<tr><td class="empty" colspan="4">Recent burns could not be loaded right now. Please try again shortly.</td></tr>';
+        if(run===recentBurnRun && savedRecent?.events?.length) {
+          renderRecentBurns(savedRecent.events);
+        } else if(run===recentBurnRun) {
+          body.innerHTML='<tr><td class="empty" colspan="4">Recent burns could not be loaded right now. Please try again shortly.</td></tr>';
+        }
       }
     }
     function selectView(view) {
