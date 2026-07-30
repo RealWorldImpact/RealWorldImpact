@@ -73,7 +73,7 @@
     <section class="hero"><div class="hero-copy"><h1>Pons Family <span>Burn List.</span></h1><p class="intro">Pons tokens with a verified on-chain burn, ranked by tokens permanently removed from circulation. Pools are scanned in GeckoTerminal volume order for fast discovery; tokens without a GeckoTerminal logo are not shown.</p></div><div class="hero-side"><section class="stats"><div class="stat"><span class="label">Tokens indexed</span><span class="value" id="projects">—</span></div><div class="stat"><span class="label">Updated</span><span class="value" id="updated">—</span></div></section></div></section>
     <section class="toolbar"><div class="status" id="status">Loading the Pons Family Burn List…</div><div class="controls"><button id="refresh" class="refresh-icon" type="button" title="Refresh list" aria-label="Refresh list">↻</button></div></section>
     <div class="view-tabs" role="tablist" aria-label="Burn List views"><button class="view-tab" id="ranked-tab" type="button" role="tab" aria-selected="true" aria-controls="ranked-panel">Ranked burns</button><button class="view-tab" id="recent-tab" type="button" role="tab" aria-selected="false" aria-controls="recent-panel">Recent burns</button></div>
-    <section class="view-panel" id="ranked-panel" role="tabpanel" aria-labelledby="ranked-tab"><section class="add-token" id="add-token-panel" hidden><p>Missing a token? Paste its contract address. Only tokens launched through the official pons factories can be added.</p><input id="token-address" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x… token address"><button id="add-token">Add pons token</button><div class="add-status" id="add-status"></div></section><div class="table-wrap"><table class="table"><thead><tr><th>#</th><th>Project</th><th class="num">Market cap / FDV</th><th class="num">24h volume</th><th class="num">Burned supply</th><th class="num">% of supply</th><th class="num">Token</th></tr></thead><tbody id="rows"><tr><td class="empty" colspan="7">Building the live list…<span class="skeleton"></span></td></tr></tbody></table></div></section>
+    <section class="view-panel" id="ranked-panel" role="tabpanel" aria-labelledby="ranked-tab"><section class="add-token" id="add-token-panel" hidden><p>Missing a token? Paste its contract address. Only tokens launched through the official pons factories can be added.</p><input id="token-address" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x… token address"><button id="add-token">Submit token</button><div class="add-status" id="add-status"></div></section><div class="table-wrap"><table class="table"><thead><tr><th>#</th><th>Project</th><th class="num">Market cap / FDV</th><th class="num">24h volume</th><th class="num">Burned supply</th><th class="num">% of supply</th><th class="num">Token</th></tr></thead><tbody id="rows"><tr><td class="empty" colspan="7">Building the live list…<span class="skeleton"></span></td></tr></tbody></table></div></section>
     <section class="view-panel" id="recent-panel" role="tabpanel" aria-labelledby="recent-tab" hidden><p class="recent-note">Newest verified transfers to the canonical zero or dead address. This begins immediately from verified Pons tokens, then expands with the active scanner catalog.</p><div class="table-wrap"><table class="table"><thead><tr><th>Project</th><th class="num">Burned amount</th><th class="num">Block</th><th class="num">Transaction</th></tr></thead><tbody id="recent-rows"><tr><td class="empty" colspan="4">Open this tab to load the newest burns.</td></tr></tbody></table></div></section>
     <footer>Market data and volume come from GeckoTerminal’s Pons Family pool index. Burned supply is read on-chain from the canonical zero and dead addresses. This is an activity dashboard, not financial advice.</footer>
   </main>
@@ -113,7 +113,7 @@
     const MARKET_INDEX_TTL = 20 * 60 * 1000;
     const GECKO_PAGE_DELAY = 900;
     const RECENT_BURN_TTL = 2 * 60 * 1000;
-    const RECENT_BURN_BLOCKS = 300000;
+    const RECENT_BURN_BLOCKS = 75000;
     const RECENT_BURN_TOKEN_CAP = 80;
     // GeckoTerminal does not consistently expose a last-page link. This cap
     // turns an upstream page limit into a safe partial pass, not an endless scan.
@@ -336,6 +336,8 @@
     const escapeHtml = s => String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     let recentBurnsLoaded=false;
     let recentBurnRun=0;
+    let recentFailures=0;
+    let recentRetryTimer;
     let pendingRecentBurns=false;
     const burnTopicAddress = address => '0x'+address.slice(2).padStart(64,'0');
     const fmtBurnAmount = amount => amount >= 1 ? fmt(amount) : amount > 0 ? amount.toLocaleString('en-US',{maximumSignificantDigits:4}) : '0';
@@ -347,6 +349,15 @@
       try { (JSON.parse(localStorage.getItem(CACHE))?.tokens||[]).forEach(add); } catch {}
       allTokens.forEach(add);
       return [...candidates.values()];
+    };
+    const readRecentLogCalls = async calls => {
+      try { return (await rpcBatch(calls)).flat(); }
+      catch(error) {
+        if(calls.length<2) return [];
+        const middle=Math.ceil(calls.length/2);
+        const parts=await Promise.all([readRecentLogCalls(calls.slice(0,middle)),readRecentLogCalls(calls.slice(middle))]);
+        return parts.flat();
+      }
     };
     const renderRecentBurns = events => {
       const body=$('recent-rows');
@@ -373,8 +384,7 @@
         for(const token of priority) for(const destination of [ZERO,DEAD]) calls.push({method:'eth_getLogs',params:[{address:token.address,fromBlock:'0x'+from.toString(16),toBlock:'0x'+latest.toString(16),topics:[TRANSFER_TOPIC,null,burnTopicAddress(destination)]}]});
         const logs=[];
         for(let i=0;i<calls.length;i+=40) {
-          const batch=await rpcBatch(calls.slice(i,i+40));
-          logs.push(...batch.flat());
+          logs.push(...await readRecentLogCalls(calls.slice(i,i+40)));
           if(run!==recentBurnRun) return;
         }
         const seen=new Set();
@@ -390,12 +400,18 @@
         if(run!==recentBurnRun) return;
         renderRecentBurns(events);
         recentBurnsLoaded=true;
+        recentFailures=0;
         try { localStorage.setItem(RECENT_BURN_CACHE,JSON.stringify({events,timestamp:Date.now()})); } catch {}
       } catch(error) {
         if(run===recentBurnRun && savedRecent?.events?.length) {
           renderRecentBurns(savedRecent.events);
         } else if(run===recentBurnRun) {
-          body.innerHTML='<tr><td class="empty" colspan="4">Recent burns could not be loaded right now. Please try again shortly.</td></tr>';
+          recentFailures++;
+          if(recentFailures<=2) {
+            body.innerHTML='<tr><td class="empty" colspan="4">Reconnecting to verify the newest burns&hellip;</td></tr>';
+            clearTimeout(recentRetryTimer);
+            recentRetryTimer=setTimeout(()=>loadRecentBurns(true),1200*recentFailures);
+          } else body.innerHTML='<tr><td class="empty" colspan="4">Recent verified burns will appear when the chain connection is available.</td></tr>';
         }
       }
     }
@@ -561,6 +577,7 @@
     $('recent-tab').addEventListener('click',()=>selectView('recent'));
     $('refresh').addEventListener('click',async()=>{
       recentBurnsLoaded=false;
+      recentFailures=0;
       localStorage.removeItem(RECENT_BURN_CACHE);
       await refresh();
     });
