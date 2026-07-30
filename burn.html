@@ -334,6 +334,8 @@
     let lastCompleteTokens=[];
     let activeRefresh=0;
     let lastUpdated=0;
+    let progressiveRenderTimer;
+    let progressiveRenderTokens=[];
     const render = (tokens, timestamp) => {
       const visible=[...tokens];
       visible.sort((a,b)=>b.burned-a.burned || a.name.localeCompare(b.name));
@@ -341,6 +343,18 @@
       $('updated').textContent = timestamp ? new Date(timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '—';
       const max = Math.max(...visible.map(t=>t.burned),1);
       $('rows').innerHTML = visible.length ? visible.map((t,i) => { const burnedUsd=t.marketCap&&t.supply ? t.burned*t.marketCap/t.supply : 0; return `<tr><td class="rank ${i<3?'top-rank':''}" data-label="Rank">${String(i+1).padStart(2,'0')}</td><td data-label="Project"><a class="token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${encodeURIComponent(t.address)}"><div class="token"><span class="mark">${escapeHtml(t.symbol.slice(0,2).toUpperCase())}${t.image ? `<img src="${escapeHtml(t.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(t.name)}<span class="verified" title="Verified GeckoTerminal logo">Verified</span></div><div class="sym">$${escapeHtml(t.symbol)} · View on pons</div></div></div></a></td><td class="num" data-label="Market cap / FDV">${t.marketCap ? `$${fmt(t.marketCap)}` : '—'}</td><td class="num" data-label="24h volume">${t.volume24h ? `$${fmt(t.volume24h)}` : '—'}</td><td class="num" data-label="Burned supply"><span class="burn">${fmt(t.burned)}</span>${burnedUsd ? `<span class="usd" title="Estimated from current market cap / FDV">(${fmtUsd(burnedUsd)})</span>` : ''}<span class="bar"><i style="width:${(t.burned/max)*100}%"></i></span></td><td class="num" data-label="Burn rate">${t.supply ? (t.burned/t.supply*100).toFixed(4) : '0.0000'}%</td><td class="num" data-label="Token"><span class="address"><button class="copy-address" type="button" data-address="${escapeHtml(t.address)}" data-label="${escapeHtml(short(t.address))}" title="Copy contract address">${escapeHtml(short(t.address))}</button></span></td></tr>`; }).join('') : '<tr><td class="empty" colspan="7">No discovered Pons tokens currently have a positive burn balance.</td></tr>';
+    };
+    const scheduleProgressiveRender = tokens => {
+      progressiveRenderTokens=tokens;
+      if(progressiveRenderTimer) return;
+      progressiveRenderTimer=setTimeout(()=>{
+        progressiveRenderTimer=undefined;
+        render(progressiveRenderTokens,Date.now());
+      },180);
+    };
+    const cancelProgressiveRender = () => {
+      if(progressiveRenderTimer) clearTimeout(progressiveRenderTimer);
+      progressiveRenderTimer=undefined;
     };
     const escapeHtml = s => String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     let recentBurnsLoaded=false;
@@ -380,7 +394,7 @@
       const body=$('recent-rows');
       if(!body || (!force && recentBurnsLoaded)) return;
       const run=++recentBurnRun;
-      const priority=recentCandidates().sort((a,b)=>(b.volume24h||0)-(a.volume24h||0));
+      const priority=recentCandidates();
       const catalogKey=recentCatalogKey(priority);
       let savedRecent;
       try {
@@ -532,7 +546,7 @@
             const burned=await readBurnBatch(markets).catch(()=>[]);
             burned.forEach(token=>burnByAddress.set(token.address,token));
             results=[...burnByAddress.values()].filter(token=>token.burned>0 && token.image);
-            if(results.length) render(results,Date.now());
+            if(results.length) scheduleProgressiveRender(results);
           };
           const savedUserTokens=userTokens();
           if(savedUserTokens.length) await ingest(await Promise.all(savedUserTokens.map(token=>readUserToken(token).catch(()=>null))).then(tokens=>tokens.filter(Boolean)));
@@ -587,6 +601,7 @@
         if(complete) {
           allTokens=results; lastCompleteTokens=results; lastUpdated=stamp;
           localStorage.setItem(CACHE,JSON.stringify({tokens:results,timestamp:stamp,complete:true}));
+          cancelProgressiveRender();
           render(allTokens,stamp);
           startPendingRecentBurns();
           setStatus(`<strong>Live.</strong> ${results.length} discovered Pons tokens with positive burned supply, ranked by burned supply.`);
@@ -600,6 +615,7 @@
           lastCompleteTokens=allTokens;
           lastUpdated=stamp;
           localStorage.setItem(CACHE,JSON.stringify({tokens:allTokens,timestamp:stamp,complete:false}));
+          cancelProgressiveRender();
           render(allTokens,stamp);
           startPendingRecentBurns();
           setStatus(`<strong>Latest verified list retained.</strong> ${results.length} pools were checked this pass; no previously indexed token was removed.`);
