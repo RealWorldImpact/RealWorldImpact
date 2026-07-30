@@ -21,8 +21,8 @@
     nav a { color:var(--ink); text-decoration:none; } .dot { color:var(--acid); font-size:18px; line-height:0; }
     .nav-actions { display:flex; align-items:center; gap:14px; }
     .chain { color:var(--muted); }
-    nav .buy-rwi { display:inline-flex; align-items:center; min-height:30px; padding:8px 10px; border:1px solid var(--acid); border-radius:6px; background:var(--acid); color:#15170f; font-size:10px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
-    nav .buy-rwi:hover { background:#ecff9d; color:#15170f; }
+    nav .buy-rwi, nav .add-token-nav { display:inline-flex; align-items:center; min-height:30px; padding:8px 10px; border:1px solid var(--acid); border-radius:6px; background:var(--acid); color:#15170f; font-size:10px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
+    nav .buy-rwi:hover, nav .add-token-nav:hover { background:#ecff9d; color:#15170f; }
     .rwi-brand { display:flex; align-items:center; gap:10px; color:var(--ink); font-size:11px; font-weight:800; letter-spacing:.1em; }
     .rwi-brand:hover { color:var(--acid); }
     .rwi-logo { display:block; width:36px; height:36px; overflow:hidden; flex:0 0 36px; border-radius:6px; background:#c9ff00; }
@@ -55,7 +55,7 @@
     footer { color:var(--muted); font-size:11px; line-height:1.6; margin-top:22px; max-width:760px; } footer a{color:var(--acid);}
     @media(max-width:680px){
       main{width:min(100% - 24px,1180px);padding-top:16px}
-      nav{align-items:flex-start;gap:12px;padding-bottom:16px}.nav-actions{gap:8px;align-items:flex-end;flex-direction:column}.chain{font-size:8px;line-height:1.2;text-align:right}.buy-rwi{font-size:8px!important;min-height:26px!important;padding:7px 8px!important}
+      nav{align-items:flex-start;gap:12px;padding-bottom:16px}.nav-actions{gap:8px;align-items:flex-end;flex-direction:column}.chain{font-size:8px;line-height:1.2;text-align:right}.buy-rwi,.add-token-nav{font-size:8px!important;min-height:26px!important;padding:7px 8px!important}
       .rwi-brand{gap:7px;font-size:9px;letter-spacing:.06em;white-space:nowrap}.rwi-logo{width:30px;height:30px;flex-basis:30px}
       .hero{grid-template-columns:1fr;padding:38px 0 28px;gap:24px}.hero h1{font-size:30px;line-height:.9}.intro{font-size:9px;margin:13px 0 0;max-width:100%}.stats{grid-template-columns:1fr}.stat{padding:8px 0}.value{font-size:18px}
       .toolbar{align-items:stretch;padding:18px 0 12px;gap:12px}.status{width:100%;font-size:10px;line-height:1.35}.controls{width:100%;display:grid;grid-template-columns:1fr auto;gap:8px}.controls input{grid-column:1 / -1;width:100%}.controls .refresh-icon{grid-column:2;width:34px;justify-self:end}.add-token{padding:13px}.add-token input,.add-token button{width:100%}
@@ -69,12 +69,12 @@
 <body>
   <div class="grain"></div>
   <main>
-    <nav><a class="rwi-brand" href="https://www.rwihood.org" target="_blank" rel="noreferrer"><span class="rwi-logo"><img src="rwi-badge.png" alt="RWI logo"></span><span>Real World Impact</span></a><div class="nav-actions"><span class="chain">Robinhood Chain / 4663</span><a class="buy-rwi" href="https://www.ponsfamily.com/launchpad/0x2286397228be256529be1ae9ed8d7d16549e9c6a" target="_blank" rel="noreferrer">Buy $RWI on Pons</a></div></nav>
+    <nav><a class="rwi-brand" href="https://www.rwihood.org" target="_blank" rel="noreferrer"><span class="rwi-logo"><img src="rwi-badge.png" alt="RWI logo"></span><span>Real World Impact</span></a><div class="nav-actions"><span class="chain">Robinhood Chain / 4663</span><button id="show-add-token" class="add-token-nav" type="button" aria-controls="add-token-panel" aria-expanded="false">Add Pons token</button><a class="buy-rwi" href="https://www.ponsfamily.com/launchpad/0x2286397228be256529be1ae9ed8d7d16549e9c6a" target="_blank" rel="noreferrer">Buy $RWI on Pons</a></div></nav>
     <section class="hero"><div class="hero-copy"><h1>Pons Family <span>Burn List.</span></h1><p class="intro">Pons tokens with a verified on-chain burn, ranked by tokens permanently removed from circulation. Pools are scanned in GeckoTerminal volume order for fast discovery; tokens without a GeckoTerminal logo are not shown.</p></div><div class="hero-side"><section class="stats"><div class="stat"><span class="label">Tokens indexed</span><span class="value" id="projects">—</span></div><div class="stat"><span class="label">Updated</span><span class="value" id="updated">—</span></div></section></div></section>
     <section class="toolbar"><div class="status" id="status">Loading the Pons Family Burn List…</div><div class="controls"><button id="refresh" class="refresh-icon" type="button" title="Refresh list" aria-label="Refresh list">↻</button></div></section>
     <div class="view-tabs" role="tablist" aria-label="Burn List views"><button class="view-tab" id="ranked-tab" type="button" role="tab" aria-selected="true" aria-controls="ranked-panel">Ranked burns</button><button class="view-tab" id="recent-tab" type="button" role="tab" aria-selected="false" aria-controls="recent-panel">Recent burns</button></div>
-    <section class="view-panel" id="ranked-panel" role="tabpanel" aria-labelledby="ranked-tab"><section class="add-token"><p>Missing a token? Paste its contract address. Only tokens launched through the official pons factories can be added.</p><input id="token-address" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x… token address"><button id="add-token">Add pons token</button><div class="add-status" id="add-status"></div></section><div class="table-wrap"><table class="table"><thead><tr><th>#</th><th>Project</th><th class="num">Market cap / FDV</th><th class="num">24h volume</th><th class="num">Burned supply</th><th class="num">% of supply</th><th class="num">Token</th></tr></thead><tbody id="rows"><tr><td class="empty" colspan="7">Building the live list…<span class="skeleton"></span></td></tr></tbody></table></div></section>
-    <section class="view-panel" id="recent-panel" role="tabpanel" aria-labelledby="recent-tab" hidden><p class="recent-note">Newest verified transfers to the canonical zero or dead address. The latest indexed Pons tokens are checked in volume order when this tab is opened.</p><div class="table-wrap"><table class="table"><thead><tr><th>Project</th><th class="num">Burned amount</th><th class="num">Block</th><th class="num">Transaction</th></tr></thead><tbody id="recent-rows"><tr><td class="empty" colspan="4">Open this tab to load the newest burns.</td></tr></tbody></table></div></section>
+    <section class="view-panel" id="ranked-panel" role="tabpanel" aria-labelledby="ranked-tab"><section class="add-token" id="add-token-panel" hidden><p>Missing a token? Paste its contract address. Only tokens launched through the official pons factories can be added.</p><input id="token-address" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x… token address"><button id="add-token">Add pons token</button><div class="add-status" id="add-status"></div></section><div class="table-wrap"><table class="table"><thead><tr><th>#</th><th>Project</th><th class="num">Market cap / FDV</th><th class="num">24h volume</th><th class="num">Burned supply</th><th class="num">% of supply</th><th class="num">Token</th></tr></thead><tbody id="rows"><tr><td class="empty" colspan="7">Building the live list…<span class="skeleton"></span></td></tr></tbody></table></div></section>
+    <section class="view-panel" id="recent-panel" role="tabpanel" aria-labelledby="recent-tab" hidden><p class="recent-note">Newest verified transfers to the canonical zero or dead address. This begins immediately from verified Pons tokens, then expands with the active scanner catalog.</p><div class="table-wrap"><table class="table"><thead><tr><th>Project</th><th class="num">Burned amount</th><th class="num">Block</th><th class="num">Transaction</th></tr></thead><tbody id="recent-rows"><tr><td class="empty" colspan="4">Open this tab to load the newest burns.</td></tr></tbody></table></div></section>
     <footer>Market data and volume come from GeckoTerminal’s Pons Family pool index. Burned supply is read on-chain from the canonical zero and dead addresses. This is an activity dashboard, not financial advice.</footer>
   </main>
   <script>
@@ -328,6 +328,15 @@
     let pendingRecentBurns=false;
     const burnTopicAddress = address => '0x'+address.slice(2).padStart(64,'0');
     const fmtBurnAmount = amount => amount >= 1 ? fmt(amount) : amount > 0 ? amount.toLocaleString('en-US',{maximumSignificantDigits:4}) : '0';
+    const recentCandidates = () => {
+      const candidates=new Map();
+      const add=token => { if(token?.address) candidates.set(token.address.toLowerCase(),token); };
+      VERIFIED_POOL_SEEDS.forEach(add);
+      userTokens().forEach(add);
+      try { (JSON.parse(localStorage.getItem(CACHE))?.tokens||[]).forEach(add); } catch {}
+      allTokens.forEach(add);
+      return [...candidates.values()];
+    };
     const renderRecentBurns = events => {
       const body=$('recent-rows');
       if(!body) return;
@@ -341,16 +350,12 @@
         const saved=JSON.parse(localStorage.getItem(RECENT_BURN_CACHE));
         if(saved?.events && Date.now()-saved.timestamp<RECENT_BURN_TTL) { renderRecentBurns(saved.events); recentBurnsLoaded=true; return; }
       } catch {}
-      if(!allTokens.length) {
-        pendingRecentBurns=true;
-        body.innerHTML='<tr><td class="empty" colspan="4">Waiting for the Pons token list, then recent burns will load automatically&hellip;</td></tr>';
-        return;
-      }
       body.innerHTML='<tr><td class="empty" colspan="4">Loading the newest verified burns&hellip;</td></tr>';
       try {
         const latest=parseInt(await rpc('eth_blockNumber',[]),16);
         const from=Math.max(0,latest-RECENT_BURN_BLOCKS);
-        const priority=[...allTokens].sort((a,b)=>(b.volume24h||0)-(a.volume24h||0)).slice(0,RECENT_BURN_TOKEN_CAP);
+        const priority=recentCandidates().sort((a,b)=>(b.volume24h||0)-(a.volume24h||0)).slice(0,RECENT_BURN_TOKEN_CAP);
+        if(!priority.length) throw new Error('No verified Pons tokens are available yet.');
         const byAddress=new Map(priority.map(token=>[token.address.toLowerCase(),token]));
         const calls=[];
         for(const token of priority) for(const destination of [ZERO,DEAD]) calls.push({method:'eth_getLogs',params:[{address:token.address,fromBlock:'0x'+from.toString(16),toBlock:'0x'+latest.toString(16),topics:[TRANSFER_TOPIC,null,burnTopicAddress(destination)]}]});
@@ -542,6 +547,14 @@
       recentBurnsLoaded=false;
       localStorage.removeItem(RECENT_BURN_CACHE);
       await refresh();
+    });
+    $('show-add-token').addEventListener('click',()=>{
+      const panel=$('add-token-panel');
+      const opening=panel.hidden;
+      if(opening) selectView('ranked');
+      panel.hidden=!opening;
+      $('show-add-token').setAttribute('aria-expanded',String(opening));
+      if(opening) requestAnimationFrame(()=>$('token-address').focus());
     });
     $('add-token').addEventListener('click',async()=>{
       const input=$('token-address');
