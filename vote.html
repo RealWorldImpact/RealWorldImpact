@@ -131,7 +131,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'Something failed. Completed steps stand; re-open to finish the rest.',
     'vote.st.writeInConnect':'Connect a wallet first.',
     'vote.st.writeInNoPrice':'Cannot read the $RWI price right now, so the fee cannot be quoted.',
-    'vote.st.writeInNote':'Two separate transactions: a token transfer carries no message, so the nomination and the burn are signed individually. The directory is a verified subset of The Giving Block, not its full listing.',
+    'vote.st.writeInNote':'Two separate transactions: a token transfer carries no message, so the nomination and the burn are signed individually. The directory is refreshed from The Giving Block’s public listing.',
     'vote.st.wiShort':'This wallet holds {have} $RWI but this step needs {need}. Top up, then press Submit — completed steps are kept.',
     'vote.st.wiNoLog':'The transaction was mined but no $RWI actually moved — the token contract accepted the call without transferring. Inspect it on the explorer: {h}',
     'vote.st.wiRetry':'Step {n} hit a snag — retrying automatically…'
@@ -3000,10 +3000,40 @@ const TGB_DIRECTORY_ALL = [
   ['the-american-society-for-the-prevention-of-cruelty-to-animals','The American Society for the Prevention of Cruelty to Animals (ASPCA)','organization_logo%2F8dc93941-eaf6-421d-b4c3-cdae8df95ec9.jpg'],
   ['infinite-family','Infinite Family','organization_logo%2F43cdfd41-ef07-4ce8-bcd8-8dbab0d3886e.jpeg']
 ];
-const TGB_BY_SLUG = (function(){ const m = {}; TGB_DIRECTORY_ALL.forEach(function(r){ m[r[0]] = r[1]; }); return m; })();
-const TGB_LOGO = (function(){ const m = {}; TGB_DIRECTORY_ALL.forEach(function(r){ if(r[2]) m[r[0]] = r[2]; }); return m; })();
-const TGB_DIRECTORY = TGB_DIRECTORY_ALL.filter(function(r){ return !!r[2]; });
+let TGB_BY_SLUG = (function(){ const m = {}; TGB_DIRECTORY_ALL.forEach(function(r){ m[r[0]] = r[1]; }); return m; })();
+let TGB_LOGO = (function(){ const m = {}; TGB_DIRECTORY_ALL.forEach(function(r){ if(r[2]) m[r[0]] = r[2]; }); return m; })();
+let TGB_DIRECTORY = TGB_DIRECTORY_ALL.filter(function(r){ return !!r[2]; });
 const TGB_CDN = 'https://static.tgbwidget.com/';
+
+/* The local directory keeps write-ins available offline. On Vercel, it is
+   expanded from The Giving Block's own public directory, which avoids a
+   client-side cross-origin request and stays current as their directory grows. */
+function setTgbDirectory(rows){
+  const merged = new Map(TGB_DIRECTORY_ALL.map(function(row){ return [row[0], row]; }));
+  (Array.isArray(rows) ? rows : []).forEach(function(row){
+    if(!Array.isArray(row) || !row[0] || !row[1]) return;
+    const slug = String(row[0]).toLowerCase().trim();
+    const name = String(row[1]).trim();
+    const logo = row[2] ? String(row[2]).trim() : (merged.get(slug) || [])[2] || '';
+    if(slug && name) merged.set(slug, [slug, name, logo]);
+  });
+  const all = Array.from(merged.values()).sort(function(a,b){ return a[1].localeCompare(b[1]); });
+  TGB_BY_SLUG = {}; TGB_LOGO = {};
+  all.forEach(function(row){ TGB_BY_SLUG[row[0]] = row[1]; if(row[2]) TGB_LOGO[row[0]] = row[2]; });
+  TGB_DIRECTORY = all;
+}
+function tgbLogoSrc(logo){ return /^https?:\/\//i.test(logo) ? logo : TGB_CDN + logo; }
+async function refreshTgbDirectory(){
+  if(location.protocol === 'file:') return false;
+  try{
+    const res = await fetch('/api/giving-block-directory', {cache:'force-cache'});
+    if(!res.ok) throw new Error('directory ' + res.status);
+    const data = await res.json();
+    if(!data || !Array.isArray(data.organizations) || data.organizations.length < 500) throw new Error('incomplete directory');
+    setTgbDirectory(data.organizations);
+    return true;
+  }catch(_e){ return false; }
+}
 
 /* What an organisation DOES is not something this page can state. The Giving
    Block publishes no API and their pages are not fetchable cross-origin, so
@@ -4498,7 +4528,7 @@ function repaintDynamic(){
       const logo = TGB_LOGO[r[0]];
       return '<div class="wi-row">'
         + '<button type="button" class="wi-opt" role="option" data-slug="' + esc(r[0]) + '">'
-        + (logo ? '<img class="wi-logo" src="' + TGB_CDN + logo + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+        + (logo ? '<img class="wi-logo" src="' + tgbLogoSrc(logo) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
                 : '<span class="wi-logo wi-logo-none" aria-hidden="true"></span>')
         + '<span class="wi-txt">' + esc(r[1]) + '<span class="sl">' + esc(r[0]) + '</span></span>'
         + '</button>'
@@ -4808,6 +4838,9 @@ function repaintDynamic(){
     });
     $w('wiSubmit').addEventListener('click', submit);
     window.wiRefreshState = function(){ try{ updateSubmitState(); }catch(e){} };
+    refreshTgbDirectory().then(function(refreshed){
+      if(refreshed && modal.classList.contains('open')) renderResults($w('wiSearch').value);
+    });
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
