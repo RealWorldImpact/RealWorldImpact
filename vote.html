@@ -3125,6 +3125,15 @@ function txText(t){
 function fmtToken(bi){
   const d = 10n ** BigInt(RWI_DECIMALS);
   const whole = bi / d;
+  // A wallet with a fractional balance can legitimately be the only counted
+  // voter. Rendering its whole-token portion alone turned a real 100% vote
+  // into the misleading "100% · 0 $RWI". Keep enough precision to make every
+  // positive weight visible without flooding the ballot with dust decimals.
+  if(whole === 0n && bi > 0n){
+    const decimals = (bi % d).toString().padStart(RWI_DECIMALS, '0');
+    const shown = decimals.slice(0, 6).replace(/0+$/, '');
+    return shown ? '0.' + shown : '<0.000001';
+  }
   const n = Number(whole);
   if(n >= 1e9) return (n/1e9).toFixed(2)+'B';
   if(n >= 1e6) return (n/1e6).toFixed(2)+'M';
