@@ -1846,11 +1846,11 @@ document.addEventListener('DOMContentLoaded', function(){
     position:relative;overflow:hidden;
   }
   .cand:hover,.cand:focus-visible{border-color:var(--lime);outline:none}
-  .cand[aria-pressed="true"]{background:var(--lime);color:var(--ink);border-color:var(--lime)}
+  .cand[aria-checked="true"]{background:var(--lime);color:var(--ink);border-color:var(--lime)}
   .cand .radio{
     width:15px;height:15px;border-radius:50%;border:1.5px solid rgba(204,254,6,.6);flex:none;
   }
-  .cand[aria-pressed="true"] .radio{border-color:var(--ink);background:var(--ink);box-shadow:inset 0 0 0 3px var(--lime)}
+  .cand[aria-checked="true"] .radio{border-color:var(--ink);background:var(--ink);box-shadow:inset 0 0 0 3px var(--lime)}
   .cand .who{min-width:0}
   .cand .name{font-size:17px;line-height:1.3}
   .cand .cause{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-top:3px}
@@ -1860,7 +1860,7 @@ document.addEventListener('DOMContentLoaded', function(){
     position:absolute;left:0;bottom:0;height:3px;background:var(--lime);
     width:0;transition:width .5s ease;
   }
-  .cand[aria-pressed="true"] .bar{background:var(--ink)}
+  .cand[aria-checked="true"] .bar{background:var(--ink)}
 
   .results-head{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;justify-content:space-between;margin-bottom:6px}
   .totals{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;opacity:.85}
@@ -2042,8 +2042,8 @@ document.addEventListener('DOMContentLoaded', function(){
     border-bottom:1px solid rgba(204,254,6,.45);
   }
   .tgb-link:hover,.tgb-link:focus-visible{opacity:1;border-bottom-color:var(--lime);outline:none}
-  .cand[aria-pressed="true"] .tgb-link{border-bottom-color:rgba(11,11,9,.5)}
-  .cand[aria-pressed="true"] .tgb-link:hover{border-bottom-color:var(--ink)}
+  .cand[aria-checked="true"] .tgb-link{border-bottom-color:rgba(11,11,9,.5)}
+  .cand[aria-checked="true"] .tgb-link:hover{border-bottom-color:var(--ink)}
   .org-picker .pick{cursor:default}
   .org-picker .pick.on{background:var(--ink);color:var(--lime);border-color:var(--ink)}
 
@@ -2083,10 +2083,10 @@ document.addEventListener('DOMContentLoaded', function(){
     display:block;margin-top:3px;font-family:var(--mono);font-size:9.5px;
     letter-spacing:.1em;text-transform:uppercase;color:var(--lime);opacity:.9;
   }
-  .cand[aria-pressed="true"] .yours{color:var(--ink)}
+  .cand[aria-checked="true"] .yours{color:var(--ink)}
   .cand .yours.pending{opacity:.6;animation:yoursPulse 1.6s ease-in-out infinite}
   .cand.is-mine{border-color:var(--lime)}
-  .cand[aria-pressed="true"].is-mine{border-color:var(--ink)}
+  .cand[aria-checked="true"].is-mine{border-color:var(--ink)}
   /* A just-submitted write-in shows up in its seat immediately with a soft
      pulse on the cause line — signals "we heard you" while the indexer
      catches up. The name stays fully readable so the seat still looks real. */
@@ -3327,7 +3327,7 @@ function softReset(){
   $('myVote').textContent = '';
   clearVoteStatus();
   const ow=$('ownerStatus'); if(ow) ow.textContent='';
-  document.querySelectorAll('.cand').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+ document.querySelectorAll('.cand').forEach(function(x){ x.setAttribute('aria-checked','false'); });
   // Dropping the pending vote changes the numbers, so recompute from the cached
   // chain data rather than leaving the old figures on screen.
   if(voteTxCache) { try{ loadTally(voteTxCache); }catch(e){} }
@@ -3484,12 +3484,12 @@ function renderBallot(){
   }).join(',');
   if(sig === lastBallotSig){
     // Same slate & language — dynamic state (selected, tally numbers) is
-    // painted separately. No need to churn the DOM. aria-pressed must sync
+    // painted separately. No need to churn the DOM. aria-checked must sync
     // unconditionally: when `selected` is null every row clears, otherwise a
     // stale highlight survives from before the refresh.
     $('ballot').querySelectorAll('.cand').forEach(function(x){
       if(x.dataset.open) return;               // open seats are not radios
-      x.setAttribute('aria-pressed', String(!!selected && x.dataset.slug === selected));
+      x.setAttribute('aria-checked', String(!!selected && x.dataset.slug === selected));
     });
     return;
   }
@@ -3508,7 +3508,7 @@ function renderBallot(){
     </button>`;
     }
     return `
-    <button class="cand${c.writein ? ' writein' : ''}${c.pending ? ' pending' : ''}" type="button" role="radio" aria-pressed="false" data-slug="${esc(c.slug)}">
+    <div class="cand${c.writein ? ' writein' : ''}${c.pending ? ' pending' : ''}" role="radio" tabindex="0" aria-checked="false" data-slug="${esc(c.slug)}">
       <span class="radio" aria-hidden="true"></span>
       <span class="who">
         <span class="name">${esc(c.name)}${c.tgb ? `<a class="tgb-link" href="${TGB_BASE}${esc(c.tgb)}/" target="_blank" rel="noopener" title="View on The Giving Block">Giving Block &#8599;</a>` : ''}</span>
@@ -3516,11 +3516,11 @@ function renderBallot(){
       </span>
       <span class="tally"><span class="pct" data-pct>&mdash;</span><br><span class="muted" data-wt></span><span class="yours" data-yours hidden></span></span>
       <span class="bar" data-bar></span>
-    </button>`;
+    </div>`;
   }).join('');
   if(selected){
     const cur = $('ballot').querySelector('.cand[data-slug="' + selected + '"]');
-    if(cur) cur.setAttribute('aria-pressed','true');
+    if(cur) cur.setAttribute('aria-checked','true');
   }
   // Cache the four inner refs on each row now, so paintTally does not run
   // four querySelectors per candidate on every repaint.
@@ -3537,9 +3537,16 @@ function renderBallot(){
       }
       selected = el.dataset.slug;
       clearVoteStatus();
-      $('ballot').querySelectorAll('.cand').forEach(x => x.setAttribute('aria-pressed', String(x === el)));
+      $('ballot').querySelectorAll('.cand').forEach(x => x.setAttribute('aria-checked', String(x === el)));
       updateVoteButton();
     });
+    if(!el.dataset.open){
+      el.addEventListener('keydown', (e) => {
+        if(e.target.closest('.tgb-link') || (e.key !== 'Enter' && e.key !== ' ')) return;
+        e.preventDefault();
+        el.click();
+      });
+    }
   });
 }
 function updateVoteButton(){
