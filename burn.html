@@ -722,8 +722,9 @@
         }
       } catch {}
     });
-    try { const saved=JSON.parse(localStorage.getItem(CACHE)); if(saved?.tokens?.length){ allTokens=saved.tokens; lastCompleteTokens=saved.tokens; lastUpdated=saved.timestamp; render(allTokens,lastUpdated); setStatus(`<strong>Cached full list shown.</strong> Updating from the market…`); } } catch {}
-    refresh();
+    let cachedListShown=false;
+    try { const saved=JSON.parse(localStorage.getItem(CACHE)); if(saved?.tokens?.length){ allTokens=saved.tokens; lastCompleteTokens=saved.tokens; lastUpdated=saved.timestamp; render(allTokens,lastUpdated); cachedListShown=true; setStatus(`<strong>Cached list shown.</strong> Select refresh to check for updates.`); } } catch {}
+    if(!cachedListShown) refresh();
   })();
   </script>
 </body>
