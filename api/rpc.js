@@ -1,5 +1,5 @@
 const RPC_URL = 'https://rpc.mainnet.chain.robinhood.com';
-const ALLOWED_METHODS = new Set(['eth_blockNumber', 'eth_call', 'eth_getLogs']);
+const ALLOWED_METHODS = new Set(['eth_blockNumber', 'eth_call', 'eth_getLogs', 'eth_getBlockByNumber']);
 const MAX_BATCH_SIZE = 100;
 const MAX_PAYLOAD_BYTES = 100_000;
 const WINDOW_MS = 60_000;
@@ -24,6 +24,7 @@ function allowRequest(req) {
 function validRequest(item) {
   if (!item || typeof item !== 'object' || !ALLOWED_METHODS.has(item.method) || !Array.isArray(item.params)) return false;
   if (item.method === 'eth_blockNumber') return item.params.length === 0;
+  if (item.method === 'eth_getBlockByNumber') return item.params.length === 2 && /^0x[0-9a-fA-F]+$/.test(item.params[0] || '') && item.params[1] === false;
   if (item.method === 'eth_call') {
     const call=item.params[0];
     return item.params.length === 2 && call && /^0x[a-fA-F0-9]{40}$/.test(call.to || '') && /^0x[a-fA-F0-9]*$/.test(call.data || '');
