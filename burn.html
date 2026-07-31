@@ -37,7 +37,7 @@
     .stat { display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:8px 0; border-bottom:1px solid var(--line); }
     .label { color:var(--muted); font-size:8px; text-transform:uppercase; letter-spacing:.08em; }.value { font:18px/1 Impact, sans-serif; letter-spacing:.02em; text-align:right; }
     .toolbar { padding:23px 0 15px; display:flex; gap:14px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
-    .view-tabs{display:flex;gap:5px;padding:14px 0 0;border-bottom:1px solid var(--line)}.view-tab{border:1px solid transparent;border-bottom:0;border-radius:6px 6px 0 0;background:transparent;color:var(--muted);padding:9px 12px}.view-tab:hover{background:rgba(213,255,63,.08);color:var(--acid)}.view-tab[aria-selected="true"]{border-color:var(--line);background:rgba(255,255,255,.02);color:var(--acid)}.view-panel[hidden]{display:none}.recent-note{color:var(--muted);font-size:11px;line-height:1.45;padding:15px 0 10px}.burn-tx{color:var(--acid);font-weight:700;text-decoration:none}.burn-tx:hover{text-decoration:underline}
+    .view-tabs{display:flex;gap:5px;padding:14px 0 0;border-bottom:1px solid var(--line)}.view-tab{border:1px solid transparent;border-bottom:0;border-radius:6px 6px 0 0;background:transparent;color:var(--muted);padding:9px 12px}.view-tab:hover{background:rgba(213,255,63,.08);color:var(--acid)}.view-tab[aria-selected="true"]{border-color:var(--line);background:rgba(255,255,255,.02);color:var(--acid)}.view-panel[hidden]{display:none}.recent-note{color:var(--muted);font-size:11px;line-height:1.45;padding:15px 0 10px}.recent-token-link{display:block;color:inherit;text-decoration:none;border-radius:6px}.recent-token-link:hover .name,.recent-token-link:focus-visible .name{color:var(--acid)}.recent-token-link:focus-visible{outline:1px solid var(--acid);outline-offset:3px}.burn-tx{color:var(--acid);font-weight:700;text-decoration:none}.burn-tx:hover{text-decoration:underline}
     .controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
     .refresh-icon { width:34px; height:34px; padding:0; display:grid; place-items:center; border-color:var(--line); background:transparent; color:var(--acid); font-size:19px; line-height:1; }
     .refresh-icon:hover { border-color:var(--acid); background:var(--acid); color:#15170f; }
@@ -108,7 +108,7 @@
     const DEAD = '0x000000000000000000000000000000000000dead';
     const CACHE = 'pons-burn-list-v18';
     const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
-    const RECENT_BURN_CACHE = 'pons-recent-burns-v11';
+    const RECENT_BURN_CACHE = 'pons-recent-burns-v12';
     const USER_TOKENS_CACHE = 'pons-burn-list-user-tokens-v1';
     const SCAN_LOCK = 'pons-burn-list-scan-lock-v1';
     const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
@@ -413,7 +413,7 @@
         const key=`${log.transactionHash}:${log.logIndex}:${log.address}`;
         if(seen.has(key)) return null;
         seen.add(key);
-        return {name:token.name,symbol:token.symbol,image:token.image||'',amount,usd:token.marketCap ? amount*token.marketCap/(token.supply||1000000000) : 0,block:parseInt(log.blockNumber,16),index:parseInt(log.logIndex,16),hash:log.transactionHash};
+        return {address:token.address,name:token.name,symbol:token.symbol,image:token.image||'',amount,usd:token.marketCap ? amount*token.marketCap/(token.supply||1000000000) : 0,block:parseInt(log.blockNumber,16),index:parseInt(log.logIndex,16),hash:log.transactionHash};
       }).filter(Boolean).filter(event=>event.usd>=1).sort((a,b)=>b.block-a.block || b.index-a.index);
     }
     async function addBurnTimestamps(events, run) {
@@ -432,7 +432,7 @@
       if(!body) return;
       const note=$('recent-note');
       if(note) note.textContent=historical ? 'Showing the latest 50 verified burns from on-chain history; burns valued below $1 are excluded.' : 'Newest verified transfers to the canonical zero or dead address. Every indexed Pons token is checked when this tab is opened; burns valued below $1 are excluded.';
-      body.innerHTML=events.length ? events.map(event=>`<tr><td data-label="Project"><div class="token"><span class="mark">${escapeHtml(event.symbol.slice(0,2).toUpperCase())}${event.image ? `<img src="${escapeHtml(event.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(event.name)}</div><div class="sym">$${escapeHtml(event.symbol)}</div></div></div></td><td class="num burn" data-label="Burned amount">${fmtBurnAmount(event.amount)}${event.usd ? `<span class="usd" title="Estimated from current market cap / FDV">(${fmtUsd(event.usd)})</span>` : ''}</td><td class="num" data-label="Block">#${event.block.toLocaleString('en-US')}</td><td class="num" data-label="Date & time">${event.timestamp ? burnTimeFormat.format(new Date(event.timestamp)) : '—'}</td><td class="num" data-label="Transaction"><a class="burn-tx" target="_blank" rel="noreferrer" href="https://robinhoodchain.blockscout.com/tx/${escapeHtml(event.hash)}">${escapeHtml(short(event.hash))} &#8599;</a></td></tr>`).join('') : '<tr><td class="empty" colspan="5">No verified burns were found in the recent chain window.</td></tr>';
+      body.innerHTML=events.length ? events.map(event=>`<tr><td data-label="Project"><a class="recent-token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${encodeURIComponent(event.address)}" aria-label="View ${escapeHtml(event.name)} on Pons Family"><div class="token"><span class="mark">${escapeHtml(event.symbol.slice(0,2).toUpperCase())}${event.image ? `<img src="${escapeHtml(event.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(event.name)}</div><div class="sym">$${escapeHtml(event.symbol)} · View on Pons</div></div></div></a></td><td class="num burn" data-label="Burned amount">${fmtBurnAmount(event.amount)}${event.usd ? `<span class="usd" title="Estimated from current market cap / FDV">(${fmtUsd(event.usd)})</span>` : ''}</td><td class="num" data-label="Block">#${event.block.toLocaleString('en-US')}</td><td class="num" data-label="Date & time">${event.timestamp ? burnTimeFormat.format(new Date(event.timestamp)) : '—'}</td><td class="num" data-label="Transaction"><a class="burn-tx" target="_blank" rel="noreferrer" href="https://robinhoodchain.blockscout.com/tx/${escapeHtml(event.hash)}">${escapeHtml(short(event.hash))} &#8599;</a></td></tr>`).join('') : '<tr><td class="empty" colspan="5">No verified burns were found in the recent chain window.</td></tr>';
     };
     async function loadRecentBurnsNow(force=false) {
       const body=$('recent-rows');
