@@ -454,11 +454,11 @@
         if(newestEvents===null || run!==recentBurnRun) return;
         const historicalEvents=[...newestEvents];
         let rangeEnd=from-1;
-        // Build a dependable last-50 view. Four adjacent, RPC-friendly
+        // Build a dependable last-50 view. Ten adjacent, RPC-friendly
         // windows are checked at once, which sharply reduces fallback time.
-        for(let pass=0;pass<220 && rangeEnd>=0 && historicalEvents.length<50;pass+=4) {
+        for(let pass=0;pass<220 && rangeEnd>=0 && historicalEvents.length<50;pass+=10) {
           const windows=[];
-          for(let offset=0;offset<4 && rangeEnd>=0;offset++) {
+          for(let offset=0;offset<10 && rangeEnd>=0;offset++) {
             const rangeStart=Math.max(0,rangeEnd-RECENT_BURN_BLOCKS+1);
             windows.push({from:rangeStart,to:rangeEnd});
             rangeEnd=rangeStart-1;
@@ -469,6 +469,7 @@
         }
         const historical=historicalEvents.length>newestEvents.length;
         let events=historicalEvents.sort((a,b)=>b.block-a.block || b.index-a.index).slice(0,50);
+        renderRecentBurns(events,historical);
         events=await addBurnTimestamps(events,run);
         if(events===null || run!==recentBurnRun) return;
         renderRecentBurns(events,historical);
