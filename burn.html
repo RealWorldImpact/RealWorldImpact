@@ -60,7 +60,7 @@
       .hero{grid-template-columns:1fr;padding:38px 0 28px;gap:24px}.hero h1{font-size:30px;line-height:.9}.intro{font-size:9px;margin:13px 0 0;max-width:100%}.stats{grid-template-columns:1fr}.stat{padding:8px 0}.value{font-size:18px}
       .toolbar{align-items:stretch;padding:18px 0 12px;gap:12px}.status{width:100%;font-size:10px;line-height:1.35}.controls{width:100%;display:grid;grid-template-columns:1fr auto;gap:8px}.controls input{grid-column:1 / -1;width:100%}.controls .refresh-icon{grid-column:2;width:34px;justify-self:end}.add-token{padding:13px}.add-token input,.add-token button{width:100%}
       .view-tabs{padding-top:9px}.view-tab{font-size:9px;padding:8px 10px}.recent-note{font-size:10px;padding:11px 0 7px}
-      #recent-panel .table tbody{gap:7px}#recent-panel .table tr{grid-template-columns:minmax(0,1fr) auto;padding:2px 11px}#recent-panel .table td{min-height:30px;padding:5px 0;font-size:10px}#recent-panel .table td::before{font-size:8px}#recent-panel .table td[data-label="Project"]{padding:8px 0 7px}#recent-panel .table td[data-label="Project"] .mark{width:26px;height:26px;flex-basis:26px}#recent-panel .table td[data-label="Project"] .name{font-size:11px}#recent-panel .table td[data-label="Burned amount"]{display:grid;grid-template-columns:1fr auto auto;align-items:center;column-gap:5px;grid-column:1;border-top:1px solid var(--line)}#recent-panel .table td[data-label="Burned amount"]::before{grid-column:1}#recent-panel .table td[data-label="Block"]{grid-column:2;border-top:1px solid var(--line);padding-left:12px}#recent-panel .table td[data-label="Transaction"]{grid-column:1 / -1;min-height:27px;border-top:1px solid var(--line);padding:5px 0}#recent-panel .table td[data-label="Transaction"]::before{content:'View transaction'}#recent-panel .burn{font-size:12px}#recent-panel .usd{font-size:9px;margin-left:0}#recent-panel .burn-tx{font-size:10px}
+      #recent-panel .table tbody{gap:7px}#recent-panel .table tr{grid-template-columns:minmax(0,1fr) auto;padding:2px 11px}#recent-panel .table td{min-height:30px;padding:5px 0;font-size:10px}#recent-panel .table td::before{font-size:8px}#recent-panel .table td[data-label="Project"]{padding:8px 0 7px}#recent-panel .table td[data-label="Project"] .mark{width:26px;height:26px;flex-basis:26px}#recent-panel .table td[data-label="Project"] .name{font-size:11px}#recent-panel .table td[data-label="Burned amount"]{display:grid;grid-template-columns:1fr auto auto;align-items:center;column-gap:5px;grid-column:1;border-top:1px solid var(--line)}#recent-panel .table td[data-label="Burned amount"]::before{grid-column:1}#recent-panel .table td[data-label="Block"]{grid-column:2;border-top:1px solid var(--line);padding-left:12px}#recent-panel .table td[data-label="Date & time"]{grid-column:1 / -1;min-height:26px;border-top:1px solid var(--line);padding:4px 0}#recent-panel .table td[data-label="Transaction"]{grid-column:1 / -1;min-height:27px;border-top:1px solid var(--line);padding:5px 0}#recent-panel .table td[data-label="Transaction"]::before{content:'View transaction'}#recent-panel .burn{font-size:12px}#recent-panel .usd{font-size:9px;margin-left:0}#recent-panel .burn-tx{font-size:10px}
       #ranked-panel .table tbody{gap:7px}#ranked-panel .table tr{padding:3px 11px}#ranked-panel .table td{min-height:29px;padding:5px 0;font-size:10px}#ranked-panel .table td::before{font-size:8px}#ranked-panel .table td[data-label="Project"]{padding:8px 0 7px}#ranked-panel .table td[data-label="Project"] .mark{width:26px;height:26px;flex-basis:26px}#ranked-panel .table td[data-label="Project"] .name{font-size:11px}#ranked-panel .table td[data-label="Burned supply"]{grid-column:1 / -1;min-height:34px;border-top:1px solid var(--line);padding:6px 0;font-size:11px}#ranked-panel .table td[data-label="Burned supply"] .burn{font-size:13px}#ranked-panel .table td[data-label="Burned supply"] .usd{font-size:10px}#ranked-panel .table td[data-label="Burned supply"] .bar{width:62px;margin-left:6px}#ranked-panel .table td[data-label="Token"]{min-height:28px;padding-top:6px}
       .table-wrap{border:0;background:transparent;overflow:visible}.table{min-width:0;display:block}.table thead{display:none}.table tbody{display:grid;gap:5px}.table tr{position:relative;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);background:rgba(255,255,255,.015);padding:1px 9px}.table td{display:flex;align-items:center;justify-content:space-between;gap:7px;border:0;padding:5px 0;font-size:10px;text-align:right!important}.table td::before{content:attr(data-label);color:var(--muted);font-size:7px;letter-spacing:.07em;text-transform:uppercase;text-align:left}.table td[data-label="Project"]{grid-column:1 / -1;justify-content:flex-start;padding:6px 0 7px;border-bottom:1px solid var(--line);text-align:left!important}.table td[data-label="Project"]::before{display:none}.table td[data-label="Rank"]{position:absolute;right:10px;top:5px;padding:0;color:var(--acid)}.table td[data-label="Rank"]::before{display:none}.table td[data-label="Token"]{grid-column:1 / -1;border-top:1px solid var(--line);padding-top:5px}.token{gap:7px}.mark{width:21px;height:21px;flex-basis:21px}.sym{font-size:9px;margin-top:1px}.burn{font-size:11px}.bar{width:46px}.address{font-size:9px}
       footer{margin-top:18px;font-size:10px}
@@ -75,7 +75,7 @@
     <section class="toolbar"><div class="status" id="status">Loading the Pons Family Burn List…</div><div class="controls"><button id="refresh" class="refresh-icon" type="button" title="Refresh list" aria-label="Refresh list">↻</button></div></section>
     <div class="view-tabs" role="tablist" aria-label="Burn List views"><button class="view-tab" id="ranked-tab" type="button" role="tab" aria-selected="true" aria-controls="ranked-panel">Ranked burns</button><button class="view-tab" id="recent-tab" type="button" role="tab" aria-selected="false" aria-controls="recent-panel">Recent burns</button></div>
     <section class="view-panel" id="ranked-panel" role="tabpanel" aria-labelledby="ranked-tab"><section class="add-token" id="add-token-panel" hidden><p>Missing a token? Paste its contract address. Only tokens launched through the official pons factories can be added.</p><input id="token-address" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x… token address"><button id="add-token">Submit token</button><div class="add-status" id="add-status"></div></section><div class="table-wrap"><table class="table"><thead><tr><th>#</th><th>Project</th><th class="num">Market cap / FDV</th><th class="num">24h volume</th><th class="num">Burned supply</th><th class="num">% of supply</th><th class="num">Token</th></tr></thead><tbody id="rows"><tr><td class="empty" colspan="7">Building the live list…<span class="skeleton"></span></td></tr></tbody></table></div></section>
-    <section class="view-panel" id="recent-panel" role="tabpanel" aria-labelledby="recent-tab" hidden><p class="recent-note">Newest verified transfers to the canonical zero or dead address. Every indexed Pons token is checked when this tab is opened; burns valued below $1 are excluded.</p><div class="table-wrap"><table class="table"><thead><tr><th>Project</th><th class="num">Burned amount</th><th class="num">Block</th><th class="num">Transaction</th></tr></thead><tbody id="recent-rows"><tr><td class="empty" colspan="4">Open this tab to load the newest burns.</td></tr></tbody></table></div></section>
+    <section class="view-panel" id="recent-panel" role="tabpanel" aria-labelledby="recent-tab" hidden><p class="recent-note" id="recent-note">Newest verified transfers to the canonical zero or dead address. Every indexed Pons token is checked when this tab is opened; burns valued below $1 are excluded.</p><div class="table-wrap"><table class="table"><thead><tr><th>Project</th><th class="num">Burned amount</th><th class="num">Block</th><th class="num">Date &amp; time</th><th class="num">Transaction</th></tr></thead><tbody id="recent-rows"><tr><td class="empty" colspan="5">Open this tab to load the newest burns.</td></tr></tbody></table></div></section>
     <footer>Market data and volume come from GeckoTerminal’s Pons Family pool index. Burned supply is read on-chain from the canonical zero and dead addresses. This is an activity dashboard, not financial advice.</footer>
   </main>
   <script>
@@ -108,7 +108,7 @@
     const DEAD = '0x000000000000000000000000000000000000dead';
     const CACHE = 'pons-burn-list-v18';
     const MARKET_INDEX_CACHE = 'pons-gecko-market-index-v10';
-    const RECENT_BURN_CACHE = 'pons-recent-burns-v8';
+    const RECENT_BURN_CACHE = 'pons-recent-burns-v11';
     const USER_TOKENS_CACHE = 'pons-burn-list-user-tokens-v1';
     const SCAN_LOCK = 'pons-burn-list-scan-lock-v1';
     const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
@@ -128,6 +128,7 @@
     const wholeNumberFormat=new Intl.NumberFormat('en-US',{maximumFractionDigits:0});
     const fmt = n => (n>=1e6 ? wholeNumberFormat : numberFormat).format(n);
     const fmtUsd = n => n >= 1 ? `$${fmt(n)}` : n > 0 ? `$${n.toLocaleString('en-US',{maximumSignificantDigits:3})}` : '';
+    const burnTimeFormat=new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
     const short = a => `${a.slice(0,6)}…${a.slice(-4)}`;
     const pause = ms => new Promise(resolve => setTimeout(resolve,ms));
     const fetchWithTimeout = async (url, options={}, timeout=10000) => {
@@ -390,10 +391,48 @@
         return parts.flat();
       }
     };
-    const renderRecentBurns = events => {
+    async function collectBurnEvents(priority, from, to, run) {
+      const byAddress=new Map(priority.map(token=>[token.address.toLowerCase(),token]));
+      const calls=[];
+      for(let i=0;i<priority.length;i+=150) {
+        const addresses=priority.slice(i,i+150).map(token=>token.address);
+        for(const destination of [ZERO,DEAD]) calls.push({method:'eth_getLogs',params:[{address:addresses,fromBlock:'0x'+from.toString(16),toBlock:'0x'+to.toString(16),topics:[TRANSFER_TOPIC,null,burnTopicAddress(destination)]}]});
+      }
+      const logs=[];
+      const logStats={failed:0};
+      for(let i=0;i<calls.length;i+=40) {
+        logs.push(...await readRecentLogCalls(calls.slice(i,i+40),logStats));
+        if(run!==recentBurnRun) return null;
+      }
+      if(!logs.length && logStats.failed) throw new Error('Recent burn log requests were unavailable.');
+      const seen=new Set();
+      return logs.map(log=>{
+        const token=byAddress.get(log.address?.toLowerCase());
+        const amount=Number(BigInt(log.data||'0x0'))/1e18;
+        if(!token || !Number.isFinite(amount) || amount<=0) return null;
+        const key=`${log.transactionHash}:${log.logIndex}:${log.address}`;
+        if(seen.has(key)) return null;
+        seen.add(key);
+        return {name:token.name,symbol:token.symbol,image:token.image||'',amount,usd:token.marketCap ? amount*token.marketCap/(token.supply||1000000000) : 0,block:parseInt(log.blockNumber,16),index:parseInt(log.logIndex,16),hash:log.transactionHash};
+      }).filter(Boolean).filter(event=>event.usd>=1).sort((a,b)=>b.block-a.block || b.index-a.index);
+    }
+    async function addBurnTimestamps(events, run) {
+      const blocks=[...new Set(events.map(event=>event.block))];
+      const timestamps=new Map();
+      for(let i=0;i<blocks.length;i+=50) {
+        const batch=blocks.slice(i,i+50);
+        const values=await rpcBatch(batch.map(block=>({method:'eth_getBlockByNumber',params:['0x'+block.toString(16),false]}))).catch(()=>[]);
+        values.forEach((value,index)=>{ if(value?.timestamp) timestamps.set(batch[index],parseInt(value.timestamp,16)*1000); });
+        if(run!==recentBurnRun) return null;
+      }
+      return events.map(event=>({...event,timestamp:timestamps.get(event.block)||0}));
+    }
+    const renderRecentBurns = (events, historical=false) => {
       const body=$('recent-rows');
       if(!body) return;
-      body.innerHTML=events.length ? events.map(event=>`<tr><td data-label="Project"><div class="token"><span class="mark">${escapeHtml(event.symbol.slice(0,2).toUpperCase())}${event.image ? `<img src="${escapeHtml(event.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(event.name)}</div><div class="sym">$${escapeHtml(event.symbol)}</div></div></div></td><td class="num burn" data-label="Burned amount">${fmtBurnAmount(event.amount)}${event.usd ? `<span class="usd" title="Estimated from current market cap / FDV">(${fmtUsd(event.usd)})</span>` : ''}</td><td class="num" data-label="Block">#${event.block.toLocaleString('en-US')}</td><td class="num" data-label="Transaction"><a class="burn-tx" target="_blank" rel="noreferrer" href="https://robinhoodchain.blockscout.com/tx/${escapeHtml(event.hash)}">${escapeHtml(short(event.hash))} &#8599;</a></td></tr>`).join('') : '<tr><td class="empty" colspan="4">No verified burns were found in the recent chain window.</td></tr>';
+      const note=$('recent-note');
+      if(note) note.textContent=historical ? 'Showing the latest 50 verified burns from on-chain history; burns valued below $1 are excluded.' : 'Newest verified transfers to the canonical zero or dead address. Every indexed Pons token is checked when this tab is opened; burns valued below $1 are excluded.';
+      body.innerHTML=events.length ? events.map(event=>`<tr><td data-label="Project"><div class="token"><span class="mark">${escapeHtml(event.symbol.slice(0,2).toUpperCase())}${event.image ? `<img src="${escapeHtml(event.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(event.name)}</div><div class="sym">$${escapeHtml(event.symbol)}</div></div></div></td><td class="num burn" data-label="Burned amount">${fmtBurnAmount(event.amount)}${event.usd ? `<span class="usd" title="Estimated from current market cap / FDV">(${fmtUsd(event.usd)})</span>` : ''}</td><td class="num" data-label="Block">#${event.block.toLocaleString('en-US')}</td><td class="num" data-label="Date & time">${event.timestamp ? burnTimeFormat.format(new Date(event.timestamp)) : '—'}</td><td class="num" data-label="Transaction"><a class="burn-tx" target="_blank" rel="noreferrer" href="https://robinhoodchain.blockscout.com/tx/${escapeHtml(event.hash)}">${escapeHtml(short(event.hash))} &#8599;</a></td></tr>`).join('') : '<tr><td class="empty" colspan="5">No verified burns were found in the recent chain window.</td></tr>';
     };
     async function loadRecentBurnsNow(force=false) {
       const body=$('recent-rows');
@@ -404,47 +443,41 @@
       let savedRecent;
       try {
         savedRecent=JSON.parse(localStorage.getItem(RECENT_BURN_CACHE));
-        if(!force && savedRecent?.events && savedRecent.catalogKey===catalogKey && Date.now()-savedRecent.timestamp<RECENT_BURN_TTL) { renderRecentBurns(savedRecent.events); recentBurnsLoaded=true; return; }
+        if(!force && savedRecent?.events && savedRecent.catalogKey===catalogKey && Date.now()-savedRecent.timestamp<RECENT_BURN_TTL) { renderRecentBurns(savedRecent.events,savedRecent.historical); recentBurnsLoaded=true; return; }
       } catch {}
       body.innerHTML='<tr><td class="empty" colspan="4">Loading the newest verified burns&hellip;</td></tr>';
       try {
         const latest=parseInt(await rpc('eth_blockNumber',[]),16);
         const from=Math.max(0,latest-RECENT_BURN_BLOCKS);
         if(!priority.length) throw new Error('No verified Pons tokens are available yet.');
-        const byAddress=new Map(priority.map(token=>[token.address.toLowerCase(),token]));
-        const calls=[];
-        // JSON-RPC supports an address array for logs. Querying batches of
-        // Pons contracts avoids one request per token and keeps results
-        // consistent across devices under the hosted RPC rate limit.
-        for(let i=0;i<priority.length;i+=150) {
-          const addresses=priority.slice(i,i+150).map(token=>token.address);
-          for(const destination of [ZERO,DEAD]) calls.push({method:'eth_getLogs',params:[{address:addresses,fromBlock:'0x'+from.toString(16),toBlock:'0x'+latest.toString(16),topics:[TRANSFER_TOPIC,null,burnTopicAddress(destination)]}]});
+        const newestEvents=await collectBurnEvents(priority,from,latest,run);
+        if(newestEvents===null || run!==recentBurnRun) return;
+        const historicalEvents=[...newestEvents];
+        let rangeEnd=from-1;
+        // Build a dependable last-50 view. Four adjacent, RPC-friendly
+        // windows are checked at once, which sharply reduces fallback time.
+        for(let pass=0;pass<220 && rangeEnd>=0 && historicalEvents.length<50;pass+=4) {
+          const windows=[];
+          for(let offset=0;offset<4 && rangeEnd>=0;offset++) {
+            const rangeStart=Math.max(0,rangeEnd-RECENT_BURN_BLOCKS+1);
+            windows.push({from:rangeStart,to:rangeEnd});
+            rangeEnd=rangeStart-1;
+          }
+          const batches=await Promise.all(windows.map(window=>collectBurnEvents(priority,window.from,window.to,run)));
+          if(batches.some(batch=>batch===null) || run!==recentBurnRun) return;
+          batches.forEach(batch=>historicalEvents.push(...batch));
         }
-        const logs=[];
-        const logStats={failed:0};
-        for(let i=0;i<calls.length;i+=40) {
-          logs.push(...await readRecentLogCalls(calls.slice(i,i+40),logStats));
-          if(run!==recentBurnRun) return;
-        }
-        if(!logs.length && logStats.failed) throw new Error('Recent burn log requests were unavailable.');
-        const seen=new Set();
-        const events=logs.map(log=>{
-          const token=byAddress.get(log.address?.toLowerCase());
-          const amount=Number(BigInt(log.data||'0x0'))/1e18;
-          if(!token || !Number.isFinite(amount) || amount<=0) return null;
-          const key=`${log.transactionHash}:${log.logIndex}:${log.address}`;
-          if(seen.has(key)) return null;
-          seen.add(key);
-          return {name:token.name,symbol:token.symbol,image:token.image||'',amount,usd:token.marketCap ? amount*token.marketCap/(token.supply||1000000000) : 0,block:parseInt(log.blockNumber,16),index:parseInt(log.logIndex,16),hash:log.transactionHash};
-        }).filter(Boolean).filter(event=>event.usd>=1).sort((a,b)=>b.block-a.block || b.index-a.index);
-        if(run!==recentBurnRun) return;
-        renderRecentBurns(events);
+        const historical=historicalEvents.length>newestEvents.length;
+        let events=historicalEvents.sort((a,b)=>b.block-a.block || b.index-a.index).slice(0,50);
+        events=await addBurnTimestamps(events,run);
+        if(events===null || run!==recentBurnRun) return;
+        renderRecentBurns(events,historical);
         recentBurnsLoaded=true;
         recentFailures=0;
-        try { localStorage.setItem(RECENT_BURN_CACHE,JSON.stringify({events,catalogKey,timestamp:Date.now()})); } catch {}
+        try { localStorage.setItem(RECENT_BURN_CACHE,JSON.stringify({events,historical,catalogKey,timestamp:Date.now()})); } catch {}
       } catch(error) {
         if(run===recentBurnRun && savedRecent?.events?.length) {
-          renderRecentBurns(savedRecent.events);
+          renderRecentBurns(savedRecent.events,savedRecent.historical);
         } else if(run===recentBurnRun) {
           recentFailures++;
           if(recentFailures<=2) {
@@ -528,15 +561,8 @@
       let currentLock;
       try { currentLock=JSON.parse(localStorage.getItem(SCAN_LOCK)); } catch {}
       if(currentLock?.id!==TAB_ID && currentLock?.timestamp && Date.now()-currentLock.timestamp<90000) {
-        setStatus(`<strong>Shared scan in progress.</strong> Another tab is loading the GeckoTerminal catalog; this tab will reuse its result.`);
+        setStatus(`<strong>Shared scan in progress.</strong> Another tab is loading the GeckoTerminal catalog. Select refresh when it finishes to load its result here.`);
         button.disabled=false;
-        setTimeout(()=>{
-          try {
-            const saved=JSON.parse(localStorage.getItem(CACHE));
-            if(saved?.tokens?.length) { allTokens=saved.tokens; lastCompleteTokens=saved.tokens; lastUpdated=saved.timestamp; render(allTokens,lastUpdated); setStatus(`<strong>Shared scan complete.</strong> Loaded the latest cached list.`); return; }
-          } catch {}
-          refresh();
-        },6000);
         return;
       }
       localStorage.setItem(SCAN_LOCK,JSON.stringify({id:TAB_ID,timestamp:Date.now()}));
