@@ -2173,7 +2173,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
   #burnListClose:hover,#burnListClose:focus-visible{background:var(--lime, #CCFE06);color:var(--ink, #0B0B09);outline:none}
   #burnListFrame{width:100%;flex:1;border:0;background:#11120f}
   @media(max-width:640px){#burnListModal{padding:8px}.burn-list-panel{height:94vh;border-radius:12px}.burn-list-head{padding:9px 11px;font-size:9px}}
-  #langSel{position:fixed;bottom:64px;right:16px;z-index:9999;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border:1px solid var(--lime, #CCFE06);border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.28);display:none;grid-template-columns:repeat(3, minmax(0, 1fr));gap:2px;min-width:200px;max-width:calc(100vw - 32px)}
+#langSel{position:fixed;bottom:64px;right:16px;z-index:9999;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border:1px solid var(--lime, #CCFE06);border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.28);display:none;grid-template-columns:repeat(3, minmax(0, 1fr));gap:2px;min-width:200px;max-width:calc(100vw - 32px)}
+/* Keep the mobile utility pills anchored to the viewport, not the scrolling page. */
+@media (max-width:640px){
+  #langBtn,#chartBtn,#burnListPill,#langSel{position:fixed!important;-webkit-transform:translateZ(0);transform:translateZ(0)}
+  #langBtn{right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom))}
+  #burnListPill{right:max(16px,env(safe-area-inset-right));bottom:max(60px,calc(env(safe-area-inset-bottom) + 44px))}
+  #langSel{right:max(16px,env(safe-area-inset-right));bottom:max(64px,calc(env(safe-area-inset-bottom) + 48px))}
+}
   #langSel.open{display:grid}
   #langSel button{background:transparent;color:inherit;border:0;padding:8px 10px;font-family:var(--mono, "IBM Plex Mono", ui-monospace, monospace);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:8px;text-align:left;transition:background .12s ease}
   #langSel button:hover,#langSel button:focus-visible{background:rgba(204,254,6,.12);outline:none}
