@@ -2734,7 +2734,11 @@ const WRITEIN_TOLERANCE = 0.80;   // accept a payment worth >=80% of quote; pric
 const RWI_PAIR = 'https://api.dexscreener.com/latest/dex/pairs/robinhood/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697';
 
 /* Verified against The Giving Block's public directory. [slug, display name] */
-const TGB_DIRECTORY = [
+// Keep the complete Giving Block record set so already-onchain nominations
+// always remain readable, then expose only entries with a verified logo asset
+// in the write-in picker. A blank placeholder looks like a broken charity, not
+// a deliberate choice, and made the directory harder to trust.
+const TGB_DIRECTORY_ALL = [
   ['2535-water','2535 Water','organization_logo%2F8419c8f0-b0b0-4915-b3ae-6f385c229e35.jpg'],
   ['3strands-global-foundation','3Strands Global Foundation','organization_logo%2F9a08c185-603e-4496-803f-187d0e1117d3.jpg'],
   ['a-t-childrens-project','A-T Children\'s Project','organization_logo%2F982f240a-373a-4383-890f-88c3718ce032.jpeg'],
@@ -2976,10 +2980,29 @@ const TGB_DIRECTORY = [
   ['women-in-blockchain-foundation','Women in Blockchain Foundation','organization_logo/24b427bc-c618-4d2b-bea0-b6dd64bc07af.jpg'],
   ['youth-alive','Youth ALIVE!','organization_logo/10f1edb3-44e6-47bd-aa27-be34bcded274.jpg'],
   ['youthcentric','YouthCentric','organization_logo%2F598a6bf1-9fb5-4053-8223-0676f8d66d58.jpeg'],
-  ['zaman-international','Zaman International','organization_logo%2Fe1bf4d1d-f544-48ee-9ca3-9b5c3d1a17fb.jpeg']
+  ['zaman-international','Zaman International','organization_logo%2Fe1bf4d1d-f544-48ee-9ca3-9b5c3d1a17fb.jpeg'],
+  ['350-org','350.org','organization_logo/9b9ab251-2b92-4350-9412-7ff19b6298ee.png'],
+  ['girls-tech-ventures','Girls Tech Ventures','organization_logo/8e768b30-1c33-44fa-87b9-306b24b9a681.jpg'],
+  ['chabad-pod','Chabad Pod Inc','organization_logo/6e838778-b7ef-4933-8925-6247c4514b35.jpg'],
+  ['forget-me-not-childrens-hospice',"Forget Me Not Children's Hospice",'organization_logo/b8a5b013-4fcd-499f-9a27-be21e180e96a.jpg'],
+  ['appalachian-wildlife-refuge','Appalachian Wildlife Refuge','organization_logo/ac07b251-506b-4592-b7d4-c745d67c7296.jpg'],
+  ['upward-mobility','Upward Mobility','organization_logo/7c71727b-bddd-406f-9b0f-bac755b1099c.jpg'],
+  ['otagomuseum','Otago Museum Trust Board','organization_logo/6426550b-cda7-4bbf-a01c-02ed58d5911d.jpg'],
+  ['camphill-communities-of-ireland','Camphill Communities of Ireland','organization_logo/004c9bce-4d42-49a3-a485-e3c30ff7e296.png'],
+  ['ojb-fc','Ojb Fc','organization_logo/5f7e7195-a210-4b81-8289-29a0384ab25d.jpg'],
+  ['yaliberty','Young Americans for Liberty Foundation','organization_logo/532fc357-bb08-45f5-a093-db62397ac68e.jpg'],
+  ['hop-on-a-cure-foundation','Hop On A Cure Foundation Inc','organization_logo/c6f8b326-33d6-4869-b044-47184ea3c854.png'],
+  ['ryse','RYSE INC','organization_logo/91fae5ea-cc20-47b2-8807-13d3aa1c058a.jpg'],
+  ['ozone-house','Ozone House','organization_logo/841e0d52-9104-47d2-9c0c-acec903962b9.png'],
+  ['trickle-up','Trickle Up','organization_logo/79aabd12-ec9d-4bfd-b62c-710476c2b50b.jpg'],
+  ['brightstone','BrightStone, Inc.','organization_logo/4948864f-a163-497d-b779-a76606bf4d80.jpg'],
+  ['wildlife-sos','Wildlife SOS','organization_logo%2F05386eed-e456-4da4-b3c9-6b2be6cdfa8a.jpg'],
+  ['the-american-society-for-the-prevention-of-cruelty-to-animals','The American Society for the Prevention of Cruelty to Animals (ASPCA)','organization_logo%2F8dc93941-eaf6-421d-b4c3-cdae8df95ec9.jpg'],
+  ['infinite-family','Infinite Family','organization_logo%2F43cdfd41-ef07-4ce8-bcd8-8dbab0d3886e.jpeg']
 ];
-const TGB_BY_SLUG = (function(){ const m = {}; TGB_DIRECTORY.forEach(function(r){ m[r[0]] = r[1]; }); return m; })();
-const TGB_LOGO = (function(){ const m = {}; TGB_DIRECTORY.forEach(function(r){ if(r[2]) m[r[0]] = r[2]; }); return m; })();
+const TGB_BY_SLUG = (function(){ const m = {}; TGB_DIRECTORY_ALL.forEach(function(r){ m[r[0]] = r[1]; }); return m; })();
+const TGB_LOGO = (function(){ const m = {}; TGB_DIRECTORY_ALL.forEach(function(r){ if(r[2]) m[r[0]] = r[2]; }); return m; })();
+const TGB_DIRECTORY = TGB_DIRECTORY_ALL.filter(function(r){ return !!r[2]; });
 const TGB_CDN = 'https://static.tgbwidget.com/';
 
 /* What an organisation DOES is not something this page can state. The Giving
