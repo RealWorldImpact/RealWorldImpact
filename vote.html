@@ -2119,6 +2119,13 @@ document.addEventListener('DOMContentLoaded', function(){
   #wiSearch:focus{border-color:var(--lime);outline:none}
   .wi-results{max-height:300px;overflow:auto;border-radius:10px;overscroll-behavior:contain}
   .wi-results:not(:empty){border:1px solid rgba(204,254,6,.28)}
+  /* The directory is deliberately long. Give its own scroll rail a high-
+     contrast treatment so it remains obvious inside the dark write-in modal. */
+  .wi-results{scrollbar-width:thin;scrollbar-color:var(--lime) rgba(204,254,6,.14)}
+  .wi-results::-webkit-scrollbar{width:11px}
+  .wi-results::-webkit-scrollbar-track{background:rgba(204,254,6,.14);border-radius:999px}
+  .wi-results::-webkit-scrollbar-thumb{background:var(--lime);border:2px solid var(--ink);border-radius:999px}
+  .wi-results::-webkit-scrollbar-thumb:hover{background:#e2ff42}
   .wi-opt{display:block;width:100%;text-align:left;background:transparent;color:inherit;border:0;
     border-bottom:1px solid rgba(204,254,6,.16);padding:10px 12px;cursor:pointer;font-size:14px;line-height:1.3}
   .wi-opt:last-child{border-bottom:0}
