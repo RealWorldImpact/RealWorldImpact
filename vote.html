@@ -3571,6 +3571,12 @@ let lastBallotSig = null;
 function renderBallot(){
   const writeInButton = $('writeInBtn');
   const writeInTag = writeInButton && writeInButton.parentElement.querySelector('.wi-tag');
+  const syncWriteInVisibility = function(){
+    const realCards = document.querySelectorAll('#ballot .cand:not([data-open]):not(.skeleton)').length;
+    const hide = realCards >= TOTAL_SLOTS;
+    if(writeInButton){ writeInButton.hidden = hide; writeInButton.style.display = hide ? 'none' : ''; }
+    if(writeInTag){ writeInTag.hidden = hide; writeInTag.style.display = hide ? 'none' : ''; }
+  };
   if(!ballotResolved){
     // Placeholder rows sized like real ones, so nothing jumps when they land.
     $('ballot').innerHTML = Array.from({length: TOTAL_SLOTS}, function(){
@@ -3581,13 +3587,11 @@ function renderBallot(){
     }).join('');
     $('ballot').setAttribute('aria-busy','true');
     lastBallotSig = null;
+    syncWriteInVisibility();
     return;
   }
   $('ballot').removeAttribute('aria-busy');
   const orgs = activeOrgs();
-  const ballotIsFull = orgs.length === TOTAL_SLOTS && orgs.every(function(org){ return !org.placeholder; });
-  if(writeInButton) writeInButton.hidden = ballotIsFull;
-  if(writeInTag) writeInTag.hidden = ballotIsFull;
   // Include pending state in the sig so a write-in that starts as 'confirming'
   // and later becomes verified triggers a full row rebuild — otherwise the
   // "confirming" cause text sticks even after the burn is observed.
@@ -3603,7 +3607,7 @@ function renderBallot(){
       if(x.dataset.open) return;               // open seats are not radios
       x.setAttribute('aria-checked', String(!!selected && x.dataset.slug === selected));
     });
-    return;
+    syncWriteInVisibility(); return;
   }
   lastBallotSig = sig;
   $('ballot').innerHTML = orgs.map(c => {
@@ -3660,6 +3664,7 @@ function renderBallot(){
       });
     }
   });
+  syncWriteInVisibility();
 }
 function updateVoteButton(){
   const ok = !!(account && walletOnChain && selected && myPower > 0n);
