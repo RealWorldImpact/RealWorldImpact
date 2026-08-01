@@ -3569,6 +3569,11 @@ function activeOrgs(){
    because placeholder rows carry translated copy. */
 let lastBallotSig = null;
 function renderBallot(){
+  const writeInButton = $('writeInBtn');
+  const writeInTag = writeInButton && writeInButton.parentElement.querySelector('.wi-tag');
+  const writeInSeatsUsed = SLATE.filter(function(slug){ return !isAutomaticBallotSlug(slug); }).length;
+  if(writeInButton) writeInButton.hidden = writeInSeatsUsed >= WRITEIN_SLOTS;
+  if(writeInTag) writeInTag.hidden = writeInSeatsUsed >= WRITEIN_SLOTS;
   if(!ballotResolved){
     // Placeholder rows sized like real ones, so nothing jumps when they land.
     $('ballot').innerHTML = Array.from({length: TOTAL_SLOTS}, function(){
