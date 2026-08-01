@@ -4450,8 +4450,12 @@ function paintVoterList(){
   const voters = lastTally && lastTally.latestMap ? [...lastTally.latestMap.keys()].sort() : [];
   box.hidden = !voters.length;
   if(!voters.length) return;
-  box.innerHTML = '<strong>Current-round voters · tap an address to copy</strong>' + voters.map(function(address){
-    return '<button type="button" data-voter-address="' + esc(address) + '">' + esc(address) + '</button>';
+  const weights = lastTally.weights || new Map(), total = lastTally.total || 0n;
+  voters.sort(function(a,b){ const x=weights.get(a)||0n, y=weights.get(b)||0n; return x === y ? a.localeCompare(b) : x > y ? -1 : 1; });
+  box.innerHTML = '<strong>Current-round voters · tap an address to copy</strong>' + voters.map(function(address, index){
+    const weight = weights.get(address) || 0n;
+    const pct = total > 0n ? Number((weight * 10000n) / total) / 100 : 0;
+    return '<button type="button" data-voter-address="' + esc(address) + '"><span>#' + (index + 1) + ' · ' + esc(address) + '</span><span>' + esc(fmtToken(weight)) + ' $RWI · ' + pct.toFixed(2) + '%</span></button>';
   }).join('');
   box.querySelectorAll('[data-voter-address]').forEach(function(button){ button.addEventListener('click', function(){
     const address = button.dataset.voterAddress;
