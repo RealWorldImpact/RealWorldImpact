@@ -3571,9 +3571,6 @@ let lastBallotSig = null;
 function renderBallot(){
   const writeInButton = $('writeInBtn');
   const writeInTag = writeInButton && writeInButton.parentElement.querySelector('.wi-tag');
-  const ballotIsFull = SLATE.length >= TOTAL_SLOTS;
-  if(writeInButton) writeInButton.hidden = ballotIsFull;
-  if(writeInTag) writeInTag.hidden = ballotIsFull;
   if(!ballotResolved){
     // Placeholder rows sized like real ones, so nothing jumps when they land.
     $('ballot').innerHTML = Array.from({length: TOTAL_SLOTS}, function(){
@@ -3588,6 +3585,9 @@ function renderBallot(){
   }
   $('ballot').removeAttribute('aria-busy');
   const orgs = activeOrgs();
+  const ballotIsFull = orgs.length === TOTAL_SLOTS && orgs.every(function(org){ return !org.placeholder; });
+  if(writeInButton) writeInButton.hidden = ballotIsFull;
+  if(writeInTag) writeInTag.hidden = ballotIsFull;
   // Include pending state in the sig so a write-in that starts as 'confirming'
   // and later becomes verified triggers a full row rebuild — otherwise the
   // "confirming" cause text sticks even after the burn is observed.
