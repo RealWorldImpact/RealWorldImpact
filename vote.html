@@ -3385,7 +3385,16 @@ async function connect(){
     requestProviders();                       // catch late-injecting wallets
     await new Promise(function(r){ setTimeout(r, 60); });
     const list = knownProviders();
-    if(!list.length){ walletStatus(t('vote.st.noWallet'), true); return; }
+    if(!list.length){
+      /* A browser wallet is optional: use Privy when no extension is present. */
+      if(typeof window.rwiOpenPrivyWallet === 'function'){
+        walletStatus('');
+        await window.rwiOpenPrivyWallet();
+        return;
+      }
+      walletStatus('No browser wallet detected. Use the Privy wallet option on rwihood.org.', true);
+      return;
+    }
     let saved=null; try{ saved = localStorage.getItem('rwi_wallet_rdns'); }catch(e){}
     const only  = list.length === 1 ? list[0] : null;
     const match = only || list.find(function(d){ return d.info && d.info.rdns === saved; });
