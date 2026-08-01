@@ -2119,6 +2119,7 @@ document.addEventListener('DOMContentLoaded', function(){
   #voterList strong{display:block;margin:0 0 10px;color:var(--lime);font-size:10px;letter-spacing:.13em;text-transform:uppercase}
   #voterList button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 10px;border:0;border-top:1px solid rgba(204,254,6,.14);background:transparent;color:var(--lime);font:inherit;text-align:left;cursor:pointer}
   #voterList button:hover,#voterList button:focus-visible{background:rgba(204,254,6,.12);outline:none}
+  #voterList button::after{content:none!important}
   @media(max-width:560px){
     .band .wrap{padding-left:16px;padding-right:16px}
     .results-head{display:block}
