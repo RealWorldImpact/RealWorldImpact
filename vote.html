@@ -2120,6 +2120,12 @@ document.addEventListener('DOMContentLoaded', function(){
   #voterList button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 10px;border:0;border-top:1px solid rgba(204,254,6,.14);background:transparent;color:var(--lime);font:inherit;text-align:left;cursor:pointer}
   #voterList button::after{content:'Copy';font-size:9px;letter-spacing:.1em;text-transform:uppercase;opacity:.65}
   #voterList button:hover,#voterList button:focus-visible{background:rgba(204,254,6,.12);outline:none}
+  @media(max-width:560px){
+    #voterList{margin-top:16px;padding:13px 12px;font-size:10px}
+    #voterList button{display:flex;align-items:flex-start;gap:5px;padding:10px 8px;line-height:1.35;flex-direction:column}
+    #voterList button span:last-child{font-size:9px;opacity:.78}
+    #voterList button::after{position:absolute;right:10px;margin-top:2px}
+  }
   #wiSearch{width:100%;padding:11px 13px;border-radius:10px;border:1px solid rgba(204,254,6,.4);
     background:transparent;color:var(--lime);font-family:var(--mono);font-size:13px;box-sizing:border-box}
   #wiSearch:focus{border-color:var(--lime);outline:none}
