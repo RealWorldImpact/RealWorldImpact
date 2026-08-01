@@ -1832,7 +1832,7 @@ document.addEventListener('DOMContentLoaded', function(){
   .band .btn.ghost{background:transparent;color:var(--lime);border-color:rgba(204,254,6,.55)}
 
   .wallet-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-family:var(--mono);font-size:12px}
-  .wallet-bar #connectBtn,.wallet-bar #disconnectBtn{min-width:156px;text-align:center}
+  .wallet-bar #connectBtn,.wallet-bar #privyBtn,.wallet-bar #disconnectBtn{min-width:156px;text-align:center}
   .chip{
     display:inline-block;border:1px solid var(--rule-strong);border-radius:999px;
     padding:5px 11px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
@@ -2083,6 +2083,13 @@ document.addEventListener('DOMContentLoaded', function(){
   @media (max-width:480px){ #langSel{grid-template-columns:repeat(2,minmax(0,1fr));min-width:170px} }
 
   .wallet-picker{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px}
+  .privy-modal{position:fixed;inset:0;z-index:10050;display:grid;place-items:center;padding:18px;background:rgba(0,0,0,.66)}
+  .privy-modal[hidden]{display:none}
+  .privy-card{width:min(100%,420px);background:var(--paper);border:1px solid var(--rule-strong);border-radius:18px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  .privy-card h2{margin:0 0 6px;font-size:1.45rem}.privy-card p{margin:0 0 16px;font-size:14px;line-height:1.45}.privy-close{float:right;min-width:auto;padding:7px 10px}
+  .privy-field{display:grid;gap:7px;margin:13px 0}.privy-field label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}.privy-field input{width:100%;box-sizing:border-box;border:1px solid var(--rule-strong);border-radius:10px;background:transparent;color:inherit;padding:11px 12px;font:inherit}.privy-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.privy-actions .btn{flex:1}.privy-status{min-height:1.25em;margin-top:12px!important;font-size:12px!important}.privy-status.err{color:#b63737}.modal-open{overflow:hidden}
+  .band .privy-card{background:#111;color:#f7f7f2}.band .privy-field input{border-color:rgba(204,254,6,.6)}
+  @media(max-width:560px){.privy-modal{align-items:end;padding:10px}.privy-card{width:100%;padding:18px;border-radius:16px}.privy-card h2{font-size:1.3rem}}
   .wallet-picker .pick-label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
 
   .cand .yours{
@@ -2268,6 +2275,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <p class="eyebrow" data-i18n="vote.s1.eyebrow">01 — Your wallet</p>
       <div class="wallet-bar">
         <button class="btn" id="connectBtn" type="button" data-i18n="vote.connect">Connect wallet</button>
+        <button class="btn ghost" id="privyBtn" type="button">Use Privy wallet</button>
         <span class="chip" id="acctChip" hidden></span>
         <span class="chip" id="chainChip" hidden></span>
         <span class="chip" id="powerChip" hidden></span>
@@ -2277,6 +2285,24 @@ document.addEventListener('DOMContentLoaded', function(){
       <p class="status" id="walletStatus"></p>
     </div>
   </section>
+
+  <div class="privy-modal" id="privyModal" hidden role="dialog" aria-modal="true" aria-labelledby="privyTitle">
+    <div class="privy-card">
+      <button class="btn ghost privy-close" id="privyClose" type="button" aria-label="Close">×</button>
+      <h2 id="privyTitle">Use your Privy wallet</h2>
+      <div data-privy-step="email">
+        <p>Sign in with your email to create or open your secure Privy wallet on Robinhood Chain.</p>
+        <div class="privy-field"><label for="privyEmail">Email address</label><input id="privyEmail" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com"></div>
+        <div class="privy-actions"><button class="btn" id="privySendCode" type="button">Send secure code</button></div>
+      </div>
+      <div data-privy-step="code" hidden>
+        <p>Enter the code from your email to finish connecting your Privy wallet.</p>
+        <div class="privy-field"><label for="privyCode">Verification code</label><input id="privyCode" type="text" autocomplete="one-time-code" inputmode="numeric" placeholder="123456"></div>
+        <div class="privy-actions"><button class="btn ghost" id="privyBack" type="button">Back</button><button class="btn" id="privyVerifyCode" type="button">Continue</button></div>
+      </div>
+      <p class="privy-status" id="privyStatus" aria-live="polite"></p>
+    </div>
+  </div>
 
   <section class="band">
     <div class="wrap">
@@ -3286,7 +3312,7 @@ async function erc20BalanceOf(token, who){
      so a single announce at parse time misses them.
    · A provider-initiated disconnect must not call wallet_revokePermissions —
      that would prompt the user in response to their own wallet's event.        */
-let wallet=null, account=null, walletOnChain=false, chosenProvider=null;
+let wallet=null, account=null, walletOnChain=false, chosenProvider=null, walletKind='external';
 let userDisconnected = false;      // blocks the silent session-resume race
 let connecting = false;            // guards double-clicks on Connect
 let bound = null;                  // { provider, handlers } for clean teardown
@@ -3413,7 +3439,7 @@ async function doConnect(d){
   try{
     const accts = await p.request({method:'eth_requestAccounts'});
     if(!accts || !accts.length){ walletStatus(t('vote.st.noAccounts'), true); return; }
-    wallet = p; chosenProvider = d;
+    wallet = p; chosenProvider = d; walletKind = 'external';
     try{ localStorage.setItem('rwi_wallet_rdns', (d.info && d.info.rdns) || 'window.ethereum'); }catch(e){}
     bindProviderEvents(p);
     await setAccount(accts[0]);
@@ -3425,6 +3451,19 @@ async function doConnect(d){
   }
 }
 
+/* Privy's embedded wallet implements the same EIP-1193 provider contract as
+   an installed wallet, so it uses the established signing and chain checks. */
+window.rwiUsePrivyProvider = async function(provider, address){
+  userDisconnected = false;
+  wallet = provider;
+  walletKind = 'privy';
+  chosenProvider = { info:{ name:'Privy wallet', rdns:'io.privy' }, provider:provider };
+  bindProviderEvents(provider);
+  await setAccount(address);
+  await ensureChain();
+  walletStatus('Privy wallet connected.', false, true);
+};
+
 /* Clear local state only. Used when the WALLET initiates the change, so we do
    not prompt the user in response to their own wallet's event. */
 function softReset(){
@@ -3432,12 +3471,13 @@ function softReset(){
   // A pending vote belongs to the wallet that cast it. Leaving it behind meant a
   // disconnected wallet kept being counted, and its poll timers kept running.
   clearPendingVote();
-  wallet=null; account=null; walletOnChain=false; myPower=0n; selected=null;
+  wallet=null; account=null; walletOnChain=false; walletKind='external'; myPower=0n; selected=null;
   ['acctChip','chainChip','powerChip','disconnectBtn'].forEach(function(id){ const e=$(id); if(e){ e.hidden=true; e.textContent=''; } });
   const os=$('ownerSection'); if(os) os.hidden = true;
   const nb=$('nextRoundBtn'); if(nb) nb.hidden = true;
   ownerPanelOpen = false;
   const cb=$('connectBtn'); if(cb){ cb.hidden = false; cb.disabled = false; }
+  const pb=$('privyBtn'); if(pb){ pb.hidden = false; pb.disabled = false; }
   const wp=$('walletPicker'); if(wp){ wp.hidden = true; wp.innerHTML=''; }
   $('voteBtn').disabled = true;
   $('myVote').textContent = '';
@@ -3461,11 +3501,14 @@ async function disconnect(){
   }
   userDisconnected = true;
   const p = wallet;
+  const wasPrivy = walletKind === 'privy';
   softReset();
   keepWalletActionForReconnect();
   const bar=$('connectBtn') && $('connectBtn').closest('.wallet-bar'); if(bar) bar.classList.add('is-disconnected');
   walletStatus(t('vote.st.disconnected'), false, true);
-  try{
+  if(wasPrivy){
+    try{ if(typeof window.rwiDisconnectPrivyWallet === 'function') await window.rwiDisconnectPrivyWallet(); }catch(e){}
+  }else try{
     if(p && p.request) await p.request({ method:'wallet_revokePermissions', params:[{ eth_accounts:{} }] });
   }catch(e){ /* unsupported in many wallets — local reset already applied */ }
   try{ localStorage.removeItem('rwi_wallet_rdns'); }catch(e){}
@@ -3487,6 +3530,7 @@ async function setAccount(a){
   account = a;
   $('acctChip').textContent = short(a); $('acctChip').hidden = false;
   const cb=$('connectBtn'); if(cb) cb.hidden = true;
+  const pb=$('privyBtn'); if(pb) pb.hidden = true;
   const bar=cb && cb.closest('.wallet-bar'); if(bar) bar.classList.remove('is-disconnected');
   const actionButton=$('disconnectBtn');
   actionButton.hidden = false;
@@ -5159,5 +5203,6 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </div>
 </div>
+<script type="module" src="/privy-wallet.js"></script>
 </body>
 </html>
