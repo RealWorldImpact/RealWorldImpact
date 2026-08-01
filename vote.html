@@ -2118,9 +2118,16 @@ document.addEventListener('DOMContentLoaded', function(){
   #voterList{margin-top:22px;padding:16px;border:1px solid rgba(204,254,6,.32);border-radius:14px;background:rgba(204,254,6,.06);font-family:var(--mono);font-size:11px;letter-spacing:.04em}
   #voterList strong{display:block;margin:0 0 10px;color:var(--lime);font-size:10px;letter-spacing:.13em;text-transform:uppercase}
   #voterList button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 10px;border:0;border-top:1px solid rgba(204,254,6,.14);background:transparent;color:var(--lime);font:inherit;text-align:left;cursor:pointer}
-  #voterList button::after{content:'Copy';font-size:9px;letter-spacing:.1em;text-transform:uppercase;opacity:.65}
   #voterList button:hover,#voterList button:focus-visible{background:rgba(204,254,6,.12);outline:none}
   @media(max-width:560px){
+    .band .wrap{padding-left:16px;padding-right:16px}
+    .results-head{display:block}
+    .results-head .totals{margin-top:10px;text-align:left;font-size:11px;line-height:1.45}
+    .ballot{margin-top:14px;gap:8px}
+    .cand{padding:12px 10px;gap:9px}
+    .cand .who{min-width:0}.cand .name{font-size:16px}.cand .cause{font-size:10px;line-height:1.35}
+    .cand .tally{font-size:10px}.cand .tally .muted{font-size:9px}
+    .wallet-bar{gap:8px}.wallet-bar .btn{padding:10px 13px;font-size:10px}
     #voterList{margin-top:16px;padding:13px 12px;font-size:10px}
     #voterList button{display:flex;align-items:flex-start;gap:5px;padding:10px 8px;line-height:1.35;flex-direction:column}
     #voterList button span:last-child{font-size:9px;opacity:.78}
