@@ -2573,10 +2573,20 @@ const CRISIS_SOURCES = [
     }
   },
   {
+    /* ReliefWeb decommissioned API v1 (fully disabled end of Q1 2026 — this
+       source is past that date, so the v1 ladder rungs are dead weight, not
+       a fallback) and now enforces pre-approved appnames as of 1 Nov 2025:
+       an appname that was never submitted for approval gets a 403, permanently,
+       regardless of how the request is otherwise formed.
+
+       RW_APP='rwihood-org' has NOT been through ReliefWeb's approval form
+       (https://reliefweb.int/contact — "Request an appname"). Until it is,
+       this source will keep 403ing and contribute nothing, which is fine:
+       USGS and EONET are enough on their own to drive the live ranking, and
+       ReliefWeb starts working the moment the appname is approved with no
+       code change needed here. */
     name: 'ReliefWeb',
-    urls: ['https://api.reliefweb.int/v1/disasters?appname=' + RW_APP + '&filter[field]=status&filter[value]=ongoing&fields[include][]=name&fields[include][]=type.name&limit=100',
-           'https://api.reliefweb.int/v1/disasters?appname=' + RW_APP + '&fields[include][]=name&fields[include][]=type.name&limit=100',
-           'https://api.reliefweb.int/v2/disasters?appname=' + RW_APP + '&fields[include][]=name&fields[include][]=type.name&limit=100'],
+    urls: ['https://api.reliefweb.int/v2/disasters?appname=' + RW_APP + '&filter[field]=status&filter[value]=ongoing&fields[include][]=name&fields[include][]=type.name&limit=100'],
     parse: function(j){
       const out = {};
       (j && j.data || []).forEach(function(d){
@@ -2590,15 +2600,24 @@ const CRISIS_SOURCES = [
   }
 ];
 
+/* A response counts as "reached" the moment it is 200-OK and parses as JSON —
+   whether or not any of its events land in a bucket we track. Earlier this
+   fell through to the next URL (effectively treated as failed) whenever
+   `total` came out to 0, which is a common, unremarkable state of the world:
+   a quiet week with no 4.5+ quakes, or an EONET pull that happens to be all
+   Manmade/Water Color events we don't score against. That silently degraded
+   "nothing to report" into "source unreachable", and with three sources
+   sharing the fallback, a quiet week could read as "all sources unavailable"
+   even though every one of them answered correctly. */
 async function fetchOneSource(src){
   for(const u of src.urls){
     try{
       const res = await fetch(u);                 // no custom headers: stay CORS-safelisted
-      if(!res.ok) continue;
+      if(!res.ok) continue;                        // genuine failure — try the next URL
       const j = await res.json();
       const counts = src.parse(j);
       const total = Object.keys(counts).reduce(function(a,k){ return a + counts[k]; }, 0);
-      if(total > 0) return { name:src.name, counts:counts, total:total };
+      return { name:src.name, counts:counts, total:total };   // reached, whatever it found
     }catch(e){ /* blocked, offline or malformed — try the next URL */ }
   }
   return null;
