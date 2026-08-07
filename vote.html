@@ -28,14 +28,14 @@ const TRANSLATIONS = {
     'vote.title.b':'You pick',
     'vote.title.c':'who\'s next.',
     'vote.lede':'$RWI holders signal which vetted charity should receive the next donation. Your vote is a transaction on Robinhood Chain, weighted by the $RWI you hold. Anyone can tally it — including you.',
-    'vote.disclaimer.title':'Please note',
+    'vote.disclaimer.title':'Read this first',
     'vote.disclaimer.body':'This is an advisory signal, not binding governance. $RWI grants no governance rights and no claim on revenue. The project reads the result and weighs it, but retains final say over every donation — recipients must clear The Giving Block\'s vetting regardless of how the vote lands. Voting is weighted by token balance, which means larger holders carry more weight. Balances are read live at tally time, so a vote is not locked to a snapshot.',
-    'vote.s1.eyebrow':'Your wallet',
+    'vote.s1.eyebrow':'01 — Your wallet',
     'vote.connect':'Connect wallet',
     'vote.disconnect':'Disconnect',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Wrong network',
-    'vote.s2.eyebrow':'The ballot',
+    'vote.s2.eyebrow':'02 — The ballot',
     'vote.closes':'· closes',
     'vote.closes.when':'when the next donation is made',
     'vote.cast':'Cast vote',
@@ -46,7 +46,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'Open a new ballot',
     'vote.founder.confirm':'Confirm & open',
     'vote.founder.note':'The slate below is composed automatically — one returning organisation, two from the project’s established cause areas, and three responding to current need, ranked against live ReliefWeb crisis data. Opening a new round is a transaction from your wallet: it supersedes the current round, and votes cast in earlier rounds stop counting immediately. Only this address can do it; declarations from anyone else are ignored when the page reads the chain.',
-    'vote.s3.eyebrow':'How the tally works',
+    'vote.s3.eyebrow':'03 — How the tally works',
     'vote.s3.title':'Countable by anyone.',
     'vote.how1a':'Your wallet sends a 0-value transaction to the ballot box address with',
     'vote.how1b':'in the data field. You pay only gas.',
@@ -78,7 +78,6 @@ const TRANSLATIONS = {
     'vote.st.noWallet':'No wallet detected. Install a browser wallet, then reload.',
     'vote.st.rejected':'Connection rejected.',
     'vote.st.connFail':'Could not connect to that wallet.',
-    'vote.st.disconnected':'Wallet disconnected. Connect again to vote.',
     'vote.st.readingCrises':'Reading live crisis feeds…',
     'vote.st.notOwner':'Only the round controller can open a round.',
     'vote.st.confirmRound':'Confirm in your wallet — opening a new ballot…',
@@ -131,7 +130,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'Something failed. Completed steps stand; re-open to finish the rest.',
     'vote.st.writeInConnect':'Connect a wallet first.',
     'vote.st.writeInNoPrice':'Cannot read the $RWI price right now, so the fee cannot be quoted.',
-    'vote.st.writeInNote':'Two separate transactions: a token transfer carries no message, so the nomination and the burn are signed individually. The directory is refreshed from The Giving Block’s public listing.',
+    'vote.st.writeInNote':'Two separate transactions: a token transfer carries no message, so the nomination and the burn are signed individually. The directory is a verified subset of The Giving Block, not its full listing.',
     'vote.st.wiShort':'This wallet holds {have} $RWI but this step needs {need}. Top up, then press Submit — completed steps are kept.',
     'vote.st.wiNoLog':'The transaction was mined but no $RWI actually moved — the token contract accepted the call without transferring. Inspect it on the explorer: {h}',
     'vote.st.wiRetry':'Step {n} hit a snag — retrying automatically…'
@@ -163,12 +162,12 @@ const TRANSLATIONS = {
     'vote.lede':'Los poseedores de $RWI señalan qué organización benéfica verificada debe recibir la próxima donación. Tu voto es una transacción en Robinhood Chain, ponderada por el $RWI que posees. Cualquiera puede contarlo — incluido tú.',
     'vote.disclaimer.title':'Lee esto primero',
     'vote.disclaimer.body':'Esto es una señal consultiva, no gobernanza vinculante. $RWI no otorga derechos de gobernanza ni derecho sobre los ingresos. El proyecto lee el resultado y lo pondera, pero conserva la última palabra sobre cada donación — los destinatarios deben pasar la verificación de The Giving Block sea cual sea el resultado. El voto se pondera por saldo de tokens, por lo que los grandes tenedores pesan más. Los saldos se leen en vivo al momento del recuento, así que un voto no queda fijado a una instantánea.',
-    'vote.s1.eyebrow':'Tu billetera',
+    'vote.s1.eyebrow':'01 — Tu billetera',
     'vote.connect':'Conectar billetera',
     'vote.disconnect':'Desconectar',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Red incorrecta',
-    'vote.s2.eyebrow':'La votación',
+    'vote.s2.eyebrow':'02 — La votación',
     'vote.closes':'· cierra',
     'vote.closes.when':'cuando se haga la próxima donación',
     'vote.cast':'Emitir voto',
@@ -179,7 +178,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'Abrir una nueva votacion',
     'vote.founder.confirm':'Confirmar y abrir',
     'vote.founder.note':'La lista siguiente se compone automáticamente — una organización recurrente, dos de las áreas de causa establecidas del proyecto y tres que responden a la necesidad actual, clasificadas según datos de crisis en vivo de ReliefWeb. Abrir una nueva ronda es una transacción desde tu billetera: reemplaza la ronda actual y los votos de rondas anteriores dejan de contar de inmediato. Solo esta dirección puede hacerlo; las declaraciones de cualquier otra se ignoran cuando la página lee la cadena.',
-    'vote.s3.eyebrow':'Cómo funciona el recuento',
+    'vote.s3.eyebrow':'03 — Cómo funciona el recuento',
     'vote.s3.title':'Contable por cualquiera.',
     'vote.how1a':'Tu billetera envía una transacción de valor 0 a la dirección de la urna con',
     'vote.how1b':'en el campo de datos. Solo pagas gas.',
@@ -292,12 +291,12 @@ const TRANSLATIONS = {
     'vote.lede':'$RWI 持有者投票决定下一笔捐赠应当流向哪个经审查的慈善机构。你的投票是 Robinhood 链上的一笔交易,按你持有的 $RWI 加权。任何人都可以统计 — 包括你。',
     'vote.disclaimer.title':'请先阅读',
     'vote.disclaimer.body':'这是咨询性信号,而非有约束力的治理。$RWI 不授予治理权,也不构成对收入的索取权。项目会参考结果并加以权衡,但对每笔捐赠保留最终决定权 — 无论投票结果如何,接收方都必须通过 The Giving Block 的审查。投票按代币余额加权,这意味着大持有者权重更高。余额在统计时实时读取,因此投票并不锁定于某个快照。',
-    'vote.s1.eyebrow':'你的钱包',
+    'vote.s1.eyebrow':'01 — 你的钱包',
     'vote.connect':'连接钱包',
     'vote.disconnect':'断开',
     'vote.chain.ok':'Robinhood 链',
     'vote.chain.wrong':'网络错误',
-    'vote.s2.eyebrow':'选票',
+    'vote.s2.eyebrow':'02 — 选票',
     'vote.closes':'· 结束于',
     'vote.closes.when':'下一笔捐赠完成时',
     'vote.cast':'投票',
@@ -308,7 +307,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'开启新的投票',
     'vote.founder.confirm':'确认并开启',
     'vote.founder.note':'下方名单为自动组成 — 一个回访组织、两个来自项目既有关注领域的组织,以及三个应对当前需求的组织,依据 ReliefWeb 实时危机数据排序。开启新一轮是来自你钱包的一笔交易:它会取代当前轮次,先前轮次的投票立即失效。只有此地址可以执行;页面读取链上数据时会忽略任何其他地址的声明。',
-    'vote.s3.eyebrow':'统计如何运作',
+    'vote.s3.eyebrow':'03 — 统计如何运作',
     'vote.s3.title':'任何人都能统计。',
     'vote.how1a':'你的钱包向投票箱地址发送一笔 0 值交易,附带',
     'vote.how1b':'写在 data 字段中。你只需支付 gas。',
@@ -421,12 +420,12 @@ const TRANSLATIONS = {
     'vote.lede':'$RWI 保有者が、次の寄付をどの審査済み慈善団体が受け取るべきかを示します。投票は Robinhood Chain 上のトランザクションで、保有する $RWI で重み付けされます。誰でも集計できます — あなたも含めて。',
     'vote.disclaimer.title':'まずお読みください',
     'vote.disclaimer.body':'これは助言的なシグナルであり、拘束力のあるガバナンスではありません。$RWI はガバナンス権も収益への請求権も付与しません。プロジェクトは結果を読み取り考慮しますが、すべての寄付について最終決定権を保持します — 投票結果にかかわらず、受取人は The Giving Block の審査を通過する必要があります。投票はトークン残高で重み付けされるため、大口保有者ほど影響が大きくなります。残高は集計時にライブで読み取られるため、投票はスナップショットに固定されません。',
-    'vote.s1.eyebrow':'あなたのウォレット',
+    'vote.s1.eyebrow':'01 — あなたのウォレット',
     'vote.connect':'ウォレットを接続',
     'vote.disconnect':'切断',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'ネットワークが違います',
-    'vote.s2.eyebrow':'投票用紙',
+    'vote.s2.eyebrow':'02 — 投票用紙',
     'vote.closes':'· 締切',
     'vote.closes.when':'次の寄付が行われたとき',
     'vote.cast':'投票する',
@@ -437,7 +436,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'新しい投票を開く',
     'vote.founder.confirm':'確認して開く',
     'vote.founder.note':'以下の候補は自動的に構成されます — 再登場の団体 1、プロジェクトの既存の関心領域から 2、そして ReliefWeb のライブ危機データに照らして順位付けされた、現在の必要に応える団体 3。新しいラウンドを開くのはあなたのウォレットからのトランザクションです:現在のラウンドを置き換え、以前のラウンドの投票は即座に無効になります。これを実行できるのはこのアドレスのみで、他の誰かの宣言はページがチェーンを読む際に無視されます。',
-    'vote.s3.eyebrow':'集計の仕組み',
+    'vote.s3.eyebrow':'03 — 集計の仕組み',
     'vote.s3.title':'誰でも数えられる。',
     'vote.how1a':'ウォレットが投票箱アドレスに 0 価値のトランザクションを送信し、',
     'vote.how1b':'を data フィールドに含めます。支払うのはガス代のみです。',
@@ -550,12 +549,12 @@ const TRANSLATIONS = {
     'vote.lede':'$RWI 보유자가 다음 기부를 어느 검증된 자선단체가 받아야 할지 신호합니다. 투표는 Robinhood Chain의 거래이며, 보유한 $RWI로 가중됩니다. 누구나 집계할 수 있습니다 — 당신도 포함해서.',
     'vote.disclaimer.title':'먼저 읽어주세요',
     'vote.disclaimer.body':'이것은 자문 신호이며 구속력 있는 거버넌스가 아닙니다. $RWI는 거버넌스 권리도, 수익에 대한 청구권도 부여하지 않습니다. 프로젝트는 결과를 읽고 참고하지만 모든 기부에 대한 최종 결정권을 유지합니다 — 투표 결과와 무관하게 수혜자는 The Giving Block의 검증을 통과해야 합니다. 투표는 토큰 잔액으로 가중되므로 대규모 보유자의 영향이 큽니다. 잔액은 집계 시점에 실시간으로 읽히므로 투표는 스냅샷에 고정되지 않습니다.',
-    'vote.s1.eyebrow':'내 지갑',
+    'vote.s1.eyebrow':'01 — 내 지갑',
     'vote.connect':'지갑 연결',
     'vote.disconnect':'연결 해제',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'잘못된 네트워크',
-    'vote.s2.eyebrow':'투표용지',
+    'vote.s2.eyebrow':'02 — 투표용지',
     'vote.closes':'· 마감',
     'vote.closes.when':'다음 기부가 이루어질 때',
     'vote.cast':'투표하기',
@@ -566,7 +565,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'새 투표 열기',
     'vote.founder.confirm':'확인하고 열기',
     'vote.founder.note':'아래 명단은 자동으로 구성됩니다 — 재등장 단체 1곳, 프로젝트의 기존 관심 분야에서 2곳, 그리고 ReliefWeb 실시간 위기 데이터에 따라 순위가 매겨진 현재 필요에 대응하는 3곳. 새 라운드를 여는 것은 당신 지갑에서 보내는 거래입니다: 현재 라운드를 대체하며, 이전 라운드의 투표는 즉시 무효가 됩니다. 오직 이 주소만 실행할 수 있으며, 다른 누군가의 선언은 페이지가 체인을 읽을 때 무시됩니다.',
-    'vote.s3.eyebrow':'집계 방식',
+    'vote.s3.eyebrow':'03 — 집계 방식',
     'vote.s3.title':'누구나 셀 수 있습니다.',
     'vote.how1a':'지갑이 투표함 주소로 0원 거래를 보내며',
     'vote.how1b':'를 data 필드에 담습니다. 가스비만 지불합니다.',
@@ -679,12 +678,12 @@ const TRANSLATIONS = {
     'vote.lede':'Detentores de $RWI sinalizam qual instituição verificada deve receber a próxima doação. Seu voto é uma transação na Robinhood Chain, ponderada pelo $RWI que você detém. Qualquer um pode contabilizar — inclusive você.',
     'vote.disclaimer.title':'Leia isto primeiro',
     'vote.disclaimer.body':'Isto é um sinal consultivo, não governança vinculante. $RWI não concede direitos de governança nem direito sobre receitas. O projeto lê o resultado e o pondera, mas mantém a palavra final sobre cada doação — os destinatários devem passar pela verificação da The Giving Block independentemente do resultado. O voto é ponderado pelo saldo de tokens, o que significa que grandes detentores pesam mais. Os saldos são lidos ao vivo no momento da contagem, então um voto não fica preso a um instantâneo.',
-    'vote.s1.eyebrow':'Sua carteira',
+    'vote.s1.eyebrow':'01 — Sua carteira',
     'vote.connect':'Conectar carteira',
     'vote.disconnect':'Desconectar',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Rede incorreta',
-    'vote.s2.eyebrow':'A votação',
+    'vote.s2.eyebrow':'02 — A votação',
     'vote.closes':'· encerra',
     'vote.closes.when':'quando a próxima doação for feita',
     'vote.cast':'Votar',
@@ -695,7 +694,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'Abrir uma nova votacao',
     'vote.founder.confirm':'Confirmar e abrir',
     'vote.founder.note':'A lista abaixo é composta automaticamente — uma organização recorrente, duas das áreas de causa já estabelecidas do projeto e três respondendo à necessidade atual, classificadas conforme dados de crise ao vivo da ReliefWeb. Abrir uma nova rodada é uma transação da sua carteira: substitui a rodada atual, e votos de rodadas anteriores param de contar imediatamente. Só este endereço pode fazê-lo; declarações de qualquer outro são ignoradas quando a página lê a cadeia.',
-    'vote.s3.eyebrow':'Como a contagem funciona',
+    'vote.s3.eyebrow':'03 — Como a contagem funciona',
     'vote.s3.title':'Contável por qualquer um.',
     'vote.how1a':'Sua carteira envia uma transação de valor 0 para o endereço da urna com',
     'vote.how1b':'no campo de dados. Você paga apenas gas.',
@@ -808,12 +807,12 @@ const TRANSLATIONS = {
     'vote.lede':'Les détenteurs de $RWI indiquent quelle œuvre vérifiée doit recevoir le prochain don. Votre vote est une transaction sur Robinhood Chain, pondérée par le $RWI que vous détenez. N\'importe qui peut le compter — vous compris.',
     'vote.disclaimer.title':'Lisez ceci d\'abord',
     'vote.disclaimer.body':'Ceci est un signal consultatif, pas une gouvernance contraignante. $RWI ne confère aucun droit de gouvernance ni créance sur les revenus. Le projet lit le résultat et en tient compte, mais conserve le dernier mot sur chaque don — les bénéficiaires doivent passer la vérification de The Giving Block quel que soit le vote. Le vote est pondéré par le solde de tokens, les gros détenteurs pèsent donc davantage. Les soldes sont lus en direct au moment du décompte, un vote n\'est donc pas figé sur un instantané.',
-    'vote.s1.eyebrow':'Votre portefeuille',
+    'vote.s1.eyebrow':'01 — Votre portefeuille',
     'vote.connect':'Connecter le portefeuille',
     'vote.disconnect':'Déconnecter',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Mauvais réseau',
-    'vote.s2.eyebrow':'Le bulletin',
+    'vote.s2.eyebrow':'02 — Le bulletin',
     'vote.closes':'· clôture',
     'vote.closes.when':'lorsque le prochain don sera effectué',
     'vote.cast':'Voter',
@@ -824,7 +823,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'Ouvrir un nouveau scrutin',
     'vote.founder.confirm':'Confirmer et ouvrir',
     'vote.founder.note':'La liste ci-dessous est composée automatiquement — une organisation récurrente, deux issues des domaines déjà soutenus par le projet, et trois répondant au besoin actuel, classées selon les données de crise en direct de ReliefWeb. Ouvrir un nouveau tour est une transaction depuis votre portefeuille : elle remplace le tour actuel, et les votes des tours précédents cessent immédiatement de compter. Seule cette adresse peut le faire ; les déclarations de toute autre sont ignorées lorsque la page lit la chaîne.',
-    'vote.s3.eyebrow':'Comment le décompte fonctionne',
+    'vote.s3.eyebrow':'03 — Comment le décompte fonctionne',
     'vote.s3.title':'Comptable par quiconque.',
     'vote.how1a':'Votre portefeuille envoie une transaction de valeur 0 à l\'adresse de l\'urne avec',
     'vote.how1b':'dans le champ de données. Vous ne payez que le gas.',
@@ -937,12 +936,12 @@ const TRANSLATIONS = {
     'vote.lede':'Держатели $RWI указывают, какая проверенная благотворительная организация должна получить следующее пожертвование. Ваш голос — транзакция в Robinhood Chain, взвешенная по количеству $RWI. Подсчитать может любой — включая вас.',
     'vote.disclaimer.title':'Сначала прочтите это',
     'vote.disclaimer.body':'Это консультативный сигнал, а не обязывающее управление. $RWI не даёт ни прав управления, ни притязаний на доход. Проект читает результат и учитывает его, но сохраняет за собой последнее слово по каждому пожертвованию — получатели обязаны пройти проверку The Giving Block независимо от исхода голосования. Голос взвешивается по балансу токенов, поэтому крупные держатели весят больше. Балансы читаются в момент подсчёта, поэтому голос не привязан к снимку.',
-    'vote.s1.eyebrow':'Ваш кошелёк',
+    'vote.s1.eyebrow':'01 — Ваш кошелёк',
     'vote.connect':'Подключить кошелёк',
     'vote.disconnect':'Отключить',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Неверная сеть',
-    'vote.s2.eyebrow':'Бюллетень',
+    'vote.s2.eyebrow':'02 — Бюллетень',
     'vote.closes':'· закрывается',
     'vote.closes.when':'когда будет сделано следующее пожертвование',
     'vote.cast':'Проголосовать',
@@ -953,7 +952,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'Открыть новое голосование',
     'vote.founder.confirm':'Подтвердить и открыть',
     'vote.founder.note':'Список ниже составляется автоматически — одна возвращающаяся организация, две из уже поддержанных проектом направлений и три, отвечающие текущей нужде, ранжированные по живым данным о кризисах ReliefWeb. Открытие нового раунда — транзакция из вашего кошелька: она заменяет текущий раунд, и голоса прошлых раундов немедленно перестают считаться. Сделать это может только этот адрес; заявления от любого другого игнорируются при чтении цепочки.',
-    'vote.s3.eyebrow':'Как работает подсчёт',
+    'vote.s3.eyebrow':'03 — Как работает подсчёт',
     'vote.s3.title':'Подсчитать может любой.',
     'vote.how1a':'Ваш кошелёк отправляет транзакцию нулевой стоимости на адрес урны с',
     'vote.how1b':'в поле данных. Вы платите только за газ.',
@@ -1066,12 +1065,12 @@ const TRANSLATIONS = {
     'vote.lede':'$RWI sahipleri, bir sonraki bağışı hangi doğrulanmış hayır kurumunun alması gerektiğini işaret eder. Oyunuz Robinhood Chain üzerinde bir işlemdir ve elinizdeki $RWI ile ağırlıklandırılır. Herkes sayabilir — siz dahil.',
     'vote.disclaimer.title':'Önce bunu okuyun',
     'vote.disclaimer.body':'Bu bağlayıcı bir yönetişim değil, danışma niteliğinde bir sinyaldir. $RWI ne yönetişim hakkı ne de gelir üzerinde hak verir. Proje sonucu okur ve dikkate alır, ancak her bağış üzerinde son sözü saklı tutar — alıcılar, oy nasıl sonuçlanırsa sonuçlansın The Giving Block doğrulamasından geçmelidir. Oylama token bakiyesiyle ağırlıklandırılır, bu da büyük sahiplerin daha fazla ağırlık taşıdığı anlamına gelir. Bakiyeler sayım anında canlı okunur, bu yüzden oy bir anlık görüntüye sabitlenmez.',
-    'vote.s1.eyebrow':'Cüzdanınız',
+    'vote.s1.eyebrow':'01 — Cüzdanınız',
     'vote.connect':'Cüzdan bağla',
     'vote.disconnect':'Bağlantıyı kes',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Yanlış ağ',
-    'vote.s2.eyebrow':'Oy pusulası',
+    'vote.s2.eyebrow':'02 — Oy pusulası',
     'vote.closes':'· kapanış',
     'vote.closes.when':'bir sonraki bağış yapıldığında',
     'vote.cast':'Oy ver',
@@ -1082,7 +1081,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'Yeni bir oylama ac',
     'vote.founder.confirm':'Onayla ve ac',
     'vote.founder.note':'Aşağıdaki liste otomatik oluşturulur — bir tekrar eden kuruluş, projenin yerleşik ilgi alanlarından iki tane ve ReliefWeb canlı kriz verilerine göre sıralanmış, güncel ihtiyaca yanıt veren üç tane. Yeni bir tur açmak cüzdanınızdan bir işlemdir: mevcut turun yerini alır ve önceki turlardaki oylar anında sayılmaz olur. Bunu yalnızca bu adres yapabilir; başka herhangi birinin bildirimleri sayfa zinciri okurken yok sayılır.',
-    'vote.s3.eyebrow':'Sayım nasıl çalışır',
+    'vote.s3.eyebrow':'03 — Sayım nasıl çalışır',
     'vote.s3.title':'Herkes sayabilir.',
     'vote.how1a':'Cüzdanınız oy sandığı adresine 0 değerli bir işlem gönderir,',
     'vote.how1b':'veri alanında. Yalnızca gas ödersiniz.',
@@ -1195,12 +1194,12 @@ const TRANSLATIONS = {
     'vote.lede':'Người nắm giữ $RWI báo hiệu tổ chức từ thiện đã kiểm định nào nên nhận khoản quyên góp tiếp theo. Phiếu của bạn là một giao dịch trên Robinhood Chain, được tính trọng số theo lượng $RWI bạn nắm giữ. Bất kỳ ai cũng có thể kiểm đếm — kể cả bạn.',
     'vote.disclaimer.title':'Đọc điều này trước',
     'vote.disclaimer.body':'Đây là tín hiệu tư vấn, không phải quản trị ràng buộc. $RWI không trao quyền quản trị và không có quyền đòi doanh thu. Dự án đọc kết quả và cân nhắc, nhưng giữ quyền quyết định cuối cùng với mọi khoản quyên góp — người nhận phải qua kiểm định của The Giving Block bất kể kết quả bỏ phiếu. Bỏ phiếu được tính trọng số theo số dư token, nghĩa là người nắm giữ lớn có trọng lượng lớn hơn. Số dư được đọc trực tiếp lúc kiểm đếm, nên phiếu không bị khóa vào một ảnh chụp.',
-    'vote.s1.eyebrow':'Ví của bạn',
+    'vote.s1.eyebrow':'01 — Ví của bạn',
     'vote.connect':'Kết nối ví',
     'vote.disconnect':'Ngắt kết nối',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Sai mạng',
-    'vote.s2.eyebrow':'Lá phiếu',
+    'vote.s2.eyebrow':'02 — Lá phiếu',
     'vote.closes':'· đóng',
     'vote.closes.when':'khi khoản quyên góp tiếp theo được thực hiện',
     'vote.cast':'Bỏ phiếu',
@@ -1211,7 +1210,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'Mở lá phiếu mới',
     'vote.founder.confirm':'Xác nhận & mở',
     'vote.founder.note':'Danh sách bên dưới được soạn tự động — một tổ chức quay lại, hai từ các lĩnh vực dự án đã hỗ trợ, và ba đáp ứng nhu cầu hiện tại, xếp hạng theo dữ liệu khủng hoảng trực tiếp của ReliefWeb. Mở vòng mới là một giao dịch từ ví của bạn: nó thay thế vòng hiện tại, và phiếu ở các vòng trước lập tức không còn được tính. Chỉ địa chỉ này mới làm được; tuyên bố từ bất kỳ ai khác đều bị bỏ qua khi trang đọc chuỗi.',
-    'vote.s3.eyebrow':'Cách kiểm đếm hoạt động',
+    'vote.s3.eyebrow':'03 — Cách kiểm đếm hoạt động',
     'vote.s3.title':'Ai cũng đếm được.',
     'vote.how1a':'Ví của bạn gửi một giao dịch giá trị 0 đến địa chỉ hòm phiếu với',
     'vote.how1b':'trong trường dữ liệu. Bạn chỉ trả gas.',
@@ -1324,12 +1323,12 @@ const TRANSLATIONS = {
     'vote.lede':'$RWI धारक संकेत देते हैं कि अगला दान किस सत्यापित धर्मार्थ संगठन को मिलना चाहिए। आपका वोट Robinhood Chain पर एक लेनदेन है, जो आपके पास मौजूद $RWI के अनुसार भारित होता है। कोई भी इसकी गिनती कर सकता है — आप भी।',
     'vote.disclaimer.title':'पहले यह पढ़ें',
     'vote.disclaimer.body':'यह एक सलाहकारी संकेत है, बाध्यकारी शासन नहीं। $RWI कोई शासन अधिकार या राजस्व पर दावा नहीं देता। परियोजना परिणाम पढ़ती है और उस पर विचार करती है, लेकिन हर दान पर अंतिम निर्णय अपने पास रखती है — वोट चाहे जैसा भी हो, प्राप्तकर्ताओं को The Giving Block की जाँच पास करनी होगी। मतदान टोकन शेष के अनुसार भारित होता है, यानी बड़े धारकों का वजन अधिक होता है। शेष गिनती के समय लाइव पढ़े जाते हैं, इसलिए वोट किसी स्नैपशॉट से बंधा नहीं है।',
-    'vote.s1.eyebrow':'आपका वॉलेट',
+    'vote.s1.eyebrow':'01 — आपका वॉलेट',
     'vote.connect':'वॉलेट कनेक्ट करें',
     'vote.disconnect':'डिस्कनेक्ट',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'गलत नेटवर्क',
-    'vote.s2.eyebrow':'मतपत्र',
+    'vote.s2.eyebrow':'02 — मतपत्र',
     'vote.closes':'· समाप्त',
     'vote.closes.when':'जब अगला दान किया जाएगा',
     'vote.cast':'वोट डालें',
@@ -1340,7 +1339,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'नया मतपत्र खोलें',
     'vote.founder.confirm':'पुष्टि करें और खोलें',
     'vote.founder.note':'नीचे की सूची स्वचालित रूप से बनती है — एक लौटने वाला संगठन, परियोजना के स्थापित कारण क्षेत्रों से दो, और वर्तमान आवश्यकता का उत्तर देने वाले तीन, जो ReliefWeb के लाइव संकट डेटा के आधार पर क्रमित हैं। नया दौर खोलना आपके वॉलेट से एक लेनदेन है: यह वर्तमान दौर की जगह लेता है, और पिछले दौरों के वोट तुरंत गिनना बंद कर देते हैं। केवल यही पता ऐसा कर सकता है; किसी और की घोषणाएँ तब अनदेखी की जाती हैं जब पृष्ठ चेन पढ़ता है।',
-    'vote.s3.eyebrow':'गणना कैसे काम करती है',
+    'vote.s3.eyebrow':'03 — गणना कैसे काम करती है',
     'vote.s3.title':'कोई भी गिन सकता है।',
     'vote.how1a':'आपका वॉलेट मतपेटी पते पर 0-मूल्य लेनदेन भेजता है, जिसमें',
     'vote.how1b':'data फ़ील्ड में। आप केवल gas चुकाते हैं।',
@@ -1453,12 +1452,12 @@ const TRANSLATIONS = {
     'vote.lede':'$RWI-Inhaber signalisieren, welche geprüfte Organisation die nächste Spende erhalten soll. Deine Stimme ist eine Transaktion auf der Robinhood Chain, gewichtet nach dem $RWI, das du hältst. Jeder kann sie auszählen — auch du.',
     'vote.disclaimer.title':'Lies das zuerst',
     'vote.disclaimer.body':'Dies ist ein beratendes Signal, keine bindende Governance. $RWI gewährt weder Governance-Rechte noch Ansprüche auf Erlöse. Das Projekt liest das Ergebnis und gewichtet es, behält aber bei jeder Spende das letzte Wort — Empfänger müssen die Prüfung von The Giving Block bestehen, unabhängig vom Abstimmungsergebnis. Die Abstimmung wird nach Token-Guthaben gewichtet, große Inhaber wiegen also schwerer. Guthaben werden zum Auszählungszeitpunkt live gelesen, eine Stimme ist also nicht auf einen Snapshot festgelegt.',
-    'vote.s1.eyebrow':'Deine Wallet',
+    'vote.s1.eyebrow':'01 — Deine Wallet',
     'vote.connect':'Wallet verbinden',
     'vote.disconnect':'Trennen',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Falsches Netzwerk',
-    'vote.s2.eyebrow':'Der Stimmzettel',
+    'vote.s2.eyebrow':'02 — Der Stimmzettel',
     'vote.closes':'· endet',
     'vote.closes.when':'wenn die nächste Spende erfolgt',
     'vote.cast':'Abstimmen',
@@ -1469,7 +1468,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'Neue Abstimmung oeffnen',
     'vote.founder.confirm':'Bestaetigen & oeffnen',
     'vote.founder.note':'Die Liste unten wird automatisch zusammengestellt — eine wiederkehrende Organisation, zwei aus den etablierten Themenfeldern des Projekts und drei, die auf den aktuellen Bedarf reagieren, gewichtet nach Live-Krisendaten von ReliefWeb. Eine neue Runde zu öffnen ist eine Transaktion aus deiner Wallet: Sie löst die aktuelle Runde ab, und Stimmen früherer Runden zählen sofort nicht mehr. Nur diese Adresse kann das; Deklarationen von anderen werden ignoriert, wenn die Seite die Chain liest.',
-    'vote.s3.eyebrow':'Wie die Auszählung funktioniert',
+    'vote.s3.eyebrow':'03 — Wie die Auszählung funktioniert',
     'vote.s3.title':'Von jedem zählbar.',
     'vote.how1a':'Deine Wallet sendet eine Transaktion mit Wert 0 an die Wahlurnen-Adresse mit',
     'vote.how1b':'im Datenfeld. Du zahlst nur Gas.',
@@ -1582,12 +1581,12 @@ const TRANSLATIONS = {
     'vote.lede':'Pemegang $RWI memberi sinyal lembaga amal terverifikasi mana yang harus menerima donasi berikutnya. Suara Anda adalah transaksi di Robinhood Chain, dibobot oleh $RWI yang Anda pegang. Siapa pun bisa menghitungnya — termasuk Anda.',
     'vote.disclaimer.title':'Baca ini dulu',
     'vote.disclaimer.body':'Ini adalah sinyal penasihat, bukan tata kelola yang mengikat. $RWI tidak memberikan hak tata kelola maupun klaim atas pendapatan. Proyek membaca hasilnya dan mempertimbangkannya, tetapi memegang keputusan akhir atas setiap donasi — penerima harus lolos verifikasi The Giving Block terlepas dari hasil pemungutan suara. Pemungutan suara dibobot berdasarkan saldo token, artinya pemegang besar membawa bobot lebih. Saldo dibaca langsung saat penghitungan, jadi suara tidak terkunci pada snapshot.',
-    'vote.s1.eyebrow':'Dompet Anda',
+    'vote.s1.eyebrow':'01 — Dompet Anda',
     'vote.connect':'Hubungkan dompet',
     'vote.disconnect':'Putuskan',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Jaringan salah',
-    'vote.s2.eyebrow':'Surat suara',
+    'vote.s2.eyebrow':'02 — Surat suara',
     'vote.closes':'· ditutup',
     'vote.closes.when':'saat donasi berikutnya dilakukan',
     'vote.cast':'Beri suara',
@@ -1598,7 +1597,7 @@ const TRANSLATIONS = {
     'vote.founder.open':'Buka surat suara baru',
     'vote.founder.confirm':'Konfirmasi & buka',
     'vote.founder.note':'Daftar di bawah disusun otomatis — satu organisasi yang kembali, dua dari bidang yang sudah didukung proyek, dan tiga yang merespons kebutuhan saat ini, diperingkat menurut data krisis langsung ReliefWeb. Membuka putaran baru adalah transaksi dari dompet Anda: ia menggantikan putaran saat ini, dan suara di putaran sebelumnya langsung berhenti dihitung. Hanya alamat ini yang bisa melakukannya; deklarasi dari siapa pun lainnya diabaikan saat halaman membaca rantai.',
-    'vote.s3.eyebrow':'Cara penghitungan bekerja',
+    'vote.s3.eyebrow':'03 — Cara penghitungan bekerja',
     'vote.s3.title':'Dapat dihitung siapa saja.',
     'vote.how1a':'Dompet Anda mengirim transaksi bernilai 0 ke alamat kotak suara dengan',
     'vote.how1b':'di bidang data. Anda hanya membayar gas.',
@@ -1766,19 +1765,13 @@ document.addEventListener('DOMContentLoaded', function(){
     --serif:'Newsreader',Georgia,'Times New Roman',serif;
   }
   *{box-sizing:border-box}
-  html{-webkit-text-size-adjust:100%;scrollbar-color:var(--ink) rgba(11,11,9,.14);scrollbar-width:thin}
-  *::-webkit-scrollbar{width:9px;height:9px}
-  *::-webkit-scrollbar-track{background:rgba(11,11,9,.14)}
-  *::-webkit-scrollbar-thumb{background:var(--ink);border:2px solid var(--lime);border-radius:999px}
-  *::-webkit-scrollbar-thumb:hover{background:rgba(11,11,9,.76)}
-  *::-webkit-scrollbar-corner{background:var(--lime)}
+  html{-webkit-text-size-adjust:100%}
   body{
     margin:0;background:var(--lime);color:var(--ink);
     font-family:var(--serif);font-size:18px;line-height:1.55;
     -webkit-font-smoothing:antialiased;
   }
   ::selection{background:var(--ink);color:var(--lime)}
-  main :is(.eyebrow,.note,.muted,.label,.meta){font-size:1.06em}
   a{color:inherit}
   h1,h2,h3{font-weight:500;margin:0;text-wrap:balance}
   p{text-wrap:pretty}
@@ -1832,7 +1825,6 @@ document.addEventListener('DOMContentLoaded', function(){
   .band .btn.ghost{background:transparent;color:var(--lime);border-color:rgba(204,254,6,.55)}
 
   .wallet-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-family:var(--mono);font-size:12px}
-  .wallet-bar #connectBtn,.wallet-bar #disconnectBtn{min-width:156px;text-align:center}
   .chip{
     display:inline-block;border:1px solid var(--rule-strong);border-radius:999px;
     padding:5px 11px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
@@ -1852,11 +1844,11 @@ document.addEventListener('DOMContentLoaded', function(){
     position:relative;overflow:hidden;
   }
   .cand:hover,.cand:focus-visible{border-color:var(--lime);outline:none}
-  .cand[aria-checked="true"]{background:var(--lime);color:var(--ink);border-color:var(--lime)}
+  .cand[aria-pressed="true"]{background:var(--lime);color:var(--ink);border-color:var(--lime)}
   .cand .radio{
     width:15px;height:15px;border-radius:50%;border:1.5px solid rgba(204,254,6,.6);flex:none;
   }
-  .cand[aria-checked="true"] .radio{border-color:var(--ink);background:var(--ink);box-shadow:inset 0 0 0 3px var(--lime)}
+  .cand[aria-pressed="true"] .radio{border-color:var(--ink);background:var(--ink);box-shadow:inset 0 0 0 3px var(--lime)}
   .cand .who{min-width:0}
   .cand .name{font-size:17px;line-height:1.3}
   .cand .cause{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-top:3px}
@@ -1866,7 +1858,7 @@ document.addEventListener('DOMContentLoaded', function(){
     position:absolute;left:0;bottom:0;height:3px;background:var(--lime);
     width:0;transition:width .5s ease;
   }
-  .cand[aria-checked="true"] .bar{background:var(--ink)}
+  .cand[aria-pressed="true"] .bar{background:var(--ink)}
 
   .results-head{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;justify-content:space-between;margin-bottom:6px}
   .totals{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;opacity:.85}
@@ -1874,9 +1866,7 @@ document.addEventListener('DOMContentLoaded', function(){
   .note{font-size:14.5px;opacity:.82;margin-top:16px;max-width:70ch}
   .status{font-family:var(--mono);font-size:12px;margin-top:14px;min-height:1.4em}
   .status.err{color:#8f2f2f}
-  .status.ok{color:var(--lime)}
   .band .status.err{color:#ff8a8a}
-  .wallet-bar.is-disconnected #connectBtn{border-color:var(--lime);box-shadow:0 0 0 3px rgba(204,254,6,.12)}
 
   .how{display:grid;gap:12px;margin-top:18px}
   .how .s{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
@@ -1959,10 +1949,7 @@ document.addEventListener('DOMContentLoaded', function(){
     transition:transform .15s ease,box-shadow .15s ease;
   }
   #chartBtn:hover,#chartBtn:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}
-  #chartBtn{width:32px;height:30px;justify-content:center;padding:0;touch-action:manipulation;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border-color:var(--lime, #CCFE06)}
-  #chartBtn:hover,#chartBtn:focus-visible{background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border-color:var(--lime, #CCFE06)}
-  #chartBtn span{display:none}
-  #chartBtn svg{width:14px;height:14px;flex:none}
+  #chartBtn svg{width:12px;height:12px;flex:none}
   #chartModal{
     position:fixed;inset:0;z-index:10000;
     display:none;align-items:center;justify-content:center;
@@ -2005,7 +1992,7 @@ document.addEventListener('DOMContentLoaded', function(){
     font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;
   }
   @media (max-width:640px){
-    #chartBtn{width:32px;height:30px;padding:0;font-size:0}
+    #chartBtn{padding:7px 12px;font-size:10px}
     .chart-panel{height:min(82vh,640px);border-radius:14px}
     #chartModal{padding:12px}
   }
@@ -2048,8 +2035,8 @@ document.addEventListener('DOMContentLoaded', function(){
     border-bottom:1px solid rgba(204,254,6,.45);
   }
   .tgb-link:hover,.tgb-link:focus-visible{opacity:1;border-bottom-color:var(--lime);outline:none}
-  .cand[aria-checked="true"] .tgb-link{border-bottom-color:rgba(11,11,9,.5)}
-  .cand[aria-checked="true"] .tgb-link:hover{border-bottom-color:var(--ink)}
+  .cand[aria-pressed="true"] .tgb-link{border-bottom-color:rgba(11,11,9,.5)}
+  .cand[aria-pressed="true"] .tgb-link:hover{border-bottom-color:var(--ink)}
   .org-picker .pick{cursor:default}
   .org-picker .pick.on{background:var(--ink);color:var(--lime);border-color:var(--ink)}
 
@@ -2061,19 +2048,9 @@ document.addEventListener('DOMContentLoaded', function(){
     transition:transform .15s ease,box-shadow .15s ease;line-height:1}
   #langBtn:hover,#langBtn:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}
   #langBtn .caret{margin-left:6px;opacity:.7}
-  #burnListPill{position:fixed;bottom:60px;right:16px;z-index:9998;width:36px;height:32px;display:grid;place-items:center;padding:0;border:1px solid var(--lime, #CCFE06);border-radius:999px;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18);transition:transform .15s ease,box-shadow .15s ease,opacity .12s ease}
-  #burnListPill:hover,#burnListPill:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}#burnListPill svg{width:16px;height:16px;stroke:currentColor}#langSel.open~#burnListPill{opacity:0;pointer-events:none}
-  #burnListModal{position:fixed;inset:0;z-index:10020;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(11,11,9,.78)}#burnListModal.open{display:flex}.burn-list-panel{width:min(1180px,100%);height:min(92vh,900px);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--lime, #CCFE06);border-radius:16px;background:var(--ink, #0B0B09);box-shadow:0 24px 80px rgba(0,0,0,.5)}.burn-list-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(204,254,6,.28);font-family:var(--mono, ui-monospace, monospace);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime, #CCFE06)}#burnListClose{width:28px;height:28px;padding:0;border:1px solid rgba(204,254,6,.45);border-radius:999px;background:transparent;color:inherit;font:inherit;font-size:16px;line-height:1;cursor:pointer}#burnListClose:hover,#burnListClose:focus-visible{background:var(--lime, #CCFE06);color:var(--ink, #0B0B09);outline:none}#burnListFrame{width:100%;flex:1;border:0;background:#11120f}@media(max-width:640px){#burnListModal{padding:8px}.burn-list-panel{height:94vh;border-radius:12px}.burn-list-head{padding:9px 11px;font-size:9px}}
   #langSel{position:fixed;bottom:64px;right:16px;z-index:9999;background:var(--ink);color:var(--lime);
     border:1px solid var(--lime);border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.28);
     display:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;min-width:200px;max-width:calc(100vw - 32px)}
-  /* Keep the mobile utility pills anchored to the viewport, not the scrolling page. */
-  @media (max-width:640px){
-    #langBtn,#chartBtn,#burnListPill,#langSel{position:fixed!important;-webkit-transform:translateZ(0);transform:translateZ(0)}
-    #langBtn{right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom))}
-    #burnListPill{right:max(16px,env(safe-area-inset-right));bottom:max(60px,calc(env(safe-area-inset-bottom) + 44px))}
-    #langSel{right:max(16px,env(safe-area-inset-right));bottom:max(64px,calc(env(safe-area-inset-bottom) + 48px))}
-  }
   #langSel.open{display:grid}
   #langSel button{background:transparent;color:inherit;border:0;padding:8px 10px;font-family:var(--mono);
     font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:8px;text-align:left;
@@ -2089,10 +2066,10 @@ document.addEventListener('DOMContentLoaded', function(){
     display:block;margin-top:3px;font-family:var(--mono);font-size:9.5px;
     letter-spacing:.1em;text-transform:uppercase;color:var(--lime);opacity:.9;
   }
-  .cand[aria-checked="true"] .yours{color:var(--ink)}
+  .cand[aria-pressed="true"] .yours{color:var(--ink)}
   .cand .yours.pending{opacity:.6;animation:yoursPulse 1.6s ease-in-out infinite}
   .cand.is-mine{border-color:var(--lime)}
-  .cand[aria-checked="true"].is-mine{border-color:var(--ink)}
+  .cand[aria-pressed="true"].is-mine{border-color:var(--ink)}
   /* A just-submitted write-in shows up in its seat immediately with a soft
      pulse on the cause line — signals "we heard you" while the indexer
      catches up. The name stays fully readable so the seat still looks real. */
@@ -2104,7 +2081,7 @@ document.addEventListener('DOMContentLoaded', function(){
   #writeInModal{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;
     padding:20px;background:rgba(11,11,9,.74);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
   #writeInModal.open{display:flex}
-  .wi-panel{width:min(560px,100%);max-height:88vh;overflow-x:hidden;overflow-y:scroll;scrollbar-gutter:stable;background:var(--ink);color:var(--lime);
+  .wi-panel{width:min(560px,100%);max-height:88vh;overflow:auto;background:var(--ink);color:var(--lime);
     border:1px solid var(--lime);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.45)}
   .wi-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;
     border-bottom:1px solid rgba(204,254,6,.35);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
@@ -2115,42 +2092,11 @@ document.addEventListener('DOMContentLoaded', function(){
   .wi-lede{font-size:15px;line-height:1.5;margin:0 0 10px}
   .wi-cost{font-family:var(--mono);font-size:12px;margin:0 0 16px;opacity:.85}
   .wi-label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.65;margin:0 0 7px}
-  #voterList{margin-top:22px;padding:16px;border:1px solid rgba(204,254,6,.32);border-radius:14px;background:rgba(204,254,6,.06);font-family:var(--mono);font-size:11px;letter-spacing:.04em}
-  #voterList strong{display:block;margin:0 0 10px;color:var(--lime);font-size:10px;letter-spacing:.13em;text-transform:uppercase}
-  #voterList button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 10px;border:0;border-top:1px solid rgba(204,254,6,.14);background:transparent;color:var(--lime);font:inherit;text-align:left;cursor:pointer}
-  #voterList button:hover,#voterList button:focus-visible{background:rgba(204,254,6,.12);outline:none}
-  #voterList button::after{content:none!important}
-  @media(max-width:560px){
-    .band .wrap{padding-left:16px;padding-right:16px}
-    .results-head{display:block}
-    .results-head .totals{margin-top:7px;text-align:left;font-size:10px;line-height:1.35}
-    .ballot{margin-top:8px;gap:3px}
-    .cand{padding:7px 8px;gap:7px;min-height:0}
-    .cand .who{min-width:0}.cand .name{font-size:14px;line-height:1.15}.cand .cause{font-size:8.5px;line-height:1.15;margin-top:2px}
-    .cand .tally{font-size:10px}.cand .tally .muted{font-size:9px}
-    .wallet-bar{gap:6px}.wallet-bar .btn{padding:8px 11px;font-size:9px}
-    #voterList{margin-top:16px;padding:13px 12px;font-size:10px}
-    #voterList button{display:flex;align-items:flex-start;gap:5px;padding:10px 8px;line-height:1.35;flex-direction:column}
-    #voterList button span:last-child{font-size:9px;opacity:.78}
-    #voterList button::after{position:absolute;right:10px;margin-top:2px}
-  }
   #wiSearch{width:100%;padding:11px 13px;border-radius:10px;border:1px solid rgba(204,254,6,.4);
     background:transparent;color:var(--lime);font-family:var(--mono);font-size:13px;box-sizing:border-box}
   #wiSearch:focus{border-color:var(--lime);outline:none}
-  .wi-results{max-height:300px;overflow-x:hidden;overflow-y:scroll;scrollbar-gutter:stable;border-radius:10px;overscroll-behavior:contain}
+  .wi-results{max-height:300px;overflow:auto;border-radius:10px;overscroll-behavior:contain}
   .wi-results:not(:empty){border:1px solid rgba(204,254,6,.28)}
-  /* The directory is deliberately long. Give its own scroll rail a high-
-     contrast treatment so it remains obvious inside the dark write-in modal. */
-  .wi-results{scrollbar-width:thin;scrollbar-color:var(--lime) rgba(204,254,6,.14)}
-  .wi-results::-webkit-scrollbar{width:11px}
-  .wi-results::-webkit-scrollbar-track{background:rgba(204,254,6,.22);border-radius:999px}
-  .wi-results::-webkit-scrollbar-thumb{background:var(--lime);border:2px solid var(--ink);border-radius:999px}
-  .wi-results::-webkit-scrollbar-thumb:hover{background:#e2ff42}
-  .wi-panel{scrollbar-width:thin;scrollbar-color:var(--lime) rgba(204,254,6,.14)}
-  .wi-panel::-webkit-scrollbar{width:11px}
-  .wi-panel::-webkit-scrollbar-track{background:rgba(204,254,6,.22);border-radius:999px}
-  .wi-panel::-webkit-scrollbar-thumb{background:var(--lime);border:2px solid var(--ink);border-radius:999px}
-  .wi-panel::-webkit-scrollbar-thumb:hover{background:#e2ff42}
   .wi-opt{display:block;width:100%;text-align:left;background:transparent;color:inherit;border:0;
     border-bottom:1px solid rgba(204,254,6,.16);padding:10px 12px;cursor:pointer;font-size:14px;line-height:1.3}
   .wi-opt:last-child{border-bottom:0}
@@ -2261,11 +2207,15 @@ document.addEventListener('DOMContentLoaded', function(){
     <h1><span data-i18n="vote.title.a">You hold it.</span><br><em data-i18n="vote.title.b">You pick</em> <span data-i18n="vote.title.c">who's next.</span></h1>
     <p class="lede" data-i18n="vote.lede">$RWI holders signal which vetted charity should receive the next donation.</p>
 
+    <div class="disclaimer">
+      <b data-i18n="vote.disclaimer.title">Read this first</b>
+      <span data-i18n="vote.disclaimer.body">This is an advisory signal, not binding governance.</span>
+    </div>
   </div>
 
   <section>
     <div class="wrap">
-      <p class="eyebrow" data-i18n="vote.s1.eyebrow">Your wallet</p>
+      <p class="eyebrow" data-i18n="vote.s1.eyebrow">01 — Your wallet</p>
       <div class="wallet-bar">
         <button class="btn" id="connectBtn" type="button" data-i18n="vote.connect">Connect wallet</button>
         <span class="chip" id="acctChip" hidden></span>
@@ -2282,7 +2232,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <div class="wrap">
       <div class="results-head">
         <div>
-          <p class="eyebrow" style="margin-bottom:4px" data-i18n="vote.s2.eyebrow">The ballot</p>
+          <p class="eyebrow" style="margin-bottom:4px" data-i18n="vote.s2.eyebrow">02 — The ballot</p>
           <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)"><span data-i18n="vote.ballotOpen">Current ballot</span> <span data-i18n="vote.closes">· closes</span> <span id="roundClose" data-i18n="vote.closes.when">when the next donation is made</span></h2>
         </div>
         <div class="totals"><span id="tallyTotals">Loading tally…</span><br><span class="livesig" id="liveSignal"></span><br><span class="livesig" id="slateWarn"></span></div>
@@ -2300,7 +2250,6 @@ document.addEventListener('DOMContentLoaded', function(){
       <p class="status" id="voteStatus"></p>
 
       <p class="note" data-i18n="vote.note.calldata">Every vote is a zero-value transaction carrying your choice in its calldata.</p>
-      <div id="voterList" hidden></div>
     </div>
   </section>
 
@@ -2320,12 +2269,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
   <section>
     <div class="wrap">
-      <p class="eyebrow" data-i18n="vote.s3.eyebrow">How the tally works</p>
+      <p class="eyebrow" data-i18n="vote.s3.eyebrow">03 — How the tally works</p>
       <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)" data-i18n="vote.s3.title">Countable by anyone.</h2>
       <div class="how">
         <div class="s"><b>01</b><p><span data-i18n="vote.how1a">Your wallet sends a 0-value transaction to the ballot box address with</span> <code id="prefixEg"></code> <span data-i18n="vote.how1b">in the data field. You pay only gas.</span></p></div>
-        <div class="s"><p data-i18n="vote.how2">.</p></div>
-        <div class="s"><p data-i18n="vote.how3">.</p></div>
+        <div class="s"><b>02</b><p data-i18n="vote.how2">.</p></div>
+        <div class="s"><b>03</b><p data-i18n="vote.how3">.</p></div>
         <div class="s"><b>04</b><p data-i18n="vote.how4">.</p></div>
       </div>
       <p class="note">
@@ -2336,12 +2285,6 @@ document.addEventListener('DOMContentLoaded', function(){
       <p class="note" data-i18n="vote.addr.note">Rounds are opened by a transaction from the round controller above.</p>
     </div>
   </section>
-  <div class="wrap">
-    <div class="disclaimer">
-      <b data-i18n="vote.disclaimer.title">Please note</b>
-      <span data-i18n="vote.disclaimer.body">This is an advisory signal, not binding governance.</span>
-    </div>
-  </div>
 </main>
 
 <footer>
@@ -2774,15 +2717,10 @@ const WRITEIN_TOLERANCE = 0.80;   // accept a payment worth >=80% of quote; pric
 const RWI_PAIR = 'https://api.dexscreener.com/latest/dex/pairs/robinhood/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697';
 
 /* Verified against The Giving Block's public directory. [slug, display name] */
-// Keep the complete Giving Block record set so already-onchain nominations
-// always remain readable, then expose only entries with a verified logo asset
-// in the write-in picker. A blank placeholder looks like a broken charity, not
-// a deliberate choice, and made the directory harder to trust.
-const TGB_DIRECTORY_ALL = [
+const TGB_DIRECTORY = [
   ['2535-water','2535 Water','organization_logo%2F8419c8f0-b0b0-4915-b3ae-6f385c229e35.jpg'],
   ['3strands-global-foundation','3Strands Global Foundation','organization_logo%2F9a08c185-603e-4496-803f-187d0e1117d3.jpg'],
   ['a-t-childrens-project','A-T Children\'s Project','organization_logo%2F982f240a-373a-4383-890f-88c3718ce032.jpeg'],
-  ['action-against-hunger','Action Against Hunger USA'],
   ['achieva','Achieva','organization_logo%2F3e836a4c-0cec-4d9d-b1a3-44181c5cf89f.jpg'],
   ['action-on-poverty-limited','Action on Poverty','organization_logo%2Fae1f9204-b80a-4859-8980-fa5d7c9b49af.jpg'],
   ['action-on-smoking-and-health','Action on Smoking and Health','organization_logo%2F1a1e9785-9ecd-4567-9ab4-f0f18244d9c6.jpg'],
@@ -2829,7 +2767,6 @@ const TGB_DIRECTORY_ALL = [
   ['deaf-plus-adult-community','Deaf Plus Adult Community','organization_logo%2F5146c216-6306-4d9e-9f0c-6a17ef5b0bc2.jpg'],
   ['diabetes-research-institute-foundation','Diabetes Research Institute Foundation','organization_logo%2F4df0f2fa-5199-4973-893b-7312b3fcffaa.jpg'],
   ['disabled-american-veterans','Disabled American Veterans','organization_logo/82274c02-8b2e-41af-b389-fae9393836ae.jpg'],
-  ['direct-relief','Direct Relief'],
   ['easter-seals-inc','Easterseals','organization_logo%2Ffd91f4e5-76b8-4d32-b2a2-00c65f3ce28f.jpg'],
   ['easterseals-swfl','Easterseals Southwest Florida','organization_logo%2F2113917c-f8de-47d0-be45-dc91e497047e.jpg'],
   ['eastwood-ranch-foundation','Eastwood Ranch Foundation','organization_logo%2Fd4e8acb9-0ce6-444d-a7fd-1054bc70a4f9.jpg'],
@@ -2838,8 +2775,6 @@ const TGB_DIRECTORY_ALL = [
   ['emmanuel-cancer-foundation','Emmanuel Cancer Foundation','organization_logo%2Fdc6d26e2-669a-449f-955a-3a0b9de9e2d3.jpg'],
   ['entryway','Entryway','organization_logo/d574b19f-f16e-4c39-8c51-8099e9ea3c6c.jpg'],
   ['family-promise-greater-phoenix','Family Promise - Greater Phoenix','FamilyPromiseGreaterPhoenix.jpg'],
-  ['feed-the-children','Feed the Children'],
-  ['feeding-america','Feeding America'],
   ['feeding-pets-of-the-homeless','Feeding Pets of the Homeless','organization_logo%2F00c55083-0e20-48fa-a307-439ecfa5e438.jpeg'],
   ['first-graduate','First Graduate','organization_logo%2Fb6d18b29-0002-4543-83a5-832fb1f3ea3b.jpg'],
   ['florence-immigrant-refugee-rights-project','Florence Immigrant & Refugee Rights Project','organization_logo%2Fb69d1495-8cce-4a98-965a-e1671fff9193.jpeg'],
@@ -2889,7 +2824,6 @@ const TGB_DIRECTORY_ALL = [
   ['india-partners','India Partners','organization_logo%2Fcc971b62-fcf4-474e-b825-2b0fa6e4d124.jpg'],
   ['institute-for-social-policy-and-understanding','Institute for Social Policy and Understanding','organization_logo%2F93153826-67b4-4f04-9fca-357d8d6c78b0.jpg'],
   ['international-bear-association','International Bear Association','organization_logo%2F7b71b250-e815-42e6-a959-8b5bd7813d02.jpg'],
-  ['international-medical-corps','International Medical Corps'],
   ['internet-security-research-group','Internet Security Research Group','organization_logo%2F6ebdc694-8a84-4c30-afe7-8a9e1add1017.jpg'],
   ['kids-in-tech','Kids in Tech','organization_logo/5b6249df-d68e-4e63-91b3-880d8bb467d5.jpg'],
   ['kofi-annan-foundation','Kofi Annan Foundation','organization_logo%2F157e10fd-b5e9-4d0d-b413-bfb1db66f801.jpeg'],
@@ -2908,7 +2842,6 @@ const TGB_DIRECTORY_ALL = [
   ['mathkind-global','Mathkind Global','organization_logo/d3c619c6-7b7f-4eb9-b5ad-810ebd7b2654.jpg'],
   ['meals-on-wheels-of-alameda-county','Meals on Wheels of Alameda County','MealsonWheelsAlameda.jpg'],
   ['mental-health-innovations','Mental Health Innovations','organization_logo%2F3241f09a-1ee0-4631-83b8-cc39942a16df.jpg'],
-  ['mercy-corps','Mercy Corps'],
   ['miracosta-college-foundation','MiraCosta College Foundation','organization_logo%2F55b1065d-9612-4288-a229-5a366c3b5786.jpeg'],
   ['mountaineer-food-bank','Mountaineer Food Bank','organization_logo%2F3ae8ec5f-3630-4e2d-81f8-cf824d202265.jpg'],
   ['move-united','Move United','organization_logo/e0284e0e-a729-47d1-9737-a1636dd11759.jpg'],
@@ -2920,7 +2853,6 @@ const TGB_DIRECTORY_ALL = [
   ['national-multiple-sclerosis-society','National Multiple Sclerosis Society','organization_logo%2F2d4d24fb-2e4f-4b3a-9ad7-9c7a54f859f1.jpg'],
   ['near-east-foundation','Near East Foundation','organization_logo/4e90399e-ae9e-4ff4-8a17-4a39dba0486a.jpg'],
   ['nephcure-kidney-international','NephCure Kidney International','organization_logo%2F208d5dd3-e9a0-4920-bde9-31b293dfec01.jpg'],
-  ['no-kid-hungry','No Kid Hungry'],
   ['norton-childrens-hospital-foundation','Norton Children\'s Hospital Foundation','organization_logo/8c1f4b5f-552a-4c83-aa95-7dcba2f4deca.jpg'],
   ['npower','NPower','organization_logo/2f7607d9-82f9-47f9-b0ae-613ab9ca36b5.jpg'],
   ['nten','NTEN','organization_logo/a9d8ca51-e362-4f12-843b-fb2e0e118052.jpeg'],
@@ -2936,7 +2868,6 @@ const TGB_DIRECTORY_ALL = [
   ['pollinator-partnership-canada','Pollinator Partnership Canada','organization_logo%2Fa989d5d9-1fa1-49b7-8c3e-aecd4aae6397.jpeg'],
   ['project-8p','Project 8p Foundation','organization_logo%2Fde593c59-ef87-4602-a995-b097962d52de.jpg'],
   ['project-healing-waters-fly-fishing','Project Healing Waters Fly Fishing','organization_logo%2F8e8796dc-03c4-4280-ac8c-07cfaff31d09.jpg'],
-  ['project-hope','Project HOPE'],
   ['raiseup-families','RaiseUp Families','organization_logo/bb785665-923d-40e1-aa3e-877573a5f275.jpg'],
   ['reach-out-and-read-colorado','Reach Out and Read Colorado','organization_logo%2F223329c4-1654-4089-9654-f457e9c88f6c.jpeg'],
   ['redwood-empire-food-bank','Redwood Empire Food Bank','organization_logo%2F56eb5166-eb92-4e47-ac6b-738a3e2acdec.jpg'],
@@ -2952,7 +2883,6 @@ const TGB_DIRECTORY_ALL = [
   ['san-diego-zoo-wildlife-alliance','San Diego Zoo Wildlife Alliance','organization_logo%2Fe7ae907f-ab9c-4312-8bc2-ffdcba5eaa6c.jpeg'],
   ['sansum-diabetes-research-institute','Sansum Diabetes Research Institute','organization_logo%2F01a108a9-647e-4748-a93f-588991b75ad0.jpg'],
   ['saving-nature','Saving Nature','organization_logo%2Fa625c158-2d67-467e-98d3-b64b84b233cd.jpg'],
-  ['save-the-children','Save the Children'],
   ['school-on-wheels-inc','School on Wheels','organization_logo%2F850cdacc-64c3-423d-b422-7f98b1313925.jpeg'],
   ['sea-turtle-conservancy','Sea Turtle Conservancy','organization_logo%2F93f4b428-1134-44e6-814a-41b90def8a77.jpg'],
   ['institute-for-shipboard-education','Semester at Sea','organization_logo/c03fbf2c-88d0-4e3c-a0c5-c845b761d00b.jpeg'],
@@ -2964,7 +2894,6 @@ const TGB_DIRECTORY_ALL = [
   ['solve-me-cfs-initiative','Solve ME/CFS Initiative','organization_logo/367bfedd-42dc-4629-b1ed-e9720311d0d8.jpg'],
   ['special-operations-warrior-foundation','Special Operations Warrior Foundation','organization_logo%2F693b06e1-25e9-47b3-ab73-48789ebb327d.jpg'],
   ['spirit-of-america','Spirit of America','organization_logo%2F416c1b97-505c-40cb-9e53-0c1f319eeded.jpeg'],
-  ['st-jude-childrens-research-hospital','St. Jude Children\'s Research Hospital'],
   ['st-mary-medical-center-foundation','St. Mary Medical Center Foundation','organization_logo%2Fb9e1c1ae-c0d9-4ce2-81b1-001a62456d23.jpg'],
   ['street-soccer-scotland','Street Soccer Scotland','organization_logo/5f50a09b-486b-4aa4-8c67-cd91d19ce68b.jpg'],
   ['teen-challenge-of-arizona','Teen Challenge of Arizona','organization_logo%2F518992ee-57f1-4c36-8407-4cf12315a61b.jpeg'],
@@ -3011,69 +2940,18 @@ const TGB_DIRECTORY_ALL = [
   ['vista-del-mar-child-and-family-services','Vista Del Mar Child and Family Services','organization_logo/ce98344c-6b95-410f-8966-5e387d8d1411.jpg'],
   ['voices-for-children','Voices for Children','organization_logo%2F147285ff-0cb6-4c0b-b895-cc8861c60d9a.jpg'],
   ['warrior-rising','Warrior Rising','organization_logo%2F5b11717e-a79b-4a4c-b651-c6552e0d8d7a.jpeg'],
-  ['water-org','Water.org'],
   ['wholeschool-mindfulness-inc','WholeSchool Mindfulness','organization_logo%2F093702df-d668-48fd-979f-790be7c0e778.jpeg'],
-  ['world-central-kitchen','World Central Kitchen'],
   ['wildaid','WildAid','organization_logo%2F487fb7c5-5f30-473a-9101-ba49b86b5d37.jpg'],
   ['wildlife-conservation-society','Wildlife Conservation Society','organization_logo%2F8d08efe9-aa08-4e17-8114-2281615716cf.jpg'],
   ['wisconsin-humane-society','Wisconsin Humane Society','organization_logo/57f3a905-baf9-4e36-8797-add16f1556bf.jpg'],
   ['women-in-blockchain-foundation','Women in Blockchain Foundation','organization_logo/24b427bc-c618-4d2b-bea0-b6dd64bc07af.jpg'],
   ['youth-alive','Youth ALIVE!','organization_logo/10f1edb3-44e6-47bd-aa27-be34bcded274.jpg'],
   ['youthcentric','YouthCentric','organization_logo%2F598a6bf1-9fb5-4053-8223-0676f8d66d58.jpeg'],
-  ['zaman-international','Zaman International','organization_logo%2Fe1bf4d1d-f544-48ee-9ca3-9b5c3d1a17fb.jpeg'],
-  ['350-org','350.org','organization_logo/9b9ab251-2b92-4350-9412-7ff19b6298ee.png'],
-  ['girls-tech-ventures','Girls Tech Ventures','organization_logo/8e768b30-1c33-44fa-87b9-306b24b9a681.jpg'],
-  ['chabad-pod','Chabad Pod Inc','organization_logo/6e838778-b7ef-4933-8925-6247c4514b35.jpg'],
-  ['forget-me-not-childrens-hospice',"Forget Me Not Children's Hospice",'organization_logo/b8a5b013-4fcd-499f-9a27-be21e180e96a.jpg'],
-  ['appalachian-wildlife-refuge','Appalachian Wildlife Refuge','organization_logo/ac07b251-506b-4592-b7d4-c745d67c7296.jpg'],
-  ['upward-mobility','Upward Mobility','organization_logo/7c71727b-bddd-406f-9b0f-bac755b1099c.jpg'],
-  ['otagomuseum','Otago Museum Trust Board','organization_logo/6426550b-cda7-4bbf-a01c-02ed58d5911d.jpg'],
-  ['camphill-communities-of-ireland','Camphill Communities of Ireland','organization_logo/004c9bce-4d42-49a3-a485-e3c30ff7e296.png'],
-  ['ojb-fc','Ojb Fc','organization_logo/5f7e7195-a210-4b81-8289-29a0384ab25d.jpg'],
-  ['yaliberty','Young Americans for Liberty Foundation','organization_logo/532fc357-bb08-45f5-a093-db62397ac68e.jpg'],
-  ['hop-on-a-cure-foundation','Hop On A Cure Foundation Inc','organization_logo/c6f8b326-33d6-4869-b044-47184ea3c854.png'],
-  ['ryse','RYSE INC','organization_logo/91fae5ea-cc20-47b2-8807-13d3aa1c058a.jpg'],
-  ['ozone-house','Ozone House','organization_logo/841e0d52-9104-47d2-9c0c-acec903962b9.png'],
-  ['trickle-up','Trickle Up','organization_logo/79aabd12-ec9d-4bfd-b62c-710476c2b50b.jpg'],
-  ['brightstone','BrightStone, Inc.','organization_logo/4948864f-a163-497d-b779-a76606bf4d80.jpg'],
-  ['wildlife-sos','Wildlife SOS','organization_logo%2F05386eed-e456-4da4-b3c9-6b2be6cdfa8a.jpg'],
-  ['the-american-society-for-the-prevention-of-cruelty-to-animals','The American Society for the Prevention of Cruelty to Animals (ASPCA)','organization_logo%2F8dc93941-eaf6-421d-b4c3-cdae8df95ec9.jpg'],
-  ['infinite-family','Infinite Family','organization_logo%2F43cdfd41-ef07-4ce8-bcd8-8dbab0d3886e.jpeg']
+  ['zaman-international','Zaman International','organization_logo%2Fe1bf4d1d-f544-48ee-9ca3-9b5c3d1a17fb.jpeg']
 ];
-let TGB_BY_SLUG = (function(){ const m = {}; TGB_DIRECTORY_ALL.forEach(function(r){ m[r[0]] = r[1]; }); return m; })();
-let TGB_LOGO = (function(){ const m = {}; TGB_DIRECTORY_ALL.forEach(function(r){ if(r[2]) m[r[0]] = r[2]; }); return m; })();
-let TGB_DIRECTORY = TGB_DIRECTORY_ALL.filter(function(r){ return !!r[2]; });
+const TGB_BY_SLUG = (function(){ const m = {}; TGB_DIRECTORY.forEach(function(r){ m[r[0]] = r[1]; }); return m; })();
+const TGB_LOGO = (function(){ const m = {}; TGB_DIRECTORY.forEach(function(r){ if(r[2]) m[r[0]] = r[2]; }); return m; })();
 const TGB_CDN = 'https://static.tgbwidget.com/';
-
-/* The local directory keeps write-ins available offline. On Vercel, it is
-   expanded from The Giving Block's own public directory, which avoids a
-   client-side cross-origin request and stays current as their directory grows. */
-function setTgbDirectory(rows){
-  const merged = new Map(TGB_DIRECTORY_ALL.map(function(row){ return [row[0], row]; }));
-  (Array.isArray(rows) ? rows : []).forEach(function(row){
-    if(!Array.isArray(row) || !row[0] || !row[1]) return;
-    const slug = String(row[0]).toLowerCase().trim();
-    const name = String(row[1]).trim();
-    const logo = row[2] ? String(row[2]).trim() : (merged.get(slug) || [])[2] || '';
-    if(slug && name) merged.set(slug, [slug, name, logo]);
-  });
-  const all = Array.from(merged.values()).sort(function(a,b){ return a[1].localeCompare(b[1]); });
-  TGB_BY_SLUG = {}; TGB_LOGO = {};
-  all.forEach(function(row){ TGB_BY_SLUG[row[0]] = row[1]; if(row[2]) TGB_LOGO[row[0]] = row[2]; });
-  TGB_DIRECTORY = all;
-}
-function tgbLogoSrc(logo){ return /^https?:\/\//i.test(logo) ? logo : TGB_CDN + logo; }
-async function refreshTgbDirectory(){
-  if(location.protocol === 'file:') return false;
-  try{
-    const res = await fetch('/api/giving-block-directory', {cache:'force-cache'});
-    if(!res.ok) throw new Error('directory ' + res.status);
-    const data = await res.json();
-    if(!data || !Array.isArray(data.organizations) || data.organizations.length < 500) throw new Error('incomplete directory');
-    setTgbDirectory(data.organizations);
-    return true;
-  }catch(_e){ return false; }
-}
 
 /* What an organisation DOES is not something this page can state. The Giving
    Block publishes no API and their pages are not fetchable cross-origin, so
@@ -3141,29 +3019,30 @@ function pickDiverse(tier, n, round, used){
    The auto half keeps a ballot valid even when nobody has written anything in. */
 const TOTAL_SLOTS = 6;
 const AUTO_SLOTS  = TOTAL_SLOTS - WRITEIN_SLOTS;
-const AUTO_TGB_PREFIX = 'auto-tgb--';
-function autoTgbSlug(slug){ return AUTO_TGB_PREFIX + slug; }
-function autoTgbSource(slug){ return slug.indexOf(AUTO_TGB_PREFIX) === 0 ? slug.slice(AUTO_TGB_PREFIX.length) : ''; }
-function isAutomaticBallotSlug(slug){ return !!ORG_POOL[slug] || !!autoTgbSource(slug); }
-function isKnownBallotSlug(slug){
-  return !!ORG_POOL[slug] || !!TGB_BY_SLUG[slug] || !!TGB_BY_SLUG[autoTgbSource(slug)];
+function updateLiveSignal(composed){
+  const ls = document.getElementById('liveSignal');
+  if(!ls) return;
+  if(!composed) return;
+  if(composed.source === 'reliefweb' && composed.live && composed.live.n){
+    ls.textContent = t('vote.st.liveSignal', {
+      c: composed.live.n,
+      t: composed.live.types.slice(0, 4).join(' · ')
+    }) + (composed.live.sources && composed.live.sources.length
+          ? '  ·  ' + composed.live.sources.join(' + ') : '');
+  } else {
+    ls.textContent = '';
+  }
 }
+
 function autoSlate(round){
-  /* The non-write-in half of every new ballot rotates through the complete
-     verified Giving Block catalog. Prefixing the onchain slug keeps it distinct
-     from holder write-ins, so all three reserved write-in seats remain open. */
-  const pool = TGB_DIRECTORY.map(function(row){ return row[0]; }).filter(function(slug){ return !!TGB_BY_SLUG[slug]; });
-  if(!pool.length) return [];
-  const start = ((Math.max(1, round) - 1) * AUTO_SLOTS) % pool.length;
-  const slate = [];
-  for(let i = 0; i < Math.min(AUTO_SLOTS, pool.length); i++) slate.push(autoTgbSlug(pool[(start + i) % pool.length]));
-  return slate;
+  const used = new Set();
+  return [...new Set([
+    ...pickDiverse('returning',1,round,used),
+    ...pickDiverse('lane',1,round,used),
+    ...pickDiverse('acute',1,round,used)
+  ])].slice(0, AUTO_SLOTS);
 }
 async function composeSlate(round){
-  /* A directory-wide rotation is fairer than a hand-maintained shortlist:
-     every Giving Block organization can reach one of these three slots. */
-  return { slate:autoSlate(round), live:null, source:'directory' };
-  /* Legacy crisis ranking remains below for reference. */
   // Must yield exactly AUTO_SLOTS, the same as autoSlate. It previously
   // returned 1 returning + 2 lane + 3 acute = six, which filled the whole
   // ballot and left no write-in seats — so a round opened with the live feed
@@ -3232,15 +3111,6 @@ function txText(t){
 function fmtToken(bi){
   const d = 10n ** BigInt(RWI_DECIMALS);
   const whole = bi / d;
-  // A wallet with a fractional balance can legitimately be the only counted
-  // voter. Rendering its whole-token portion alone turned a real 100% vote
-  // into the misleading "100% · 0 $RWI". Keep enough precision to make every
-  // positive weight visible without flooding the ballot with dust decimals.
-  if(whole === 0n && bi > 0n){
-    const decimals = (bi % d).toString().padStart(RWI_DECIMALS, '0');
-    const shown = decimals.slice(0, 6).replace(/0+$/, '');
-    return shown ? '0.' + shown : '<0.000001';
-  }
   const n = Number(whole);
   if(n >= 1e9) return (n/1e9).toFixed(2)+'B';
   if(n >= 1e6) return (n/1e6).toFixed(2)+'M';
@@ -3306,9 +3176,9 @@ window.addEventListener('eip6963:announceProvider', onAnnounce);
 function requestProviders(){ try{ window.dispatchEvent(new Event('eip6963:requestProvider')); }catch(e){} }
 requestProviders();
 
-function walletStatus(msg, isErr, isOk){
+function walletStatus(msg, isErr){
   const el = $('walletStatus'); if(!el) return;
-  el.textContent = msg || ''; el.classList.toggle('err', !!isErr); el.classList.toggle('ok', !!isOk);
+  el.textContent = msg || ''; el.classList.toggle('err', !!isErr);
 }
 /* An error explaining WHY a vote could not be sent has to outlive the
    updateVoteButton() call in castVote's finally block — otherwise the message
@@ -3433,7 +3303,7 @@ function softReset(){
   // disconnected wallet kept being counted, and its poll timers kept running.
   clearPendingVote();
   wallet=null; account=null; walletOnChain=false; myPower=0n; selected=null;
-  ['acctChip','chainChip','powerChip','disconnectBtn'].forEach(function(id){ const e=$(id); if(e){ e.hidden=true; e.textContent=''; } });
+  ['acctChip','chainChip','powerChip','disconnectBtn'].forEach(function(id){ const e=$(id); if(e) e.hidden=true; });
   const os=$('ownerSection'); if(os) os.hidden = true;
   const nb=$('nextRoundBtn'); if(nb) nb.hidden = true;
   ownerPanelOpen = false;
@@ -3443,7 +3313,7 @@ function softReset(){
   $('myVote').textContent = '';
   clearVoteStatus();
   const ow=$('ownerStatus'); if(ow) ow.textContent='';
- document.querySelectorAll('.cand').forEach(function(x){ x.setAttribute('aria-checked','false'); });
+  document.querySelectorAll('.cand').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
   // Dropping the pending vote changes the numbers, so recompute from the cached
   // chain data rather than leaving the old figures on screen.
   if(voteTxCache) { try{ loadTally(voteTxCache); }catch(e){} }
@@ -3452,34 +3322,14 @@ function softReset(){
 /* User-initiated disconnect: also ask the wallet to drop the permission, so a
    later reconnect prompts again instead of silently re-authorising. */
 async function disconnect(){
-  if(!wallet && !account){
-    softReset();
-    keepWalletActionForReconnect();
-    const bar=$('connectBtn') && $('connectBtn').closest('.wallet-bar'); if(bar) bar.classList.add('is-disconnected');
-    walletStatus(t('vote.st.disconnected'), false, true);
-    return;
-  }
   userDisconnected = true;
   const p = wallet;
   softReset();
-  keepWalletActionForReconnect();
-  const bar=$('connectBtn') && $('connectBtn').closest('.wallet-bar'); if(bar) bar.classList.add('is-disconnected');
-  walletStatus(t('vote.st.disconnected'), false, true);
+  walletStatus('');
   try{
     if(p && p.request) await p.request({ method:'wallet_revokePermissions', params:[{ eth_accounts:{} }] });
   }catch(e){ /* unsupported in many wallets — local reset already applied */ }
   try{ localStorage.removeItem('rwi_wallet_rdns'); }catch(e){}
-}
-
-function keepWalletActionForReconnect(){
-  const connectButton=$('connectBtn'); if(connectButton){ connectButton.hidden=false; connectButton.disabled=false; }
-  const actionButton=$('disconnectBtn');
-  if(actionButton){
-    actionButton.hidden=false;
-    actionButton.dataset.mode='disconnect';
-    actionButton.setAttribute('data-i18n','vote.disconnect');
-    actionButton.textContent=t('vote.disconnect');
-  }
 }
 
 async function setAccount(a){
@@ -3487,12 +3337,7 @@ async function setAccount(a){
   account = a;
   $('acctChip').textContent = short(a); $('acctChip').hidden = false;
   const cb=$('connectBtn'); if(cb) cb.hidden = true;
-  const bar=cb && cb.closest('.wallet-bar'); if(bar) bar.classList.remove('is-disconnected');
-  const actionButton=$('disconnectBtn');
-  actionButton.hidden = false;
-  actionButton.dataset.mode='disconnect';
-  actionButton.setAttribute('data-i18n','vote.disconnect');
-  actionButton.textContent=t('vote.disconnect');
+  $('disconnectBtn').hidden = false;
   const wp=$('walletPicker'); if(wp){ wp.hidden = true; wp.innerHTML=''; }
   walletStatus('');
   if(!same) selected = null;          // a different wallet should not inherit a selection
@@ -3552,11 +3397,6 @@ async function refreshPower(){
 let selected = null;
 function orgRecord(slug){
   if(ORG_POOL[slug]) return Object.assign({slug:slug}, ORG_POOL[slug]);
-  const automaticSlug = autoTgbSource(slug);
-  if(automaticSlug && TGB_BY_SLUG[automaticSlug]){
-    return { slug:slug, name:TGB_BY_SLUG[automaticSlug], tgb:automaticSlug,
-      cause:'Selected from The Giving Block directory', theme:'directory', automatic:true };
-  }
   if(TGB_BY_SLUG[slug]){                               // a holder's write-in
     const isPending = pendingWriteIn && pendingWriteIn.slug === slug
                    && pendingWriteIn.round === ROUND;
@@ -3583,14 +3423,6 @@ function activeOrgs(){
    because placeholder rows carry translated copy. */
 let lastBallotSig = null;
 function renderBallot(){
-  const writeInButton = $('writeInBtn');
-  const writeInTag = writeInButton && writeInButton.parentElement.querySelector('.wi-tag');
-  const syncWriteInVisibility = function(){
-    const realCards = document.querySelectorAll('#ballot .cand:not([data-open]):not(.skeleton)').length;
-    const hide = realCards >= TOTAL_SLOTS;
-    if(writeInButton){ writeInButton.hidden = hide; writeInButton.style.display = hide ? 'none' : ''; }
-    if(writeInTag){ writeInTag.hidden = hide; writeInTag.style.display = hide ? 'none' : ''; }
-  };
   if(!ballotResolved){
     // Placeholder rows sized like real ones, so nothing jumps when they land.
     $('ballot').innerHTML = Array.from({length: TOTAL_SLOTS}, function(){
@@ -3601,7 +3433,6 @@ function renderBallot(){
     }).join('');
     $('ballot').setAttribute('aria-busy','true');
     lastBallotSig = null;
-    syncWriteInVisibility();
     return;
   }
   $('ballot').removeAttribute('aria-busy');
@@ -3614,14 +3445,14 @@ function renderBallot(){
   }).join(',');
   if(sig === lastBallotSig){
     // Same slate & language — dynamic state (selected, tally numbers) is
-    // painted separately. No need to churn the DOM. aria-checked must sync
+    // painted separately. No need to churn the DOM. aria-pressed must sync
     // unconditionally: when `selected` is null every row clears, otherwise a
     // stale highlight survives from before the refresh.
     $('ballot').querySelectorAll('.cand').forEach(function(x){
       if(x.dataset.open) return;               // open seats are not radios
-      x.setAttribute('aria-checked', String(!!selected && x.dataset.slug === selected));
+      x.setAttribute('aria-pressed', String(!!selected && x.dataset.slug === selected));
     });
-    syncWriteInVisibility(); return;
+    return;
   }
   lastBallotSig = sig;
   $('ballot').innerHTML = orgs.map(c => {
@@ -3638,7 +3469,7 @@ function renderBallot(){
     </button>`;
     }
     return `
-    <div class="cand${c.writein ? ' writein' : ''}${c.pending ? ' pending' : ''}" role="radio" tabindex="0" aria-checked="false" data-slug="${esc(c.slug)}">
+    <button class="cand${c.writein ? ' writein' : ''}${c.pending ? ' pending' : ''}" type="button" role="radio" aria-pressed="false" data-slug="${esc(c.slug)}">
       <span class="radio" aria-hidden="true"></span>
       <span class="who">
         <span class="name">${esc(c.name)}${c.tgb ? `<a class="tgb-link" href="${TGB_BASE}${esc(c.tgb)}/" target="_blank" rel="noopener" title="View on The Giving Block">Giving Block &#8599;</a>` : ''}</span>
@@ -3646,11 +3477,11 @@ function renderBallot(){
       </span>
       <span class="tally"><span class="pct" data-pct>&mdash;</span><br><span class="muted" data-wt></span><span class="yours" data-yours hidden></span></span>
       <span class="bar" data-bar></span>
-    </div>`;
+    </button>`;
   }).join('');
   if(selected){
     const cur = $('ballot').querySelector('.cand[data-slug="' + selected + '"]');
-    if(cur) cur.setAttribute('aria-checked','true');
+    if(cur) cur.setAttribute('aria-pressed','true');
   }
   // Cache the four inner refs on each row now, so paintTally does not run
   // four querySelectors per candidate on every repaint.
@@ -3667,18 +3498,10 @@ function renderBallot(){
       }
       selected = el.dataset.slug;
       clearVoteStatus();
-      $('ballot').querySelectorAll('.cand').forEach(x => x.setAttribute('aria-checked', String(x === el)));
+      $('ballot').querySelectorAll('.cand').forEach(x => x.setAttribute('aria-pressed', String(x === el)));
       updateVoteButton();
     });
-    if(!el.dataset.open){
-      el.addEventListener('keydown', (e) => {
-        if(e.target.closest('.tgb-link') || (e.key !== 'Enter' && e.key !== ' ')) return;
-        e.preventDefault();
-        el.click();
-      });
-    }
   });
-  syncWriteInVisibility();
 }
 function updateVoteButton(){
   const ok = !!(account && walletOnChain && selected && myPower > 0n);
@@ -3897,7 +3720,7 @@ async function loadRound(txs){
     if(sep < 0) continue;
     const n = parseInt(body.slice(0, sep), 10);
     if(!Number.isFinite(n) || n < 1) continue;
-    const slugs = body.slice(sep+1).split(',').map(s => s.trim().toLowerCase()).filter(isKnownBallotSlug);
+    const slugs = body.slice(sep+1).split(',').map(s => s.trim().toLowerCase()).filter(s => ORG_POOL[s]);
     if(!slugs.length) continue;
     const bn = Number(t.block_number || t.block || 0);
     const ix = Number(t.index !== undefined ? t.index
@@ -3917,25 +3740,32 @@ async function loadRound(txs){
 
   if(best){
     ROUND = best.n;
-    // A declaration may name slugs this build no longer knows. Resolve what we
-    // can and record the rest — dropping them silently produced a one-candidate
-    // "ballot" once already.
-    const known = best.slugs.filter(isKnownBallotSlug);
-    staleSlugs = best.slugs.filter(function(s){ return !isKnownBallotSlug(s); });
+    const known = best.slugs.filter(function(s){ return ORG_POOL[s]; });
+    staleSlugs = best.slugs.filter(function(s){ return !ORG_POOL[s]; });
     if(known.length >= 3){
-      // The auto half is capped at AUTO_SLOTS. Earlier builds composed rounds of
-      // six, which filled the board and left no write-in seats — the feature
-      // simply never appeared. A longer declaration is from that older format;
-      // take the auto half and say so rather than silently swallowing the
-      // difference.
       slateTrimmed = Math.max(0, known.length - AUTO_SLOTS);
       SLATE = known.slice(0, AUTO_SLOTS);
+      // The onchain declaration fixes the ballot; the live feed only drives
+      // the signal chip and the owner panel preview. Update it in the
+      // background so it never delays the ballot render.
+      fetchLiveCrises(true).then(function(live){
+        if(live && live.n) updateLiveSignal({ source:'reliefweb', live:live });
+      }).catch(function(){});
     } else {
-      // Too little survived to be a real ballot. Fall back and say so.
-      SLATE = autoSlate(ROUND);
-      slateRecovered = true;
+      // Too little survived to be a real ballot. Compose from live feed.
+      const c = await composeSlate(ROUND);
+      SLATE = c.slate;
+      slateRecovered = !!staleSlugs.length;
+      updateLiveSignal(c);
     }
-  } else { ROUND = 1; SLATE = autoSlate(1); }
+  } else {
+    // No onchain declaration at all — compose the default ballot from the
+    // live crisis feed so the page is immediately useful.
+    ROUND = 1;
+    const c = await composeSlate(1);
+    SLATE = c.slate;
+    updateLiveSignal(c);
+  }
   // Holder write-ins fill the remaining slots on top of the auto-composed half.
   // Paint immediately from any nominations visible in the tx list (so the seat
   // is never blank), then let the burn verification run in the background and
@@ -4001,7 +3831,7 @@ function renderOwnerPanel(){
   composeSlate(ROUND + 1).then(function(c){
     if(!ownerPanelOpen) return;
     $('orgPicker').innerHTML = c.slate.map(function(s){
-      const o = orgRecord(s);
+      const o = ORG_POOL[s];
       const why = (c.source === 'reliefweb' && o.tier === 'acute' && o.responds)
         ? o.responds.filter(function(t){ return c.live.counts[t]; }).slice(0,3).join(', ')
         : '';
@@ -4469,28 +4299,9 @@ function myCurrentChoice(){
   const v = lastTally.latestMap.get(account.toLowerCase());
   return v ? v.slug : null;
 }
-function paintVoterList(){
-  const box = $('voterList');
-  if(!box) return;
-  const voters = lastTally && lastTally.latestMap ? [...lastTally.latestMap.keys()].sort() : [];
-  box.hidden = !voters.length;
-  if(!voters.length) return;
-  const weights = lastTally.weights || new Map(), total = lastTally.total || 0n;
-  voters.sort(function(a,b){ const x=weights.get(a)||0n, y=weights.get(b)||0n; return x === y ? a.localeCompare(b) : x > y ? -1 : 1; });
-  box.innerHTML = '<strong>Current-round voters · tap an address to copy</strong>' + voters.map(function(address, index){
-    const weight = weights.get(address) || 0n;
-    const pct = total > 0n ? Number((weight * 10000n) / total) / 100 : 0;
-    return '<button type="button" data-voter-address="' + esc(address) + '"><span>#' + (index + 1) + ' · ' + esc(address) + '</span><span>' + esc(fmtToken(weight)) + ' $RWI · ' + pct.toFixed(2) + '%</span></button>';
-  }).join('');
-  box.querySelectorAll('[data-voter-address]').forEach(function(button){ button.addEventListener('click', function(){
-    const address = button.dataset.voterAddress;
-    navigator.clipboard && navigator.clipboard.writeText(address).then(function(){ button.textContent = 'Copied · ' + address; });
-  }); });
-}
 function paintTally(){
   if(!lastTally){ return; }
   const {byslug, total, counted} = lastTally;
-  paintVoterList();
   updateSlateNotice();
   // Largest-remainder allocation to one decimal. Independent rounding made three
   // equal shares read 33.3 / 33.3 / 33.3 — a ballot whose parts do not add up
@@ -4558,13 +4369,9 @@ function repaintDynamic(){
     else if(account) $('chainChip').textContent=t('vote.chain.wrong');
     renderOwnerPanel();
     const ls=$('liveSignal');
-    if(ls && ls.textContent.trim()){
+    if(ls && ls.textContent.trim() && lastLiveCrises){
       // Language switch — no fetch. Same data, new label.
-      const c = lastLiveCrises;
-      if(c && c.types && c.types.length){
-        ls.textContent = t('vote.st.liveSignal',{c:c.n,t:c.types.slice(0,4).join(' · ')})
-          + (c.sources&&c.sources.length?'  ·  '+c.sources.join(' + '):'');
-      }
+      updateLiveSignal({ source:'reliefweb', live:lastLiveCrises });
     }
   }catch(e){}
 }
@@ -4616,7 +4423,7 @@ function repaintDynamic(){
       const logo = TGB_LOGO[r[0]];
       return '<div class="wi-row">'
         + '<button type="button" class="wi-opt" role="option" data-slug="' + esc(r[0]) + '">'
-        + (logo ? '<img class="wi-logo" src="' + tgbLogoSrc(logo) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+        + (logo ? '<img class="wi-logo" src="' + TGB_CDN + logo + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
                 : '<span class="wi-logo wi-logo-none" aria-hidden="true"></span>')
         + '<span class="wi-txt">' + esc(r[1]) + '<span class="sl">' + esc(r[0]) + '</span></span>'
         + '</button>'
@@ -4823,7 +4630,7 @@ function repaintDynamic(){
     // transaction. Also re-check the already-seated case here: the ballot can
     // change between pick and submit.
     if(SLATE.indexOf(chosen) !== -1 || ORG_POOL_TGB.has(chosen)){ wiStatus(t('vote.st.writeInDup'), true); return; }
-    const wiSeatsUsed = SLATE.filter(function(s){ return !isAutomaticBallotSlug(s); }).length;
+    const wiSeatsUsed = SLATE.filter(function(s){ return !ORG_POOL[s]; }).length;
     if(wiSeatsUsed >= WRITEIN_SLOTS){ wiStatus(t('vote.st.writeInFull'), true); return; }
     const price = await fetchRwiPrice();
     if(!price){ wiStatus(t('vote.st.writeInNoPrice'), true); return; }
@@ -4926,9 +4733,6 @@ function repaintDynamic(){
     });
     $w('wiSubmit').addEventListener('click', submit);
     window.wiRefreshState = function(){ try{ updateSubmitState(); }catch(e){} };
-    refreshTgbDirectory().then(function(refreshed){
-      if(refreshed && modal.classList.contains('open')) renderResults($w('wiSearch').value);
-    });
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
@@ -4936,27 +4740,12 @@ function repaintDynamic(){
 
 /* --------------------------------------------------------------------- boot */
 document.addEventListener('DOMContentLoaded', () => {
-  /* Keep wallet controls in the ballot flow without changing their elements,
-     IDs, or event handlers. */
-  const connectControl = $('connectBtn');
-  const walletSection = connectControl && connectControl.closest('section');
-  const ballotBand = document.querySelector('section.band .wrap');
-  if(walletSection && ballotBand){
-    const walletWrap = walletSection.querySelector('.wrap');
-    const walletLabel = walletWrap.querySelector('.eyebrow'); if(walletLabel) walletLabel.remove();
-    const walletBar = walletWrap.querySelector('.wallet-bar');
-    const walletPicker = walletWrap.querySelector('#walletPicker');
-    const walletStatus = walletWrap.querySelector('#walletStatus');
-    const ballot = ballotBand.querySelector('#ballot');
-    [walletBar, walletPicker, walletStatus].forEach(function(node){ if(node) ballotBand.insertBefore(node, ballot); });
-    walletSection.remove();
-  }
   $('boxAddr').textContent = BALLOT_BOX;
   $('ownerAddr').textContent = OWNER;
   $('prefixEg').textContent = 'RWIVOTE:\u2039n\u203a:\u2039slug\u203a';
   renderBallot();
   $('connectBtn').addEventListener('click', connect);
-  $('disconnectBtn').addEventListener('click', () => $('disconnectBtn').dataset.mode === 'connect' ? connect() : disconnect());
+  $('disconnectBtn').addEventListener('click', disconnect);
   $('voteBtn').addEventListener('click', castVote);
   $('refreshBtn').addEventListener('click', () => refreshAll({force:true}));
   const nrb = $('newRoundBtn'); if(nrb) nrb.addEventListener('click', openNewRound);
@@ -5013,7 +4802,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- Floating chart pill + modal (GeckoTerminal). Sits immediately left of the
      language pill; its offset is measured at runtime so the two never overlap. -->
-<button type="button" id="chartBtn" aria-haspopup="dialog" aria-controls="chartModal" aria-label="Open RWI chart">
+<button type="button" id="chartBtn" aria-haspopup="dialog" aria-controls="chartModal">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><path d="M6 16V9"/><path d="M11 16V4"/><path d="M16 16v-5"/><path d="M21 16v-9"/></svg>
   <span data-i18n="chart.btn">Chart</span>
 </button>
@@ -5047,7 +4836,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loading=document.getElementById('chartLoading'),
         langBtn=document.getElementById('langBtn');
     if(!btn||!modal||!frame) return;
-    btn.setAttribute('aria-expanded','false');
     var loaded=false, lastFocus=null;
 
     // Keep the chart pill clear of the language pill, whose width changes with its label.
@@ -5091,21 +4879,6 @@ document.addEventListener('DOMContentLoaded', () => {
 <div id="langPanel" role="menu" aria-label="Language">
   <button data-lang="en" role="menuitemradio">EN</button><button data-lang="es" role="menuitemradio">ES</button><button data-lang="zh" role="menuitemradio">&#20013;&#25991;</button><button data-lang="ja" role="menuitemradio">&#26085;&#26412;&#35486;</button><button data-lang="ko" role="menuitemradio">&#54620;&#44397;&#50612;</button><button data-lang="pt" role="menuitemradio">PT</button><button data-lang="fr" role="menuitemradio">FR</button><button data-lang="ru" role="menuitemradio">RU</button><button data-lang="tr" role="menuitemradio">TR</button><button data-lang="vi" role="menuitemradio">VI</button><button data-lang="hi" role="menuitemradio">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;</button><button data-lang="de" role="menuitemradio">DE</button><button data-lang="id" role="menuitemradio">ID</button>
 </div>
-<button id="burnListPill" type="button" aria-haspopup="dialog" aria-controls="burnListModal" aria-label="Open the Pons Family Burn List" title="Pons Family Burn List"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4.2 0 7-2.7 7-6.7 0-3.2-2.1-5.3-4.2-7.4.1 2.2-1.1 3.7-2.5 4.7.2-3.5-1.5-6.1-4.2-8.6.1 3.6-3.1 6.2-3.1 10.4C5 18.8 7.8 22 12 22Z"/><path d="M9.5 18.5c0 1.5 1.1 2.5 2.5 2.5s2.5-1 2.5-2.5c0-1.2-.8-2.1-1.7-2.9 0 .9-.5 1.5-1.1 1.9.1-1.4-.6-2.5-1.8-3.5.1 1.5-.9 2.6-.9 4.5Z"/></svg></button>
-<div id="burnListModal" role="dialog" aria-modal="true" aria-labelledby="burnListTitle"><div class="burn-list-panel"><div class="burn-list-head"><span id="burnListTitle">Pons Family Burn List</span><button id="burnListClose" type="button" aria-label="Close Burn List">&#10005;</button></div><iframe id="burnListFrame" data-src="https://www.rwihood.org/burn.html" title="Pons Family Burn List"></iframe></div></div>
-<script>
-(function(){
-  const trigger=document.getElementById('burnListPill'), modal=document.getElementById('burnListModal'), close=document.getElementById('burnListClose'), frame=document.getElementById('burnListFrame');
-  if(!trigger||!modal||!close||!frame)return;
-  trigger.setAttribute('aria-expanded','false');
-  let previousFocus=null, previousOverflow='';
-  function open(){previousFocus=document.activeElement;previousOverflow=document.body.style.overflow;if(!frame.getAttribute('src'))frame.src=frame.dataset.src;modal.classList.add('open');trigger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';close.focus();}
-  function shut(){if(!modal.classList.contains('open'))return;modal.classList.remove('open');trigger.setAttribute('aria-expanded','false');document.body.style.overflow=previousOverflow;(previousFocus||trigger).focus();}
-  trigger.addEventListener('click',open);close.addEventListener('click',shut);
-  modal.addEventListener('click',event=>{if(event.target===modal)shut();});
-  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('open'))shut();});
-})();
-</script>
 <script>
 (function(){
   const btn=document.getElementById('langBtn'), panel=document.getElementById('langPanel');
