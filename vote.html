@@ -28,25 +28,28 @@ const TRANSLATIONS = {
     'vote.title.b':'You pick',
     'vote.title.c':'who\'s next.',
     'vote.lede':'$RWI holders signal which vetted charity should receive the next donation. Your vote is a transaction on Robinhood Chain, weighted by the $RWI you hold. Anyone can tally it — including you.',
-    'vote.disclaimer.title':'Read this first',
+    'vote.disclaimer.title':'Please note',
     'vote.disclaimer.body':'This is an advisory signal, not binding governance. $RWI grants no governance rights and no claim on revenue. The project reads the result and weighs it, but retains final say over every donation — recipients must clear The Giving Block\'s vetting regardless of how the vote lands. Voting is weighted by token balance, which means larger holders carry more weight. Balances are read live at tally time, so a vote is not locked to a snapshot.',
-    'vote.s1.eyebrow':'01 — Your wallet',
     'vote.connect':'Connect wallet',
     'vote.disconnect':'Disconnect',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Wrong network',
-    'vote.s2.eyebrow':'02 — The ballot',
+    'vote.s2.eyebrow':'01 — The ballot',
     'vote.closes':'· closes',
     'vote.closes.when':'when the next donation is made',
     'vote.cast':'Cast vote',
     'vote.refresh':'Refresh tally',
     'vote.nextround':'Next round →',
     'vote.note.calldata':'Every vote is a zero-value transaction carrying your choice in its calldata. Nothing is stored on a server — the tally you see is read straight off Robinhood Chain, and re-voting simply replaces your previous choice.',
+    'vote.voters.eyebrow':'Active voters this round',
+    'vote.voters.empty':'No votes yet this round.',
+    'vote.voters.copyTitle':'Copy address',
+    'vote.voters.copied':'Copied',
     'vote.founder.eyebrow':'Founder controls',
     'vote.founder.open':'Open a new ballot',
     'vote.founder.confirm':'Confirm & open',
     'vote.founder.note':'The slate below is composed automatically — one returning organisation, two from the project’s established cause areas, and three responding to current need, ranked against live ReliefWeb crisis data. Opening a new round is a transaction from your wallet: it supersedes the current round, and votes cast in earlier rounds stop counting immediately. Only this address can do it; declarations from anyone else are ignored when the page reads the chain.',
-    'vote.s3.eyebrow':'03 — How the tally works',
+    'vote.s3.eyebrow':'02 — How the tally works',
     'vote.s3.title':'Countable by anyone.',
     'vote.how1a':'Your wallet sends a 0-value transaction to the ballot box address with',
     'vote.how1b':'in the data field. You pay only gas.',
@@ -99,8 +102,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'That wallet returned no accounts. Unlock it and try again.'
   ,
     'vote.st.tallyPartial':'{n} balance(s) could not be read — this tally is incomplete. Refresh to retry.',
-    'vote.st.tallyTruncated':'Vote history is long enough that older votes may not be shown.'
-  ,
     'vote.st.checking':'Checking the transaction…',
     'vote.st.boxContract':'The ballot box address holds contract code, so it rejects the vote data and every transaction reverts. It must be a plain wallet address. Nothing was sent — no gas was spent.',
     'vote.st.wouldRevert':'This transaction would fail on chain, so it was not sent. No gas was spent.',
@@ -160,25 +161,28 @@ const TRANSLATIONS = {
     'vote.title.b':'Tú eliges',
     'vote.title.c':'quién sigue.',
     'vote.lede':'Los poseedores de $RWI señalan qué organización benéfica verificada debe recibir la próxima donación. Tu voto es una transacción en Robinhood Chain, ponderada por el $RWI que posees. Cualquiera puede contarlo — incluido tú.',
-    'vote.disclaimer.title':'Lee esto primero',
+    'vote.disclaimer.title':'Ten en cuenta',
     'vote.disclaimer.body':'Esto es una señal consultiva, no gobernanza vinculante. $RWI no otorga derechos de gobernanza ni derecho sobre los ingresos. El proyecto lee el resultado y lo pondera, pero conserva la última palabra sobre cada donación — los destinatarios deben pasar la verificación de The Giving Block sea cual sea el resultado. El voto se pondera por saldo de tokens, por lo que los grandes tenedores pesan más. Los saldos se leen en vivo al momento del recuento, así que un voto no queda fijado a una instantánea.',
-    'vote.s1.eyebrow':'01 — Tu billetera',
     'vote.connect':'Conectar billetera',
     'vote.disconnect':'Desconectar',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Red incorrecta',
-    'vote.s2.eyebrow':'02 — La votación',
+    'vote.s2.eyebrow':'01 — La votación',
     'vote.closes':'· cierra',
     'vote.closes.when':'cuando se haga la próxima donación',
     'vote.cast':'Emitir voto',
     'vote.refresh':'Actualizar recuento',
     'vote.nextround':'Siguiente ronda →',
     'vote.note.calldata':'Cada voto es una transacción de valor cero que lleva tu elección en su calldata. Nada se almacena en un servidor — el recuento que ves se lee directamente de Robinhood Chain, y volver a votar simplemente reemplaza tu elección anterior.',
+    'vote.voters.eyebrow':'Votantes activos esta ronda',
+    'vote.voters.empty':'Aún no hay votos en esta ronda.',
+    'vote.voters.copyTitle':'Copiar dirección',
+    'vote.voters.copied':'Copiado',
     'vote.founder.eyebrow':'Controles del fundador',
     'vote.founder.open':'Abrir una nueva votacion',
     'vote.founder.confirm':'Confirmar y abrir',
     'vote.founder.note':'La lista siguiente se compone automáticamente — una organización recurrente, dos de las áreas de causa establecidas del proyecto y tres que responden a la necesidad actual, clasificadas según datos de crisis en vivo de ReliefWeb. Abrir una nueva ronda es una transacción desde tu billetera: reemplaza la ronda actual y los votos de rondas anteriores dejan de contar de inmediato. Solo esta dirección puede hacerlo; las declaraciones de cualquier otra se ignoran cuando la página lee la cadena.',
-    'vote.s3.eyebrow':'03 — Cómo funciona el recuento',
+    'vote.s3.eyebrow':'02 — Cómo funciona el recuento',
     'vote.s3.title':'Contable por cualquiera.',
     'vote.how1a':'Tu billetera envía una transacción de valor 0 a la dirección de la urna con',
     'vote.how1b':'en el campo de datos. Solo pagas gas.',
@@ -231,8 +235,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Esa billetera no devolvio cuentas. Desbloqueala e intentalo de nuevo.'
   ,
     'vote.st.tallyPartial':'No se pudieron leer {n} saldo(s) — este recuento esta incompleto. Actualiza para reintentar.',
-    'vote.st.tallyTruncated':'El historial de votos es tan largo que los votos antiguos podrian no mostrarse.'
-  ,
     'vote.st.checking':'Comprobando la transaccion…',
     'vote.st.boxContract':'La direccion de la urna contiene codigo de contrato, por lo que rechaza los datos del voto y toda transaccion revierte. Debe ser una direccion de billetera simple. No se envio nada — no se gasto gas.',
     'vote.st.wouldRevert':'Esta transaccion fallaria en la cadena, asi que no se envio. No se gasto gas.',
@@ -289,25 +291,28 @@ const TRANSLATIONS = {
     'vote.title.b':'你来选',
     'vote.title.c':'下一个是谁。',
     'vote.lede':'$RWI 持有者投票决定下一笔捐赠应当流向哪个经审查的慈善机构。你的投票是 Robinhood 链上的一笔交易,按你持有的 $RWI 加权。任何人都可以统计 — 包括你。',
-    'vote.disclaimer.title':'请先阅读',
+    'vote.disclaimer.title':'请注意',
     'vote.disclaimer.body':'这是咨询性信号,而非有约束力的治理。$RWI 不授予治理权,也不构成对收入的索取权。项目会参考结果并加以权衡,但对每笔捐赠保留最终决定权 — 无论投票结果如何,接收方都必须通过 The Giving Block 的审查。投票按代币余额加权,这意味着大持有者权重更高。余额在统计时实时读取,因此投票并不锁定于某个快照。',
-    'vote.s1.eyebrow':'01 — 你的钱包',
     'vote.connect':'连接钱包',
     'vote.disconnect':'断开',
     'vote.chain.ok':'Robinhood 链',
     'vote.chain.wrong':'网络错误',
-    'vote.s2.eyebrow':'02 — 选票',
+    'vote.s2.eyebrow':'01 — 选票',
     'vote.closes':'· 结束于',
     'vote.closes.when':'下一笔捐赠完成时',
     'vote.cast':'投票',
     'vote.refresh':'刷新统计',
     'vote.nextround':'下一轮 →',
     'vote.note.calldata':'每一票都是一笔零值交易,你的选择写在其 calldata 中。没有任何内容存储在服务器上 — 你看到的统计直接读自 Robinhood 链,重新投票只会替换你之前的选择。',
+    'vote.voters.eyebrow':'本轮活跃投票者',
+    'vote.voters.empty':'本轮尚无投票。',
+    'vote.voters.copyTitle':'复制地址',
+    'vote.voters.copied':'已复制',
     'vote.founder.eyebrow':'创始人控制',
     'vote.founder.open':'开启新的投票',
     'vote.founder.confirm':'确认并开启',
     'vote.founder.note':'下方名单为自动组成 — 一个回访组织、两个来自项目既有关注领域的组织,以及三个应对当前需求的组织,依据 ReliefWeb 实时危机数据排序。开启新一轮是来自你钱包的一笔交易:它会取代当前轮次,先前轮次的投票立即失效。只有此地址可以执行;页面读取链上数据时会忽略任何其他地址的声明。',
-    'vote.s3.eyebrow':'03 — 统计如何运作',
+    'vote.s3.eyebrow':'02 — 统计如何运作',
     'vote.s3.title':'任何人都能统计。',
     'vote.how1a':'你的钱包向投票箱地址发送一笔 0 值交易,附带',
     'vote.how1b':'写在 data 字段中。你只需支付 gas。',
@@ -360,8 +365,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'该钱包未返回账户。请解锁后重试。'
   ,
     'vote.st.tallyPartial':'有 {n} 个余额无法读取 — 本次统计不完整。请刷新重试。',
-    'vote.st.tallyTruncated':'投票记录较长,较早的投票可能未显示。'
-  ,
     'vote.st.checking':'正在检查交易…',
     'vote.st.boxContract':'投票箱地址含有合约代码,会拒绝投票数据,导致每笔交易回滚。它必须是普通钱包地址。未发送任何交易 — 未消耗 gas。',
     'vote.st.wouldRevert':'该交易在链上会失败,因此未发送。未消耗 gas。',
@@ -418,25 +421,28 @@ const TRANSLATIONS = {
     'vote.title.b':'あなたが選ぶ',
     'vote.title.c':'次は誰かを。',
     'vote.lede':'$RWI 保有者が、次の寄付をどの審査済み慈善団体が受け取るべきかを示します。投票は Robinhood Chain 上のトランザクションで、保有する $RWI で重み付けされます。誰でも集計できます — あなたも含めて。',
-    'vote.disclaimer.title':'まずお読みください',
+    'vote.disclaimer.title':'ご注意ください',
     'vote.disclaimer.body':'これは助言的なシグナルであり、拘束力のあるガバナンスではありません。$RWI はガバナンス権も収益への請求権も付与しません。プロジェクトは結果を読み取り考慮しますが、すべての寄付について最終決定権を保持します — 投票結果にかかわらず、受取人は The Giving Block の審査を通過する必要があります。投票はトークン残高で重み付けされるため、大口保有者ほど影響が大きくなります。残高は集計時にライブで読み取られるため、投票はスナップショットに固定されません。',
-    'vote.s1.eyebrow':'01 — あなたのウォレット',
     'vote.connect':'ウォレットを接続',
     'vote.disconnect':'切断',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'ネットワークが違います',
-    'vote.s2.eyebrow':'02 — 投票用紙',
+    'vote.s2.eyebrow':'01 — 投票用紙',
     'vote.closes':'· 締切',
     'vote.closes.when':'次の寄付が行われたとき',
     'vote.cast':'投票する',
     'vote.refresh':'集計を更新',
     'vote.nextround':'次のラウンド →',
     'vote.note.calldata':'すべての投票は、選択を calldata に載せたゼロ価値のトランザクションです。サーバーには何も保存されません — 表示される集計は Robinhood Chain から直接読み取られ、再投票は以前の選択を置き換えるだけです。',
+    'vote.voters.eyebrow':'今ラウンドのアクティブな投票者',
+    'vote.voters.empty':'今ラウンドはまだ投票がありません。',
+    'vote.voters.copyTitle':'アドレスをコピー',
+    'vote.voters.copied':'コピーしました',
     'vote.founder.eyebrow':'創設者コントロール',
     'vote.founder.open':'新しい投票を開く',
     'vote.founder.confirm':'確認して開く',
     'vote.founder.note':'以下の候補は自動的に構成されます — 再登場の団体 1、プロジェクトの既存の関心領域から 2、そして ReliefWeb のライブ危機データに照らして順位付けされた、現在の必要に応える団体 3。新しいラウンドを開くのはあなたのウォレットからのトランザクションです:現在のラウンドを置き換え、以前のラウンドの投票は即座に無効になります。これを実行できるのはこのアドレスのみで、他の誰かの宣言はページがチェーンを読む際に無視されます。',
-    'vote.s3.eyebrow':'03 — 集計の仕組み',
+    'vote.s3.eyebrow':'02 — 集計の仕組み',
     'vote.s3.title':'誰でも数えられる。',
     'vote.how1a':'ウォレットが投票箱アドレスに 0 価値のトランザクションを送信し、',
     'vote.how1b':'を data フィールドに含めます。支払うのはガス代のみです。',
@@ -489,8 +495,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'そのウォレットはアカウントを返しませんでした。ロックを解除して再試行してください。'
   ,
     'vote.st.tallyPartial':'{n} 件の残高を読み取れませんでした — この集計は不完全です。更新して再試行してください。',
-    'vote.st.tallyTruncated':'投票履歴が長いため、古い投票が表示されていない可能性があります。'
-  ,
     'vote.st.checking':'トランザクションを確認中…',
     'vote.st.boxContract':'投票箱アドレスにコントラクトコードがあるため投票データが拒否され、すべてのトランザクションが失敗します。通常のウォレットアドレスである必要があります。送信していません — ガスは消費されていません。',
     'vote.st.wouldRevert':'このトランザクションはチェーン上で失敗するため送信しませんでした。ガスは消費されていません。',
@@ -547,25 +551,28 @@ const TRANSLATIONS = {
     'vote.title.b':'당신이 고릅니다',
     'vote.title.c':'다음은 누구인지.',
     'vote.lede':'$RWI 보유자가 다음 기부를 어느 검증된 자선단체가 받아야 할지 신호합니다. 투표는 Robinhood Chain의 거래이며, 보유한 $RWI로 가중됩니다. 누구나 집계할 수 있습니다 — 당신도 포함해서.',
-    'vote.disclaimer.title':'먼저 읽어주세요',
+    'vote.disclaimer.title':'유의사항',
     'vote.disclaimer.body':'이것은 자문 신호이며 구속력 있는 거버넌스가 아닙니다. $RWI는 거버넌스 권리도, 수익에 대한 청구권도 부여하지 않습니다. 프로젝트는 결과를 읽고 참고하지만 모든 기부에 대한 최종 결정권을 유지합니다 — 투표 결과와 무관하게 수혜자는 The Giving Block의 검증을 통과해야 합니다. 투표는 토큰 잔액으로 가중되므로 대규모 보유자의 영향이 큽니다. 잔액은 집계 시점에 실시간으로 읽히므로 투표는 스냅샷에 고정되지 않습니다.',
-    'vote.s1.eyebrow':'01 — 내 지갑',
     'vote.connect':'지갑 연결',
     'vote.disconnect':'연결 해제',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'잘못된 네트워크',
-    'vote.s2.eyebrow':'02 — 투표용지',
+    'vote.s2.eyebrow':'01 — 투표용지',
     'vote.closes':'· 마감',
     'vote.closes.when':'다음 기부가 이루어질 때',
     'vote.cast':'투표하기',
     'vote.refresh':'집계 새로고침',
     'vote.nextround':'다음 라운드 →',
     'vote.note.calldata':'모든 투표는 선택을 calldata에 담은 0원 거래입니다. 서버에는 아무것도 저장되지 않습니다 — 보이는 집계는 Robinhood Chain에서 직접 읽으며, 재투표는 이전 선택을 대체할 뿐입니다.',
+    'vote.voters.eyebrow':'이번 라운드 활성 투표자',
+    'vote.voters.empty':'이번 라운드에는 아직 투표가 없습니다.',
+    'vote.voters.copyTitle':'주소 복사',
+    'vote.voters.copied':'복사됨',
     'vote.founder.eyebrow':'창립자 제어',
     'vote.founder.open':'새 투표 열기',
     'vote.founder.confirm':'확인하고 열기',
     'vote.founder.note':'아래 명단은 자동으로 구성됩니다 — 재등장 단체 1곳, 프로젝트의 기존 관심 분야에서 2곳, 그리고 ReliefWeb 실시간 위기 데이터에 따라 순위가 매겨진 현재 필요에 대응하는 3곳. 새 라운드를 여는 것은 당신 지갑에서 보내는 거래입니다: 현재 라운드를 대체하며, 이전 라운드의 투표는 즉시 무효가 됩니다. 오직 이 주소만 실행할 수 있으며, 다른 누군가의 선언은 페이지가 체인을 읽을 때 무시됩니다.',
-    'vote.s3.eyebrow':'03 — 집계 방식',
+    'vote.s3.eyebrow':'02 — 집계 방식',
     'vote.s3.title':'누구나 셀 수 있습니다.',
     'vote.how1a':'지갑이 투표함 주소로 0원 거래를 보내며',
     'vote.how1b':'를 data 필드에 담습니다. 가스비만 지불합니다.',
@@ -618,8 +625,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'해당 지갑이 계정을 반환하지 않았습니다. 잠금을 해제하고 다시 시도하세요.'
   ,
     'vote.st.tallyPartial':'{n}개의 잔액을 읽지 못했습니다 — 이 집계는 불완전합니다. 새로고침하여 다시 시도하세요.',
-    'vote.st.tallyTruncated':'투표 기록이 길어 오래된 투표가 표시되지 않을 수 있습니다.'
-  ,
     'vote.st.checking':'거래를 확인하는 중…',
     'vote.st.boxContract':'투표함 주소에 컨트랙트 코드가 있어 투표 데이터를 거부하고 모든 거래가 되돌려집니다. 일반 지갑 주소여야 합니다. 아무것도 전송되지 않았습니다 — 가스가 소모되지 않았습니다.',
     'vote.st.wouldRevert':'이 거래는 체인에서 실패하므로 전송하지 않았습니다. 가스가 소모되지 않았습니다.',
@@ -676,25 +681,28 @@ const TRANSLATIONS = {
     'vote.title.b':'Você escolhe',
     'vote.title.c':'quem é o próximo.',
     'vote.lede':'Detentores de $RWI sinalizam qual instituição verificada deve receber a próxima doação. Seu voto é uma transação na Robinhood Chain, ponderada pelo $RWI que você detém. Qualquer um pode contabilizar — inclusive você.',
-    'vote.disclaimer.title':'Leia isto primeiro',
+    'vote.disclaimer.title':'Nota',
     'vote.disclaimer.body':'Isto é um sinal consultivo, não governança vinculante. $RWI não concede direitos de governança nem direito sobre receitas. O projeto lê o resultado e o pondera, mas mantém a palavra final sobre cada doação — os destinatários devem passar pela verificação da The Giving Block independentemente do resultado. O voto é ponderado pelo saldo de tokens, o que significa que grandes detentores pesam mais. Os saldos são lidos ao vivo no momento da contagem, então um voto não fica preso a um instantâneo.',
-    'vote.s1.eyebrow':'01 — Sua carteira',
     'vote.connect':'Conectar carteira',
     'vote.disconnect':'Desconectar',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Rede incorreta',
-    'vote.s2.eyebrow':'02 — A votação',
+    'vote.s2.eyebrow':'01 — A votação',
     'vote.closes':'· encerra',
     'vote.closes.when':'quando a próxima doação for feita',
     'vote.cast':'Votar',
     'vote.refresh':'Atualizar contagem',
     'vote.nextround':'Próxima rodada →',
     'vote.note.calldata':'Cada voto é uma transação de valor zero que carrega sua escolha no calldata. Nada é armazenado em servidor — a contagem que você vê é lida direto da Robinhood Chain, e votar de novo simplesmente substitui sua escolha anterior.',
+    'vote.voters.eyebrow':'Votantes ativos nesta rodada',
+    'vote.voters.empty':'Ainda não há votos nesta rodada.',
+    'vote.voters.copyTitle':'Copiar endereço',
+    'vote.voters.copied':'Copiado',
     'vote.founder.eyebrow':'Controles do fundador',
     'vote.founder.open':'Abrir uma nova votacao',
     'vote.founder.confirm':'Confirmar e abrir',
     'vote.founder.note':'A lista abaixo é composta automaticamente — uma organização recorrente, duas das áreas de causa já estabelecidas do projeto e três respondendo à necessidade atual, classificadas conforme dados de crise ao vivo da ReliefWeb. Abrir uma nova rodada é uma transação da sua carteira: substitui a rodada atual, e votos de rodadas anteriores param de contar imediatamente. Só este endereço pode fazê-lo; declarações de qualquer outro são ignoradas quando a página lê a cadeia.',
-    'vote.s3.eyebrow':'03 — Como a contagem funciona',
+    'vote.s3.eyebrow':'02 — Como a contagem funciona',
     'vote.s3.title':'Contável por qualquer um.',
     'vote.how1a':'Sua carteira envia uma transação de valor 0 para o endereço da urna com',
     'vote.how1b':'no campo de dados. Você paga apenas gas.',
@@ -747,8 +755,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Essa carteira nao retornou contas. Desbloqueie e tente novamente.'
   ,
     'vote.st.tallyPartial':'Nao foi possivel ler {n} saldo(s) — esta contagem esta incompleta. Atualize para tentar de novo.',
-    'vote.st.tallyTruncated':'O historico de votos e longo o bastante para que votos antigos possam nao aparecer.'
-  ,
     'vote.st.checking':'Verificando a transacao…',
     'vote.st.boxContract':'O endereco da urna contem codigo de contrato, entao rejeita os dados do voto e toda transacao reverte. Precisa ser um endereco de carteira comum. Nada foi enviado — nenhum gas foi gasto.',
     'vote.st.wouldRevert':'Esta transacao falharia na cadeia, entao nao foi enviada. Nenhum gas foi gasto.',
@@ -805,25 +811,28 @@ const TRANSLATIONS = {
     'vote.title.b':'Vous choisissez',
     'vote.title.c':'qui est le prochain.',
     'vote.lede':'Les détenteurs de $RWI indiquent quelle œuvre vérifiée doit recevoir le prochain don. Votre vote est une transaction sur Robinhood Chain, pondérée par le $RWI que vous détenez. N\'importe qui peut le compter — vous compris.',
-    'vote.disclaimer.title':'Lisez ceci d\'abord',
+    'vote.disclaimer.title':'À noter',
     'vote.disclaimer.body':'Ceci est un signal consultatif, pas une gouvernance contraignante. $RWI ne confère aucun droit de gouvernance ni créance sur les revenus. Le projet lit le résultat et en tient compte, mais conserve le dernier mot sur chaque don — les bénéficiaires doivent passer la vérification de The Giving Block quel que soit le vote. Le vote est pondéré par le solde de tokens, les gros détenteurs pèsent donc davantage. Les soldes sont lus en direct au moment du décompte, un vote n\'est donc pas figé sur un instantané.',
-    'vote.s1.eyebrow':'01 — Votre portefeuille',
     'vote.connect':'Connecter le portefeuille',
     'vote.disconnect':'Déconnecter',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Mauvais réseau',
-    'vote.s2.eyebrow':'02 — Le bulletin',
+    'vote.s2.eyebrow':'01 — Le bulletin',
     'vote.closes':'· clôture',
     'vote.closes.when':'lorsque le prochain don sera effectué',
     'vote.cast':'Voter',
     'vote.refresh':'Actualiser le décompte',
     'vote.nextround':'Tour suivant →',
     'vote.note.calldata':'Chaque vote est une transaction de valeur nulle portant votre choix dans son calldata. Rien n\'est stocké sur un serveur — le décompte affiché est lu directement sur Robinhood Chain, et revoter remplace simplement votre choix précédent.',
+    'vote.voters.eyebrow':'Votants actifs ce tour',
+    'vote.voters.empty':'Aucun vote pour ce tour pour le moment.',
+    'vote.voters.copyTitle':'Copier l\'adresse',
+    'vote.voters.copied':'Copié',
     'vote.founder.eyebrow':'Contrôles du fondateur',
     'vote.founder.open':'Ouvrir un nouveau scrutin',
     'vote.founder.confirm':'Confirmer et ouvrir',
     'vote.founder.note':'La liste ci-dessous est composée automatiquement — une organisation récurrente, deux issues des domaines déjà soutenus par le projet, et trois répondant au besoin actuel, classées selon les données de crise en direct de ReliefWeb. Ouvrir un nouveau tour est une transaction depuis votre portefeuille : elle remplace le tour actuel, et les votes des tours précédents cessent immédiatement de compter. Seule cette adresse peut le faire ; les déclarations de toute autre sont ignorées lorsque la page lit la chaîne.',
-    'vote.s3.eyebrow':'03 — Comment le décompte fonctionne',
+    'vote.s3.eyebrow':'02 — Comment le décompte fonctionne',
     'vote.s3.title':'Comptable par quiconque.',
     'vote.how1a':'Votre portefeuille envoie une transaction de valeur 0 à l\'adresse de l\'urne avec',
     'vote.how1b':'dans le champ de données. Vous ne payez que le gas.',
@@ -876,8 +885,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Ce portefeuille n a renvoye aucun compte. Deverrouillez-le et reessayez.'
   ,
     'vote.st.tallyPartial':'{n} solde(s) n ont pas pu etre lus — ce decompte est incomplet. Actualisez pour reessayer.',
-    'vote.st.tallyTruncated':'L historique des votes est assez long pour que d anciens votes ne soient pas affiches.'
-  ,
     'vote.st.checking':'Verification de la transaction…',
     'vote.st.boxContract':'L adresse de l urne contient du code de contrat : elle rejette les donnees du vote et chaque transaction echoue. Ce doit etre une adresse de portefeuille simple. Rien n a ete envoye — aucun gas depense.',
     'vote.st.wouldRevert':'Cette transaction echouerait sur la chaine, elle n a donc pas ete envoyee. Aucun gas depense.',
@@ -934,25 +941,28 @@ const TRANSLATIONS = {
     'vote.title.b':'Вы выбираете',
     'vote.title.c':'кто следующий.',
     'vote.lede':'Держатели $RWI указывают, какая проверенная благотворительная организация должна получить следующее пожертвование. Ваш голос — транзакция в Robinhood Chain, взвешенная по количеству $RWI. Подсчитать может любой — включая вас.',
-    'vote.disclaimer.title':'Сначала прочтите это',
+    'vote.disclaimer.title':'Обратите внимание',
     'vote.disclaimer.body':'Это консультативный сигнал, а не обязывающее управление. $RWI не даёт ни прав управления, ни притязаний на доход. Проект читает результат и учитывает его, но сохраняет за собой последнее слово по каждому пожертвованию — получатели обязаны пройти проверку The Giving Block независимо от исхода голосования. Голос взвешивается по балансу токенов, поэтому крупные держатели весят больше. Балансы читаются в момент подсчёта, поэтому голос не привязан к снимку.',
-    'vote.s1.eyebrow':'01 — Ваш кошелёк',
     'vote.connect':'Подключить кошелёк',
     'vote.disconnect':'Отключить',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Неверная сеть',
-    'vote.s2.eyebrow':'02 — Бюллетень',
+    'vote.s2.eyebrow':'01 — Бюллетень',
     'vote.closes':'· закрывается',
     'vote.closes.when':'когда будет сделано следующее пожертвование',
     'vote.cast':'Проголосовать',
     'vote.refresh':'Обновить подсчёт',
     'vote.nextround':'Следующий раунд →',
     'vote.note.calldata':'Каждый голос — транзакция нулевой стоимости, несущая ваш выбор в calldata. Ничего не хранится на сервере — подсчёт читается напрямую из Robinhood Chain, а повторное голосование просто заменяет прежний выбор.',
+    'vote.voters.eyebrow':'Активные голосующие в этом раунде',
+    'vote.voters.empty':'В этом раунде пока нет голосов.',
+    'vote.voters.copyTitle':'Скопировать адрес',
+    'vote.voters.copied':'Скопировано',
     'vote.founder.eyebrow':'Управление основателя',
     'vote.founder.open':'Открыть новое голосование',
     'vote.founder.confirm':'Подтвердить и открыть',
     'vote.founder.note':'Список ниже составляется автоматически — одна возвращающаяся организация, две из уже поддержанных проектом направлений и три, отвечающие текущей нужде, ранжированные по живым данным о кризисах ReliefWeb. Открытие нового раунда — транзакция из вашего кошелька: она заменяет текущий раунд, и голоса прошлых раундов немедленно перестают считаться. Сделать это может только этот адрес; заявления от любого другого игнорируются при чтении цепочки.',
-    'vote.s3.eyebrow':'03 — Как работает подсчёт',
+    'vote.s3.eyebrow':'02 — Как работает подсчёт',
     'vote.s3.title':'Подсчитать может любой.',
     'vote.how1a':'Ваш кошелёк отправляет транзакцию нулевой стоимости на адрес урны с',
     'vote.how1b':'в поле данных. Вы платите только за газ.',
@@ -1005,8 +1015,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Кошелёк не вернул аккаунтов. Разблокируйте его и повторите.'
   ,
     'vote.st.tallyPartial':'Не удалось прочитать {n} баланс(ов) — подсчёт неполный. Обновите, чтобы повторить.',
-    'vote.st.tallyTruncated':'История голосов настолько длинная, что старые голоса могут не отображаться.'
-  ,
     'vote.st.checking':'Проверка транзакции…',
     'vote.st.boxContract':'По адресу урны размещён код контракта, поэтому данные голоса отклоняются и каждая транзакция откатывается. Нужен обычный адрес кошелька. Ничего не отправлено — газ не потрачен.',
     'vote.st.wouldRevert':'Эта транзакция не прошла бы в сети, поэтому не была отправлена. Газ не потрачен.',
@@ -1063,25 +1071,28 @@ const TRANSLATIONS = {
     'vote.title.b':'Sen seçiyorsun',
     'vote.title.c':'sıradakini.',
     'vote.lede':'$RWI sahipleri, bir sonraki bağışı hangi doğrulanmış hayır kurumunun alması gerektiğini işaret eder. Oyunuz Robinhood Chain üzerinde bir işlemdir ve elinizdeki $RWI ile ağırlıklandırılır. Herkes sayabilir — siz dahil.',
-    'vote.disclaimer.title':'Önce bunu okuyun',
+    'vote.disclaimer.title':'Lütfen dikkat',
     'vote.disclaimer.body':'Bu bağlayıcı bir yönetişim değil, danışma niteliğinde bir sinyaldir. $RWI ne yönetişim hakkı ne de gelir üzerinde hak verir. Proje sonucu okur ve dikkate alır, ancak her bağış üzerinde son sözü saklı tutar — alıcılar, oy nasıl sonuçlanırsa sonuçlansın The Giving Block doğrulamasından geçmelidir. Oylama token bakiyesiyle ağırlıklandırılır, bu da büyük sahiplerin daha fazla ağırlık taşıdığı anlamına gelir. Bakiyeler sayım anında canlı okunur, bu yüzden oy bir anlık görüntüye sabitlenmez.',
-    'vote.s1.eyebrow':'01 — Cüzdanınız',
     'vote.connect':'Cüzdan bağla',
     'vote.disconnect':'Bağlantıyı kes',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Yanlış ağ',
-    'vote.s2.eyebrow':'02 — Oy pusulası',
+    'vote.s2.eyebrow':'01 — Oy pusulası',
     'vote.closes':'· kapanış',
     'vote.closes.when':'bir sonraki bağış yapıldığında',
     'vote.cast':'Oy ver',
     'vote.refresh':'Sayımı yenile',
     'vote.nextround':'Sonraki tur →',
     'vote.note.calldata':'Her oy, seçiminizi calldata içinde taşıyan sıfır değerli bir işlemdir. Sunucuda hiçbir şey saklanmaz — gördüğünüz sayım doğrudan Robinhood Chain\'den okunur ve yeniden oy vermek önceki seçiminizi değiştirir.',
+    'vote.voters.eyebrow':'Bu turdaki aktif oy verenler',
+    'vote.voters.empty':'Bu turda henüz oy yok.',
+    'vote.voters.copyTitle':'Adresi kopyala',
+    'vote.voters.copied':'Kopyalandı',
     'vote.founder.eyebrow':'Kurucu kontrolleri',
     'vote.founder.open':'Yeni bir oylama ac',
     'vote.founder.confirm':'Onayla ve ac',
     'vote.founder.note':'Aşağıdaki liste otomatik oluşturulur — bir tekrar eden kuruluş, projenin yerleşik ilgi alanlarından iki tane ve ReliefWeb canlı kriz verilerine göre sıralanmış, güncel ihtiyaca yanıt veren üç tane. Yeni bir tur açmak cüzdanınızdan bir işlemdir: mevcut turun yerini alır ve önceki turlardaki oylar anında sayılmaz olur. Bunu yalnızca bu adres yapabilir; başka herhangi birinin bildirimleri sayfa zinciri okurken yok sayılır.',
-    'vote.s3.eyebrow':'03 — Sayım nasıl çalışır',
+    'vote.s3.eyebrow':'02 — Sayım nasıl çalışır',
     'vote.s3.title':'Herkes sayabilir.',
     'vote.how1a':'Cüzdanınız oy sandığı adresine 0 değerli bir işlem gönderir,',
     'vote.how1b':'veri alanında. Yalnızca gas ödersiniz.',
@@ -1134,8 +1145,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Bu cuzdan hesap dondurmedi. Kilidini acip tekrar deneyin.'
   ,
     'vote.st.tallyPartial':'{n} bakiye okunamadi — bu sayim eksik. Yenileyip tekrar deneyin.',
-    'vote.st.tallyTruncated':'Oy gecmisi uzun oldugundan eski oylar gosterilmiyor olabilir.'
-  ,
     'vote.st.checking':'Islem kontrol ediliyor…',
     'vote.st.boxContract':'Oy sandigi adresinde sozlesme kodu var; oy verisini reddediyor ve her islem geri aliniyor. Duz bir cuzdan adresi olmali. Hicbir sey gonderilmedi — gas harcanmadi.',
     'vote.st.wouldRevert':'Bu islem zincirde basarisiz olurdu, bu yuzden gonderilmedi. Gas harcanmadi.',
@@ -1192,25 +1201,28 @@ const TRANSLATIONS = {
     'vote.title.b':'Bạn chọn',
     'vote.title.c':'ai là người tiếp theo.',
     'vote.lede':'Người nắm giữ $RWI báo hiệu tổ chức từ thiện đã kiểm định nào nên nhận khoản quyên góp tiếp theo. Phiếu của bạn là một giao dịch trên Robinhood Chain, được tính trọng số theo lượng $RWI bạn nắm giữ. Bất kỳ ai cũng có thể kiểm đếm — kể cả bạn.',
-    'vote.disclaimer.title':'Đọc điều này trước',
+    'vote.disclaimer.title':'Xin lưu ý',
     'vote.disclaimer.body':'Đây là tín hiệu tư vấn, không phải quản trị ràng buộc. $RWI không trao quyền quản trị và không có quyền đòi doanh thu. Dự án đọc kết quả và cân nhắc, nhưng giữ quyền quyết định cuối cùng với mọi khoản quyên góp — người nhận phải qua kiểm định của The Giving Block bất kể kết quả bỏ phiếu. Bỏ phiếu được tính trọng số theo số dư token, nghĩa là người nắm giữ lớn có trọng lượng lớn hơn. Số dư được đọc trực tiếp lúc kiểm đếm, nên phiếu không bị khóa vào một ảnh chụp.',
-    'vote.s1.eyebrow':'01 — Ví của bạn',
     'vote.connect':'Kết nối ví',
     'vote.disconnect':'Ngắt kết nối',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Sai mạng',
-    'vote.s2.eyebrow':'02 — Lá phiếu',
+    'vote.s2.eyebrow':'01 — Lá phiếu',
     'vote.closes':'· đóng',
     'vote.closes.when':'khi khoản quyên góp tiếp theo được thực hiện',
     'vote.cast':'Bỏ phiếu',
     'vote.refresh':'Làm mới kiểm đếm',
     'vote.nextround':'Vòng tiếp theo →',
     'vote.note.calldata':'Mỗi phiếu là một giao dịch giá trị bằng không mang lựa chọn của bạn trong calldata. Không có gì lưu trên máy chủ — kiểm đếm bạn thấy được đọc thẳng từ Robinhood Chain, và bỏ phiếu lại chỉ thay thế lựa chọn trước đó.',
+    'vote.voters.eyebrow':'Người bỏ phiếu đang hoạt động vòng này',
+    'vote.voters.empty':'Vòng này chưa có phiếu bầu.',
+    'vote.voters.copyTitle':'Sao chép địa chỉ',
+    'vote.voters.copied':'Đã sao chép',
     'vote.founder.eyebrow':'Điều khiển người sáng lập',
     'vote.founder.open':'Mở lá phiếu mới',
     'vote.founder.confirm':'Xác nhận & mở',
     'vote.founder.note':'Danh sách bên dưới được soạn tự động — một tổ chức quay lại, hai từ các lĩnh vực dự án đã hỗ trợ, và ba đáp ứng nhu cầu hiện tại, xếp hạng theo dữ liệu khủng hoảng trực tiếp của ReliefWeb. Mở vòng mới là một giao dịch từ ví của bạn: nó thay thế vòng hiện tại, và phiếu ở các vòng trước lập tức không còn được tính. Chỉ địa chỉ này mới làm được; tuyên bố từ bất kỳ ai khác đều bị bỏ qua khi trang đọc chuỗi.',
-    'vote.s3.eyebrow':'03 — Cách kiểm đếm hoạt động',
+    'vote.s3.eyebrow':'02 — Cách kiểm đếm hoạt động',
     'vote.s3.title':'Ai cũng đếm được.',
     'vote.how1a':'Ví của bạn gửi một giao dịch giá trị 0 đến địa chỉ hòm phiếu với',
     'vote.how1b':'trong trường dữ liệu. Bạn chỉ trả gas.',
@@ -1263,8 +1275,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Ví đó không trả về tài khoản nào. Hãy mở khóa và thử lại.'
   ,
     'vote.st.tallyPartial':'Không đọc được {n} số dư — kiểm đếm này chưa đầy đủ. Làm mới để thử lại.',
-    'vote.st.tallyTruncated':'Lịch sử bỏ phiếu đủ dài nên các phiếu cũ có thể không được hiển thị.'
-  ,
     'vote.st.checking':'Đang kiểm tra giao dịch…',
     'vote.st.boxContract':'Địa chỉ hòm phiếu chứa mã hợp đồng nên từ chối dữ liệu phiếu và mọi giao dịch đều bị hoàn. Nó phải là địa chỉ ví thường. Không gửi gì cả — không tốn gas.',
     'vote.st.wouldRevert':'Giao dịch này sẽ thất bại trên chuỗi nên đã không được gửi. Không tốn gas.',
@@ -1321,25 +1331,28 @@ const TRANSLATIONS = {
     'vote.title.b':'आप चुनते हैं',
     'vote.title.c':'अगला कौन है।',
     'vote.lede':'$RWI धारक संकेत देते हैं कि अगला दान किस सत्यापित धर्मार्थ संगठन को मिलना चाहिए। आपका वोट Robinhood Chain पर एक लेनदेन है, जो आपके पास मौजूद $RWI के अनुसार भारित होता है। कोई भी इसकी गिनती कर सकता है — आप भी।',
-    'vote.disclaimer.title':'पहले यह पढ़ें',
+    'vote.disclaimer.title':'कृपया ध्यान दें',
     'vote.disclaimer.body':'यह एक सलाहकारी संकेत है, बाध्यकारी शासन नहीं। $RWI कोई शासन अधिकार या राजस्व पर दावा नहीं देता। परियोजना परिणाम पढ़ती है और उस पर विचार करती है, लेकिन हर दान पर अंतिम निर्णय अपने पास रखती है — वोट चाहे जैसा भी हो, प्राप्तकर्ताओं को The Giving Block की जाँच पास करनी होगी। मतदान टोकन शेष के अनुसार भारित होता है, यानी बड़े धारकों का वजन अधिक होता है। शेष गिनती के समय लाइव पढ़े जाते हैं, इसलिए वोट किसी स्नैपशॉट से बंधा नहीं है।',
-    'vote.s1.eyebrow':'01 — आपका वॉलेट',
     'vote.connect':'वॉलेट कनेक्ट करें',
     'vote.disconnect':'डिस्कनेक्ट',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'गलत नेटवर्क',
-    'vote.s2.eyebrow':'02 — मतपत्र',
+    'vote.s2.eyebrow':'01 — मतपत्र',
     'vote.closes':'· समाप्त',
     'vote.closes.when':'जब अगला दान किया जाएगा',
     'vote.cast':'वोट डालें',
     'vote.refresh':'गणना ताज़ा करें',
     'vote.nextround':'अगला दौर →',
     'vote.note.calldata':'हर वोट एक शून्य-मूल्य लेनदेन है जो आपकी पसंद को अपने calldata में रखता है। किसी सर्वर पर कुछ भी संग्रहीत नहीं होता — आप जो गणना देखते हैं वह सीधे Robinhood Chain से पढ़ी जाती है, और दोबारा वोट करना बस आपकी पिछली पसंद को बदल देता है।',
+    'vote.voters.eyebrow':'इस दौर के सक्रिय मतदाता',
+    'vote.voters.empty':'इस दौर में अभी तक कोई वोट नहीं।',
+    'vote.voters.copyTitle':'पता कॉपी करें',
+    'vote.voters.copied':'कॉपी हो गया',
     'vote.founder.eyebrow':'संस्थापक नियंत्रण',
     'vote.founder.open':'नया मतपत्र खोलें',
     'vote.founder.confirm':'पुष्टि करें और खोलें',
     'vote.founder.note':'नीचे की सूची स्वचालित रूप से बनती है — एक लौटने वाला संगठन, परियोजना के स्थापित कारण क्षेत्रों से दो, और वर्तमान आवश्यकता का उत्तर देने वाले तीन, जो ReliefWeb के लाइव संकट डेटा के आधार पर क्रमित हैं। नया दौर खोलना आपके वॉलेट से एक लेनदेन है: यह वर्तमान दौर की जगह लेता है, और पिछले दौरों के वोट तुरंत गिनना बंद कर देते हैं। केवल यही पता ऐसा कर सकता है; किसी और की घोषणाएँ तब अनदेखी की जाती हैं जब पृष्ठ चेन पढ़ता है।',
-    'vote.s3.eyebrow':'03 — गणना कैसे काम करती है',
+    'vote.s3.eyebrow':'02 — गणना कैसे काम करती है',
     'vote.s3.title':'कोई भी गिन सकता है।',
     'vote.how1a':'आपका वॉलेट मतपेटी पते पर 0-मूल्य लेनदेन भेजता है, जिसमें',
     'vote.how1b':'data फ़ील्ड में। आप केवल gas चुकाते हैं।',
@@ -1392,8 +1405,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'उस वॉलेट ने कोई खाता नहीं लौटाया। इसे अनलॉक करके पुनः प्रयास करें।'
   ,
     'vote.st.tallyPartial':'{n} शेष नहीं पढ़े जा सके — यह गणना अधूरी है। पुनः प्रयास हेतु ताज़ा करें।',
-    'vote.st.tallyTruncated':'वोट इतिहास इतना लंबा है कि पुराने वोट शायद न दिखें।'
-  ,
     'vote.st.checking':'लेनदेन की जाँच हो रही है…',
     'vote.st.boxContract':'मतपेटी पते में अनुबंध कोड है, इसलिए वह वोट डेटा अस्वीकार करता है और हर लेनदेन वापस हो जाता है। यह एक सामान्य वॉलेट पता होना चाहिए। कुछ नहीं भेजा गया — कोई gas खर्च नहीं हुआ।',
     'vote.st.wouldRevert':'यह लेनदेन चेन पर विफल होता, इसलिए भेजा नहीं गया। कोई gas खर्च नहीं हुआ।',
@@ -1450,25 +1461,28 @@ const TRANSLATIONS = {
     'vote.title.b':'Du wählst',
     'vote.title.c':'wer als Nächstes.',
     'vote.lede':'$RWI-Inhaber signalisieren, welche geprüfte Organisation die nächste Spende erhalten soll. Deine Stimme ist eine Transaktion auf der Robinhood Chain, gewichtet nach dem $RWI, das du hältst. Jeder kann sie auszählen — auch du.',
-    'vote.disclaimer.title':'Lies das zuerst',
+    'vote.disclaimer.title':'Bitte beachten',
     'vote.disclaimer.body':'Dies ist ein beratendes Signal, keine bindende Governance. $RWI gewährt weder Governance-Rechte noch Ansprüche auf Erlöse. Das Projekt liest das Ergebnis und gewichtet es, behält aber bei jeder Spende das letzte Wort — Empfänger müssen die Prüfung von The Giving Block bestehen, unabhängig vom Abstimmungsergebnis. Die Abstimmung wird nach Token-Guthaben gewichtet, große Inhaber wiegen also schwerer. Guthaben werden zum Auszählungszeitpunkt live gelesen, eine Stimme ist also nicht auf einen Snapshot festgelegt.',
-    'vote.s1.eyebrow':'01 — Deine Wallet',
     'vote.connect':'Wallet verbinden',
     'vote.disconnect':'Trennen',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Falsches Netzwerk',
-    'vote.s2.eyebrow':'02 — Der Stimmzettel',
+    'vote.s2.eyebrow':'01 — Der Stimmzettel',
     'vote.closes':'· endet',
     'vote.closes.when':'wenn die nächste Spende erfolgt',
     'vote.cast':'Abstimmen',
     'vote.refresh':'Auszählung aktualisieren',
     'vote.nextround':'Nächste Runde →',
     'vote.note.calldata':'Jede Stimme ist eine Transaktion ohne Wert, die deine Wahl im Calldata trägt. Nichts wird auf einem Server gespeichert — die angezeigte Auszählung wird direkt von der Robinhood Chain gelesen, und erneutes Abstimmen ersetzt einfach deine vorherige Wahl.',
+    'vote.voters.eyebrow':'Aktive Wähler in dieser Runde',
+    'vote.voters.empty':'In dieser Runde noch keine Stimmen.',
+    'vote.voters.copyTitle':'Adresse kopieren',
+    'vote.voters.copied':'Kopiert',
     'vote.founder.eyebrow':'Gründer-Steuerung',
     'vote.founder.open':'Neue Abstimmung oeffnen',
     'vote.founder.confirm':'Bestaetigen & oeffnen',
     'vote.founder.note':'Die Liste unten wird automatisch zusammengestellt — eine wiederkehrende Organisation, zwei aus den etablierten Themenfeldern des Projekts und drei, die auf den aktuellen Bedarf reagieren, gewichtet nach Live-Krisendaten von ReliefWeb. Eine neue Runde zu öffnen ist eine Transaktion aus deiner Wallet: Sie löst die aktuelle Runde ab, und Stimmen früherer Runden zählen sofort nicht mehr. Nur diese Adresse kann das; Deklarationen von anderen werden ignoriert, wenn die Seite die Chain liest.',
-    'vote.s3.eyebrow':'03 — Wie die Auszählung funktioniert',
+    'vote.s3.eyebrow':'02 — Wie die Auszählung funktioniert',
     'vote.s3.title':'Von jedem zählbar.',
     'vote.how1a':'Deine Wallet sendet eine Transaktion mit Wert 0 an die Wahlurnen-Adresse mit',
     'vote.how1b':'im Datenfeld. Du zahlst nur Gas.',
@@ -1521,8 +1535,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Diese Wallet lieferte keine Konten. Entsperre sie und versuche es erneut.'
   ,
     'vote.st.tallyPartial':'{n} Guthaben konnten nicht gelesen werden — diese Auszaehlung ist unvollstaendig. Aktualisieren zum Wiederholen.',
-    'vote.st.tallyTruncated':'Der Stimmverlauf ist lang genug, dass aeltere Stimmen moeglicherweise nicht angezeigt werden.'
-  ,
     'vote.st.checking':'Transaktion wird geprueft…',
     'vote.st.boxContract':'Die Wahlurnen-Adresse enthaelt Vertragscode, lehnt die Stimmdaten ab und jede Transaktion schlaegt fehl. Es muss eine normale Wallet-Adresse sein. Nichts gesendet — kein Gas verbraucht.',
     'vote.st.wouldRevert':'Diese Transaktion wuerde onchain fehlschlagen und wurde nicht gesendet. Kein Gas verbraucht.',
@@ -1579,25 +1591,28 @@ const TRANSLATIONS = {
     'vote.title.b':'Anda memilih',
     'vote.title.c':'siapa berikutnya.',
     'vote.lede':'Pemegang $RWI memberi sinyal lembaga amal terverifikasi mana yang harus menerima donasi berikutnya. Suara Anda adalah transaksi di Robinhood Chain, dibobot oleh $RWI yang Anda pegang. Siapa pun bisa menghitungnya — termasuk Anda.',
-    'vote.disclaimer.title':'Baca ini dulu',
+    'vote.disclaimer.title':'Harap dicatat',
     'vote.disclaimer.body':'Ini adalah sinyal penasihat, bukan tata kelola yang mengikat. $RWI tidak memberikan hak tata kelola maupun klaim atas pendapatan. Proyek membaca hasilnya dan mempertimbangkannya, tetapi memegang keputusan akhir atas setiap donasi — penerima harus lolos verifikasi The Giving Block terlepas dari hasil pemungutan suara. Pemungutan suara dibobot berdasarkan saldo token, artinya pemegang besar membawa bobot lebih. Saldo dibaca langsung saat penghitungan, jadi suara tidak terkunci pada snapshot.',
-    'vote.s1.eyebrow':'01 — Dompet Anda',
     'vote.connect':'Hubungkan dompet',
     'vote.disconnect':'Putuskan',
     'vote.chain.ok':'Robinhood Chain',
     'vote.chain.wrong':'Jaringan salah',
-    'vote.s2.eyebrow':'02 — Surat suara',
+    'vote.s2.eyebrow':'01 — Surat suara',
     'vote.closes':'· ditutup',
     'vote.closes.when':'saat donasi berikutnya dilakukan',
     'vote.cast':'Beri suara',
     'vote.refresh':'Segarkan hitungan',
     'vote.nextround':'Putaran berikutnya →',
     'vote.note.calldata':'Setiap suara adalah transaksi bernilai nol yang membawa pilihan Anda di calldata-nya. Tidak ada yang disimpan di server — hitungan yang Anda lihat dibaca langsung dari Robinhood Chain, dan memilih ulang hanya menggantikan pilihan sebelumnya.',
+    'vote.voters.eyebrow':'Pemilih aktif putaran ini',
+    'vote.voters.empty':'Belum ada suara di putaran ini.',
+    'vote.voters.copyTitle':'Salin alamat',
+    'vote.voters.copied':'Disalin',
     'vote.founder.eyebrow':'Kontrol pendiri',
     'vote.founder.open':'Buka surat suara baru',
     'vote.founder.confirm':'Konfirmasi & buka',
     'vote.founder.note':'Daftar di bawah disusun otomatis — satu organisasi yang kembali, dua dari bidang yang sudah didukung proyek, dan tiga yang merespons kebutuhan saat ini, diperingkat menurut data krisis langsung ReliefWeb. Membuka putaran baru adalah transaksi dari dompet Anda: ia menggantikan putaran saat ini, dan suara di putaran sebelumnya langsung berhenti dihitung. Hanya alamat ini yang bisa melakukannya; deklarasi dari siapa pun lainnya diabaikan saat halaman membaca rantai.',
-    'vote.s3.eyebrow':'03 — Cara penghitungan bekerja',
+    'vote.s3.eyebrow':'02 — Cara penghitungan bekerja',
     'vote.s3.title':'Dapat dihitung siapa saja.',
     'vote.how1a':'Dompet Anda mengirim transaksi bernilai 0 ke alamat kotak suara dengan',
     'vote.how1b':'di bidang data. Anda hanya membayar gas.',
@@ -1650,8 +1665,6 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Dompet itu tidak mengembalikan akun. Buka kuncinya dan coba lagi.'
   ,
     'vote.st.tallyPartial':'{n} saldo tidak dapat dibaca — hitungan ini belum lengkap. Segarkan untuk mencoba lagi.',
-    'vote.st.tallyTruncated':'Riwayat suara cukup panjang sehingga suara lama mungkin tidak ditampilkan.'
-  ,
     'vote.st.checking':'Memeriksa transaksi…',
     'vote.st.boxContract':'Alamat kotak suara memuat kode kontrak, sehingga menolak data suara dan setiap transaksi dibatalkan. Harus berupa alamat dompet biasa. Tidak ada yang dikirim — tidak ada gas terpakai.',
     'vote.st.wouldRevert':'Transaksi ini akan gagal di rantai, jadi tidak dikirim. Tidak ada gas terpakai.',
@@ -1805,6 +1818,26 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   .disclaimer b{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px}
 
+  .voter-list{display:flex;flex-direction:column;margin-top:10px}
+  .voter-row{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:9px 0;border-bottom:1px solid var(--rule);
+    font-family:var(--mono);font-size:12.5px;
+  }
+  .band .voter-row{border-bottom-color:rgba(204,254,6,.18)}
+  .voter-row:last-child{border-bottom:0}
+  .voter-addr{
+    background:none;border:0;padding:2px 0;cursor:pointer;font:inherit;color:inherit;
+    display:flex;align-items:center;gap:7px;opacity:.88;text-align:left;
+  }
+  .voter-addr:hover,.voter-addr:focus-visible{opacity:1;text-decoration:underline;outline:none}
+  .voter-addr .copy-ic{opacity:.5;font-size:12px}
+  .voter-addr.copied{opacity:1}
+  .voter-addr.copied .copy-ic{opacity:1}
+  .voter-amt{white-space:nowrap;opacity:.85;flex-shrink:0}
+  .voter-cause{opacity:.55;font-size:11px;margin-left:8px}
+  .voter-empty{opacity:.55;font-size:12.5px;font-family:var(--mono);padding:8px 0;margin:0}
+
   section{padding:34px 0;border-top:1px solid var(--rule-strong)}
 
   /* inverted band for the ballot — mirrors the ledger band on the home page */
@@ -1949,7 +1982,10 @@ document.addEventListener('DOMContentLoaded', function(){
     transition:transform .15s ease,box-shadow .15s ease;
   }
   #chartBtn:hover,#chartBtn:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}
-  #chartBtn svg{width:12px;height:12px;flex:none}
+  #chartBtn{width:32px;height:30px;justify-content:center;padding:0;touch-action:manipulation;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border-color:var(--lime, #CCFE06)}
+  #chartBtn:hover,#chartBtn:focus-visible{background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border-color:var(--lime, #CCFE06)}
+  #chartBtn span{display:none}
+  #chartBtn svg{width:14px;height:14px;flex:none}
   #chartModal{
     position:fixed;inset:0;z-index:10000;
     display:none;align-items:center;justify-content:center;
@@ -1992,7 +2028,7 @@ document.addEventListener('DOMContentLoaded', function(){
     font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;
   }
   @media (max-width:640px){
-    #chartBtn{padding:7px 12px;font-size:10px}
+    #chartBtn{width:32px;height:30px;padding:0;font-size:0}
     .chart-panel{height:min(82vh,640px);border-radius:14px}
     #chartModal{padding:12px}
   }
@@ -2051,6 +2087,13 @@ document.addEventListener('DOMContentLoaded', function(){
   #langSel{position:fixed;bottom:64px;right:16px;z-index:9999;background:var(--ink);color:var(--lime);
     border:1px solid var(--lime);border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.28);
     display:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;min-width:200px;max-width:calc(100vw - 32px)}
+  /* Keep the mobile utility pills anchored to the viewport, not the scrolling page. */
+  @media (max-width:640px){
+    #langBtn,#chartBtn,#burnListPill,#langSel{position:fixed!important;-webkit-transform:translateZ(0);transform:translateZ(0)}
+    #langBtn{right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom))}
+    #burnListPill{right:max(16px,env(safe-area-inset-right));bottom:max(60px,calc(env(safe-area-inset-bottom) + 44px))}
+    #langSel{right:max(16px,env(safe-area-inset-right));bottom:max(64px,calc(env(safe-area-inset-bottom) + 48px))}
+  }
   #langSel.open{display:grid}
   #langSel button{background:transparent;color:inherit;border:0;padding:8px 10px;font-family:var(--mono);
     font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:8px;text-align:left;
@@ -2058,6 +2101,28 @@ document.addEventListener('DOMContentLoaded', function(){
   #langSel button:hover,#langSel button:focus-visible{background:rgba(204,254,6,.12);outline:none}
   #langSel button.on{background:var(--lime);color:var(--ink)}
   @media (max-width:480px){ #langSel{grid-template-columns:repeat(2,minmax(0,1fr));min-width:170px} }
+
+  #burnListPill{position:fixed;bottom:60px;right:16px;z-index:9998;width:36px;height:32px;display:grid;
+    place-items:center;padding:0;border:1px solid var(--lime);border-radius:999px;background:var(--ink);
+    color:var(--lime);font-size:15px;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18);
+    transition:transform .15s ease,box-shadow .15s ease,opacity .12s ease}
+  #burnListPill:hover,#burnListPill:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}
+  #burnListPill svg{width:16px;height:16px;stroke:currentColor}
+  #langSel.open~#burnListPill{opacity:0;pointer-events:none}
+  #burnListModal{position:fixed;inset:0;z-index:10020;display:none;align-items:center;justify-content:center;
+    padding:20px;background:rgba(11,11,9,.78)}
+  #burnListModal.open{display:flex}
+  .burn-list-panel{width:min(1180px,100%);height:min(92vh,900px);display:flex;flex-direction:column;
+    overflow:hidden;border:1px solid var(--lime);border-radius:16px;background:var(--ink);
+    box-shadow:0 24px 80px rgba(0,0,0,.5)}
+  .burn-list-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;
+    border-bottom:1px solid rgba(204,254,6,.28);font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--lime)}
+  #burnListClose{width:28px;height:28px;padding:0;border:1px solid rgba(204,254,6,.45);border-radius:999px;
+    background:transparent;color:inherit;font:inherit;font-size:16px;line-height:1;cursor:pointer}
+  #burnListClose:hover,#burnListClose:focus-visible{background:var(--lime);color:var(--ink);outline:none}
+  #burnListFrame{width:100%;flex:1;border:0;background:#11120f}
+  @media(max-width:640px){#burnListModal{padding:8px}.burn-list-panel{height:94vh;border-radius:12px}.burn-list-head{padding:9px 11px;font-size:9px}}
 
   .wallet-picker{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px}
   .wallet-picker .pick-label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
@@ -2206,16 +2271,18 @@ document.addEventListener('DOMContentLoaded', function(){
     <p class="eyebrow" data-i18n="vote.eyebrow">Community signal</p>
     <h1><span data-i18n="vote.title.a">You hold it.</span><br><em data-i18n="vote.title.b">You pick</em> <span data-i18n="vote.title.c">who's next.</span></h1>
     <p class="lede" data-i18n="vote.lede">$RWI holders signal which vetted charity should receive the next donation.</p>
-
-    <div class="disclaimer">
-      <b data-i18n="vote.disclaimer.title">Read this first</b>
-      <span data-i18n="vote.disclaimer.body">This is an advisory signal, not binding governance.</span>
-    </div>
   </div>
 
-  <section>
+  <section class="band">
     <div class="wrap">
-      <p class="eyebrow" data-i18n="vote.s1.eyebrow">01 — Your wallet</p>
+      <div class="results-head">
+        <div>
+          <p class="eyebrow" style="margin-bottom:4px" data-i18n="vote.s2.eyebrow">01 — The ballot</p>
+          <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)"><span data-i18n="vote.ballotOpen">Current ballot</span> <span data-i18n="vote.closes">· closes</span> <span id="roundClose" data-i18n="vote.closes.when">when the next donation is made</span></h2>
+        </div>
+        <div class="totals"><span id="tallyTotals">Loading tally…</span><br><span class="livesig" id="liveSignal"></span><br><span class="livesig" id="slateWarn"></span></div>
+      </div>
+
       <div class="wallet-bar">
         <button class="btn" id="connectBtn" type="button" data-i18n="vote.connect">Connect wallet</button>
         <span class="chip" id="acctChip" hidden></span>
@@ -2225,18 +2292,6 @@ document.addEventListener('DOMContentLoaded', function(){
       </div>
       <div class="wallet-picker" id="walletPicker" hidden></div>
       <p class="status" id="walletStatus"></p>
-    </div>
-  </section>
-
-  <section class="band">
-    <div class="wrap">
-      <div class="results-head">
-        <div>
-          <p class="eyebrow" style="margin-bottom:4px" data-i18n="vote.s2.eyebrow">02 — The ballot</p>
-          <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)"><span data-i18n="vote.ballotOpen">Current ballot</span> <span data-i18n="vote.closes">· closes</span> <span id="roundClose" data-i18n="vote.closes.when">when the next donation is made</span></h2>
-        </div>
-        <div class="totals"><span id="tallyTotals">Loading tally…</span><br><span class="livesig" id="liveSignal"></span><br><span class="livesig" id="slateWarn"></span></div>
-      </div>
 
       <div class="ballot" id="ballot"><!-- rendered from ORG_POOL / SLATE --></div>
 
@@ -2250,6 +2305,11 @@ document.addEventListener('DOMContentLoaded', function(){
       <p class="status" id="voteStatus"></p>
 
       <p class="note" data-i18n="vote.note.calldata">Every vote is a zero-value transaction carrying your choice in its calldata.</p>
+
+      <div class="voters">
+        <p class="eyebrow" style="margin-top:26px" data-i18n="vote.voters.eyebrow">Active voters this round</p>
+        <div class="voter-list" id="voterList"><!-- rendered from lastTally --></div>
+      </div>
     </div>
   </section>
 
@@ -2269,7 +2329,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
   <section>
     <div class="wrap">
-      <p class="eyebrow" data-i18n="vote.s3.eyebrow">03 — How the tally works</p>
+      <p class="eyebrow" data-i18n="vote.s3.eyebrow">02 — How the tally works</p>
       <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)" data-i18n="vote.s3.title">Countable by anyone.</h2>
       <div class="how">
         <div class="s"><b>01</b><p><span data-i18n="vote.how1a">Your wallet sends a 0-value transaction to the ballot box address with</span> <code id="prefixEg"></code> <span data-i18n="vote.how1b">in the data field. You pay only gas.</span></p></div>
@@ -2283,6 +2343,15 @@ document.addEventListener('DOMContentLoaded', function(){
         <span data-i18n="vote.addr.controller">Round controller:</span> <code id="ownerAddr"></code>
       </p>
       <p class="note" data-i18n="vote.addr.note">Rounds are opened by a transaction from the round controller above.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="disclaimer" style="margin-top:0">
+        <b data-i18n="vote.disclaimer.title">Please note</b>
+        <span data-i18n="vote.disclaimer.body">This is an advisory signal, not binding governance.</span>
+      </div>
     </div>
   </section>
 </main>
@@ -3105,6 +3174,28 @@ let ballotResolved = false;
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const short = a => a.slice(0,6) + '…' + a.slice(-4);
+/* navigator.clipboard requires a secure context and can be missing or denied
+   (older browsers, some in-app webviews). The execCommand path is legacy but
+   universally available as a fallback — copy-to-clipboard is a small enough
+   feature that silently failing on either path is worse than trying both. */
+async function copyToClipboard(text){
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  }catch(e){ /* fall through to the legacy path */ }
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.opacity = '0'; ta.style.pointerEvents = 'none';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  }catch(e){ return false; }
+}
 
 function toHexUtf8(str){
   let out = '0x';
@@ -3983,7 +4074,7 @@ async function refreshAll(opts){
   }
   renderBallot();
   renderOwnerPanel();
-  await loadTally(voteTxCache);
+  await loadTally(voteTxCache, opts.force);
   if(seq !== refreshSeq) return;
   updateVoteButton();
 }
@@ -4201,7 +4292,18 @@ async function fetchVoteTxsUncached(){
   // notice covers this too instead of staying silent.
   const out = [];
   votePagesTruncated = false;
-  const MAX_PAGES = 20;
+  // Blockscout returns 50 items/page, so MAX_PAGES=50 caps a walk at 2,500
+  // transactions. That number is the ballot box's ENTIRE lifetime history,
+  // not this round's — the walk isn't scoped by date or round, so history
+  // from every past round (plus anything unrelated sent to this address,
+  // since it doubles as an active wallet) stays in the count forever. A
+  // round lasting about a week keeps any SINGLE round's volume nowhere near
+  // this ceiling, but lifetime volume only grows, so the real margin is a
+  // matter of total months in operation, not weeks per round. 50 pages
+  // buys a lot of runway cheaply; if this address ever becomes genuinely
+  // high-traffic, the real fix is a dedicated ballot-box address rather
+  // than pushing this number up further.
+  const MAX_PAGES = 50;
   const PAGE_RETRY_DELAYS = [400, 1000];      // ~1.4s of grace per page, total
   let url = SCAN + '/api/v2/addresses/' + BALLOT_BOX + '/transactions?filter=to';
   for(let page=0; page<MAX_PAGES; page++){
@@ -4236,7 +4338,13 @@ function updateSlateNotice(){
   else if(staleSlugs.length) warn.textContent = t('vote.st.slateStale', {n:staleSlugs.length});
   else if(slateTrimmed)      warn.textContent = t('vote.st.slateTrimmed', {n:slateTrimmed});
   else if(lastTally && lastTally.unreadable) warn.textContent = t('vote.st.tallyPartial', {n:lastTally.unreadable});
-  else if(lastTally && lastTally.truncated)  warn.textContent = t('vote.st.tallyTruncated');
+  // A truncated read (see fetchVoteTxsUncached) still drives the silent
+  // retry/self-heal on its own — see votePagesTruncated — but no longer
+  // surfaces text here. Round history at any realistic weekly cadence stays
+  // far under the pagination ceiling (see the note by MAX_PAGES), so this
+  // was firing on a near-impossible case and reading, out of context, like
+  // "your vote might be missing" — a worse experience than just retrying
+  // quietly and staying silent about it.
   else warn.textContent = '';
 }
 
@@ -4256,7 +4364,7 @@ function paintFrom(weights, latest, sig){
   showMyVote();
 }
 
-async function loadTally(cached){
+async function loadTally(cached, force){
   const totalsEl = $('tallyTotals');
   totalsEl.textContent = t('vote.st.tallyReading');
   let txs = cached;
@@ -4313,9 +4421,17 @@ async function loadTally(cached){
   const voters = [...latest.keys()];
   // Balances are the expensive part — one eth_call per voter, with retries.
   // If neither the voters nor their choices changed since the last pass, the
-  // previous weights are still valid and there is nothing to re-read.
+  // previous weights are usually still close enough to skip re-reading N
+  // balances on a routine background pass (write-in polling, a language
+  // switch). But "usually" is doing real work in that sentence: a wallet's
+  // balance can change with no new vote transaction at all — buy, vote, sell
+  // — and this project's whole design is built on weights being read live,
+  // not snapshotted (see the LIMITATIONS note at the top of this file). A
+  // forced refresh — the explicit "Refresh tally" button, or anything that
+  // needs to reflect the chain as it stands right now — must bypass this
+  // shortcut, or "refresh" would sometimes not actually refresh anything.
   const sig = voters.map(function(a){ return a + ':' + latest.get(a).slug; }).sort().join('|');
-  if(lastTally && lastTally.sig === sig && lastTally.weights){
+  if(!force && lastTally && lastTally.sig === sig && lastTally.weights){
     paintFrom(lastTally.weights, latest, sig);
     return;
   }
@@ -4408,6 +4524,42 @@ function paintTally(){
   $('tallyTotals').textContent = counted
     ? t(counted===1 ? 'vote.st.wallet1' : 'vote.st.wallets', {n:counted, w:fmtToken(total)})
     : t('vote.st.noVotes');
+  renderVoterList();
+}
+/* Active-voters list — the same per-wallet weights already read for the
+   tally above, just presented one row per voter instead of summed per
+   organization. Weights are read fresh every tally pass (no balance
+   snapshot, by design), so a wallet that has since moved or sold its entire
+   $RWI balance reads back 0 here and is filtered out — the exact same test
+   the totals above already apply, just reused. Nothing extra to fetch. */
+function renderVoterList(){
+  const wrap = $('voterList');
+  if(!wrap || !lastTally || !lastTally.latestMap) return;
+  const rows = [];
+  for(const [addr, v] of lastTally.latestMap){
+    const w = (lastTally.weights && lastTally.weights.get(addr)) || 0n;
+    if(w <= 0n) continue;                          // moved/sold — same cutoff the tally uses
+    rows.push({ addr:addr, w:w, slug:v.slug });
+  }
+  rows.sort(function(a,b){ return b.w > a.w ? 1 : (b.w < a.w ? -1 : 0); });
+  if(!rows.length){
+    wrap.innerHTML = '<p class="voter-empty">' + esc(t('vote.voters.empty')) + '</p>';
+    return;
+  }
+  const copyTitle = esc(t('vote.voters.copyTitle'));
+  wrap.innerHTML = rows.map(function(r){
+    const org = orgRecord(r.slug);
+    const cause = org ? esc(org.name) : '';
+    return '<div class="voter-row">'
+      + '<button class="voter-addr" type="button" data-addr="' + esc(r.addr) + '" title="' + copyTitle + '" aria-label="' + copyTitle + '">'
+      +   '<span class="copy-ic" aria-hidden="true">&#128203;</span>'
+      +   '<span class="voter-addr-text">' + esc(short(r.addr)) + '</span>'
+      + '</button>'
+      + '<span class="voter-amt">' + esc(fmtToken(r.w)) + ' $RWI'
+      +   (cause ? '<span class="voter-cause">· ' + cause + '</span>' : '')
+      + '</span>'
+      + '</div>';
+  }).join('');
 }
 function showMyVote(){
   if(!account || !lastTally) { $('myVote').textContent=''; return; }
@@ -4807,6 +4959,25 @@ document.addEventListener('DOMContentLoaded', () => {
   $('disconnectBtn').addEventListener('click', disconnect);
   $('voteBtn').addEventListener('click', castVote);
   $('refreshBtn').addEventListener('click', () => refreshAll({force:true}));
+  // Event delegation: the voter list is rebuilt wholesale on every tally
+  // repaint, so a per-row listener would need re-attaching each time. One
+  // listener on the container survives every rebuild.
+  const vl = $('voterList');
+  if(vl) vl.addEventListener('click', function(e){
+    const btn = e.target.closest('.voter-addr');
+    if(!btn) return;
+    const addr = btn.dataset.addr;
+    if(!addr) return;
+    copyToClipboard(addr).then(function(ok){
+      if(!ok) return;
+      const label = btn.querySelector('.voter-addr-text');
+      if(!label) return;
+      const original = label.textContent;
+      label.textContent = t('vote.voters.copied');
+      btn.classList.add('copied');
+      setTimeout(function(){ label.textContent = original; btn.classList.remove('copied'); }, 1200);
+    });
+  });
   const nrb = $('newRoundBtn'); if(nrb) nrb.addEventListener('click', openNewRound);
   const trg = $('nextRoundBtn');
   if(trg) trg.addEventListener('click', () => {
@@ -4861,7 +5032,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- Floating chart pill + modal (GeckoTerminal). Sits immediately left of the
      language pill; its offset is measured at runtime so the two never overlap. -->
-<button type="button" id="chartBtn" aria-haspopup="dialog" aria-controls="chartModal">
+<button type="button" id="chartBtn" aria-haspopup="dialog" aria-controls="chartModal" aria-label="Open RWI chart">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><path d="M6 16V9"/><path d="M11 16V4"/><path d="M16 16v-5"/><path d="M21 16v-9"/></svg>
   <span data-i18n="chart.btn">Chart</span>
 </button>
@@ -4938,6 +5109,26 @@ document.addEventListener('DOMContentLoaded', () => {
 <div id="langPanel" role="menu" aria-label="Language">
   <button data-lang="en" role="menuitemradio">EN</button><button data-lang="es" role="menuitemradio">ES</button><button data-lang="zh" role="menuitemradio">&#20013;&#25991;</button><button data-lang="ja" role="menuitemradio">&#26085;&#26412;&#35486;</button><button data-lang="ko" role="menuitemradio">&#54620;&#44397;&#50612;</button><button data-lang="pt" role="menuitemradio">PT</button><button data-lang="fr" role="menuitemradio">FR</button><button data-lang="ru" role="menuitemradio">RU</button><button data-lang="tr" role="menuitemradio">TR</button><button data-lang="vi" role="menuitemradio">VI</button><button data-lang="hi" role="menuitemradio">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;</button><button data-lang="de" role="menuitemradio">DE</button><button data-lang="id" role="menuitemradio">ID</button>
 </div>
+<button id="burnListPill" type="button" aria-haspopup="dialog" aria-controls="burnListModal" aria-label="Open the Pons Family Burn List" title="Pons Family Burn List"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4.2 0 7-2.7 7-6.7 0-3.2-2.1-5.3-4.2-7.4.1 2.2-1.1 3.7-2.5 4.7.2-3.5-1.5-6.1-4.2-8.6.1 3.6-3.1 6.2-3.1 10.4C5 18.8 7.8 22 12 22Z"/><path d="M9.5 18.5c0 1.5 1.1 2.5 2.5 2.5s2.5-1 2.5-2.5c0-1.2-.8-2.1-1.7-2.9 0 .9-.5 1.5-1.1 1.9.1-1.4-.6-2.5-1.8-3.5.1 1.5-.9 2.6-.9 4.5Z"/></svg></button>
+<div id="burnListModal" role="dialog" aria-modal="true" aria-labelledby="burnListTitle">
+  <div class="burn-list-panel">
+    <div class="burn-list-head"><span id="burnListTitle">Pons Family Burn List</span><button id="burnListClose" type="button" aria-label="Close Burn List">&#10005;</button></div>
+    <iframe id="burnListFrame" data-src="https://www.rwihood.org/burn.html" title="Pons Family Burn List"></iframe>
+  </div>
+</div>
+<script>
+(function(){
+  const trigger=document.getElementById('burnListPill'), modal=document.getElementById('burnListModal'), close=document.getElementById('burnListClose'), frame=document.getElementById('burnListFrame');
+  if(!trigger||!modal||!close||!frame)return;
+  trigger.setAttribute('aria-expanded','false');
+  let previousFocus=null, previousOverflow='';
+  function open(){previousFocus=document.activeElement;previousOverflow=document.body.style.overflow;if(!frame.getAttribute('src'))frame.src=frame.dataset.src;modal.classList.add('open');trigger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';close.focus();}
+  function shut(){if(!modal.classList.contains('open'))return;modal.classList.remove('open');trigger.setAttribute('aria-expanded','false');document.body.style.overflow=previousOverflow;(previousFocus||trigger).focus();}
+  trigger.addEventListener('click',open);close.addEventListener('click',shut);
+  modal.addEventListener('click',event=>{if(event.target===modal)shut();});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('open'))shut();});
+})();
+</script>
 <script>
 (function(){
   const btn=document.getElementById('langBtn'), panel=document.getElementById('langPanel');
