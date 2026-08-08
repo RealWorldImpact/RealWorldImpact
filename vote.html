@@ -1779,6 +1779,15 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
+  /* Keep every scrollable edge part of the same lime-and-ink system. The
+     Firefox properties cover the page scrollbar; WebKit rules style Chrome,
+     Edge, and each internal scrolling surface. */
+  html{scrollbar-color:var(--ink) rgba(11,11,9,.14);scrollbar-width:thin}
+  *::-webkit-scrollbar{width:9px;height:9px}
+  *::-webkit-scrollbar-track{background:rgba(11,11,9,.14)}
+  *::-webkit-scrollbar-thumb{background:var(--ink);border:2px solid var(--lime);border-radius:999px}
+  *::-webkit-scrollbar-thumb:hover{background:rgba(11,11,9,.76)}
+  *::-webkit-scrollbar-corner{background:var(--lime)}
   body{
     margin:0;background:var(--lime);color:var(--ink);
     font-family:var(--serif);font-size:18px;line-height:1.55;
