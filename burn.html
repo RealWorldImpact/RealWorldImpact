@@ -246,15 +246,46 @@
     };
     const userTokens = () => { try { return JSON.parse(localStorage.getItem(USER_TOKENS_CACHE)) || []; } catch { return []; } };
     const saveUserTokens = tokens => localStorage.setItem(USER_TOKENS_CACHE,JSON.stringify(tokens));
+    // eth_getLogs on this RPC times out on wide block ranges (see the
+    // chunked scanning in launches()/launchesV2()). A single specific
+    // token's launch log — filtered by both address and topic — sometimes
+    // succeeds across a much wider range than a full factory enumeration
+    // would, so this tries the whole range in one call first. If that
+    // fails, it falls back to the same proven 25,000-block chunk size used
+    // elsewhere, searching newest-first: someone adding a token by hand is
+    // almost always adding a recent one, so this resolves quickly for the
+    // common case instead of working forward from the factory's genesis.
+    async function findLaunchLog(factory, topic, topicAddress) {
+      const from=Math.max(factory.from,0);
+      try {
+        const logs=await rpc('eth_getLogs',[{address:factory.address,fromBlock:'0x'+from.toString(16),toBlock:'latest',topics:[topic,topicAddress]}]);
+        return logs[0]||null;
+      } catch {}
+      const latest=parseInt(await rpc('eth_blockNumber',[]),16);
+      const chunk=25000;
+      const starts=[];
+      for(let start=latest;start>=from;start-=chunk) starts.push(start);
+      for(let i=0;i<starts.length;i+=5) {
+        const group=starts.slice(i,i+5);
+        const results=await Promise.all(group.map(start=>{
+          const end=start;
+          const windowFrom=Math.max(from,start-chunk+1);
+          return rpc('eth_getLogs',[{address:factory.address,fromBlock:'0x'+windowFrom.toString(16),toBlock:'0x'+end.toString(16),topics:[topic,topicAddress]}]).then(logs=>logs[0]||null).catch(()=>null);
+        }));
+        const found=results.find(Boolean);
+        if(found) return found;
+      }
+      return null;
+    }
     async function verifyPonsToken(address) {
       const topicAddress='0x'+address.slice(2).padStart(64,'0');
       const [v1logs,v2logs]=await Promise.all([
-        rpcBatch(FACTORIES.map(factory=>({method:'eth_getLogs',params:[{address:factory.address,fromBlock:'0x'+factory.from.toString(16),toBlock:'latest',topics:[LAUNCH_TOPIC,topicAddress]}]}))),
-        rpcBatch(V2_FACTORIES.map(factory=>({method:'eth_getLogs',params:[{address:factory.address,fromBlock:'0x'+factory.from.toString(16),toBlock:'latest',topics:[V2_LAUNCH_TOPIC,topicAddress]}]})))
+        Promise.all(FACTORIES.map(factory=>findLaunchLog(factory,LAUNCH_TOPIC,topicAddress))),
+        Promise.all(V2_FACTORIES.map(factory=>findLaunchLog(factory,V2_LAUNCH_TOPIC,topicAddress)))
       ]);
-      const v1launch=v1logs.flat()[0];
+      const v1launch=v1logs.find(Boolean);
       if(v1launch) return {address,pool:('0x'+v1launch.data.slice(2+64+24,2+128)).toLowerCase()};
-      const v2launch=v2logs.flat()[0];
+      const v2launch=v2logs.find(Boolean);
       // A v2 launch has no simple per-token pool address to record: pre-
       // graduation it trades on its own curve, and post-graduation it trades
       // through one shared Uniswap v4 hook keyed by a pool id, not a pool
@@ -285,7 +316,10 @@
         }
         if(!details.image && attempt<2) await pause(750*(attempt+1));
       } catch { if(attempt<2) await pause(750*(attempt+1)); }
-      if(!details.image) try {
+      // v2 tokens have no simple pool address (see verifyPonsToken), so this
+      // fallback — which needs one — only applies to v1 tokens still
+      // missing an image after the token-endpoint attempt above.
+      if(!details.image && token.pool) try {
         const response=await fetchWithTimeout(geckoPoolUrl(token.pool));
         if(response.ok) {
           const market=await response.json();
@@ -642,8 +676,17 @@
     // making a refresh feel slow, and the main thing keeping the "shared
     // scan in progress" lock held long enough for a page reload to collide
     // with it. Anything this finds is folded in and persisted on its own.
+    let sweepsInFlight=false;
     async function runCompletenessSweeps(run, markets, burnByAddress, usedFastPath) {
       if(run!==activeRefresh) return;
+      // A rapid second refresh click launches its own detached sweep call
+      // before the first one finishes; without this guard both would scan
+      // the same block ranges concurrently. The next refresh's own "missing
+      // burns" retry loop already re-checks anything not yet in
+      // burnByAddress, so skipping here costs nothing but a redundant scan.
+      if(sweepsInFlight) return;
+      sweepsInFlight=true;
+      try {
       if(!usedFastPath) try {
         let sweepCache;
         try { sweepCache=JSON.parse(localStorage.getItem(SWEEP_CACHE)); } catch {}
@@ -739,6 +782,7 @@
       cancelProgressiveRender();
       render(allTokens,lastUpdated);
       startPendingRecentBurns();
+      } finally { sweepsInFlight=false; }
     }
     async function refresh() {
       const run=++activeRefresh;
