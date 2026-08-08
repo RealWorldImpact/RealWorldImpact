@@ -50,7 +50,7 @@
     .table-wrap { border:1px solid var(--line); overflow:auto; background:rgba(255,255,255,.015); }.table { min-width:730px; width:100%; border-collapse:collapse; }
     th { color:var(--muted); font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:.1em; text-align:left; padding:14px 16px; border-bottom:1px solid var(--line); } th.num, td.num{text-align:right;}
     td { padding:17px 16px; border-bottom:1px solid var(--line); font-size:13px; } tr:last-child td{border-bottom:0;} tbody tr:hover{background:rgba(213,255,63,.05);} td.num[data-label="Market cap / FDV"],td.num[data-label="24h volume"],td.num[data-label="Token"]{color:var(--muted);}
-    .rank { color:var(--acid); }.top-rank{font-weight:800;text-shadow:0 0 14px rgba(213,255,63,.28)}.token-link{color:inherit;text-decoration:none}.token-link:hover .name{color:var(--acid)}.token { display:flex; gap:11px; align-items:center; }.mark { position:relative; height:28px; width:28px; border-radius:50%; overflow:hidden; flex:0 0 28px; background:#33372b; display:grid; place-items:center; color:var(--acid); font-size:10px; }.mark img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }.name { font-weight:700; }.verified{display:inline-block;margin-left:6px;padding:2px 4px;border:1px solid rgba(213,255,63,.35);border-radius:999px;color:var(--acid);font-size:7px;letter-spacing:.07em;text-transform:uppercase;vertical-align:middle}.sym, .address { color:var(--muted); font-size:11px; margin-top:3px; }.copy-address { appearance:none; border:0; padding:0; background:transparent; color:inherit; font:inherit; letter-spacing:inherit; text-transform:none; cursor:copy; }.copy-address:hover { color:var(--acid); background:transparent; }.copy-address.copied { color:var(--acid); }
+    .rank { color:var(--acid); }.top-rank{font-weight:800;text-shadow:0 0 14px rgba(213,255,63,.28)}.token-link{color:inherit;text-decoration:none}.token-link:hover .name{color:var(--acid)}.token { display:flex; gap:11px; align-items:center; }.mark { position:relative; height:28px; width:28px; border-radius:50%; overflow:hidden; flex:0 0 28px; background:#33372b; display:grid; place-items:center; color:var(--acid); font-size:10px; }.mark img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }.name { font-weight:700; }.verified{display:inline-block;margin-left:6px;padding:2px 4px;border:1px solid rgba(213,255,63,.35);border-radius:999px;color:var(--acid);font-size:7px;letter-spacing:.07em;text-transform:uppercase;vertical-align:middle}.v2-tag{display:inline-block;margin-left:6px;padding:2px 4px;border:1px solid rgba(246,244,232,.3);border-radius:999px;color:var(--ink);opacity:.75;font-size:7px;letter-spacing:.07em;text-transform:uppercase;vertical-align:middle}.sym, .address { color:var(--muted); font-size:11px; margin-top:3px; }.copy-address { appearance:none; border:0; padding:0; background:transparent; color:inherit; font:inherit; letter-spacing:inherit; text-transform:none; cursor:copy; }.copy-address:hover { color:var(--acid); background:transparent; }.copy-address.copied { color:var(--acid); }
     .burn { color:var(--acid); font-size:14px; font-weight:800; }.usd{color:var(--muted);font-size:10px;margin-left:5px;white-space:nowrap}.bar { height:4px; width:92px; background:#2c2e29; display:inline-block; vertical-align:middle; margin-left:8px; }.bar i { display:block; height:100%; background:var(--acid); min-width:1px; }
     .empty { padding:54px 20px; text-align:center; color:var(--muted); font-size:13px; }.skeleton{display:block;width:min(280px,100%);height:8px;margin:8px auto;border-radius:999px;background:linear-gradient(90deg,#2c2e29 25%,#3c4034 37%,#2c2e29 63%);background-size:400% 100%;animation:shimmer 1.3s infinite linear}@keyframes shimmer{to{background-position:-135% 0}}.error { color:#ff9a7a; }
     footer { color:var(--muted); font-size:11px; line-height:1.6; margin-top:22px; max-width:760px; } footer a{color:var(--acid);}
@@ -116,6 +116,17 @@
       { address:'0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e', from:0 }
     ];
     const V2_LAUNCH_TOPIC = '0x8d4aad4953d0ca700d468f3753aa14432d1b35b43ec6409f051fb6aa43a89607';
+    // Robinhood Chain runs ~0.1s block times, so the shared DISCOVERY_BLOCKS
+    // window below (300k blocks) only covers a few hours — nowhere near
+    // v2's real launch history, and its exact factory deployment block
+    // isn't published anywhere to pin an accurate start. Rather than either
+    // miss older v2 launches or rescan a huge range on every visit, v2
+    // backfill is done incrementally: each sweep covers any new blocks
+    // since the last check, plus one more bounded chunk further into the
+    // past, persisted in V2_SWEEP_CURSOR. It reaches full history over a
+    // handful of visits without ever making a single refresh slow.
+    const V2_MAX_BACKFILL_BLOCKS = 33000000;
+    const V2_SWEEP_CHUNK_BLOCKS = 1000000;
     const SWAP_TOPIC = '0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67';
     const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
     const ZERO = '0x0000000000000000000000000000000000000000';
@@ -126,6 +137,7 @@
     const USER_TOKENS_CACHE = 'pons-burn-list-user-tokens-v1';
     const SCAN_LOCK = 'pons-burn-list-scan-lock-v1';
     const SWEEP_CACHE = 'pons-burn-list-sweep-v1';
+    const V2_SWEEP_CURSOR = 'pons-burn-list-v2-cursor-v1';
     const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
     const MARKET_INDEX_TTL = 20 * 60 * 1000;
     const SWEEP_TTL = 15 * 60 * 1000;
@@ -242,7 +254,7 @@
       // graduation it trades on its own curve, and post-graduation it trades
       // through one shared Uniswap v4 hook keyed by a pool id, not a pool
       // contract address. readUserToken() only needs the token address.
-      if(v2launch) return {address};
+      if(v2launch) return {address,isV2:true};
       throw new Error('This address is not a token launched through an official pons factory.');
     }
     async function readUserToken(token) {
@@ -373,7 +385,7 @@
       $('projects').textContent = fmt(visible.length);
       $('updated').textContent = timestamp ? new Date(timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '—';
       const max = Math.max(...visible.map(t=>t.burned),1);
-      $('rows').innerHTML = visible.length ? visible.map((t,i) => { const burnedUsd=t.marketCap&&t.supply ? t.burned*t.marketCap/t.supply : 0; return `<tr><td class="rank ${i<3?'top-rank':''}" data-label="Rank">${String(i+1).padStart(2,'0')}</td><td data-label="Project"><a class="token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${encodeURIComponent(t.address)}"><div class="token"><span class="mark">${escapeHtml(t.symbol.slice(0,2).toUpperCase())}${t.image ? `<img src="${escapeHtml(t.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(t.name)}<span class="verified" title="Verified GeckoTerminal logo">Verified</span></div><div class="sym">$${escapeHtml(t.symbol)} · View on pons</div></div></div></a></td><td class="num" data-label="Market cap / FDV">${t.marketCap ? `$${fmt(t.marketCap)}` : '—'}</td><td class="num" data-label="24h volume">${t.volume24h ? `$${fmt(t.volume24h)}` : '—'}</td><td class="num" data-label="Burned supply"><span class="burn">${fmt(t.burned)}</span>${burnedUsd ? `<span class="usd" title="Estimated from current market cap / FDV">(${fmtUsd(burnedUsd)})</span>` : ''}<span class="bar"><i style="width:${(t.burned/max)*100}%"></i></span></td><td class="num" data-label="% of supply">${t.supply ? (t.burned/t.supply*100).toFixed(4) : '0.0000'}%</td><td class="num" data-label="Token"><span class="address"><button class="copy-address" type="button" data-address="${escapeHtml(t.address)}" data-label="${escapeHtml(short(t.address))}" title="Copy contract address">${escapeHtml(short(t.address))}</button></span></td></tr>`; }).join('') : '<tr><td class="empty" colspan="7">No discovered Pons tokens currently have a positive burn balance.</td></tr>';
+      $('rows').innerHTML = visible.length ? visible.map((t,i) => { const burnedUsd=t.marketCap&&t.supply ? t.burned*t.marketCap/t.supply : 0; return `<tr><td class="rank ${i<3?'top-rank':''}" data-label="Rank">${String(i+1).padStart(2,'0')}</td><td data-label="Project"><a class="token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${encodeURIComponent(t.address)}"><div class="token"><span class="mark">${escapeHtml(t.symbol.slice(0,2).toUpperCase())}${t.image ? `<img src="${escapeHtml(t.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(t.name)}<span class="verified" title="Verified GeckoTerminal logo">Verified</span>${t.isV2 ? `<span class="v2-tag" title="Launched through the pons v2 protocol">V2</span>` : ''}</div><div class="sym">$${escapeHtml(t.symbol)} · View on pons</div></div></div></a></td><td class="num" data-label="Market cap / FDV">${t.marketCap ? `$${fmt(t.marketCap)}` : '—'}</td><td class="num" data-label="24h volume">${t.volume24h ? `$${fmt(t.volume24h)}` : '—'}</td><td class="num" data-label="Burned supply"><span class="burn">${fmt(t.burned)}</span>${burnedUsd ? `<span class="usd" title="Estimated from current market cap / FDV">(${fmtUsd(burnedUsd)})</span>` : ''}<span class="bar"><i style="width:${(t.burned/max)*100}%"></i></span></td><td class="num" data-label="% of supply">${t.supply ? (t.burned/t.supply*100).toFixed(4) : '0.0000'}%</td><td class="num" data-label="Token"><span class="address"><button class="copy-address" type="button" data-address="${escapeHtml(t.address)}" data-label="${escapeHtml(short(t.address))}" title="Copy contract address">${escapeHtml(short(t.address))}</button></span></td></tr>`; }).join('') : '<tr><td class="empty" colspan="7">No discovered Pons tokens currently have a positive burn balance.</td></tr>';
     };
     const scheduleProgressiveRender = tokens => {
       progressiveRenderTokens=tokens;
@@ -442,7 +454,7 @@
         const key=`${log.transactionHash}:${log.logIndex}:${log.address}`;
         if(seen.has(key)) return null;
         seen.add(key);
-        return {address:token.address,name:token.name,symbol:token.symbol,image:token.image||'',amount,usd:token.marketCap ? amount*token.marketCap/(token.supply||1000000000) : 0,block:parseInt(log.blockNumber,16),index:parseInt(log.logIndex,16),hash:log.transactionHash};
+        return {address:token.address,name:token.name,symbol:token.symbol,image:token.image||'',isV2:token.isV2||false,amount,usd:token.marketCap ? amount*token.marketCap/(token.supply||1000000000) : 0,block:parseInt(log.blockNumber,16),index:parseInt(log.logIndex,16),hash:log.transactionHash};
       }).filter(Boolean).filter(event=>event.usd>=1).sort((a,b)=>b.block-a.block || b.index-a.index);
     }
     async function addBurnTimestamps(events, run) {
@@ -461,7 +473,7 @@
       if(!body) return;
       const note=$('recent-note');
       if(note) note.textContent=historical ? 'Showing the latest 50 verified burns from on-chain history; burns valued below $1 are excluded.' : 'Newest verified transfers to the canonical zero or dead address. Every indexed Pons token is checked when this tab is opened; burns valued below $1 are excluded.';
-      body.innerHTML=events.length ? events.map(event=>`<tr><td data-label="Project"><a class="recent-token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${encodeURIComponent(event.address)}" aria-label="View ${escapeHtml(event.name)} on Pons Family"><div class="token"><span class="mark">${escapeHtml(event.symbol.slice(0,2).toUpperCase())}${event.image ? `<img src="${escapeHtml(event.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(event.name)}</div><div class="sym">$${escapeHtml(event.symbol)} · View on Pons</div></div></div></a></td><td class="num burn" data-label="Burned amount">${fmtBurnAmount(event.amount)}${event.usd ? `<span class="usd" title="Estimated from current market cap / FDV">(${fmtUsd(event.usd)})</span>` : ''}</td><td class="num" data-label="Block">#${event.block.toLocaleString('en-US')}</td><td class="num" data-label="Date & time">${event.timestamp ? burnTimeFormat.format(new Date(event.timestamp)) : '—'}</td><td class="num" data-label="Transaction"><a class="burn-tx" target="_blank" rel="noreferrer" href="https://robinhoodchain.blockscout.com/tx/${escapeHtml(event.hash)}">${escapeHtml(short(event.hash))} &#8599;</a></td></tr>`).join('') : '<tr><td class="empty" colspan="5">No verified burns were found in the recent chain window.</td></tr>';
+      body.innerHTML=events.length ? events.map(event=>`<tr><td data-label="Project"><a class="recent-token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${encodeURIComponent(event.address)}" aria-label="View ${escapeHtml(event.name)} on Pons Family"><div class="token"><span class="mark">${escapeHtml(event.symbol.slice(0,2).toUpperCase())}${event.image ? `<img src="${escapeHtml(event.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(event.name)}${event.isV2 ? `<span class="v2-tag" title="Launched through the pons v2 protocol">V2</span>` : ''}</div><div class="sym">$${escapeHtml(event.symbol)} · View on Pons</div></div></div></a></td><td class="num burn" data-label="Burned amount">${fmtBurnAmount(event.amount)}${event.usd ? `<span class="usd" title="Estimated from current market cap / FDV">(${fmtUsd(event.usd)})</span>` : ''}</td><td class="num" data-label="Block">#${event.block.toLocaleString('en-US')}</td><td class="num" data-label="Date & time">${event.timestamp ? burnTimeFormat.format(new Date(event.timestamp)) : '—'}</td><td class="num" data-label="Transaction"><a class="burn-tx" target="_blank" rel="noreferrer" href="https://robinhoodchain.blockscout.com/tx/${escapeHtml(event.hash)}">${escapeHtml(short(event.hash))} &#8599;</a></td></tr>`).join('') : '<tr><td class="empty" colspan="5">No verified burns were found in the recent chain window.</td></tr>';
     };
     async function loadRecentBurnsNow(force=false) {
       const body=$('recent-rows');
@@ -574,14 +586,14 @@
       await Promise.all(Array.from({length:Math.min(3,jobs.length)},worker));
       return {tokens:[...tokens.values()],latest};
     }
-    async function launchesV2() {
-      const latest = parseInt(await rpc('eth_blockNumber',[]),16);
+    async function launchesV2(rangeFrom, rangeTo) {
       const tokens = new Map(); const chunk = 25000; const jobs=[];
       for (const factory of V2_FACTORIES) {
-        const firstBlock=Math.max(factory.from,latest-DISCOVERY_BLOCKS);
-        for (let start=firstBlock; start<=latest; start+=chunk) {
-          const end=Math.min(start+chunk-1,latest);
-          jobs.push({factory,start,end});
+        const start=Math.max(factory.from,rangeFrom);
+        if(start>rangeTo) continue;
+        for (let s=start; s<=rangeTo; s+=chunk) {
+          const end=Math.min(s+chunk-1,rangeTo);
+          jobs.push({factory,start:s,end});
         }
       }
       let completed=0, cursor=0;
@@ -594,14 +606,14 @@
             // so the token address comes straight from topics[1] — there is
             // no per-launch pool to decode out of the log data.
             const address=('0x'+l.topics[1].slice(-40)).toLowerCase();
-            tokens.set(address,{address,launchedBlock:parseInt(l.blockNumber,16)});
+            tokens.set(address,{address,launchedBlock:parseInt(l.blockNumber,16),isV2:true});
           });
           completed++;
           setStatus(`Finding v2 launches · ${completed} of ${jobs.length} chain ranges`);
         }
       };
       await Promise.all(Array.from({length:Math.min(3,jobs.length)},worker));
-      return {tokens:[...tokens.values()],latest};
+      return [...tokens.values()];
     }
     async function withVolume(tokens, latest) {
       const active=[];
@@ -688,8 +700,27 @@
             if(!sweepCache?.timestamp || Date.now()-sweepCache.timestamp>=SWEEP_TTL) {
               try {
                 setStatus('Cross-checking recent launches directly on-chain');
-                const [discovery,discoveryV2]=await Promise.all([launches(),launchesV2()]);
+                let v2Cursor;
+                try { v2Cursor=JSON.parse(localStorage.getItem(V2_SWEEP_CURSOR)); } catch {}
+                const [discovery,latestNow]=await Promise.all([launches(),rpc('eth_blockNumber',[]).then(v=>parseInt(v,16))]);
                 if(run!==activeRefresh) return;
+                const floor=v2Cursor?.floor ?? Math.max(0,latestNow-V2_MAX_BACKFILL_BLOCKS);
+                // Every sweep covers any new blocks since the last check
+                // (cheap), plus one more bounded chunk further into v2's
+                // past (also cheap) — never the whole 33M-block range in
+                // one pass. Full historical coverage is reached gradually
+                // across visits instead of stalling any single refresh.
+                const ranges=[];
+                if(!v2Cursor) {
+                  ranges.push({from:Math.max(floor,latestNow-V2_SWEEP_CHUNK_BLOCKS),to:latestNow});
+                } else {
+                  if(v2Cursor.scannedTo<latestNow) ranges.push({from:v2Cursor.scannedTo+1,to:latestNow});
+                  if(v2Cursor.scannedFrom>floor) ranges.push({from:Math.max(floor,v2Cursor.scannedFrom-V2_SWEEP_CHUNK_BLOCKS),to:v2Cursor.scannedFrom-1});
+                }
+                const discoveryV2=ranges.length ? (await Promise.all(ranges.map(r=>launchesV2(r.from,r.to)))).flat() : [];
+                if(run!==activeRefresh) return;
+                const nextScannedFrom=Math.min(v2Cursor?.scannedFrom ?? latestNow, ...ranges.map(r=>r.from));
+                localStorage.setItem(V2_SWEEP_CURSOR,JSON.stringify({scannedFrom:nextScannedFrom,scannedTo:latestNow,floor}));
                 const known=new Set([...markets.map(market=>market.address),...burnByAddress.keys()]);
                 const undiscovered=discovery.tokens.filter(token=>!known.has(token.address.toLowerCase()));
                 if(undiscovered.length) {
@@ -709,7 +740,7 @@
                 // Swap-log volume check available here the way there is for
                 // v1. GeckoTerminal indexing (and the logo requirement
                 // below) is what filters these instead.
-                const undiscoveredV2=discoveryV2.tokens.filter(token=>!known.has(token.address.toLowerCase()));
+                const undiscoveredV2=discoveryV2.filter(token=>!known.has(token.address.toLowerCase()));
                 if(undiscoveredV2.length) {
                   for(let i=0;i<undiscoveredV2.length;i+=5) {
                     setStatus(`Checking v2 launches · ${Math.min(i+5,undiscoveredV2.length)} / ${undiscoveredV2.length}`);
