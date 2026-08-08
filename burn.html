@@ -11,6 +11,7 @@
   <link rel="shortcut icon" href="favicon.ico" />
   <link rel="apple-touch-icon" sizes="100x100" href="rwi-badge.png?v=2" />
   <link rel="preconnect" href="https://api.geckoterminal.com" crossorigin />
+  <link rel="preconnect" href="https://rpc.mainnet.chain.robinhood.com" crossorigin />
   <style>
     :root { --ink:#f6f4e8; --muted:#a8aa9d; --line:rgba(246,244,232,.13); --acid:#d5ff3f; --coal:#11120f; --panel:#1a1c17; }
     * { box-sizing:border-box; }
@@ -71,7 +72,7 @@
   <div class="grain"></div>
   <main>
     <nav><a class="rwi-brand" href="https://www.rwihood.org" target="_blank" rel="noreferrer"><span class="rwi-logo"><img src="rwi-badge.png" alt="RWI logo"></span><span>Real World Impact</span></a><div class="nav-actions"><span class="chain">Robinhood Chain / 4663</span><button id="show-add-token" class="add-token-nav" type="button" aria-controls="add-token-panel" aria-expanded="false">Add Pons token</button><a class="buy-rwi" href="https://www.ponsfamily.com/launchpad/0x2286397228be256529be1ae9ed8d7d16549e9c6a" target="_blank" rel="noreferrer">Buy $RWI on Pons</a></div></nav>
-    <section class="hero"><div class="hero-copy"><h1>Pons Family <span>Burn List.</span></h1><p class="intro">Pons tokens with a verified on-chain burn, ranked by tokens permanently removed from circulation. Pools are scanned in GeckoTerminal volume order for fast discovery; tokens without a GeckoTerminal logo are not shown.</p></div><div class="hero-side"><section class="stats"><div class="stat"><span class="label">Tokens indexed</span><span class="value" id="projects">—</span></div><div class="stat"><span class="label">Updated</span><span class="value" id="updated">—</span></div></section></div></section>
+    <section class="hero"><div class="hero-copy"><h1>Pons Family <span>Burn List.</span></h1><p class="intro">Pons tokens with a verified on-chain burn, ranked by tokens permanently removed from circulation. Pools are scanned in GeckoTerminal volume order and cross-checked directly against both the legacy and active pons factories on-chain for full coverage; tokens without a GeckoTerminal logo are not shown.</p></div><div class="hero-side"><section class="stats"><div class="stat"><span class="label">Tokens indexed</span><span class="value" id="projects">—</span></div><div class="stat"><span class="label">Updated</span><span class="value" id="updated">—</span></div></section></div></section>
     <section class="toolbar"><div class="status" id="status">Loading the Pons Family Burn List…</div><div class="controls"><button id="refresh" class="refresh-icon" type="button" title="Refresh list" aria-label="Refresh list">↻</button></div></section>
     <div class="view-tabs" role="tablist" aria-label="Burn List views"><button class="view-tab" id="ranked-tab" type="button" role="tab" aria-selected="true" aria-controls="ranked-panel">Ranked burns</button><button class="view-tab" id="recent-tab" type="button" role="tab" aria-selected="false" aria-controls="recent-panel">Recent burns</button></div>
     <section class="view-panel" id="ranked-panel" role="tabpanel" aria-labelledby="ranked-tab"><section class="add-token" id="add-token-panel" hidden><p>Missing a token? Paste its contract address. Only tokens launched through the official pons factories can be added.</p><input id="token-address" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x… token address"><button id="add-token">Submit token</button><div class="add-status" id="add-status"></div></section><div class="table-wrap"><table class="table"><thead><tr><th>#</th><th>Project</th><th class="num">Market cap / FDV</th><th class="num">24h volume</th><th class="num">Burned supply</th><th class="num">% of supply</th><th class="num">Token</th></tr></thead><tbody id="rows"><tr><td class="empty" colspan="7">Building the live list…<span class="skeleton"></span></td></tr></tbody></table></div></section>
@@ -111,8 +112,10 @@
     const RECENT_BURN_CACHE = 'pons-recent-burns-v12';
     const USER_TOKENS_CACHE = 'pons-burn-list-user-tokens-v1';
     const SCAN_LOCK = 'pons-burn-list-scan-lock-v1';
+    const SWEEP_CACHE = 'pons-burn-list-sweep-v1';
     const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
     const MARKET_INDEX_TTL = 20 * 60 * 1000;
+    const SWEEP_TTL = 15 * 60 * 1000;
     const GECKO_PAGE_DELAY = 900;
     const RECENT_BURN_TTL = 2 * 60 * 1000;
     const RECENT_BURN_BLOCKS = 75000;
@@ -121,6 +124,12 @@
     const MAX_GECKO_PAGES = 99;
     const DISCOVERY_BLOCKS = 300000;
     const $ = id => document.getElementById(id);
+    // Log only a plain string, never the raw error/exception object. Some
+    // hosting/preview contexts relay console output via postMessage, and a
+    // DOMException from an aborted fetch can carry a non-cloneable internal
+    // reference to its AbortSignal — passing the raw object can throw a
+    // secondary "DataCloneError" from inside the logging call itself.
+    const errText = error => (error && (error.message || error.name)) || String(error);
     const geckoDexUrl = page => LIVE_RWI ? `/api/gecko?kind=dex&page=${page}` : GECKO_API+page;
     const geckoPoolUrl = address => LIVE_RWI ? `/api/gecko?kind=pool&address=${address}` : `${GECKO_POOL_API}${address}?include=base_token%2Cquote_token`;
     const geckoTokenUrl = address => LIVE_RWI ? `/api/gecko?kind=token&address=${address}` : `${GECKO_TOKEN_API}${address}`;
@@ -132,9 +141,16 @@
     const short = a => `${a.slice(0,6)}…${a.slice(-4)}`;
     const pause = ms => new Promise(resolve => setTimeout(resolve,ms));
     const fetchWithTimeout = async (url, options={}, timeout=10000) => {
-      const controller=new AbortController();
-      const timer=setTimeout(()=>controller.abort(),timeout);
-      try { return await fetch(url,{...options,signal:controller.signal}); }
+      // Deliberately avoids AbortController/AbortSignal here. Some hosting
+      // and preview environments relay page activity (including in-flight
+      // fetch details) across frames via postMessage, and an AbortSignal is
+      // not structured-cloneable — that throws a DataCloneError of its own,
+      // separate from and on top of whatever this fetch was doing. A plain
+      // timer race enforces the same effective timeout without ever
+      // constructing a signal, so nothing here can trip that.
+      let timer;
+      const timeoutPromise=new Promise((_,reject)=>{ timer=setTimeout(()=>reject(new Error('Request timed out')),timeout); });
+      try { return await Promise.race([fetch(url,options),timeoutPromise]); }
       finally { clearTimeout(timer); }
     };
     const requestRpc = async payload => {
@@ -176,14 +192,6 @@
       const token1PerToken0=(sqrt / 2**96)**2;
       const priceEth=tokenIs0 ? token1PerToken0 : 1/token1PerToken0;
       return {address:launch.address,name:decodeString(nameRaw)||'Unknown project',symbol:decodeString(symbolRaw)||'—',supply,burned:asNum(zeroRaw)+asNum(deadRaw),marketCap:priceEth * ethUsd * supply};
-    };
-    const readBurn = async market => {
-      const [zeroRaw,deadRaw] = await rpcBatch([
-        {method:'eth_call',params:[{to:market.address,data:'0x70a08231'+padAddress(ZERO)},'latest']},
-        {method:'eth_call',params:[{to:market.address,data:'0x70a08231'+padAddress(DEAD)},'latest']}
-      ]);
-      const asNum = value => Number(BigInt(value) / 1000000000000n) / 1e6;
-      return {...market,supply:1000000000,burned:asNum(zeroRaw)+asNum(deadRaw)};
     };
     const readBurnBatch = async markets => {
       const calls=[];
@@ -229,7 +237,7 @@
         const response=await fetchWithTimeout(geckoTokenUrl(token.address));
         if(response.ok) {
           const attrs=(await response.json()).data?.attributes||{};
-          details.image=attrs.image_url||'';
+          details.image=attrs.image_url||details.image;
           details.name=attrs.name||details.name;
           details.symbol=attrs.symbol||details.symbol;
           details.marketCap=Number(attrs.market_cap_usd ?? attrs.fdv_usd)||details.marketCap;
@@ -309,7 +317,7 @@
           if(!page) throw lastError;
         } catch(error) {
           if(markets.size) {
-            console.warn(`GeckoTerminal page ${pageNumber} could not be loaded; using ${markets.size} pools already collected.`,error);
+            console.warn(`GeckoTerminal page ${pageNumber} could not be loaded; using ${markets.size} pools already collected.`,errText(error));
             complete=false;
             break;
           }
@@ -343,7 +351,7 @@
       $('projects').textContent = fmt(visible.length);
       $('updated').textContent = timestamp ? new Date(timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '—';
       const max = Math.max(...visible.map(t=>t.burned),1);
-      $('rows').innerHTML = visible.length ? visible.map((t,i) => { const burnedUsd=t.marketCap&&t.supply ? t.burned*t.marketCap/t.supply : 0; return `<tr><td class="rank ${i<3?'top-rank':''}" data-label="Rank">${String(i+1).padStart(2,'0')}</td><td data-label="Project"><a class="token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${encodeURIComponent(t.address)}"><div class="token"><span class="mark">${escapeHtml(t.symbol.slice(0,2).toUpperCase())}${t.image ? `<img src="${escapeHtml(t.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(t.name)}<span class="verified" title="Verified GeckoTerminal logo">Verified</span></div><div class="sym">$${escapeHtml(t.symbol)} · View on pons</div></div></div></a></td><td class="num" data-label="Market cap / FDV">${t.marketCap ? `$${fmt(t.marketCap)}` : '—'}</td><td class="num" data-label="24h volume">${t.volume24h ? `$${fmt(t.volume24h)}` : '—'}</td><td class="num" data-label="Burned supply"><span class="burn">${fmt(t.burned)}</span>${burnedUsd ? `<span class="usd" title="Estimated from current market cap / FDV">(${fmtUsd(burnedUsd)})</span>` : ''}<span class="bar"><i style="width:${(t.burned/max)*100}%"></i></span></td><td class="num" data-label="Burn rate">${t.supply ? (t.burned/t.supply*100).toFixed(4) : '0.0000'}%</td><td class="num" data-label="Token"><span class="address"><button class="copy-address" type="button" data-address="${escapeHtml(t.address)}" data-label="${escapeHtml(short(t.address))}" title="Copy contract address">${escapeHtml(short(t.address))}</button></span></td></tr>`; }).join('') : '<tr><td class="empty" colspan="7">No discovered Pons tokens currently have a positive burn balance.</td></tr>';
+      $('rows').innerHTML = visible.length ? visible.map((t,i) => { const burnedUsd=t.marketCap&&t.supply ? t.burned*t.marketCap/t.supply : 0; return `<tr><td class="rank ${i<3?'top-rank':''}" data-label="Rank">${String(i+1).padStart(2,'0')}</td><td data-label="Project"><a class="token-link" target="_blank" rel="noreferrer" href="https://www.ponsfamily.com/launchpad/${encodeURIComponent(t.address)}"><div class="token"><span class="mark">${escapeHtml(t.symbol.slice(0,2).toUpperCase())}${t.image ? `<img src="${escapeHtml(t.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><div><div class="name">${escapeHtml(t.name)}<span class="verified" title="Verified GeckoTerminal logo">Verified</span></div><div class="sym">$${escapeHtml(t.symbol)} · View on pons</div></div></div></a></td><td class="num" data-label="Market cap / FDV">${t.marketCap ? `$${fmt(t.marketCap)}` : '—'}</td><td class="num" data-label="24h volume">${t.volume24h ? `$${fmt(t.volume24h)}` : '—'}</td><td class="num" data-label="Burned supply"><span class="burn">${fmt(t.burned)}</span>${burnedUsd ? `<span class="usd" title="Estimated from current market cap / FDV">(${fmtUsd(burnedUsd)})</span>` : ''}<span class="bar"><i style="width:${(t.burned/max)*100}%"></i></span></td><td class="num" data-label="% of supply">${t.supply ? (t.burned/t.supply*100).toFixed(4) : '0.0000'}%</td><td class="num" data-label="Token"><span class="address"><button class="copy-address" type="button" data-address="${escapeHtml(t.address)}" data-label="${escapeHtml(short(t.address))}" title="Copy contract address">${escapeHtml(short(t.address))}</button></span></td></tr>`; }).join('') : '<tr><td class="empty" colspan="7">No discovered Pons tokens currently have a positive burn balance.</td></tr>';
     };
     const scheduleProgressiveRender = tokens => {
       progressiveRenderTokens=tokens;
@@ -364,7 +372,6 @@
     let queuedRecentRefresh=false;
     let recentFailures=0;
     let recentRetryTimer;
-    let pendingRecentBurns=false;
     const burnTopicAddress = address => '0x'+address.slice(2).padStart(64,'0');
     const fmtBurnAmount = amount => amount >= 1 ? fmt(amount) : amount > 0 ? amount.toLocaleString('en-US',{maximumSignificantDigits:4}) : '0';
     const recentCandidates = () => {
@@ -445,7 +452,7 @@
         savedRecent=JSON.parse(localStorage.getItem(RECENT_BURN_CACHE));
         if(!force && savedRecent?.events && savedRecent.catalogKey===catalogKey && Date.now()-savedRecent.timestamp<RECENT_BURN_TTL) { renderRecentBurns(savedRecent.events,savedRecent.historical); recentBurnsLoaded=true; return; }
       } catch {}
-      body.innerHTML='<tr><td class="empty" colspan="4">Loading the newest verified burns&hellip;</td></tr>';
+      body.innerHTML='<tr><td class="empty" colspan="5">Loading the newest verified burns&hellip;</td></tr>';
       try {
         const latest=parseInt(await rpc('eth_blockNumber',[]),16);
         const from=Math.max(0,latest-RECENT_BURN_BLOCKS);
@@ -482,10 +489,10 @@
         } else if(run===recentBurnRun) {
           recentFailures++;
           if(recentFailures<=2) {
-            body.innerHTML='<tr><td class="empty" colspan="4">Reconnecting to verify the newest burns&hellip;</td></tr>';
+            body.innerHTML='<tr><td class="empty" colspan="5">Reconnecting to verify the newest burns&hellip;</td></tr>';
             clearTimeout(recentRetryTimer);
             recentRetryTimer=setTimeout(()=>loadRecentBurns(true),1200*recentFailures);
-          } else body.innerHTML='<tr><td class="empty" colspan="4">Recent verified burns will appear when the chain connection is available.</td></tr>';
+          } else body.innerHTML='<tr><td class="empty" colspan="5">Recent verified burns will appear when the chain connection is available.</td></tr>';
         }
       }
     }
@@ -514,8 +521,7 @@
       if(recent) loadRecentBurns();
     }
     function startPendingRecentBurns() {
-      if((pendingRecentBurns || $('recent-tab').getAttribute('aria-selected')==='true') && allTokens.length) {
-        pendingRecentBurns=false;
+      if($('recent-tab').getAttribute('aria-selected')==='true' && allTokens.length) {
         loadRecentBurns(true);
       }
     }
@@ -584,8 +590,10 @@
           if(savedUserTokens.length) await ingest(await Promise.all(savedUserTokens.map(token=>readUserToken(token).catch(()=>null))).then(tokens=>tokens.filter(Boolean)));
           let markets;
           let cachedIndex;
+          let usedFastPath=false;
           try { cachedIndex=JSON.parse(localStorage.getItem(MARKET_INDEX_CACHE)); } catch {}
           if(cachedIndex?.markets?.length && Date.now()-cachedIndex.timestamp<MARKET_INDEX_TTL) {
+            usedFastPath=true;
             setStatus(`<strong>Fast refresh.</strong> Checking the newest high-volume pools, then rechecking cached burns.`);
             const priority=await geckoMarkets(ingest,1);
             const merged=new Map(cachedIndex.markets.map(market=>[market.address,market]));
@@ -610,9 +618,46 @@
             const batch=await readBurnBatch(missing.slice(i,i+40)).catch(()=>[]); batch.forEach(token=>burnByAddress.set(token.address,token));
             if(run!==activeRefresh) return;
           }
+          if(!usedFastPath) {
+            // GeckoTerminal's own pool listing can lag behind brand-new
+            // launches, or drop a page mid-scan (see the retry loop in
+            // geckoMarkets). This cross-checks both the legacy and active
+            // pons factories directly on-chain for anything GeckoTerminal
+            // hasn't surfaced yet. Only launches with real Swap activity get
+            // the more expensive per-token hydration, so a token with
+            // genuine volume and a burn is never missing just because
+            // GeckoTerminal hasn't indexed it yet.
+            // Scanning ~300k blocks across two factories on every single
+            // refresh is expensive and mostly redundant — the window barely
+            // moves between clicks, and anything it finds is already kept
+            // forever in CACHE. A short TTL lets it stay fresh without
+            // repeating that scan every time refresh is pressed.
+            let sweepCache;
+            try { sweepCache=JSON.parse(localStorage.getItem(SWEEP_CACHE)); } catch {}
+            if(!sweepCache?.timestamp || Date.now()-sweepCache.timestamp>=SWEEP_TTL) {
+              try {
+                setStatus('Cross-checking recent launches directly on-chain');
+                const discovery=await launches();
+                if(run!==activeRefresh) return;
+                const known=new Set([...markets.map(market=>market.address),...burnByAddress.keys()]);
+                const undiscovered=discovery.tokens.filter(token=>!known.has(token.address.toLowerCase()));
+                if(undiscovered.length) {
+                  const active=await withVolume(undiscovered,discovery.latest);
+                  if(run!==activeRefresh) return;
+                  for(let i=0;i<active.length;i+=5) {
+                    setStatus(`Checking on-chain-only launches · ${Math.min(i+5,active.length)} / ${active.length}`);
+                    const batch=await Promise.all(active.slice(i,i+5).map(token=>readUserToken(token).catch(()=>null)));
+                    batch.filter(Boolean).forEach(token=>burnByAddress.set(token.address,token));
+                    if(run!==activeRefresh) return;
+                  }
+                }
+                localStorage.setItem(SWEEP_CACHE,JSON.stringify({timestamp:Date.now()}));
+              } catch(sweepError) { console.warn('On-chain completeness sweep skipped.',errText(sweepError)); }
+            }
+          }
           results=[...burnByAddress.values()];
         } catch(geckoError) {
-          console.warn('GeckoTerminal unavailable; using chain fallback.',geckoError);
+          console.warn('GeckoTerminal unavailable; using chain fallback.',errText(geckoError));
           setStatus('GeckoTerminal is unavailable. Falling back to recent chain activity…');
           const discovery=await launches();
           if(run!==activeRefresh) return;
@@ -652,7 +697,7 @@
           startPendingRecentBurns();
           setStatus(`<strong>Latest verified list retained.</strong> ${results.length} pools were checked this pass; no previously indexed token was removed.`);
         }
-      } catch(err) { console.error(err); setStatus(`Could not complete the scan: ${escapeHtml(err.message)}. Check your connection and try again.`,true); }
+      } catch(err) { console.error(errText(err)); setStatus(`Could not complete the scan: ${escapeHtml(err.message)}. Check your connection and try again.`,true); }
       finally {
         if(run===activeRefresh) button.disabled=false;
         try { const lock=JSON.parse(localStorage.getItem(SCAN_LOCK)); if(lock?.id===TAB_ID) localStorage.removeItem(SCAN_LOCK); } catch {}
