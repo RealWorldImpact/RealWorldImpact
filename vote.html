@@ -3721,6 +3721,9 @@ function clearPendingWriteIn(){
 /* Boot timer handle; cleared by refreshAll on the first successful load. */
 let bootFallbackTimer = null;
 let votePagesTruncated = false;
+let _truncationRetryScheduled = false;
+let _truncationRetryCount = 0;
+const MAX_TRUNCATION_RETRIES = 2;
 let staleSlugs = [];
 let slateRecovered = false;
 let slateTrimmed = 0;
@@ -3933,6 +3936,24 @@ async function refreshAll(opts){
   voteTxCache = txs;
   await loadRound(voteTxCache);
   if(seq !== refreshSeq) return;
+  // fetchVoteTxsUncached() already retries a failing page in place; this is
+  // the outer safety net for the rarer case a page fails through those
+  // retries too. Rather than leave the (now honestly flagged) partial read
+  // on screen until someone happens to hit refresh, try the whole walk again
+  // a couple more times, spaced out — past the sort of blip that causes this.
+  // Capped at MAX_TRUNCATION_RETRIES: a genuinely dead endpoint must not turn
+  // into a request loop that retries forever. Once a read comes back clean,
+  // the counter resets, so a later, unrelated blip still gets its own budget.
+  if(!votePagesTruncated){
+    _truncationRetryCount = 0;
+  } else if(!_truncationRetryScheduled && _truncationRetryCount < MAX_TRUNCATION_RETRIES){
+    _truncationRetryScheduled = true;
+    _truncationRetryCount++;
+    setTimeout(function(){
+      _truncationRetryScheduled = false;
+      if(votePagesTruncated) refreshAll({force:true});
+    }, 4000);
+  }
   ballotResolved = true;                         // the chain has spoken
   // Boot fallback timer is redundant once the chain answered — clear it so
   // it does not fire a needless renderBallot four seconds later.
@@ -4165,14 +4186,33 @@ async function fetchVoteTxsUncached(){
   // The ballot box shares an address with an active wallet, so vote transactions
   // compete with unrelated traffic for the pagination window. Walk further, and
   // flag it if we still run out of pages — silently reading a partial history
-  // would drop real votes.
+  // would drop real votes, and — just as importantly — could make loadRound
+  // settle on a stale round declaration sitting on a page we never reached.
+  //
+  // A single page fetch failing (a transient 5xx, a dropped connection) used
+  // to be treated identically to legitimately running out of pages: the loop
+  // broke, and everything collected so far was returned as if it were the
+  // complete history. Two or three pages in, on a busy ballot box, that
+  // silently produced a ballot one round behind — with no warning, because
+  // `votePagesTruncated` was only ever set on the MAX_PAGES branch. A page
+  // now gets a couple of quick retries before that page is accepted as
+  // failed, and a failure that survives the retries sets the SAME truncation
+  // flag the MAX_PAGES case does, so the existing "reading may be partial"
+  // notice covers this too instead of staying silent.
   const out = [];
   votePagesTruncated = false;
   const MAX_PAGES = 20;
+  const PAGE_RETRY_DELAYS = [400, 1000];      // ~1.4s of grace per page, total
   let url = SCAN + '/api/v2/addresses/' + BALLOT_BOX + '/transactions?filter=to';
   for(let page=0; page<MAX_PAGES; page++){
-    const r = await fetch(url, {headers:{accept:'application/json'}});
-    if(!r.ok) break;
+    let r = null;
+    for(let attempt=0; ; attempt++){
+      try{ r = await fetch(url, {headers:{accept:'application/json'}}); }catch(e){ r = null; }
+      if(r && r.ok) break;
+      if(attempt >= PAGE_RETRY_DELAYS.length){ r = null; break; }   // out of retries
+      await new Promise(function(res){ setTimeout(res, PAGE_RETRY_DELAYS[attempt]); });
+    }
+    if(!r){ votePagesTruncated = true; break; }    // genuine failure — say so, don't guess
     const j = await r.json();
     (j.items || []).forEach(t => out.push(t));
     if(!j.next_page_params) break;
