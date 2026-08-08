@@ -127,6 +127,11 @@
     // handful of visits without ever making a single refresh slow.
     const V2_MAX_BACKFILL_BLOCKS = 33000000;
     const V2_SWEEP_CHUNK_BLOCKS = 1000000;
+    // v2 has only been live a short while, so a much bigger first pass still
+    // stays cheap relative to the full 33M-block safety margin, and gets a
+    // real answer immediately instead of needing many visits to reach it.
+    const V2_INITIAL_CATCHUP_BLOCKS = 5000000;
+    const V2_SWEEP_TTL = 5 * 60 * 1000;
     const SWAP_TOPIC = '0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67';
     const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
     const ZERO = '0x0000000000000000000000000000000000000000';
@@ -141,7 +146,7 @@
     const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
     const MARKET_INDEX_TTL = 20 * 60 * 1000;
     const SWEEP_TTL = 15 * 60 * 1000;
-    const GECKO_PAGE_DELAY = 900;
+    const GECKO_PAGE_DELAY = 600;
     const RECENT_BURN_TTL = 2 * 60 * 1000;
     const RECENT_BURN_BLOCKS = 75000;
     // GeckoTerminal does not consistently expose a last-page link. This cap
@@ -303,7 +308,11 @@
         const task=emit(batch);
         pendingBurnReads.add(task);
         task.then(()=>pendingBurnReads.delete(task),()=>pendingBurnReads.delete(task));
-        if(pendingBurnReads.size>=3) await Promise.race(pendingBurnReads);
+        // These burn-balance reads race against the RPC endpoint, not
+        // GeckoTerminal, so they aren't bound by GECKO_PAGE_DELAY's pacing —
+        // a slightly higher cap keeps more of them in flight while pages
+        // are still being paginated.
+        if(pendingBurnReads.size>=4) await Promise.race(pendingBurnReads);
       };
       const addPool = (pool, included) => {
         const attrs=pool.attributes||{};
@@ -625,12 +634,124 @@
       }
       return active;
     }
+    // Runs the v1 and v2 completeness sweeps as a detached background task —
+    // deliberately NOT part of the critical path that refresh() awaits. The
+    // primary GeckoTerminal-based list already has everything it needs to
+    // render and release the scan lock; making callers wait on a
+    // multi-million-block chain scan on top of that was the main thing
+    // making a refresh feel slow, and the main thing keeping the "shared
+    // scan in progress" lock held long enough for a page reload to collide
+    // with it. Anything this finds is folded in and persisted on its own.
+    async function runCompletenessSweeps(run, markets, burnByAddress, usedFastPath) {
+      if(run!==activeRefresh) return;
+      if(!usedFastPath) try {
+        let sweepCache;
+        try { sweepCache=JSON.parse(localStorage.getItem(SWEEP_CACHE)); } catch {}
+        if(!sweepCache?.timestamp || Date.now()-sweepCache.timestamp>=SWEEP_TTL) {
+          // GeckoTerminal's own pool listing can lag behind brand-new
+          // launches, or drop a page mid-scan (see the retry loop in
+          // geckoMarkets). This cross-checks both the legacy and active
+          // pons factories directly on-chain for anything GeckoTerminal
+          // hasn't surfaced yet. Only launches with real Swap activity get
+          // the more expensive per-token hydration, so a token with
+          // genuine volume and a burn is never missing just because
+          // GeckoTerminal hasn't indexed it yet. A short TTL keeps this
+          // from repeating the same chain scan every time refresh runs.
+          const discovery=await launches();
+          if(run===activeRefresh) {
+            const known=new Set([...markets.map(market=>market.address),...burnByAddress.keys()]);
+            const undiscovered=discovery.tokens.filter(token=>!known.has(token.address.toLowerCase()));
+            if(undiscovered.length) {
+              const active=await withVolume(undiscovered,discovery.latest);
+              for(let i=0;i<active.length && run===activeRefresh;i+=5) {
+                const batch=await Promise.all(active.slice(i,i+5).map(token=>readUserToken(token).catch(()=>null)));
+                batch.filter(Boolean).forEach(token=>burnByAddress.set(token.address,token));
+                const found=[...burnByAddress.values()].filter(token=>token.burned>0 && token.image);
+                if(found.length && run===activeRefresh) scheduleProgressiveRender(found);
+              }
+            }
+          }
+          localStorage.setItem(SWEEP_CACHE,JSON.stringify({timestamp:Date.now()}));
+        }
+      } catch(sweepError) { console.warn('On-chain completeness sweep skipped.',errText(sweepError)); }
+      try {
+        // v2 has no GeckoTerminal-independent historical backstop the way
+        // v1 does, so this always runs — including after a "fast" refresh —
+        // gated only by its own short TTL rather than which refresh path
+        // was taken. Robinhood Chain's ~0.1s block time means the shared
+        // window above only covers a few hours, nowhere near enough for
+        // v2's real history, and its exact factory deployment block isn't
+        // published anywhere to pin an accurate start. Rather than either
+        // miss older v2 launches or rescan a huge range every time, this is
+        // incremental: each run covers any new blocks since the last check
+        // plus one more bounded chunk further into the past, persisted in
+        // V2_SWEEP_CURSOR, reaching full history over a handful of visits
+        // without making any single one slow.
+        let v2Cursor;
+        try { v2Cursor=JSON.parse(localStorage.getItem(V2_SWEEP_CURSOR)); } catch {}
+        if(!v2Cursor?.lastRun || Date.now()-v2Cursor.lastRun>=V2_SWEEP_TTL) {
+          const latestNow=parseInt(await rpc('eth_blockNumber',[]),16);
+          const floor=v2Cursor?.floor ?? Math.max(0,latestNow-V2_MAX_BACKFILL_BLOCKS);
+          const ranges=[];
+          if(!v2Cursor) {
+            ranges.push({from:Math.max(floor,latestNow-V2_INITIAL_CATCHUP_BLOCKS),to:latestNow});
+          } else {
+            if(v2Cursor.scannedTo<latestNow) ranges.push({from:v2Cursor.scannedTo+1,to:latestNow});
+            if(v2Cursor.scannedFrom>floor) ranges.push({from:Math.max(floor,v2Cursor.scannedFrom-V2_SWEEP_CHUNK_BLOCKS),to:v2Cursor.scannedFrom-1});
+          }
+          const discoveryV2=ranges.length ? (await Promise.all(ranges.map(r=>launchesV2(r.from,r.to)))).flat() : [];
+          const nextScannedFrom=Math.min(v2Cursor?.scannedFrom ?? latestNow, ...ranges.map(r=>r.from));
+          localStorage.setItem(V2_SWEEP_CURSOR,JSON.stringify({scannedFrom:nextScannedFrom,scannedTo:latestNow,floor,lastRun:Date.now()}));
+          if(run===activeRefresh) {
+            // v2 launches trade pre-graduation on their own bonding curve
+            // and only reach a real Uniswap v4 pool at graduation, through
+            // a shared hook keyed by pool id rather than a per-launch pool
+            // contract — so there is no comparable Swap-log volume check
+            // available here the way there is for v1. GeckoTerminal
+            // indexing (and the logo requirement below) filters these
+            // instead.
+            const known=new Set([...markets.map(market=>market.address),...burnByAddress.keys()]);
+            const undiscoveredV2=discoveryV2.filter(token=>!known.has(token.address.toLowerCase()));
+            if(undiscoveredV2.length) {
+              for(let i=0;i<undiscoveredV2.length && run===activeRefresh;i+=5) {
+                const batch=await Promise.all(undiscoveredV2.slice(i,i+5).map(token=>readUserToken(token).catch(()=>null)));
+                batch.filter(Boolean).forEach(token=>burnByAddress.set(token.address,token));
+                const found=[...burnByAddress.values()].filter(token=>token.burned>0 && token.image);
+                if(found.length && run===activeRefresh) scheduleProgressiveRender(found);
+              }
+            }
+          }
+        }
+      } catch(sweepError) { console.warn('v2 completeness sweep skipped.',errText(sweepError)); }
+      // The primary refresh already finished, rendered, and released the
+      // scan lock by the time any of this resolves, so anything the
+      // sweeps found needs its own persistence step to survive a reload.
+      if(run!==activeRefresh) return;
+      const swept=[...burnByAddress.values()].filter(token=>token.burned>0 && token.image);
+      if(!swept.length) return;
+      const retained=new Map(lastCompleteTokens.map(token=>[token.address,token]));
+      try { (JSON.parse(localStorage.getItem(CACHE))?.tokens||[]).forEach(token=>retained.set(token.address,token)); } catch {}
+      swept.forEach(token=>retained.set(token.address,token));
+      allTokens=[...retained.values()];
+      lastCompleteTokens=allTokens;
+      lastUpdated=Date.now();
+      localStorage.setItem(CACHE,JSON.stringify({tokens:allTokens,timestamp:lastUpdated,complete:false}));
+      cancelProgressiveRender();
+      render(allTokens,lastUpdated);
+      startPendingRecentBurns();
+    }
     async function refresh() {
       const run=++activeRefresh;
       const button=$('refresh'); button.disabled=true;
       let currentLock;
       try { currentLock=JSON.parse(localStorage.getItem(SCAN_LOCK)); } catch {}
-      if(currentLock?.id!==TAB_ID && currentLock?.timestamp && Date.now()-currentLock.timestamp<90000) {
+      // Sweeps no longer run inside this lock's critical section (see
+      // runCompletenessSweeps), so a legitimately active scan should hold
+      // this for a few seconds at most, not the ~90s it used to allow for.
+      // Shortening the staleness window plus proactively clearing this
+      // tab's own lock on unload (below) means a reload mid-scan doesn't
+      // leave a stale lock behind for the next load to collide with.
+      if(currentLock?.id!==TAB_ID && currentLock?.timestamp && Date.now()-currentLock.timestamp<30000) {
         setStatus(`<strong>Shared scan in progress.</strong> Another tab is loading the GeckoTerminal catalog. Select refresh when it finishes to load its result here.`);
         button.disabled=false;
         return;
@@ -681,78 +802,11 @@
             const batch=await readBurnBatch(missing.slice(i,i+40)).catch(()=>[]); batch.forEach(token=>burnByAddress.set(token.address,token));
             if(run!==activeRefresh) return;
           }
-          if(!usedFastPath) {
-            // GeckoTerminal's own pool listing can lag behind brand-new
-            // launches, or drop a page mid-scan (see the retry loop in
-            // geckoMarkets). This cross-checks both the legacy and active
-            // pons factories directly on-chain for anything GeckoTerminal
-            // hasn't surfaced yet. Only launches with real Swap activity get
-            // the more expensive per-token hydration, so a token with
-            // genuine volume and a burn is never missing just because
-            // GeckoTerminal hasn't indexed it yet.
-            // Scanning ~300k blocks across two factories on every single
-            // refresh is expensive and mostly redundant — the window barely
-            // moves between clicks, and anything it finds is already kept
-            // forever in CACHE. A short TTL lets it stay fresh without
-            // repeating that scan every time refresh is pressed.
-            let sweepCache;
-            try { sweepCache=JSON.parse(localStorage.getItem(SWEEP_CACHE)); } catch {}
-            if(!sweepCache?.timestamp || Date.now()-sweepCache.timestamp>=SWEEP_TTL) {
-              try {
-                setStatus('Cross-checking recent launches directly on-chain');
-                let v2Cursor;
-                try { v2Cursor=JSON.parse(localStorage.getItem(V2_SWEEP_CURSOR)); } catch {}
-                const [discovery,latestNow]=await Promise.all([launches(),rpc('eth_blockNumber',[]).then(v=>parseInt(v,16))]);
-                if(run!==activeRefresh) return;
-                const floor=v2Cursor?.floor ?? Math.max(0,latestNow-V2_MAX_BACKFILL_BLOCKS);
-                // Every sweep covers any new blocks since the last check
-                // (cheap), plus one more bounded chunk further into v2's
-                // past (also cheap) — never the whole 33M-block range in
-                // one pass. Full historical coverage is reached gradually
-                // across visits instead of stalling any single refresh.
-                const ranges=[];
-                if(!v2Cursor) {
-                  ranges.push({from:Math.max(floor,latestNow-V2_SWEEP_CHUNK_BLOCKS),to:latestNow});
-                } else {
-                  if(v2Cursor.scannedTo<latestNow) ranges.push({from:v2Cursor.scannedTo+1,to:latestNow});
-                  if(v2Cursor.scannedFrom>floor) ranges.push({from:Math.max(floor,v2Cursor.scannedFrom-V2_SWEEP_CHUNK_BLOCKS),to:v2Cursor.scannedFrom-1});
-                }
-                const discoveryV2=ranges.length ? (await Promise.all(ranges.map(r=>launchesV2(r.from,r.to)))).flat() : [];
-                if(run!==activeRefresh) return;
-                const nextScannedFrom=Math.min(v2Cursor?.scannedFrom ?? latestNow, ...ranges.map(r=>r.from));
-                localStorage.setItem(V2_SWEEP_CURSOR,JSON.stringify({scannedFrom:nextScannedFrom,scannedTo:latestNow,floor}));
-                const known=new Set([...markets.map(market=>market.address),...burnByAddress.keys()]);
-                const undiscovered=discovery.tokens.filter(token=>!known.has(token.address.toLowerCase()));
-                if(undiscovered.length) {
-                  const active=await withVolume(undiscovered,discovery.latest);
-                  if(run!==activeRefresh) return;
-                  for(let i=0;i<active.length;i+=5) {
-                    setStatus(`Checking on-chain-only launches · ${Math.min(i+5,active.length)} / ${active.length}`);
-                    const batch=await Promise.all(active.slice(i,i+5).map(token=>readUserToken(token).catch(()=>null)));
-                    batch.filter(Boolean).forEach(token=>burnByAddress.set(token.address,token));
-                    if(run!==activeRefresh) return;
-                  }
-                }
-                // v2 launches trade pre-graduation on their own bonding
-                // curve and only reach a real Uniswap v4 pool at graduation,
-                // through a shared hook keyed by pool id rather than a
-                // per-launch pool contract — so there is no comparable
-                // Swap-log volume check available here the way there is for
-                // v1. GeckoTerminal indexing (and the logo requirement
-                // below) is what filters these instead.
-                const undiscoveredV2=discoveryV2.filter(token=>!known.has(token.address.toLowerCase()));
-                if(undiscoveredV2.length) {
-                  for(let i=0;i<undiscoveredV2.length;i+=5) {
-                    setStatus(`Checking v2 launches · ${Math.min(i+5,undiscoveredV2.length)} / ${undiscoveredV2.length}`);
-                    const batch=await Promise.all(undiscoveredV2.slice(i,i+5).map(token=>readUserToken(token).catch(()=>null)));
-                    batch.filter(Boolean).forEach(token=>burnByAddress.set(token.address,token));
-                    if(run!==activeRefresh) return;
-                  }
-                }
-                localStorage.setItem(SWEEP_CACHE,JSON.stringify({timestamp:Date.now()}));
-              } catch(sweepError) { console.warn('On-chain completeness sweep skipped.',errText(sweepError)); }
-            }
-          }
+          // On-chain completeness checks (both v1 and v2) run detached from
+          // here on — see runCompletenessSweeps — so the primary list can
+          // finish, render, and release the scan lock without waiting on a
+          // multi-million-block chain scan.
+          runCompletenessSweeps(run,markets,burnByAddress,usedFastPath).catch(sweepError=>console.warn('Completeness sweeps failed.',errText(sweepError)));
           results=[...burnByAddress.values()];
         } catch(geckoError) {
           console.warn('GeckoTerminal unavailable; using chain fallback.',errText(geckoError));
@@ -865,6 +919,16 @@
         }
       } catch {}
     });
+    // If this tab is holding the scan lock and the page is closed, reloaded,
+    // or navigated away from mid-scan, release it immediately instead of
+    // leaving the next load to wait out the staleness window for a scan
+    // that no longer exists. 'pagehide' covers more browsers/cases than
+    // 'beforeunload' alone (notably bfcache navigations on mobile Safari).
+    const releaseOwnScanLock = () => {
+      try { const lock=JSON.parse(localStorage.getItem(SCAN_LOCK)); if(lock?.id===TAB_ID) localStorage.removeItem(SCAN_LOCK); } catch {}
+    };
+    window.addEventListener('pagehide',releaseOwnScanLock);
+    window.addEventListener('beforeunload',releaseOwnScanLock);
     let cachedListShown=false;
     try { const saved=JSON.parse(localStorage.getItem(CACHE)); if(saved?.tokens?.length){ allTokens=saved.tokens; lastCompleteTokens=saved.tokens; lastUpdated=saved.timestamp; render(allTokens,lastUpdated); cachedListShown=true; setStatus(`<strong>Cached list shown.</strong> Select refresh to check for updates.`); } } catch {}
     if(!cachedListShown) refresh();
