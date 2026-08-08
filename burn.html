@@ -86,6 +86,16 @@
     const GECKO_API = 'https://api.geckoterminal.com/api/v2/networks/robinhood/dexes/pons-dot-family/pools?include=base_token%2Cquote_token&sort=h24_volume_usd_desc&page=';
     const GECKO_POOL_API = 'https://api.geckoterminal.com/api/v2/networks/robinhood/pools/';
     const GECKO_TOKEN_API = 'https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/';
+    // Blockscout's Etherscan-compatible logs endpoint is backed by its own
+    // indexed database, not a raw RPC node — unlike eth_getLogs on the RPC
+    // endpoint above, wide fromBlock..toBlock ranges are just an indexed
+    // query here, not a block-by-block scan. That's what lets discovery run
+    // as a couple of direct, live queries instead of the chunked, cursor-
+    // based backfill this used to need. API keys are optional (shared 5
+    // req/s pool without one); no key is used here. Capped at 1,000 logs
+    // per call by Blockscout itself, far above this app's real result
+    // counts for a single factory or pool.
+    const BLOCKSCOUT_API = 'https://robinhoodchain.blockscout.com/api';
     const VERIFIED_POOL_SEEDS = [
       {pool:'0xff6aa24815d1274a9be0cfd17c7c7489cd40a697',address:'0x2286397228be256529be1ae9ed8d7d16549e9c6a',name:'Real World Impact',symbol:'RWI',image:'https://assets.geckoterminal.com/caxlvtu7q4kzn1mznh6ec2c8c9i6',marketCap:74330,volume24h:50990},
       {pool:'0xca6aa177b14482a3e56ae395146461e3aec1de73',address:'0xf11168ec379efd20a35006f1d44cc5f9e4e94e67',name:'Xeno',symbol:'XENO',image:'https://coin-images.coingecko.com/coins/images/102174795/large/epjr5bp1jx8di81aa5yyhglyqgvj.?1784883172',marketCap:14615,volume24h:2689},
@@ -116,22 +126,6 @@
       { address:'0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e', from:0 }
     ];
     const V2_LAUNCH_TOPIC = '0x8d4aad4953d0ca700d468f3753aa14432d1b35b43ec6409f051fb6aa43a89607';
-    // Robinhood Chain runs ~0.1s block times, so the shared DISCOVERY_BLOCKS
-    // window below (300k blocks) only covers a few hours — nowhere near
-    // v2's real launch history, and its exact factory deployment block
-    // isn't published anywhere to pin an accurate start. Rather than either
-    // miss older v2 launches or rescan a huge range on every visit, v2
-    // backfill is done incrementally: each sweep covers any new blocks
-    // since the last check, plus one more bounded chunk further into the
-    // past, persisted in V2_SWEEP_CURSOR. It reaches full history over a
-    // handful of visits without ever making a single refresh slow.
-    const V2_MAX_BACKFILL_BLOCKS = 33000000;
-    const V2_SWEEP_CHUNK_BLOCKS = 1000000;
-    // v2 has only been live a short while, so a much bigger first pass still
-    // stays cheap relative to the full 33M-block safety margin, and gets a
-    // real answer immediately instead of needing many visits to reach it.
-    const V2_INITIAL_CATCHUP_BLOCKS = 5000000;
-    const V2_SWEEP_TTL = 5 * 60 * 1000;
     const SWAP_TOPIC = '0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67';
     const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
     const ZERO = '0x0000000000000000000000000000000000000000';
@@ -142,17 +136,20 @@
     const USER_TOKENS_CACHE = 'pons-burn-list-user-tokens-v1';
     const SCAN_LOCK = 'pons-burn-list-scan-lock-v1';
     const SWEEP_CACHE = 'pons-burn-list-sweep-v1';
-    const V2_SWEEP_CURSOR = 'pons-burn-list-v2-cursor-v1';
     const TAB_ID = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
     const MARKET_INDEX_TTL = 20 * 60 * 1000;
-    const SWEEP_TTL = 15 * 60 * 1000;
     const GECKO_PAGE_DELAY = 600;
     const RECENT_BURN_TTL = 2 * 60 * 1000;
     const RECENT_BURN_BLOCKS = 75000;
     // GeckoTerminal does not consistently expose a last-page link. This cap
     // turns an upstream page limit into a safe partial pass, not an endless scan.
     const MAX_GECKO_PAGES = 99;
-    const DISCOVERY_BLOCKS = 300000;
+    // How long between full v1/v2 completeness checks against Blockscout
+    // (see runCompletenessSweeps). These are now fast, live, indexed
+    // queries rather than a chunked chain scan, so this exists purely to
+    // avoid repeating the same query needlessly on back-to-back refreshes,
+    // not to bound how long a scan takes.
+    const SWEEP_TTL = 5 * 60 * 1000;
     const $ = id => document.getElementById(id);
     // Log only a plain string, never the raw error/exception object. Some
     // hosting/preview contexts relay console output via postMessage, and a
@@ -204,6 +201,37 @@
       return calls.map((_,id)=>{ const r=byId.get(id); if(!r) throw new Error('RPC batch response was incomplete'); if(r.error) throw new Error(r.error.message); return r.result; });
     };
     const call = (to,data) => rpc('eth_call',[{to,data},'latest']);
+    // A single logs query against Blockscout's index, with light retry —
+    // one request instead of the many chunked eth_getLogs calls the RPC
+    // node needed for the same result. See the status/message check inside
+    // for why a genuine "no records" response and an actual error are
+    // deliberately not treated the same way.
+    const blockscoutLogs = async ({address, topic0, topic1, fromBlock=0, toBlock='latest'}) => {
+      const params=new URLSearchParams({module:'logs',action:'getLogs',fromBlock:String(fromBlock),toBlock:String(toBlock)});
+      if(address) params.set('address',address);
+      if(topic0) params.set('topic0',topic0);
+      if(topic1) { params.set('topic1',topic1); params.set('topic0_1_opr','and'); }
+      let lastError;
+      for(let attempt=0;attempt<3;attempt++) {
+        try {
+          const response=await fetchWithTimeout(`${BLOCKSCOUT_API}?${params.toString()}`,{},15000);
+          if(!response.ok) throw new Error(`Blockscout logs returned ${response.status}`);
+          const body=await response.json();
+          if(Array.isArray(body.result)) return body.result;
+          // Etherscan-style APIs report a genuine empty match as status "0"
+          // with a "No records found" message, not an OK status with an
+          // empty array — result itself is typically a string or null in
+          // that case. Anything else at status "0" (rate limiting, a bad
+          // param, a backend hiccup) is a real failure and needs to retry
+          // or surface, not be silently treated as "nothing found": too
+          // much here (token verification, completeness checks) depends on
+          // "empty" genuinely meaning empty.
+          if(body.status==='0' && /no records found/i.test(body.message||'')) return [];
+          throw new Error(body.message||body.result||'Blockscout logs request failed');
+        } catch(error) { lastError=error; if(attempt<2) await pause(500*2**attempt); }
+      }
+      throw lastError;
+    };
     const padAddress = address => address.slice(2).padStart(64,'0');
     const decodeString = hex => { if (!hex || hex === '0x') return ''; const n = parseInt(hex.slice(2,66),16); const text = hex.slice(66,66+n*2); try { return new TextDecoder().decode(Uint8Array.from(text.match(/.{1,2}/g)||[],x=>parseInt(x,16))); } catch { return ''; } };
     const readToken = async (launch, ethUsd) => {
@@ -246,36 +274,9 @@
     };
     const userTokens = () => { try { return JSON.parse(localStorage.getItem(USER_TOKENS_CACHE)) || []; } catch { return []; } };
     const saveUserTokens = tokens => localStorage.setItem(USER_TOKENS_CACHE,JSON.stringify(tokens));
-    // eth_getLogs on this RPC times out on wide block ranges (see the
-    // chunked scanning in launches()/launchesV2()). A single specific
-    // token's launch log — filtered by both address and topic — sometimes
-    // succeeds across a much wider range than a full factory enumeration
-    // would, so this tries the whole range in one call first. If that
-    // fails, it falls back to the same proven 25,000-block chunk size used
-    // elsewhere, searching newest-first: someone adding a token by hand is
-    // almost always adding a recent one, so this resolves quickly for the
-    // common case instead of working forward from the factory's genesis.
     async function findLaunchLog(factory, topic, topicAddress) {
-      const from=Math.max(factory.from,0);
-      try {
-        const logs=await rpc('eth_getLogs',[{address:factory.address,fromBlock:'0x'+from.toString(16),toBlock:'latest',topics:[topic,topicAddress]}]);
-        return logs[0]||null;
-      } catch {}
-      const latest=parseInt(await rpc('eth_blockNumber',[]),16);
-      const chunk=25000;
-      const starts=[];
-      for(let start=latest;start>=from;start-=chunk) starts.push(start);
-      for(let i=0;i<starts.length;i+=5) {
-        const group=starts.slice(i,i+5);
-        const results=await Promise.all(group.map(start=>{
-          const end=start;
-          const windowFrom=Math.max(from,start-chunk+1);
-          return rpc('eth_getLogs',[{address:factory.address,fromBlock:'0x'+windowFrom.toString(16),toBlock:'0x'+end.toString(16),topics:[topic,topicAddress]}]).then(logs=>logs[0]||null).catch(()=>null);
-        }));
-        const found=results.find(Boolean);
-        if(found) return found;
-      }
-      return null;
+      const logs=await blockscoutLogs({address:factory.address,topic0:topic,topic1:topicAddress,fromBlock:factory.from});
+      return logs[0]||null;
     }
     async function verifyPonsToken(address) {
       const topicAddress='0x'+address.slice(2).padStart(64,'0');
@@ -603,186 +604,119 @@
       }
     }
     async function launches() {
-      const latest = parseInt(await rpc('eth_blockNumber',[]),16);
-      const tokens = new Map(); const chunk = 25000; const jobs=[];
-      for (const factory of FACTORIES) {
-        const firstBlock=Math.max(factory.from,latest-DISCOVERY_BLOCKS);
-        for (let start=firstBlock; start<=latest; start+=chunk) {
-          const end=Math.min(start+chunk-1,latest);
-          jobs.push({factory,start,end});
-        }
-      }
-      let completed=0, cursor=0;
-      const worker=async () => {
-        while(cursor<jobs.length) {
-          const job=jobs[cursor++];
-          const logs=await rpc('eth_getLogs',[{address:job.factory.address,fromBlock:'0x'+job.start.toString(16),toBlock:'0x'+job.end.toString(16),topics:[LAUNCH_TOPIC]}]);
-          logs.forEach(l => {
-            const address=('0x'+l.topics[1].slice(-40)).toLowerCase();
-            const pool=('0x'+l.data.slice(2+64+24,2+128)).toLowerCase();
-            tokens.set(address,{address,pool,launchedBlock:parseInt(l.blockNumber,16)});
-          });
-          completed++;
-          setStatus(`Finding launches · ${completed} of ${jobs.length} chain ranges`);
-        }
-      };
-      await Promise.all(Array.from({length:Math.min(3,jobs.length)},worker));
+      // Blockscout's index means this covers each factory's entire history
+      // — legacy included — in one live query per factory, instead of the
+      // chunked block-range scan (and the recency window that implied) this
+      // used to need.
+      const [latestHex, ...factoryLogs] = await Promise.all([
+        rpc('eth_blockNumber',[]),
+        ...FACTORIES.map(factory=>blockscoutLogs({address:factory.address,topic0:LAUNCH_TOPIC,fromBlock:factory.from}))
+      ]);
+      const latest=parseInt(latestHex,16);
+      const tokens=new Map();
+      factoryLogs.flat().forEach(l => {
+        const address=('0x'+l.topics[1].slice(-40)).toLowerCase();
+        const pool=('0x'+l.data.slice(2+64+24,2+128)).toLowerCase();
+        tokens.set(address,{address,pool,launchedBlock:parseInt(l.blockNumber,16)});
+      });
       return {tokens:[...tokens.values()],latest};
     }
-    async function launchesV2(rangeFrom, rangeTo) {
-      const tokens = new Map(); const chunk = 25000; const jobs=[];
-      for (const factory of V2_FACTORIES) {
-        const start=Math.max(factory.from,rangeFrom);
-        if(start>rangeTo) continue;
-        for (let s=start; s<=rangeTo; s+=chunk) {
-          const end=Math.min(s+chunk-1,rangeTo);
-          jobs.push({factory,start:s,end});
-        }
-      }
-      let completed=0, cursor=0;
-      const worker=async () => {
-        while(cursor<jobs.length) {
-          const job=jobs[cursor++];
-          const logs=await rpc('eth_getLogs',[{address:job.factory.address,fromBlock:'0x'+job.start.toString(16),toBlock:'0x'+job.end.toString(16),topics:[V2_LAUNCH_TOPIC]}]);
-          logs.forEach(l => {
-            // token and curve are both indexed on v2's TokenLaunched event,
-            // so the token address comes straight from topics[1] — there is
-            // no per-launch pool to decode out of the log data.
-            const address=('0x'+l.topics[1].slice(-40)).toLowerCase();
-            tokens.set(address,{address,launchedBlock:parseInt(l.blockNumber,16),isV2:true});
-          });
-          completed++;
-          setStatus(`Finding v2 launches · ${completed} of ${jobs.length} chain ranges`);
-        }
-      };
-      await Promise.all(Array.from({length:Math.min(3,jobs.length)},worker));
+    async function launchesV2() {
+      // Same as launches() above — one live indexed query covers v2's full
+      // history, so the incremental block-range backfill (and its
+      // persisted cursor) this used to need is no longer necessary.
+      const logs=(await Promise.all(V2_FACTORIES.map(factory=>blockscoutLogs({address:factory.address,topic0:V2_LAUNCH_TOPIC,fromBlock:factory.from})))).flat();
+      const tokens=new Map();
+      logs.forEach(l => {
+        // token and curve are both indexed on v2's TokenLaunched event, so
+        // the token address comes straight from topics[1] — there is no
+        // per-launch pool to decode out of the log data.
+        const address=('0x'+l.topics[1].slice(-40)).toLowerCase();
+        tokens.set(address,{address,launchedBlock:parseInt(l.blockNumber,16),isV2:true});
+      });
       return [...tokens.values()];
     }
     async function withVolume(tokens, latest) {
       const active=[];
-      for(let i=0;i<tokens.length;i+=10) {
-        const group=tokens.slice(i,i+10);
-        setStatus(`Checking recent trading volume · ${Math.min(i+10,tokens.length)} / ${tokens.length}`);
-        const results=await rpcBatch(group.map(token=>({method:'eth_getLogs',params:[{address:token.pool,fromBlock:'0x'+token.launchedBlock.toString(16),toBlock:'0x'+latest.toString(16),topics:[SWAP_TOPIC]}]})));
+      // Blockscout's unauthenticated tier is a 5 req/s pool shared across
+      // all callers, not just this page — a batch of 10 fired at once via
+      // Promise.all risks bursting past that. 4 stays comfortably under it
+      // even alongside the couple of other Blockscout calls a sweep makes
+      // around the same time.
+      for(let i=0;i<tokens.length;i+=4) {
+        const group=tokens.slice(i,i+4);
+        setStatus(`Checking recent trading volume · ${Math.min(i+4,tokens.length)} / ${tokens.length}`);
+        const results=await Promise.all(group.map(token=>blockscoutLogs({address:token.pool,topic0:SWAP_TOPIC,fromBlock:token.launchedBlock,toBlock:latest}).catch(()=>[])));
         results.forEach((swaps,index)=>{ if(swaps.length) active.push(group[index]); });
       }
       return active;
     }
-    // Runs the v1 and v2 completeness sweeps as a detached background task —
-    // deliberately NOT part of the critical path that refresh() awaits. The
-    // primary GeckoTerminal-based list already has everything it needs to
-    // render and release the scan lock; making callers wait on a
-    // multi-million-block chain scan on top of that was the main thing
-    // making a refresh feel slow, and the main thing keeping the "shared
-    // scan in progress" lock held long enough for a page reload to collide
-    // with it. Anything this finds is folded in and persisted on its own.
+    // Runs the v1 and v2 completeness checks as a detached background task
+    // — deliberately NOT part of the critical path that refresh() awaits.
+    // The primary GeckoTerminal-based list already has everything it needs
+    // to render and release the scan lock, so this runs after that instead
+    // of holding it up. Both launches() and launchesV2() are now live,
+    // indexed Blockscout queries covering full history in one call each —
+    // no chunking, no backfill cursor, no multi-visit ramp-up needed the
+    // way raw eth_getLogs scanning required. Anything this finds is folded
+    // in and persisted on its own.
     let sweepsInFlight=false;
-    async function runCompletenessSweeps(run, markets, burnByAddress, usedFastPath) {
+    async function runCompletenessSweeps(run, markets, burnByAddress) {
       if(run!==activeRefresh) return;
       // A rapid second refresh click launches its own detached sweep call
-      // before the first one finishes; without this guard both would scan
-      // the same block ranges concurrently. The next refresh's own "missing
-      // burns" retry loop already re-checks anything not yet in
-      // burnByAddress, so skipping here costs nothing but a redundant scan.
+      // before the first one finishes; without this guard both would query
+      // the same thing concurrently. The next refresh's own "missing burns"
+      // retry loop already re-checks anything not yet in burnByAddress, so
+      // skipping here costs nothing but a redundant query.
       if(sweepsInFlight) return;
       sweepsInFlight=true;
       try {
-      if(!usedFastPath) try {
         let sweepCache;
         try { sweepCache=JSON.parse(localStorage.getItem(SWEEP_CACHE)); } catch {}
-        if(!sweepCache?.timestamp || Date.now()-sweepCache.timestamp>=SWEEP_TTL) {
-          // GeckoTerminal's own pool listing can lag behind brand-new
-          // launches, or drop a page mid-scan (see the retry loop in
-          // geckoMarkets). This cross-checks both the legacy and active
-          // pons factories directly on-chain for anything GeckoTerminal
-          // hasn't surfaced yet. Only launches with real Swap activity get
-          // the more expensive per-token hydration, so a token with
-          // genuine volume and a burn is never missing just because
-          // GeckoTerminal hasn't indexed it yet. A short TTL keeps this
-          // from repeating the same chain scan every time refresh runs.
-          const discovery=await launches();
-          if(run===activeRefresh) {
-            const known=new Set([...markets.map(market=>market.address),...burnByAddress.keys()]);
-            const undiscovered=discovery.tokens.filter(token=>!known.has(token.address.toLowerCase()));
-            if(undiscovered.length) {
-              const active=await withVolume(undiscovered,discovery.latest);
-              for(let i=0;i<active.length && run===activeRefresh;i+=5) {
-                const batch=await Promise.all(active.slice(i,i+5).map(token=>readUserToken(token).catch(()=>null)));
-                batch.filter(Boolean).forEach(token=>burnByAddress.set(token.address,token));
-                const found=[...burnByAddress.values()].filter(token=>token.burned>0 && token.image);
-                if(found.length && run===activeRefresh) scheduleProgressiveRender(found);
-              }
-            }
-          }
-          localStorage.setItem(SWEEP_CACHE,JSON.stringify({timestamp:Date.now()}));
+        if(sweepCache?.timestamp && Date.now()-sweepCache.timestamp<SWEEP_TTL) return;
+        // GeckoTerminal's own pool listing can lag behind brand-new
+        // launches, or drop a page mid-scan (see the retry loop in
+        // geckoMarkets), and has no visibility into v2 at all yet. This
+        // cross-checks both v1 factories and the v2 factory directly
+        // on-chain via Blockscout for anything GeckoTerminal hasn't
+        // surfaced. Only v1 launches with real Swap activity get the more
+        // expensive per-token hydration (v2 has no comparable per-pool
+        // Swap check — see launchesV2 — so GeckoTerminal indexing and the
+        // logo requirement below filter those instead).
+        const [discovery,discoveredV2]=await Promise.all([launches(),launchesV2()]);
+        if(run!==activeRefresh) return;
+        const known=new Set([...markets.map(market=>market.address),...burnByAddress.keys()]);
+        const undiscovered=[
+          ...await withVolume(discovery.tokens.filter(token=>!known.has(token.address.toLowerCase())),discovery.latest),
+          ...discoveredV2.filter(token=>!known.has(token.address.toLowerCase())),
+        ];
+        if(run!==activeRefresh) return;
+        for(let i=0;i<undiscovered.length && run===activeRefresh;i+=5) {
+          const batch=await Promise.all(undiscovered.slice(i,i+5).map(token=>readUserToken(token).catch(()=>null)));
+          batch.filter(Boolean).forEach(token=>burnByAddress.set(token.address,token));
+          const found=[...burnByAddress.values()].filter(token=>token.burned>0 && token.image);
+          if(found.length && run===activeRefresh) scheduleProgressiveRender(found);
         }
-      } catch(sweepError) { console.warn('On-chain completeness sweep skipped.',errText(sweepError)); }
-      try {
-        // v2 has no GeckoTerminal-independent historical backstop the way
-        // v1 does, so this always runs — including after a "fast" refresh —
-        // gated only by its own short TTL rather than which refresh path
-        // was taken. Robinhood Chain's ~0.1s block time means the shared
-        // window above only covers a few hours, nowhere near enough for
-        // v2's real history, and its exact factory deployment block isn't
-        // published anywhere to pin an accurate start. Rather than either
-        // miss older v2 launches or rescan a huge range every time, this is
-        // incremental: each run covers any new blocks since the last check
-        // plus one more bounded chunk further into the past, persisted in
-        // V2_SWEEP_CURSOR, reaching full history over a handful of visits
-        // without making any single one slow.
-        let v2Cursor;
-        try { v2Cursor=JSON.parse(localStorage.getItem(V2_SWEEP_CURSOR)); } catch {}
-        if(!v2Cursor?.lastRun || Date.now()-v2Cursor.lastRun>=V2_SWEEP_TTL) {
-          const latestNow=parseInt(await rpc('eth_blockNumber',[]),16);
-          const floor=v2Cursor?.floor ?? Math.max(0,latestNow-V2_MAX_BACKFILL_BLOCKS);
-          const ranges=[];
-          if(!v2Cursor) {
-            ranges.push({from:Math.max(floor,latestNow-V2_INITIAL_CATCHUP_BLOCKS),to:latestNow});
-          } else {
-            if(v2Cursor.scannedTo<latestNow) ranges.push({from:v2Cursor.scannedTo+1,to:latestNow});
-            if(v2Cursor.scannedFrom>floor) ranges.push({from:Math.max(floor,v2Cursor.scannedFrom-V2_SWEEP_CHUNK_BLOCKS),to:v2Cursor.scannedFrom-1});
-          }
-          const discoveryV2=ranges.length ? (await Promise.all(ranges.map(r=>launchesV2(r.from,r.to)))).flat() : [];
-          const nextScannedFrom=Math.min(v2Cursor?.scannedFrom ?? latestNow, ...ranges.map(r=>r.from));
-          localStorage.setItem(V2_SWEEP_CURSOR,JSON.stringify({scannedFrom:nextScannedFrom,scannedTo:latestNow,floor,lastRun:Date.now()}));
-          if(run===activeRefresh) {
-            // v2 launches trade pre-graduation on their own bonding curve
-            // and only reach a real Uniswap v4 pool at graduation, through
-            // a shared hook keyed by pool id rather than a per-launch pool
-            // contract — so there is no comparable Swap-log volume check
-            // available here the way there is for v1. GeckoTerminal
-            // indexing (and the logo requirement below) filters these
-            // instead.
-            const known=new Set([...markets.map(market=>market.address),...burnByAddress.keys()]);
-            const undiscoveredV2=discoveryV2.filter(token=>!known.has(token.address.toLowerCase()));
-            if(undiscoveredV2.length) {
-              for(let i=0;i<undiscoveredV2.length && run===activeRefresh;i+=5) {
-                const batch=await Promise.all(undiscoveredV2.slice(i,i+5).map(token=>readUserToken(token).catch(()=>null)));
-                batch.filter(Boolean).forEach(token=>burnByAddress.set(token.address,token));
-                const found=[...burnByAddress.values()].filter(token=>token.burned>0 && token.image);
-                if(found.length && run===activeRefresh) scheduleProgressiveRender(found);
-              }
-            }
-          }
+        localStorage.setItem(SWEEP_CACHE,JSON.stringify({timestamp:Date.now()}));
+        // The primary refresh already finished, rendered, and released the
+        // scan lock by the time any of this resolves, so anything found
+        // here needs its own persistence step to survive a reload.
+        if(run!==activeRefresh) return;
+        const swept=[...burnByAddress.values()].filter(token=>token.burned>0 && token.image);
+        if(swept.length) {
+          const retained=new Map(lastCompleteTokens.map(token=>[token.address,token]));
+          try { (JSON.parse(localStorage.getItem(CACHE))?.tokens||[]).forEach(token=>retained.set(token.address,token)); } catch {}
+          swept.forEach(token=>retained.set(token.address,token));
+          allTokens=[...retained.values()];
+          lastCompleteTokens=allTokens;
+          lastUpdated=Date.now();
+          localStorage.setItem(CACHE,JSON.stringify({tokens:allTokens,timestamp:lastUpdated,complete:false}));
+          cancelProgressiveRender();
+          render(allTokens,lastUpdated);
+          startPendingRecentBurns();
         }
-      } catch(sweepError) { console.warn('v2 completeness sweep skipped.',errText(sweepError)); }
-      // The primary refresh already finished, rendered, and released the
-      // scan lock by the time any of this resolves, so anything the
-      // sweeps found needs its own persistence step to survive a reload.
-      if(run!==activeRefresh) return;
-      const swept=[...burnByAddress.values()].filter(token=>token.burned>0 && token.image);
-      if(!swept.length) return;
-      const retained=new Map(lastCompleteTokens.map(token=>[token.address,token]));
-      try { (JSON.parse(localStorage.getItem(CACHE))?.tokens||[]).forEach(token=>retained.set(token.address,token)); } catch {}
-      swept.forEach(token=>retained.set(token.address,token));
-      allTokens=[...retained.values()];
-      lastCompleteTokens=allTokens;
-      lastUpdated=Date.now();
-      localStorage.setItem(CACHE,JSON.stringify({tokens:allTokens,timestamp:lastUpdated,complete:false}));
-      cancelProgressiveRender();
-      render(allTokens,lastUpdated);
-      startPendingRecentBurns();
-      } finally { sweepsInFlight=false; }
+      } catch(sweepError) { console.warn('Completeness check skipped.',errText(sweepError)); }
+      finally { sweepsInFlight=false; }
     }
     async function refresh() {
       const run=++activeRefresh;
@@ -848,9 +782,10 @@
           }
           // On-chain completeness checks (both v1 and v2) run detached from
           // here on — see runCompletenessSweeps — so the primary list can
-          // finish, render, and release the scan lock without waiting on a
-          // multi-million-block chain scan.
-          runCompletenessSweeps(run,markets,burnByAddress,usedFastPath).catch(sweepError=>console.warn('Completeness sweeps failed.',errText(sweepError)));
+          // finish, render, and release the scan lock without waiting on
+          // them, even though they're now fast, indexed Blockscout queries
+          // rather than a raw chain scan.
+          runCompletenessSweeps(run,markets,burnByAddress).catch(sweepError=>console.warn('Completeness sweeps failed.',errText(sweepError)));
           results=[...burnByAddress.values()];
         } catch(geckoError) {
           console.warn('GeckoTerminal unavailable; using chain fallback.',errText(geckoError));
