@@ -9,7 +9,7 @@
   },
   "version": "1.0.0",
   "protocolVersion": "0.2.0",
-  "documentationUrl": "https://rwihood.org/whitepaper.html",
+  "documentationUrl": "https://rwihood.org/docs.html",
   "capabilities": {
     "streaming": false,
     "pushNotifications": false,
