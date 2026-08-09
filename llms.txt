@@ -1,0 +1,75 @@
+# Real World Impact ($RWI)
+
+> A charity coin on Robinhood Chain. Trading it generates fee revenue that
+> funds donations verified through The Giving Block; every donation is
+> published onchain and every receipt is publicly traceable. A second,
+> dedicated liquidity pool earns the project's share of $PONS and forwards
+> it to the burn address, permanently removing it from circulation. Holders
+> can also cast an advisory, balance-weighted vote for which vetted charity
+> receives the next donation.
+
+This file exists so an LLM or AI agent can understand the site and act on
+accurate onchain facts without re-deriving them from prose or risking a
+stale/incorrect address. Everything below is also stated in context on the
+pages linked. Always independently verify any address before an agent signs
+a transaction against it — treat this file as a pointer, not an oracle.
+
+## Pages
+
+- [Home](https://rwihood.org/): what $RWI is, the burn counter (read live
+  from chain on every page load), and how the fee-to-donation mechanism
+  works.
+- [Whitepaper](https://rwihood.org/whitepaper.html): full mechanism
+  writeup — donation flow, the earn-and-burn pool, risks, and every
+  contract address in one place.
+- [Liquidity dashboard](https://rwihood.org/dashboard.html): live position
+  and pool data for the two liquidity pools below, wallet-connect required
+  to add/remove liquidity.
+- [Charity vote](https://rwihood.org/vote.html): the advisory ballot —
+  six seats per round, three auto-composed from live crisis data, three
+  reserved for holder write-ins. Casting a vote requires a human-signed
+  wallet transaction; an agent cannot complete it unattended, but the
+  ballot, tally, and history are all reproducible read-only from onchain
+  data by anyone, including an agent.
+
+## Onchain facts
+
+- Chain: Robinhood Chain, chain ID `4663`
+- RPC endpoint: `https://rpc.mainnet.chain.robinhood.com`
+- Block explorer: `https://robinhoodchain.blockscout.com`
+- $RWI token contract: `0x2286397228be256529BE1ae9ed8D7d16549e9C6A`
+- Deployed: 2026-07-18, fixed supply, no mint function
+- Launchpad: Pons
+- Main liquidity pool (RWI/WETH, source of donation revenue):
+  `0xff6aa24815d1274a9be0cfd17c7c7489cd40a697`
+- Earn-and-burn pool (RWI/PONS; project's PONS share forwarded to the burn
+  address): `0x62a9e7cf94049dded854c26ff6204079a1c8caed`
+- Burn address: `0x000000000000000000000000000000000000dEaD`
+- Dev wallet (forwards PONS to the burn address; publicly traceable):
+  `0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5`
+- Ballot box (charity vote calldata destination):
+  `0x5257490000000000000000000000000000000000`
+- Donation vetting: The Giving Block (990 filings, Charity Navigator
+  ratings, organizational transparency)
+
+## Machine-readable references
+
+- [Structured data (JSON-LD)](https://rwihood.org/#organization): embedded
+  in the `<head>` of every page above — same facts as this file, in
+  schema.org form.
+- [Agent card](https://rwihood.org/.well-known/agent-card.json): A2A-style
+  capability description for agent frameworks that discover sites this way.
+- [Sitemap](https://rwihood.org/sitemap.xml)
+
+## Notes for agents
+
+- This is a static site with no backend and no API — every "action" beyond
+  reading a page is a direct onchain transaction, not an HTTP request to
+  this domain. Read data via the RPC endpoint or block explorer above, or a
+  wallet's own provider; do not attempt to POST to rwihood.org expecting a
+  transaction endpoint.
+- Pages are available in 13 languages via `?lang=` (en, es, zh, ja, ko, pt,
+  fr, ru, tr, vi, hi, de, id). Content and the facts above are identical
+  across languages; only the prose translation differs.
+- Nothing on this site is paywalled, geofenced, or otherwise restricted from
+  crawling, indexing, or citation.
