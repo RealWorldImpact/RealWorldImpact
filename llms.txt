@@ -19,7 +19,7 @@ a transaction against it — treat this file as a pointer, not an oracle.
 - [Home](https://rwihood.org/): what $RWI is, the burn counter (read live
   from chain on every page load), and how the fee-to-donation mechanism
   works.
-- [Whitepaper](https://rwihood.org/whitepaper.html): full mechanism
+- [Docs](https://rwihood.org/docs.html): full mechanism
   writeup — donation flow, the earn-and-burn pool, risks, and every
   contract address in one place.
 - [Liquidity dashboard](https://rwihood.org/dashboard.html): live position
