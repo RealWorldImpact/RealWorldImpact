@@ -19,13 +19,13 @@ a transaction against it — treat this file as a pointer, not an oracle.
 - [Home](https://rwihood.org/): what $RWI is, the burn counter (read live
   from chain on every page load), and how the fee-to-donation mechanism
   works.
-- [Docs](https://rwihood.org/docs.html): full mechanism
+- [Docs](https://rwihood.org/docs): full mechanism
   writeup — donation flow, the earn-and-burn pool, risks, and every
   contract address in one place.
-- [Liquidity dashboard](https://rwihood.org/dashboard.html): live position
+- [Liquidity dashboard](https://rwihood.org/dashboard): live position
   and pool data for the two liquidity pools below, wallet-connect required
   to add/remove liquidity.
-- [Charity vote](https://rwihood.org/vote.html): the advisory ballot for
+- [Charity vote](https://rwihood.org/vote): the advisory ballot for
   which vetted charity receives the next donation — see the dedicated
   section below for exact mechanics.
 
