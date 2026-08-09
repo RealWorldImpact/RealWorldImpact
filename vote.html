@@ -1817,6 +1817,15 @@ document.addEventListener('DOMContentLoaded', function(){
     --serif:'Newsreader',Georgia,'Times New Roman',serif;
   }
   *{box-sizing:border-box}
+  /* Several component classes below (.btn, .chip, and any future one that
+     sets its own `display`) tie with the browser's default [hidden]{display:
+     none} rule on CSS specificity — whichever is declared later in the
+     sheet wins, which is the component class, not the hidden state. That
+     silently left elements like the voter list's "show all" button and the
+     wallet status chips visible-but-blank whenever JS set .hidden=true.
+     One global, always-wins rule here removes the whole bug class instead
+     of patching each component one at a time. */
+  [hidden]{display:none!important}
   html{-webkit-text-size-adjust:100%}
   /* Keep every scrollable edge part of the same lime-and-ink system. The
      Firefox properties cover the page scrollbar; WebKit rules style Chrome,
@@ -1866,34 +1875,61 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   .disclaimer b{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px}
 
-  .voters-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .voters-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:2px}
   .voter-summary{opacity:.6;font-size:11.5px}
   .voter-list{display:flex;flex-direction:column;margin-top:10px}
   .voter-row{
-    display:flex;align-items:center;justify-content:space-between;gap:14px;
-    padding:9px 0;border-bottom:1px solid var(--rule);
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+    column-gap:14px;row-gap:3px;
+    padding:12px 0;border-bottom:1px solid var(--rule);
     font-family:var(--mono);font-size:12.5px;
   }
   .band .voter-row{border-bottom-color:rgba(204,254,6,.18)}
   .voter-row:last-child{border-bottom:0}
-  .voter-row.is-mine{background:rgba(204,254,6,.08);margin:0 -10px;padding-left:10px;padding-right:10px;border-radius:6px;border-bottom-color:transparent}
+  .voter-row.is-mine{background:rgba(204,254,6,.08);margin:0 -12px;padding-left:12px;padding-right:12px;border-radius:8px;border-bottom-color:transparent}
   .band .voter-row.is-mine{background:rgba(204,254,6,.14)}
-  .voter-left{display:flex;align-items:center;gap:10px;min-width:0}
-  .voter-rank{opacity:.4;font-size:11px;flex-shrink:0;width:1.6em;text-align:right}
+  .voter-left{display:flex;align-items:center;gap:9px;min-width:0;flex:1 1 auto}
+  .voter-rank{
+    opacity:.4;font-size:11px;flex-shrink:0;width:1.7em;text-align:center;
+  }
+  .voter-row.top3 .voter-rank{
+    opacity:1;width:1.6em;height:1.6em;line-height:1.6em;text-align:center;
+    background:rgba(204,254,6,.16);border-radius:999px;color:var(--lime);font-weight:600;font-size:10.5px;
+  }
   .voter-addr{
-    background:none;border:0;padding:2px 0;cursor:pointer;font:inherit;color:inherit;
-    display:flex;align-items:center;gap:7px;opacity:.88;text-align:left;min-width:0;
+    background:none;border:0;padding:7px 2px;margin:-7px -2px;cursor:pointer;font:inherit;color:inherit;
+    display:flex;align-items:center;gap:7px;opacity:.88;text-align:left;min-width:0;border-radius:4px;
   }
   .voter-addr:hover,.voter-addr:focus-visible{opacity:1;text-decoration:underline;outline:none}
   .voter-addr .copy-ic{opacity:.5;font-size:12px;flex-shrink:0}
   .voter-addr.copied{opacity:1}
   .voter-addr.copied .copy-ic{opacity:1}
-  .voter-you-tag{font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.65;flex-shrink:0}
-  .voter-amt{white-space:nowrap;opacity:.85;flex-shrink:0;text-align:right}
-  .voter-pct{opacity:.5;font-size:11px;margin-left:6px}
-  .voter-cause{opacity:.55;font-size:11px;margin-left:8px}
+  .voter-you-tag{
+    font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0;
+    padding:2px 7px;border:1px solid rgba(204,254,6,.45);border-radius:999px;color:var(--lime);opacity:.9;
+  }
+  .voter-amt{white-space:nowrap;opacity:.92;flex-shrink:0;text-align:right;font-weight:500}
+  .voter-meta{
+    flex-basis:100%;order:3;
+    opacity:.5;font-size:11px;white-space:normal;word-break:break-word;
+  }
   .voter-empty{opacity:.55;font-size:12.5px;font-family:var(--mono);padding:8px 0;margin:0}
-  .voter-more{margin-top:12px;font-size:10.5px;padding:8px 16px}
+  .voter-more{margin-top:14px;font-size:10.5px;padding:9px 18px}
+
+  @media (max-width:640px){
+    .voters-head{row-gap:4px}
+    .voter-list{margin-top:8px}
+    .voter-row{padding:13px 0;column-gap:10px;font-size:12px}
+    .voter-row.is-mine{margin:0 -14px;padding-left:14px;padding-right:14px}
+    .voter-left{gap:8px}
+    .voter-rank{width:1.5em;font-size:10.5px}
+    .voter-row.top3 .voter-rank{width:1.5em;height:1.5em;line-height:1.5em}
+    .voter-addr-text{font-size:12px}
+    .voter-you-tag{font-size:9px;padding:2px 6px}
+    .voter-amt{font-size:12.5px}
+    .voter-meta{font-size:11px;padding-left:calc(1.5em + 8px)}
+    .voter-more{width:100%;text-align:center}
+  }
 
   section{padding:34px 0;border-top:1px solid var(--rule-strong)}
 
@@ -2024,7 +2060,6 @@ document.addEventListener('DOMContentLoaded', function(){
   .band .btn.owner-only:hover,.band .btn.owner-only:focus-visible{
     background:rgba(204,254,6,.14);border-style:solid;opacity:1;
   }
-  .owner-only[hidden]{display:none}
   @media (max-width:640px){ .owner-only{margin-left:0;width:100%} }
   /* ---------- floating chart pill + modal ---------- */
   #chartBtn{
@@ -4707,7 +4742,7 @@ function renderVoterList(){
     // overflow past Number.MAX_SAFE_INTEGER on the way to a percentage.
     const pct = total > 0n ? Number((r.w * 10000n) / total) / 100 : 0;
     const isMine = mine && r.addr === mine;
-    return '<div class="voter-row' + (isMine ? ' is-mine' : '') + '" role="listitem">'
+    return '<div class="voter-row' + (isMine ? ' is-mine' : '') + (i < 3 ? ' top3' : '') + '" role="listitem">'
       + '<span class="voter-left">'
       +   '<span class="voter-rank">' + (i+1) + '</span>'
       +   '<button class="voter-addr" type="button" data-addr="' + esc(r.addr) + '" title="' + copyTitle + '" aria-label="' + copyTitle + '">'
@@ -4716,10 +4751,8 @@ function renderVoterList(){
       +   '</button>'
       +   (isMine ? '<span class="voter-you-tag">' + youTag + '</span>' : '')
       + '</span>'
-      + '<span class="voter-amt">' + esc(fmtToken(r.w)) + ' $RWI'
-      +   '<span class="voter-pct">' + pct.toFixed(pct < 10 ? 1 : 0) + '%</span>'
-      +   (cause ? '<span class="voter-cause">· ' + cause + '</span>' : '')
-      + '</span>'
+      + '<span class="voter-amt">' + esc(fmtToken(r.w)) + ' $RWI</span>'
+      + '<span class="voter-meta">' + pct.toFixed(pct < 10 ? 1 : 0) + '%' + (cause ? ' · ' + cause : '') + '</span>'
       + '</div>';
   }).join('');
   if(moreBtn){
