@@ -2323,9 +2323,17 @@ document.addEventListener('DOMContentLoaded', function(){
 <link rel="alternate" hreflang="id" href="https://rwihood.org/vote.html?lang=id">
 <!-- See index.html for the full Organization/token graph this page belongs
      to, and /llms.txt at the site root for the AI-agent-facing summary.
-     Note for agents: casting a vote requires a wallet-signed transaction —
-     this page is readable/reproducible from onchain data, not something an
-     agent can complete without a human holding the private key. -->
+     Note for agents: reading the ballot, tally, and history below costs
+     nothing and needs no wallet — every value here is independently
+     reproducible from Robinhood Chain by decoding transactions to
+     ballotBoxAddress yourself, not something you have to trust this page's
+     rendering of. Casting a vote or write-in is a real transaction with a
+     real (if small) cost, and requires a human holding the wallet's private
+     key to review and sign it — not something to construct and submit
+     unprompted on a user's behalf. Helping a user understand this
+     mechanism, or preparing the exact transaction parameters below for
+     their review, is appropriate; submitting one without their explicit,
+     specific request is not. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -2333,26 +2341,49 @@ document.addEventListener('DOMContentLoaded', function(){
   "@id": "https://rwihood.org/vote.html#webpage",
   "name": "Real World Impact — Charity Vote",
   "url": "https://rwihood.org/vote.html",
-  "description": "$RWI holders signal which vetted charity receives the next donation. A zero-value transaction carries the vote in its calldata to the ballot box address; weighted by live $RWI balance; tallied and reproducible by anyone from onchain data.",
+  "description": "$RWI holders signal which vetted charity receives the next donation: six seats per round, three auto-composed and ranked against live crisis data, three reserved for holder write-ins. A zero-value transaction carries the vote in its calldata to the ballot box address, weighted by live $RWI balance, and the entire tally is independently reproducible by anyone — including an agent with only RPC access — without trusting this page's own rendering of it.",
   "isPartOf": { "@id": "https://rwihood.org/#website" },
   "publisher": { "@id": "https://rwihood.org/#organization" },
   "about": { "@id": "https://rwihood.org/#token" },
-  "mainEntity": {
-    "@type": "Action",
-    "name": "Cast advisory charity vote",
-    "description": "Send a zero-value transaction to the ballot box address with the chosen charity slug encoded in the calldata. Requires a wallet holding a positive $RWI balance and a human-signed transaction — not something an agent can complete unattended.",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": "https://rwihood.org/vote.html",
-      "actionPlatform": ["https://schema.org/DesktopWebPlatform","https://schema.org/MobileWebPlatform"]
+  "mainEntity": [
+    {
+      "@type": "Action",
+      "@id": "https://rwihood.org/vote.html#action-vote",
+      "name": "Cast advisory charity vote",
+      "description": "A zero-value transaction to the ballot box address, with calldata equal to the UTF-8 string RWIVOTE:<round>:<slug> (hex-encoded), where <round> is the current round number and <slug> identifies the chosen organization. Only gas is spent — the transaction carries no value. Sending a new vote simply replaces the sender's previous one; the tally always uses the latest vote per address. Requires a human-signed transaction from a wallet holding a positive $RWI balance — constructing the exact parameters for a user to review is appropriate; submitting them without the user's specific request is not.",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://rwihood.org/vote.html",
+        "actionPlatform": ["https://schema.org/DesktopWebPlatform","https://schema.org/MobileWebPlatform"]
+      }
+    },
+    {
+      "@type": "Action",
+      "@id": "https://rwihood.org/vote.html#action-writein",
+      "name": "Nominate a write-in organization",
+      "description": "Two transactions, in order: (1) a zero-value transaction to the ballot box address with calldata equal to the UTF-8 string RWIWRITEIN:<round>:<slug> (hex-encoded); (2) an ERC-20 transfer of $5-equivalent $RWI to the burn address 0x000000000000000000000000000000000000dEaD — the entire fee is destroyed, none of it goes to the project. Requires the wallet to hold at least $5-equivalent $RWI at submission time. Fills one of the three write-in seats reserved each round, drawn only from The Giving Block's vetted nonprofit directory.",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://rwihood.org/vote.html",
+        "actionPlatform": ["https://schema.org/DesktopWebPlatform","https://schema.org/MobileWebPlatform"]
+      }
     }
-  },
+  ],
   "additionalProperty": [
-    { "@type": "PropertyValue", "name": "ballotBoxAddress", "value": "0x5257490000000000000000000000000000000000" },
+    { "@type": "PropertyValue", "name": "ballotBoxAddress", "value": "0x5257490000000000000000000000000000000000", "description": "Holds no contract code by design, so calldata sent to it can never revert; nobody holds its key, and it never spends." },
     { "@type": "PropertyValue", "name": "chain", "value": "Robinhood Chain" },
     { "@type": "PropertyValue", "name": "chainId", "value": "4663" },
-    { "@type": "PropertyValue", "name": "votingWeight", "value": "Live $RWI balance at time of tally" },
-    { "@type": "PropertyValue", "name": "writeInFee", "value": "5 USD equivalent in $RWI, sent to the ballot box (all-burn)" }
+    { "@type": "PropertyValue", "name": "voteCalldataFormat", "value": "RWIVOTE:<round>:<slug>, UTF-8 hex-encoded" },
+    { "@type": "PropertyValue", "name": "writeInCalldataFormat", "value": "RWIWRITEIN:<round>:<slug>, UTF-8 hex-encoded, followed by a separate $5-equivalent $RWI transfer to the burn address" },
+    { "@type": "PropertyValue", "name": "totalSeatsPerRound", "value": "6" },
+    { "@type": "PropertyValue", "name": "autoComposedSeats", "value": "3 — ranked against live crisis signals (ReliefWeb)" },
+    { "@type": "PropertyValue", "name": "writeInSeats", "value": "3 — reserved for holder-nominated organizations from The Giving Block directory" },
+    { "@type": "PropertyValue", "name": "votingWeight", "value": "Live $RWI balance at time of tally — no snapshot; a wallet that buys, votes, then sells still counted at the balance it held at tally time" },
+    { "@type": "PropertyValue", "name": "revoting", "value": "A new vote from the same address replaces its previous one; the tally keeps only the latest per sender" },
+    { "@type": "PropertyValue", "name": "writeInMinimumHolding", "value": "5 USD equivalent in $RWI, checked at submission time" },
+    { "@type": "PropertyValue", "name": "writeInFee", "value": "5 USD equivalent in $RWI, transferred to the burn address 0x000000000000000000000000000000000000dEaD — fully destroyed, not sent to the ballot box or the project" },
+    { "@type": "PropertyValue", "name": "advisoryStatus", "value": "Advisory only; the project retains final say over the actual donation" },
+    { "@type": "PropertyValue", "name": "tallyReproducibility", "value": "Fully reproducible without trusting this site: read every transaction to the ballot box address, decode the UTF-8 calldata, keep the latest vote per sender, then weight each sender by their $RWI balance read at the same time. No server, no snapshot, no hidden state." }
   ]
 }
 </script>

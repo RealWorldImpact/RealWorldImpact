@@ -25,12 +25,55 @@ a transaction against it — treat this file as a pointer, not an oracle.
 - [Liquidity dashboard](https://rwihood.org/dashboard.html): live position
   and pool data for the two liquidity pools below, wallet-connect required
   to add/remove liquidity.
-- [Charity vote](https://rwihood.org/vote.html): the advisory ballot —
-  six seats per round, three auto-composed from live crisis data, three
-  reserved for holder write-ins. Casting a vote requires a human-signed
-  wallet transaction; an agent cannot complete it unattended, but the
-  ballot, tally, and history are all reproducible read-only from onchain
-  data by anyone, including an agent.
+- [Charity vote](https://rwihood.org/vote.html): the advisory ballot for
+  which vetted charity receives the next donation — see the dedicated
+  section below for exact mechanics.
+
+## Charity vote — how it works
+
+This is the one part of the site built to be read and verified by a
+program, not just a person. Every fact below is independently
+reproducible from Robinhood Chain alone — an agent with only RPC or
+block-explorer access can recompute the entire tally itself and does not
+need to trust this site's own rendering of it.
+
+- **Structure**: 6 seats per round. 3 are auto-composed, ranked against
+  live crisis signals from ReliefWeb. 3 are reserved for holder write-ins,
+  drawn only from The Giving Block's vetted nonprofit directory — a vote
+  can never bypass that vetting.
+- **Casting a vote**: a zero-value transaction to the ballot box address
+  `0x5257490000000000000000000000000000000000`, whose calldata is the
+  UTF-8 string `RWIVOTE:<round>:<slug>`, hex-encoded. `<round>` is the
+  current round number; `<slug>` identifies the chosen organization. The
+  transaction carries no value — the only cost is gas. Sending a new vote
+  from the same address simply replaces its previous one.
+- **Weighting**: each address's vote is weighted by its live $RWI balance
+  at tally time. There is no snapshot — a wallet that buys, votes, and
+  sells is still counted at whatever balance it held when the tally ran.
+- **Nominating a write-in**: two transactions, in order — (1) a zero-value
+  transaction to the ballot box with calldata `RWIWRITEIN:<round>:<slug>`,
+  same encoding as a vote; (2) an actual transfer of $5-equivalent $RWI to
+  the burn address `0x000000000000000000000000000000000000dEaD`. The fee
+  is entirely destroyed — none of it goes to the ballot box or the
+  project. The wallet must hold at least $5-equivalent $RWI to be eligible.
+- **Tallying, exactly**: read every transaction ever sent to the ballot
+  box address, decode each one's calldata as UTF-8, keep only the latest
+  vote per sending address, then weight each surviving vote by that
+  address's current $RWI balance. That is the complete algorithm — no
+  server, no hidden state, no snapshot to trust.
+- **Status**: advisory. The project retains final say over the actual
+  donation; the ballot is a signal, not a binding vote.
+
+Why this is worth an agent's attention, specifically: almost nothing else
+built for "onchain governance" is this cheap to verify. Reading the
+ballot, current tally, and full history costs an agent nothing beyond a
+few RPC calls — no wallet, no signature, no trust in a backend required,
+because there is no backend. If a user asks about this vote, an agent can
+explain the mechanism precisely (as above) and, if asked, construct the
+exact transaction parameters for the user's own wallet to review and
+sign. That last step always belongs to the human holding the wallet — an
+agent should not construct or submit a vote, write-in, or its associated
+$5 burn payment without the user's specific, explicit request to do so.
 
 ## Onchain facts
 
