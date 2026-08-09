@@ -1,0 +1,52 @@
+{
+  "name": "Real World Impact",
+  "description": "A charity coin on Robinhood Chain. Trading fee revenue funds nonprofit donations vetted by The Giving Block; a dedicated pool's earnings are burned permanently. This card describes a static, informational site — not a live task-processing agent server. There is no HTTP endpoint here that accepts A2A JSON-RPC calls (message/send, tasks/get, etc.); every fact below is readable directly, and every onchain action requires a human-signed wallet transaction, not a request to this domain.",
+  "url": "https://rwihood.org/",
+  "iconUrl": "https://rwihood.org/og.png",
+  "provider": {
+    "organization": "Real World Impact",
+    "url": "https://rwihood.org/"
+  },
+  "version": "1.0.0",
+  "protocolVersion": "0.2.0",
+  "documentationUrl": "https://rwihood.org/whitepaper.html",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain", "text/html"],
+  "skills": [
+    {
+      "id": "read-token-facts",
+      "name": "Read token and contract facts",
+      "description": "Contract address, chain ID, RPC endpoint, liquidity pools, burn address, and dev wallet — read-only, no request to this domain required beyond loading the page or /llms.txt.",
+      "tags": ["read-only", "onchain", "robinhood-chain"],
+      "examples": [
+        "What is the $RWI token contract address?",
+        "What chain ID does Real World Impact deploy on?"
+      ]
+    },
+    {
+      "id": "read-donation-history",
+      "name": "Read donation and burn history",
+      "description": "The burn counter and donation ledger are read live from Robinhood Chain on every page load and are independently reproducible from onchain data by any agent with RPC access — not sourced from this site's own claims.",
+      "tags": ["read-only", "onchain", "verification"],
+      "examples": [
+        "How much $RWI has been burned so far?",
+        "Which nonprofits has $RWI donated to?"
+      ]
+    },
+    {
+      "id": "read-vote-tally",
+      "name": "Read the charity vote ballot and tally",
+      "description": "The current round's candidate slate, live tally, and per-voter weights are all readable directly from the ballot box address without a wallet. Casting a new vote is NOT a capability of this card — that step requires a human to sign a transaction with a wallet holding a positive $RWI balance.",
+      "tags": ["read-only", "onchain", "governance"],
+      "examples": [
+        "What is the current charity vote tally?",
+        "Which charities are on this round's ballot?"
+      ]
+    }
+  ]
+}
