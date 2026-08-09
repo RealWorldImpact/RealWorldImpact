@@ -3443,6 +3443,53 @@ async function erc20BalanceOf(token, who){
   const res = await rpc('eth_call',[{to:token,data},'latest']);
   return BigInt(res || '0x0');
 }
+// A connected wallet's injected provider (EIP-1193's request()) takes one
+// call at a time — there is no batched equivalent — so a bulk read like N
+// voters' balances always goes straight to the public endpoints below,
+// bypassing the wallet entirely, rather than falling back to N individual
+// wallet calls. These are plain public balance reads with no signature or
+// wallet-specific trust involved, and the public endpoints already prove
+// out as a working path — they're the same ones rpc() falls back to with
+// no wallet connected at all — so nothing is lost by using them uniformly
+// here, and a great deal of latency is: one HTTP round trip instead of N.
+async function rpcBatch(calls){
+  const body = calls.map(function(c, i){ return {jsonrpc:'2.0', id:i, method:c.method, params:c.params}; });
+  for(let k=0;k<RPCS.length;k++){
+    const url = RPCS[(rpcI+k)%RPCS.length];
+    try{
+      const r = await fetchWithDeadline(url, {
+        method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body)
+      }, 15000);
+      if(!r.ok) continue;
+      const j = await r.json();
+      if(!Array.isArray(j)) continue;
+      const byId = new Map(j.map(function(x){ return [x.id, x]; }));
+      const results = calls.map(function(_, i){
+        const entry = byId.get(i);
+        return entry && entry.result !== undefined ? entry.result : null;
+      });
+      // Accept the batch once ANYTHING useful comes back — a provider that
+      // rejects one call in the batch still returns valid entries for the
+      // rest. A fully empty/malformed response falls through to the next
+      // RPC below instead of returning a batch of all-null "successes".
+      if(results.some(function(x){ return x !== null; })){ rpcI = (rpcI+k)%RPCS.length; return results; }
+    }catch(e){ /* next endpoint */ }
+  }
+  throw new Error('rpc batch failed');
+}
+async function balancesOf(token, addresses){
+  const calls = addresses.map(function(addr){
+    return {method:'eth_call', params:[{to:token, data:'0x70a08231' + addr.toLowerCase().replace(/^0x/,'').padStart(64,'0')}, 'latest']};
+  });
+  let lastError;
+  for(let attempt=0; attempt<3; attempt++){
+    try{
+      const results = await rpcBatch(calls);
+      return results.map(function(res){ return (res === null || res === undefined) ? null : BigInt(res || '0x0'); });
+    }catch(e){ lastError = e; await new Promise(function(r){ setTimeout(r, 400 * (attempt + 1)); }); }
+  }
+  throw lastError;
+}
 
 /* --------------------------------------------------------- wallet (EIP-6963)
    Notes on the shape of this, because a few things here are easy to get wrong:
@@ -4725,20 +4772,21 @@ async function loadTally(cached, force){
     paintFrom(lastTally.weights, latest, sig);
     return;
   }
-  const CONCURRENCY = 4;
   let unreadable = 0;
-  async function balanceWithRetry(addr){
-    for(let attempt = 0; attempt < 3; attempt++){
-      try{ return await erc20BalanceOf(RWI, addr); }
-      catch(e){ await new Promise(function(r){ setTimeout(r, 250 * (attempt + 1)); }); }
-    }
-    unreadable++;
-    return null;                       // null !== 0n: unknown, not empty
-  }
-  for(let i=0;i<voters.length;i+=CONCURRENCY){
-    const slice = voters.slice(i,i+CONCURRENCY);
-    const bals = await Promise.all(slice.map(balanceWithRetry));
-    slice.forEach((a,k) => { if(bals[k] !== null) weights.set(a, bals[k]); });
+  // Was one eth_call per voter, four concurrent — a single-digit voter count
+  // still meant multiple sequential network round trips, and every one of
+  // them stacks directly onto how long the ballot takes to show a real
+  // tally. A JSON-RPC batch collapses this into one HTTP round trip
+  // regardless of voter count (chunked at BATCH_CAP for providers that cap
+  // batch size), with the same "unreadable, not silently zero" guarantee
+  // as before if a chunk still won't land after retries.
+  const BATCH_CAP = 100;
+  for(let i=0;i<voters.length;i+=BATCH_CAP){
+    const slice = voters.slice(i,i+BATCH_CAP);
+    let bals;
+    try{ bals = await balancesOf(RWI, slice); }
+    catch(e){ bals = slice.map(function(){ return null; }); }
+    slice.forEach((a,k) => { if(bals[k] !== null) weights.set(a, bals[k]); else unreadable++; });
   }
 
   const byslug = new Map(SLATE.map(s => [s, 0n]));
