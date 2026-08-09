@@ -105,6 +105,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'That wallet returned no accounts. Unlock it and try again.'
   ,
     'vote.st.tallyPartial':'{n} balance(s) could not be read — this tally is incomplete. Refresh to retry.',
+    'vote.st.stillLoading':'Still checking the chain — this can take a moment on a slow connection.',
     'vote.st.checking':'Checking the transaction…',
     'vote.st.boxContract':'The ballot box address holds contract code, so it rejects the vote data and every transaction reverts. It must be a plain wallet address. Nothing was sent — no gas was spent.',
     'vote.st.wouldRevert':'This transaction would fail on chain, so it was not sent. No gas was spent.',
@@ -241,6 +242,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Esa billetera no devolvio cuentas. Desbloqueala e intentalo de nuevo.'
   ,
     'vote.st.tallyPartial':'No se pudieron leer {n} saldo(s) — este recuento esta incompleto. Actualiza para reintentar.',
+    'vote.st.stillLoading':'Aun revisando la cadena — esto puede tardar un poco con una conexion lenta.',
     'vote.st.checking':'Comprobando la transaccion…',
     'vote.st.boxContract':'La direccion de la urna contiene codigo de contrato, por lo que rechaza los datos del voto y toda transaccion revierte. Debe ser una direccion de billetera simple. No se envio nada — no se gasto gas.',
     'vote.st.wouldRevert':'Esta transaccion fallaria en la cadena, asi que no se envio. No se gasto gas.',
@@ -374,6 +376,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'该钱包未返回账户。请解锁后重试。'
   ,
     'vote.st.tallyPartial':'有 {n} 个余额无法读取 — 本次统计不完整。请刷新重试。',
+    'vote.st.stillLoading':'仍在检查链上数据——网络较慢时可能需要一点时间。',
     'vote.st.checking':'正在检查交易…',
     'vote.st.boxContract':'投票箱地址含有合约代码,会拒绝投票数据,导致每笔交易回滚。它必须是普通钱包地址。未发送任何交易 — 未消耗 gas。',
     'vote.st.wouldRevert':'该交易在链上会失败,因此未发送。未消耗 gas。',
@@ -507,6 +510,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'そのウォレットはアカウントを返しませんでした。ロックを解除して再試行してください。'
   ,
     'vote.st.tallyPartial':'{n} 件の残高を読み取れませんでした — この集計は不完全です。更新して再試行してください。',
+    'vote.st.stillLoading':'チェーンを確認中です — 接続が遅い場合、少し時間がかかることがあります。',
     'vote.st.checking':'トランザクションを確認中…',
     'vote.st.boxContract':'投票箱アドレスにコントラクトコードがあるため投票データが拒否され、すべてのトランザクションが失敗します。通常のウォレットアドレスである必要があります。送信していません — ガスは消費されていません。',
     'vote.st.wouldRevert':'このトランザクションはチェーン上で失敗するため送信しませんでした。ガスは消費されていません。',
@@ -640,6 +644,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'해당 지갑이 계정을 반환하지 않았습니다. 잠금을 해제하고 다시 시도하세요.'
   ,
     'vote.st.tallyPartial':'{n}개의 잔액을 읽지 못했습니다 — 이 집계는 불완전합니다. 새로고침하여 다시 시도하세요.',
+    'vote.st.stillLoading':'체인을 확인하는 중입니다 — 연결이 느리면 시간이 조금 걸릴 수 있습니다.',
     'vote.st.checking':'거래를 확인하는 중…',
     'vote.st.boxContract':'투표함 주소에 컨트랙트 코드가 있어 투표 데이터를 거부하고 모든 거래가 되돌려집니다. 일반 지갑 주소여야 합니다. 아무것도 전송되지 않았습니다 — 가스가 소모되지 않았습니다.',
     'vote.st.wouldRevert':'이 거래는 체인에서 실패하므로 전송하지 않았습니다. 가스가 소모되지 않았습니다.',
@@ -773,6 +778,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Essa carteira nao retornou contas. Desbloqueie e tente novamente.'
   ,
     'vote.st.tallyPartial':'Nao foi possivel ler {n} saldo(s) — esta contagem esta incompleta. Atualize para tentar de novo.',
+    'vote.st.stillLoading':'Ainda verificando a blockchain — isso pode demorar um pouco em uma conexao lenta.',
     'vote.st.checking':'Verificando a transacao…',
     'vote.st.boxContract':'O endereco da urna contem codigo de contrato, entao rejeita os dados do voto e toda transacao reverte. Precisa ser um endereco de carteira comum. Nada foi enviado — nenhum gas foi gasto.',
     'vote.st.wouldRevert':'Esta transacao falharia na cadeia, entao nao foi enviada. Nenhum gas foi gasto.',
@@ -906,6 +912,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Ce portefeuille n a renvoye aucun compte. Deverrouillez-le et reessayez.'
   ,
     'vote.st.tallyPartial':'{n} solde(s) n ont pas pu etre lus — ce decompte est incomplet. Actualisez pour reessayer.',
+    'vote.st.stillLoading':'Verification de la chaine en cours — cela peut prendre un moment sur une connexion lente.',
     'vote.st.checking':'Verification de la transaction…',
     'vote.st.boxContract':'L adresse de l urne contient du code de contrat : elle rejette les donnees du vote et chaque transaction echoue. Ce doit etre une adresse de portefeuille simple. Rien n a ete envoye — aucun gas depense.',
     'vote.st.wouldRevert':'Cette transaction echouerait sur la chaine, elle n a donc pas ete envoyee. Aucun gas depense.',
@@ -1039,6 +1046,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Кошелёк не вернул аккаунтов. Разблокируйте его и повторите.'
   ,
     'vote.st.tallyPartial':'Не удалось прочитать {n} баланс(ов) — подсчёт неполный. Обновите, чтобы повторить.',
+    'vote.st.stillLoading':'Проверяем блокчейн — на медленном соединении это может занять немного времени.',
     'vote.st.checking':'Проверка транзакции…',
     'vote.st.boxContract':'По адресу урны размещён код контракта, поэтому данные голоса отклоняются и каждая транзакция откатывается. Нужен обычный адрес кошелька. Ничего не отправлено — газ не потрачен.',
     'vote.st.wouldRevert':'Эта транзакция не прошла бы в сети, поэтому не была отправлена. Газ не потрачен.',
@@ -1172,6 +1180,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Bu cuzdan hesap dondurmedi. Kilidini acip tekrar deneyin.'
   ,
     'vote.st.tallyPartial':'{n} bakiye okunamadi — bu sayim eksik. Yenileyip tekrar deneyin.',
+    'vote.st.stillLoading':'Zincir hala kontrol ediliyor — yavas baglantida biraz zaman alabilir.',
     'vote.st.checking':'Islem kontrol ediliyor…',
     'vote.st.boxContract':'Oy sandigi adresinde sozlesme kodu var; oy verisini reddediyor ve her islem geri aliniyor. Duz bir cuzdan adresi olmali. Hicbir sey gonderilmedi — gas harcanmadi.',
     'vote.st.wouldRevert':'Bu islem zincirde basarisiz olurdu, bu yuzden gonderilmedi. Gas harcanmadi.',
@@ -1305,6 +1314,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Ví đó không trả về tài khoản nào. Hãy mở khóa và thử lại.'
   ,
     'vote.st.tallyPartial':'Không đọc được {n} số dư — kiểm đếm này chưa đầy đủ. Làm mới để thử lại.',
+    'vote.st.stillLoading':'Vẫn đang kiểm tra chuỗi khối — có thể mất một chút thời gian nếu kết nối chậm.',
     'vote.st.checking':'Đang kiểm tra giao dịch…',
     'vote.st.boxContract':'Địa chỉ hòm phiếu chứa mã hợp đồng nên từ chối dữ liệu phiếu và mọi giao dịch đều bị hoàn. Nó phải là địa chỉ ví thường. Không gửi gì cả — không tốn gas.',
     'vote.st.wouldRevert':'Giao dịch này sẽ thất bại trên chuỗi nên đã không được gửi. Không tốn gas.',
@@ -1438,6 +1448,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'उस वॉलेट ने कोई खाता नहीं लौटाया। इसे अनलॉक करके पुनः प्रयास करें।'
   ,
     'vote.st.tallyPartial':'{n} शेष नहीं पढ़े जा सके — यह गणना अधूरी है। पुनः प्रयास हेतु ताज़ा करें।',
+    'vote.st.stillLoading':'अभी भी चेन जांची जा रही है — धीमे कनेक्शन पर थोड़ा समय लग सकता है।',
     'vote.st.checking':'लेनदेन की जाँच हो रही है…',
     'vote.st.boxContract':'मतपेटी पते में अनुबंध कोड है, इसलिए वह वोट डेटा अस्वीकार करता है और हर लेनदेन वापस हो जाता है। यह एक सामान्य वॉलेट पता होना चाहिए। कुछ नहीं भेजा गया — कोई gas खर्च नहीं हुआ।',
     'vote.st.wouldRevert':'यह लेनदेन चेन पर विफल होता, इसलिए भेजा नहीं गया। कोई gas खर्च नहीं हुआ।',
@@ -1571,6 +1582,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Diese Wallet lieferte keine Konten. Entsperre sie und versuche es erneut.'
   ,
     'vote.st.tallyPartial':'{n} Guthaben konnten nicht gelesen werden — diese Auszaehlung ist unvollstaendig. Aktualisieren zum Wiederholen.',
+    'vote.st.stillLoading':'Blockchain wird noch geprueft — bei langsamer Verbindung kann das etwas dauern.',
     'vote.st.checking':'Transaktion wird geprueft…',
     'vote.st.boxContract':'Die Wahlurnen-Adresse enthaelt Vertragscode, lehnt die Stimmdaten ab und jede Transaktion schlaegt fehl. Es muss eine normale Wallet-Adresse sein. Nichts gesendet — kein Gas verbraucht.',
     'vote.st.wouldRevert':'Diese Transaktion wuerde onchain fehlschlagen und wurde nicht gesendet. Kein Gas verbraucht.',
@@ -1704,6 +1716,7 @@ const TRANSLATIONS = {
     'vote.st.noAccounts':'Dompet itu tidak mengembalikan akun. Buka kuncinya dan coba lagi.'
   ,
     'vote.st.tallyPartial':'{n} saldo tidak dapat dibaca — hitungan ini belum lengkap. Segarkan untuk mencoba lagi.',
+    'vote.st.stillLoading':'Masih memeriksa rantai blok — ini bisa memakan waktu sedikit lebih lama pada koneksi lambat.',
     'vote.st.checking':'Memeriksa transaksi…',
     'vote.st.boxContract':'Alamat kotak suara memuat kode kontrak, sehingga menolak data suara dan setiap transaksi dibatalkan. Harus berupa alamat dompet biasa. Tidak ada yang dikirim — tidak ada gas terpakai.',
     'vote.st.wouldRevert':'Transaksi ini akan gagal di rantai, jadi tidak dikirim. Tidak ada gas terpakai.',
@@ -4190,6 +4203,7 @@ function schedulePendingReconcile(){
 }
 
 let refreshSeq = 0;
+let _zeroDataRetryCount = 0;
 async function refreshAll(opts){
   opts = opts || {};
   // Polling, manual refresh and post-vote reloads can overlap. Without a
@@ -4209,8 +4223,38 @@ async function refreshAll(opts){
   // Capped at MAX_TRUNCATION_RETRIES: a genuinely dead endpoint must not turn
   // into a request loop that retries forever. Once a read comes back clean,
   // the counter resets, so a later, unrelated blip still gets its own budget.
+  //
+  // A truncated read that still got SOME data (this branch) is different
+  // from one that got NONE at all (below): with real, recent transactions
+  // in hand, loadRound's round determination is trustworthy even if a
+  // deeper page later failed — Blockscout returns newest-first, so the
+  // current round's declaration is almost always on the pages that
+  // succeeded. Zero data is the dangerous case: there is nothing to
+  // determine a round from, and loadRound falls back to the hardcoded
+  // round-1/autoSlate() default — a placeholder nobody declared. Showing
+  // that as if it were the real ballot is exactly the bug this guards
+  // against, so ballotResolved deliberately does NOT get set below when
+  // that happens, and retries continue on a far more patient budget than
+  // the couple of tries a partial-but-real read gets.
+  const gotNoData = votePagesTruncated && voteTxCache.length === 0;
   if(!votePagesTruncated){
     _truncationRetryCount = 0;
+    _zeroDataRetryCount = 0;
+  } else if(gotNoData){
+    if(!_truncationRetryScheduled){
+      _truncationRetryScheduled = true;
+      _zeroDataRetryCount++;
+      // Patient, not aggressive: every 6s for the first minute, then every
+      // 30s indefinitely after that. Cheap enough to keep trying through a
+      // genuinely long outage without hammering a struggling endpoint —
+      // and the alternative, giving up and showing an undeclared slate as
+      // if it were real, is worse than a slow honest skeleton.
+      const delay = _zeroDataRetryCount <= 10 ? 6000 : 30000;
+      setTimeout(function(){
+        _truncationRetryScheduled = false;
+        if(votePagesTruncated) refreshAll({force:true});
+      }, delay);
+    }
   } else if(!_truncationRetryScheduled && _truncationRetryCount < MAX_TRUNCATION_RETRIES){
     _truncationRetryScheduled = true;
     _truncationRetryCount++;
@@ -4219,10 +4263,12 @@ async function refreshAll(opts){
       if(votePagesTruncated) refreshAll({force:true});
     }, 4000);
   }
-  ballotResolved = true;                         // the chain has spoken
-  // Boot fallback timer is redundant once the chain answered — clear it so
-  // it does not fire a needless renderBallot four seconds later.
-  if(bootFallbackTimer){ clearTimeout(bootFallbackTimer); bootFallbackTimer = null; }
+  if(!gotNoData){
+    ballotResolved = true;                       // the chain has genuinely spoken
+    // Boot fallback timer is redundant once the chain answered — clear it so
+    // it does not fire a needless renderBallot four seconds later.
+    if(bootFallbackTimer){ clearTimeout(bootFallbackTimer); bootFallbackTimer = null; }
+  }
   updateSlateNotice();                           // runs whether or not votes exist
   // Keep the ballot showing what this wallet chose rather than resetting to
   // nothing the instant they vote — and ALSO preserve a live selection through
@@ -4446,6 +4492,35 @@ async function fetchVoteTxs(force){
   })();
   return _txCache.inflight;
 }
+// Deliberately a Promise.race against a timer, not AbortController/
+// AbortSignal: some hosting/preview environments relay console and network
+// activity across frames via postMessage, and an AbortSignal is not
+// structured-cloneable — passing one through fetch can throw a
+// DataCloneError of its own, on top of and separate from whatever the
+// fetch itself was doing. A timer race enforces the same effective
+// timeout without ever constructing a signal.
+function fetchWithDeadline(url, options, ms){
+  return new Promise(function(resolve, reject){
+    const timer = setTimeout(function(){ reject(new Error('Request timed out')); }, ms);
+    fetch(url, options).then(
+      function(r){ clearTimeout(timer); resolve(r); },
+      function(e){ clearTimeout(timer); reject(e); }
+    );
+  });
+}
+const VOTE_TX_STORE_KEY = 'rwi_vote_tx_cache_v1';
+const VOTE_TX_STORE_CAP = 2500;      // matches the existing MAX_PAGES*50 ceiling below
+function readVoteTxStore(){
+  try{
+    const parsed = JSON.parse(localStorage.getItem(VOTE_TX_STORE_KEY));
+    if(!parsed || !Array.isArray(parsed.txs) || !parsed.hash) return null;
+    return parsed;
+  }catch(e){ return null; }
+}
+function writeVoteTxStore(hash, txs){
+  try{ localStorage.setItem(VOTE_TX_STORE_KEY, JSON.stringify({hash:hash, txs:txs.slice(0, VOTE_TX_STORE_CAP)})); }
+  catch(e){ /* storage full or unavailable — the read just stays uncached, not incorrect */ }
+}
 async function fetchVoteTxsUncached(){
   // Blockscout v2, cursor-paginated. Only transactions *to* the ballot box matter.
   // The ballot box shares an address with an active wallet, so vote transactions
@@ -4464,6 +4539,25 @@ async function fetchVoteTxsUncached(){
   // failed, and a failure that survives the retries sets the SAME truncation
   // flag the MAX_PAGES case does, so the existing "reading may be partial"
   // notice covers this too instead of staying silent.
+  //
+  // A plain fetch() with no timeout can hang indefinitely on a stalled
+  // connection — neither erroring (so the retry loop below never sees a
+  // failure) nor resolving (so the caller never learns anything went
+  // wrong). fetchWithDeadline forces a page to fail after a bounded wait
+  // instead of hanging the whole read, and every outer retry mechanism
+  // that depends on a page eventually being marked failed relies on this.
+  //
+  // Every fresh page load used to re-walk this address's ENTIRE lifetime
+  // history from scratch — the only cache was in-memory with an 8s TTL,
+  // gone on reload. A returning visit does not need that: Blockscout
+  // returns newest-first, so once the walk reaches a transaction hash
+  // already present in last visit's cached read, everything after it is
+  // already known, and the walk can stop and splice the two together
+  // instead of re-fetching pages of history that have not changed. A cold
+  // cache (first-ever visit, or one so stale its checkpoint has fallen
+  // past MAX_PAGES) just falls back to the full walk this always did —
+  // correct either way, only slower on that one pass, and it re-seeds a
+  // fresh checkpoint for next time regardless of which path was taken.
   const out = [];
   votePagesTruncated = false;
   // Blockscout returns 50 items/page, so MAX_PAGES=50 caps a walk at 2,500
@@ -4476,27 +4570,48 @@ async function fetchVoteTxsUncached(){
   // matter of total months in operation, not weeks per round. 50 pages
   // buys a lot of runway cheaply; if this address ever becomes genuinely
   // high-traffic, the real fix is a dedicated ballot-box address rather
-  // than pushing this number up further.
+  // than pushing this number up further. The incremental cache above
+  // means this ceiling is now mostly a cold-start/worst-case bound, not
+  // the typical cost of a visit.
   const MAX_PAGES = 50;
   const PAGE_RETRY_DELAYS = [400, 1000];      // ~1.4s of grace per page, total
+  const store = readVoteTxStore();
+  let foundCheckpoint = false;
   let url = SCAN + '/api/v2/addresses/' + BALLOT_BOX + '/transactions?filter=to';
   for(let page=0; page<MAX_PAGES; page++){
     let r = null;
     for(let attempt=0; ; attempt++){
-      try{ r = await fetch(url, {headers:{accept:'application/json'}}); }catch(e){ r = null; }
+      try{ r = await fetchWithDeadline(url, {headers:{accept:'application/json'}}, 10000); }catch(e){ r = null; }
       if(r && r.ok) break;
       if(attempt >= PAGE_RETRY_DELAYS.length){ r = null; break; }   // out of retries
       await new Promise(function(res){ setTimeout(res, PAGE_RETRY_DELAYS[attempt]); });
     }
     if(!r){ votePagesTruncated = true; break; }    // genuine failure — say so, don't guess
     const j = await r.json();
-    (j.items || []).forEach(t => out.push(t));
+    const items = j.items || [];
+    if(store){
+      const idx = items.findIndex(function(t){ return t.hash === store.hash; });
+      if(idx !== -1){
+        // Everything before idx on this page is newer than the checkpoint —
+        // genuinely new since last visit. The checkpoint itself and
+        // everything after it are already in store.txs; do not re-add them.
+        for(let k=0; k<idx; k++) out.push(items[k]);
+        foundCheckpoint = true;
+        break;
+      }
+    }
+    items.forEach(t => out.push(t));
     if(!j.next_page_params) break;
     if(page === MAX_PAGES - 1){ votePagesTruncated = true; break; }
     const q = new URLSearchParams(j.next_page_params).toString();
     url = SCAN + '/api/v2/addresses/' + BALLOT_BOX + '/transactions?filter=to&' + q;
   }
-  return out;
+  const merged = foundCheckpoint ? out.concat(store.txs) : out;
+  // Only ever overwrite the checkpoint with a pass that actually succeeded —
+  // a truncated/failed read must not replace a good checkpoint with a worse
+  // one, or the next visit would lose the very history this exists to skip.
+  if(merged.length && !votePagesTruncated) writeVoteTxStore(merged[0].hash, merged);
+  return merged;
 }
 /* Rebuild the totals from weights we already read, and paint. Used when the
    set of voters and their choices is unchanged — there is nothing new to
@@ -4508,7 +4623,8 @@ async function fetchVoteTxsUncached(){
    text; hence a single function, called from everywhere that matters. */
 function updateSlateNotice(){
   const warn = $('slateWarn'); if(!warn) return;
-  if(slateRecovered)         warn.textContent = t('vote.st.slateRecovered');
+  if(!ballotResolved)        warn.textContent = t('vote.st.stillLoading');
+  else if(slateRecovered)    warn.textContent = t('vote.st.slateRecovered');
   else if(staleSlugs.length) warn.textContent = t('vote.st.slateStale', {n:staleSlugs.length});
   else if(slateTrimmed)      warn.textContent = t('vote.st.slateTrimmed', {n:slateTrimmed});
   else if(lastTally && lastTally.unreadable) warn.textContent = t('vote.st.tallyPartial', {n:lastTally.unreadable});
@@ -5201,13 +5317,27 @@ document.addEventListener('DOMContentLoaded', () => {
       if(sec && sec.scrollIntoView) sec.scrollIntoView({behavior:'smooth', block:'start'});
     }
   });
-  refreshAll().catch(function(){ ballotResolved = true; renderBallot(); });
-  // Never leave a skeleton up indefinitely if the network is unreachable.
-  // Handle is stored so refreshAll can clear it as soon as the chain answers,
-  // instead of sitting idle for the full 12s in the common case.
+  // If refreshAll() itself throws (loadRound hitting genuinely unexpected
+  // data, say), the old behavior was to give up and paint the hardcoded
+  // round-1/autoSlate() placeholder as if it were the real, declared
+  // ballot — precisely the bug this whole block exists to prevent. Retry
+  // instead; the skeleton (via updateSlateNotice's !ballotResolved branch)
+  // stays up and honest in the meantime.
+  refreshAll().catch(function(){ updateSlateNotice(); setTimeout(function(){ refreshAll().catch(function(){}); }, 6000); });
+  // A stalled first load must not sit on a bare, unexplained skeleton
+  // forever — but "explain and keep trying" is the fix, not "give up and
+  // show a slate nobody declared" (the old behavior here). ballotResolved
+  // is never forced true by this timer; only a genuine chain read does
+  // that, inside refreshAll(). fetchWithDeadline (see fetchVoteTxsUncached)
+  // guarantees a stuck request eventually surfaces as a real failure for
+  // refreshAll's own retry logic to act on, so this timer's only job is
+  // messaging and a backstop nudge in case nothing is retrying yet.
   bootFallbackTimer = setTimeout(function(){
     bootFallbackTimer = null;
-    if(!ballotResolved){ ballotResolved = true; renderBallot(); }
+    if(!ballotResolved){
+      updateSlateNotice();
+      if(!_truncationRetryScheduled) refreshAll({force:true}).catch(function(){});
+    }
   }, 12000);
   // Surface a mis-configured ballot box before anyone spends gas on it.
   Promise.all([checkBallotBox(), checkOwner()]).then(function(r){
