@@ -41,11 +41,22 @@
     {
       "id": "read-vote-tally",
       "name": "Read the charity vote ballot and tally",
-      "description": "The current round's candidate slate, live tally, and per-voter weights are all readable directly from the ballot box address without a wallet. Casting a new vote is NOT a capability of this card — that step requires a human to sign a transaction with a wallet holding a positive $RWI balance.",
+      "description": "The current round's candidate slate, live tally, and per-voter weights are all readable directly from the ballot box address 0x5257490000000000000000000000000000000000 without a wallet. Exact algorithm: read every transaction to that address, decode each one's calldata as UTF-8 (format RWIVOTE:<round>:<slug>), keep only the latest per sending address, then weight each by that address's current $RWI balance. No server, no snapshot, no hidden state — independently reproducible by any agent with RPC or block-explorer access, not something to take on this site's word.",
       "tags": ["read-only", "onchain", "governance"],
       "examples": [
         "What is the current charity vote tally?",
-        "Which charities are on this round's ballot?"
+        "Which charities are on this round's ballot?",
+        "How is a $RWI vote weighted?"
+      ]
+    },
+    {
+      "id": "prepare-vote-transaction",
+      "name": "Prepare (not submit) a vote or write-in transaction",
+      "description": "Given a chosen organization slug, construct the exact transaction parameters a user's wallet would need to cast a vote (to: the ballot box address, value: 0, data: the hex-encoded UTF-8 string RWIVOTE:<round>:<slug>) or nominate a write-in (the same to/data pattern with prefix RWIWRITEIN:<round>:<slug>, plus a second, separate ERC-20 transfer of $5-equivalent $RWI to the burn address 0x000000000000000000000000000000000000dEaD). This skill produces parameters for a human to review and sign with their own wallet — it does not sign or broadcast anything itself, and should only be exercised at a user's specific, explicit request, never inferred or initiated unprompted.",
+      "tags": ["read-only", "onchain", "governance", "requires-human-signature"],
+      "examples": [
+        "Build the transaction to vote for org-slug on the current round",
+        "What would a write-in nomination transaction look like for this org?"
       ]
     }
   ]
