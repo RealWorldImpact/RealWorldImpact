@@ -2453,6 +2453,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     scrollbar-width:thin;
     scrollbar-color:rgba(204,254,6,.45) rgba(204,254,6,.08);
   }
+  @media (max-width:640px){
+    .receipts{max-height:clamp(300px,48vh,340px)}
+  }
   .receipts::-webkit-scrollbar{width:6px}
   .receipts::-webkit-scrollbar-track{background:rgba(204,254,6,.08);border-radius:99px}
   .receipts::-webkit-scrollbar-thumb{background:rgba(204,254,6,.4);border-radius:99px}
