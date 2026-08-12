@@ -5435,10 +5435,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- Floating chart pill + modal (GeckoTerminal). Sits immediately left of the
      language pill; its offset is measured at runtime so the two never overlap. -->
-<button type="button" id="chartBtn" aria-haspopup="dialog" aria-controls="chartModal" aria-label="Open RWI chart">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><path d="M6 16V9"/><path d="M11 16V4"/><path d="M16 16v-5"/><path d="M21 16v-9"/></svg>
-  <span data-i18n="chart.btn">Chart</span>
-</button>
 <div id="chartModal" role="dialog" aria-modal="true" aria-labelledby="chartModalTitle">
   <div class="chart-panel">
     <div class="chart-head">
@@ -5512,7 +5508,6 @@ document.addEventListener('DOMContentLoaded', () => {
 <div id="langPanel" role="menu" aria-label="Language">
   <button data-lang="en" role="menuitemradio">EN</button><button data-lang="es" role="menuitemradio">ES</button><button data-lang="zh" role="menuitemradio">&#20013;&#25991;</button><button data-lang="ja" role="menuitemradio">&#26085;&#26412;&#35486;</button><button data-lang="ko" role="menuitemradio">&#54620;&#44397;&#50612;</button><button data-lang="pt" role="menuitemradio">PT</button><button data-lang="fr" role="menuitemradio">FR</button><button data-lang="ru" role="menuitemradio">RU</button><button data-lang="tr" role="menuitemradio">TR</button><button data-lang="vi" role="menuitemradio">VI</button><button data-lang="hi" role="menuitemradio">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;</button><button data-lang="de" role="menuitemradio">DE</button><button data-lang="id" role="menuitemradio">ID</button>
 </div>
-<button id="burnListPill" type="button" aria-haspopup="dialog" aria-controls="burnListModal" aria-label="Open the Pons Family Burn List" title="Pons Family Burn List"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4.2 0 7-2.7 7-6.7 0-3.2-2.1-5.3-4.2-7.4.1 2.2-1.1 3.7-2.5 4.7.2-3.5-1.5-6.1-4.2-8.6.1 3.6-3.1 6.2-3.1 10.4C5 18.8 7.8 22 12 22Z"/><path d="M9.5 18.5c0 1.5 1.1 2.5 2.5 2.5s2.5-1 2.5-2.5c0-1.2-.8-2.1-1.7-2.9 0 .9-.5 1.5-1.1 1.9.1-1.4-.6-2.5-1.8-3.5.1 1.5-.9 2.6-.9 4.5Z"/></svg></button>
 <div id="burnListModal" role="dialog" aria-modal="true" aria-labelledby="burnListTitle">
   <div class="burn-list-panel">
     <div class="burn-list-head"><span id="burnListTitle">Pons Family Burn List</span><button id="burnListClose" type="button" aria-label="Close Burn List">&#10005;</button></div>
