@@ -12,6 +12,11 @@
       "source": "/Impact",
       "destination": "/impact",
       "permanent": true
+    },
+    {
+      "source": "/ponsfamilyfued",
+      "destination": "/PonsFamilyFued",
+      "permanent": true
     }
   ],
   "rewrites": [
