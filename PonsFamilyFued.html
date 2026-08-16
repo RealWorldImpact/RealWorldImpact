@@ -31,12 +31,13 @@
     --serif:"Newsreader",Georgia,serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;margin:0}
+  html,body{height:100%;height:100dvh;margin:0}
   body{
     background:var(--ink);color:var(--lime);font-family:var(--mono);
     display:flex;align-items:center;justify-content:center;padding:10px;
-    overflow:hidden;overscroll-behavior:none;
+    overflow:hidden;overscroll-behavior:none;-webkit-user-select:none;user-select:none;
   }
+  button{-webkit-user-select:none;user-select:none}
   .wrap{width:min(760px,100%);height:100%;max-height:960px;display:flex;flex-direction:column;gap:7px}
 
   header{display:flex;align-items:center;gap:9px;flex:0 0 auto}
@@ -145,6 +146,18 @@
     body{padding:6px}.wrap{gap:5px}.card{flex:1 1 100%;max-width:none;padding:10px}.cards{max-height:74vh;overflow-y:auto}
     .title{font-size:15px}.sub{font-size:8px}.clock{font-size:21px}.bestrun{display:none}.muteBtn{padding:6px;font-size:8px}
     .bosshud{width:58%;top:8px}.phasehud{top:8px;left:8px}.milestone b{font-size:23px}.buildbar{min-height:22px}
+  }
+  @media (pointer:coarse), (max-width:520px){
+    body{padding:max(5px,env(safe-area-inset-top)) max(5px,env(safe-area-inset-right)) max(5px,env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left))}
+    canvas{cursor:default}
+    #sensBtn{display:none}
+    .muteBtn{min-width:62px;min-height:38px;padding:8px 9px}
+    .veil button,#resume button{min-width:132px;min-height:48px;padding:14px 24px}
+    .card{min-height:82px}
+    .card:hover,.card:focus-visible{transform:none}
+  }
+  @media (pointer:coarse) and (max-height:520px){
+    body{padding:3px}.wrap{gap:3px}.sub,.foot{display:none}.buildbar{min-height:19px}.veil p{line-height:1.55}.veil button{margin-top:10px}
   }
   @media (prefers-reduced-motion:reduce){.card,.milestone,.bosshud,.bar i,.bossbar i{transition:none}}
 </style>
@@ -683,7 +696,7 @@ function step(dt){
   const rush = S.adren && lowHp;
 
   // move player
-  let tx = aim.x, ty = aim.y;
+  let tx = aim.x, ty = aim.y, touchPower = 1;
   if (usingKeys){
     let kx = (keys.d||keys.ArrowRight?1:0) - (keys.a||keys.ArrowLeft?1:0);
     let ky = (keys.s||keys.ArrowDown?1:0) - (keys.w||keys.ArrowUp?1:0);
@@ -691,11 +704,14 @@ function step(dt){
     tx = P.x + kx/m*100; ty = P.y + ky/m*100;
     if (!kx && !ky){ tx = P.x; ty = P.y; }
   } else if (touchStick){
-    tx = P.x + touchStick.mx*100; ty = P.y + touchStick.my*100;
+    touchPower = Math.hypot(touchStick.mx,touchStick.my);
+    if (touchPower > .001){
+      tx = P.x + touchStick.mx/touchPower*100; ty = P.y + touchStick.my/touchPower*100;
+    } else { tx = P.x; ty = P.y; }
   }
   const dx = tx-P.x, dy = ty-P.y, d = Math.hypot(dx,dy);
   if (d > 1.2){
-    const v = Math.min(S.spd*(rush ? 1.35 : 1), d*20);
+    const v = Math.min(S.spd*(rush ? 1.35 : 1)*touchPower, d*20);
     const stepD = Math.min(d, v*dt);
     P.x += dx/d*stepD; P.y += dy/d*stepD;
   } else if (d > 0){
@@ -1188,9 +1204,9 @@ function draw(){
   // Relative touch stick: the finger sets direction without covering Ozzy.
   if (touchStick){
     ctx.strokeStyle = "rgba(204,254,6,.34)"; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(touchStick.sx, touchStick.sy, 34, 0, 6.2832); ctx.stroke();
+    ctx.beginPath(); ctx.arc(touchStick.sx, touchStick.sy, 46, 0, 6.2832); ctx.stroke();
     ctx.fillStyle = "rgba(204,254,6,.24)";
-    ctx.beginPath(); ctx.arc(touchStick.x, touchStick.y, 12, 0, 6.2832); ctx.fill();
+    ctx.beginPath(); ctx.arc(touchStick.x, touchStick.y, 13, 0, 6.2832); ctx.fill();
   }
 
   // player
@@ -1319,6 +1335,7 @@ function pt(e){
   return {x:(cx-b.left)/b.width*W, y:(cy-b.top)/b.height*H};
 }
 let dragging = false, touchStick = null;
+const TOUCH_DEAD = 8, TOUCH_RADIUS = 46;
 const fine = () => { try{ return window.matchMedia("(pointer:fine)").matches; }catch(e){ return true; } };
 function setAim(e){
   const p = pt(e);
@@ -1327,7 +1344,7 @@ function setAim(e){
   usingKeys = false;
 }
 function tryLock(){
-  if (!cv.requestPointerLock || !fine()) return;
+  if (!cv.requestPointerLock || !fine() || coarseInput) return;
   try{
     const p = cv.requestPointerLock({unadjustedMovement:true});
     if (p && p.catch) p.catch(() => { try{ cv.requestPointerLock(); }catch(e2){ lockable = false; } });
@@ -1349,9 +1366,13 @@ document.addEventListener("pointerlockchange", () => {
 document.addEventListener("pointerlockerror", () => { lockable = false; $("resume").hidden = true; lockPause = false; });
 
 cv.addEventListener("pointerdown", e => {
-  dragging = true;
-  if (e.pointerType === "mouse"){ if (!locked) tryLock(); }
+  if (e.pointerType === "mouse"){
+    dragging = true;
+    if (!locked) tryLock();
+  }
   else {
+    e.preventDefault();
+    if (touchStick) return;
     const p = pt(e);
     touchStick = {id:e.pointerId, sx:p.x, sy:p.y, x:p.x, y:p.y, mx:0, my:0};
     aim.x = P.x; aim.y = P.y; usingKeys = false;
@@ -1364,21 +1385,39 @@ window.addEventListener("pointermove", e => {
     aim.y = clamp(aim.y + (e.movementY || 0)*sens, 17, H-17);
     usingKeys = false;
   } else if (touchStick && e.pointerId === touchStick.id){
-    const p = pt(e), dx = p.x-touchStick.sx, dy = p.y-touchStick.sy, d = Math.hypot(dx,dy);
-    touchStick.mx = d > 7 ? dx/d : 0; touchStick.my = d > 7 ? dy/d : 0;
-    const knob = Math.min(34,d);
-    touchStick.x = touchStick.sx + touchStick.mx*knob; touchStick.y = touchStick.sy + touchStick.my*knob;
+    e.preventDefault();
+    const p = pt(e);
+    let dx = p.x-touchStick.sx, dy = p.y-touchStick.sy, d = Math.hypot(dx,dy);
+    if (d > TOUCH_RADIUS*1.35){
+      const shift = d-TOUCH_RADIUS;
+      touchStick.sx += dx/d*shift; touchStick.sy += dy/d*shift;
+      dx = p.x-touchStick.sx; dy = p.y-touchStick.sy; d = Math.hypot(dx,dy);
+    }
+    const ux = d ? dx/d : 0, uy = d ? dy/d : 0;
+    const power = clamp((d-TOUCH_DEAD)/(TOUCH_RADIUS-TOUCH_DEAD),0,1);
+    touchStick.mx = ux*power; touchStick.my = uy*power;
+    const knob = Math.min(TOUCH_RADIUS,d);
+    touchStick.x = touchStick.sx + ux*knob; touchStick.y = touchStick.sy + uy*knob;
     aim.x = clamp(P.x + touchStick.mx*70, 17, W-17); aim.y = clamp(P.y + touchStick.my*70, 17, H-17);
   } else if (e.pointerType === "mouse" || dragging) setAim(e);
 });
+function clearTouchStick(id){
+  if (touchStick && (id == null || id === touchStick.id)){
+    touchStick = null; aim.x = P.x; aim.y = P.y;
+  }
+}
 window.addEventListener("pointerup", e => {
   dragging = false;
-  if (touchStick && e.pointerId === touchStick.id){ touchStick = null; aim.x = P.x; aim.y = P.y; }
+  clearTouchStick(e.pointerId);
 });
 window.addEventListener("pointercancel", e => {
   dragging = false;
-  if (touchStick && e.pointerId === touchStick.id){ touchStick = null; aim.x = P.x; aim.y = P.y; }
+  clearTouchStick(e.pointerId);
 });
+cv.addEventListener("lostpointercapture", e => clearTouchStick(e.pointerId));
+window.addEventListener("blur", () => clearTouchStick());
+document.addEventListener("visibilitychange", () => { if (document.hidden) clearTouchStick(); });
+cv.addEventListener("contextmenu", e => e.preventDefault());
 
 $("resume").addEventListener("click", () => { tryLock(); });
 cv.addEventListener("touchmove", e => e.preventDefault(), {passive:false});
@@ -1421,7 +1460,7 @@ $("startBtn").onclick = go;
 /* ================= boot ================= */
 $("mark").style.backgroundImage = "url(" + ART.ozzy + ")";
 fit();
-if (coarseInput) $("controlHint").innerHTML = '<kbd>drag anywhere</kbd> to steer · shooting is automatic';
+if (coarseInput) $("controlHint").innerHTML = '<kbd>drag anywhere</kbd> to steer · farther is faster · lift to stop';
 updateRecordSummary();
 P = {x:W/2, y:H/2, r:17, a:0};
 S = {hp:100, maxhp:100, dmg:10, rate:2.8, multi:1, pierce:0, spd:330, mag:78, orbit:0, regen:0, crit:0, blast:0, bounce:0, dr:0, ifr:1, xpMul:1, bvel:1, brad:0, dbl:0, echo:0, kb:1, thorn:0, slug:0, seek:0, kit:0, deto:0, nova:0, novaT:0, slow:0, twin:0, second:0, adren:0, cd:0, iframe:0, orbA:0, taken:{}};
