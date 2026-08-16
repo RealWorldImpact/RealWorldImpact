@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Pons Family Feud</title>
 <meta name="description" content="Ozzy versus the whole family. Move to survive, build your loadout, and battle through endless rounds in this automatic-shooting survival game.">
 <meta name="theme-color" content="#0B0B09">
@@ -91,6 +94,10 @@
   .joystick::after{height:1px;left:8px;right:8px;top:50%}
   .joystickKnob{position:absolute;z-index:1;width:38%;aspect-ratio:1;left:31%;top:31%;border-radius:50%;
     background:var(--lime);box-shadow:0 0 0 5px rgba(204,254,6,.12),0 3px 10px #000;transform:translate(0,0);will-change:transform;pointer-events:none}
+  .fsBtn{display:none;border:1px solid rgba(204,254,6,.32);border-radius:2px;background:transparent;color:var(--dim);
+    font:500 7px/1 var(--mono);letter-spacing:.12em;padding:6px 7px;cursor:pointer;white-space:nowrap}
+  .fsBtn[hidden]{display:none}
+  html.touch-ui .fsBtn:not([hidden]){display:block}
   .rotateGate{display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;flex-direction:column;
     gap:10px;padding:28px;text-align:center;background:#0b0b09;color:var(--pale)}
   .rotateIcon{width:76px;height:46px;border:2px solid var(--lime);border-radius:9px;transform:rotate(90deg);position:relative;margin-bottom:14px;
@@ -193,8 +200,46 @@
   @media (pointer:coarse) and (orientation:portrait), (max-width:520px) and (orientation:portrait){
     .rotateGate{display:flex}.wrap{visibility:hidden;pointer-events:none}
   }
-  @media (max-height:430px){
-    html.touch-ui body{padding:3px}.playrow{gap:4px}.joystickRail{flex-basis:104px;gap:6px}.joystick{width:72px}
+  @media (max-height:520px){
+    html.touch-ui body{padding:max(3px,env(safe-area-inset-top)) max(3px,env(safe-area-inset-right)) max(3px,env(safe-area-inset-bottom)) max(3px,env(safe-area-inset-left))}
+    html.touch-ui .wrap{gap:3px}
+    html.touch-ui .sub,html.touch-ui .foot{display:none}
+    html.touch-ui header{gap:7px}
+    html.touch-ui .mark{width:28px;height:28px}
+    html.touch-ui .title{font-size:17px}
+    html.touch-ui .bestrun{font-size:8px;letter-spacing:.1em}
+    html.touch-ui .clock{font-size:23px;margin-left:4px}
+    html.touch-ui .muteBtn{min-width:58px;min-height:32px;padding:6px 7px;font-size:8px}
+    html.touch-ui .bars{gap:5px}
+    html.touch-ui .bar{height:8px}
+    html.touch-ui .lvl,html.touch-ui .kills{font-size:9px}
+    html.touch-ui .buildbar{min-height:18px}
+    html.touch-ui .playrow{gap:4px}
+    html.touch-ui .joystickRail{flex-basis:clamp(88px,14vw,110px);gap:6px}
+    html.touch-ui .joystick{width:min(72px,76%)}
+    html.touch-ui .joystickLabel,html.touch-ui .joystickHint{font-size:7px}
+    html.touch-ui .veil{padding:12px;gap:2px}
+    html.touch-ui .veil h2{font-size:min(38px,7.5vw)}
+    html.touch-ui .veil p{max-width:390px;font-size:9.5px;line-height:1.5;margin-top:5px}
+    html.touch-ui .recordsummary{font-size:7.5px;line-height:1.4;margin-top:5px}
+    html.touch-ui .veil button,html.touch-ui #resume button{min-width:118px;min-height:44px;margin-top:7px;padding:10px 18px}
+    html.touch-ui #pick{padding:8px;gap:5px}
+    html.touch-ui #pick h3{font-size:22px;line-height:1}
+    html.touch-ui #pick .eyebrow{font-size:8px}
+    html.touch-ui .cards{max-width:100%;flex-wrap:nowrap;gap:6px}
+    html.touch-ui .card{flex:1 1 0;min-width:0;max-width:none;min-height:0;padding:9px 8px}
+    html.touch-ui .card .cn{font-size:9.5px;letter-spacing:.05em;gap:4px}
+    html.touch-ui .card .cn u{font-size:7.5px}
+    html.touch-ui .card .cd{font-size:8.5px;line-height:1.35;margin-top:5px}
+    html.touch-ui .card .now{font-size:8px;line-height:1.3;margin-top:5px;padding-top:5px}
+    html.touch-ui .card.heavy .cn::after,html.touch-ui .card.mid .cn::after{display:none}
+  }
+  @media (max-width:700px) and (orientation:landscape){
+    html.touch-ui .bestrun{display:none}
+  }
+  @media (max-height:350px){
+    html.touch-ui .veil h2{font-size:30px}
+    html.touch-ui #veil>p:not(#controlHint),html.touch-ui #recordSummary{display:none}
   }
   @media (prefers-reduced-motion:reduce){.card,.milestone,.bosshud,.bar i,.bossbar i{transition:none}}
 </style>
@@ -261,6 +306,7 @@
       <div class="joystickKnob" id="joystickKnob"></div>
     </div>
     <div class="joystickHint">DRAG</div>
+    <button class="fsBtn" id="fsBtn" type="button" hidden>FULL SCREEN</button>
   </aside>
   </div>
 
@@ -403,8 +449,10 @@ function fit(){
   if (aim){ aim.x = Math.min(aim.x, W); aim.y = Math.min(aim.y, H); }
   const hint = document.getElementById("controlHint");
   if (hint) hint.innerHTML = coarseInput ? '<kbd>side joystick</kbd> to move · shooting is automatic' : '<kbd>mouse</kbd> or <kbd>WASD</kbd> to move · <kbd>Esc</kbd> frees the cursor';
+  updateFullscreenUI();
 }
 window.addEventListener("resize", fit);
+window.addEventListener("orientationchange", () => setTimeout(fit, 120));
 
 /* ================= state ================= */
 let P, S, foes, shots, orbs, bits, hostile, drops;
@@ -1434,6 +1482,29 @@ function pt(e){
 }
 let dragging = false, touchStick = null;
 const joystick = $("joystick"), joystickKnob = $("joystickKnob");
+function fullscreenActive(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+function updateFullscreenUI(){
+  const btn = document.getElementById("fsBtn"); if (!btn) return;
+  const el = document.documentElement;
+  const supported = !!(el.requestFullscreen || el.webkitRequestFullscreen);
+  btn.hidden = !coarseInput || orientationPause || fullscreenActive() || !supported;
+}
+async function tryFullscreen(){
+  if (!coarseInput || orientationPause || fullscreenActive()) return;
+  const el = document.documentElement;
+  try{
+    let result;
+    if (el.requestFullscreen) result = el.requestFullscreen({navigationUI:"hide"});
+    else if (el.webkitRequestFullscreen) result = el.webkitRequestFullscreen();
+    else return;
+    if (result && result.then) await result;
+    try{ if (screen.orientation && screen.orientation.lock) await screen.orientation.lock("landscape"); }catch(e){}
+    setTimeout(() => { try{ window.scrollTo(0,1); }catch(e){} fit(); }, 60);
+  }catch(e){}
+  updateFullscreenUI();
+}
+document.addEventListener("fullscreenchange", updateFullscreenUI);
+document.addEventListener("webkitfullscreenchange", updateFullscreenUI);
 const fine = () => { try{ return window.matchMedia("(pointer:fine)").matches; }catch(e){ return true; } };
 function setAim(e){
   const p = pt(e);
@@ -1488,6 +1559,7 @@ function updateTouchStick(e){
 joystick.addEventListener("pointerdown", e => {
   if (!coarseInput || !running || paused || orientationPause || touchStick) return;
   e.preventDefault();
+  tryFullscreen();
   touchStick = {id:e.pointerId,mx:0,my:0};
   aim.x = P.x; aim.y = P.y; usingKeys = false;
   updateTouchStick(e);
@@ -1556,10 +1628,12 @@ $("mute").onclick = () => {
   $("mute").textContent = muted ? "SOUND OFF" : "SOUND ON";
   $("mute").setAttribute("aria-pressed", String(muted));
 };
+$("fsBtn").onclick = tryFullscreen;
 
 function go(){
   fit();
   if (orientationPause) return;
+  tryFullscreen();
   $("veil").hidden = true; $("resume").hidden = true; lockPause = false;
   reset(); tryLock();
 }
