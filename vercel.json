@@ -14,15 +14,25 @@
       "permanent": true
     },
     {
+      "source": "/PonsFamilyFued",
+      "destination": "/PonsFamilyFeud",
+      "permanent": true
+    },
+    {
       "source": "/ponsfamilyfued",
-      "destination": "/PonsFamilyFued",
+      "destination": "/PonsFamilyFeud",
+      "permanent": true
+    },
+    {
+      "source": "/ponsfamilyfeud",
+      "destination": "/PonsFamilyFeud",
       "permanent": true
     }
   ],
   "rewrites": [
     {
-      "source": "/PonsFamilyFued",
-      "destination": "/PonsFamilyFued.html"
+      "source": "/PonsFamilyFeud",
+      "destination": "/PonsFamilyFeud.html"
     }
   ],
   "headers": [
