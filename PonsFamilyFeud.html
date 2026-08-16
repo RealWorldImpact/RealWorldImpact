@@ -352,7 +352,8 @@ window.addEventListener("resize", fit);
 let P, S, foes, shots, orbs, bits, hostile, drops;
 let t, kills, level, xp, xpNeed, spawnAcc, bossAt, bossOn, shake, flash, hurt, running, over, paused;
 let bossesDefeated = 0, bossWarned = false, milestoneIndex = 0, milestoneTimer = 0, buildDirty = true, pendingPicks = 0;
-let surgeAt = 45, surgeEnd = 0, surgeActive = false, surgeCount = 0;
+let surgeAt = 105, surgeEnd = 0, surgeActive = false, surgeCount = 0;
+const STARTING_HP = 120;
 const RECORD_KEY = "pons-family-feud.records.v2";
 const EMPTY_RECORDS = {time:0, score:0, level:1, kills:0, bosses:0};
 function loadRecords(){
@@ -386,6 +387,7 @@ let locked = false, lockPause = false, lockable = false;
 let sens = 1.5;
 const rnd = (a,b) => a + Math.random()*(b-a);
 const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
+const attackPace = () => coarseInput ? 1 : clamp(1-t/1800, .86, 1);
 
 function showMilestone(kicker, text, seconds){
   $("milestoneKicker").textContent = kicker;
@@ -415,13 +417,13 @@ function renderBuild(){
 
 function reset(){
   P = {x:W/2, y:H/2, r:17, a:0};
-  S = {hp:100, maxhp:100, dmg:10, rate:2.8, multi:1, pierce:0, spd:330, mag:78, orbit:0,
+  S = {hp:STARTING_HP, maxhp:STARTING_HP, dmg:10, rate:2.8, multi:1, pierce:0, spd:330, mag:78, orbit:0,
        regen:0, crit:0, blast:0, bounce:0, dr:0, ifr:1, xpMul:1, bvel:1, brad:0, dbl:0, echo:0, kb:1, thorn:0, slug:0, seek:0, kit:0, deto:0, nova:0, novaT:0, slow:0, twin:0, second:0, adren:0, cd:0, iframe:0, orbA:0, taken:{}};
   foes = []; shots = []; orbs = []; bits = []; hostile = []; drops = []; texts = []; novaFx = []; toast = null;
   t = 0; kills = 0; level = 1; xp = 0; xpNeed = 6;
-  spawnAcc = 0; bossAt = 75; bossOn = false; bossWarned = false; bossesDefeated = 0;
+  spawnAcc = 0; bossAt = coarseInput ? 75 : 90; bossOn = false; bossWarned = false; bossesDefeated = 0;
   milestoneIndex = 0; milestoneTimer = 0; buildDirty = true; pendingPicks = 0; touchStick = null;
-  surgeAt = 45; surgeEnd = 0; surgeActive = false; surgeCount = 0;
+  surgeAt = 105; surgeEnd = 0; surgeActive = false; surgeCount = 0;
   shake = 0; flash = 0; hurt = 0;
   running = true; over = false; paused = false;
   aim.x = P.x; aim.y = P.y;
@@ -456,9 +458,9 @@ function spawn(k, x, y, scale, elite){
   const p = (x == null) ? edgePoint() : {x, y};
   // Desktop has more room and more precise controls, so it gets a firmer curve.
   // Keep the original mobile values exactly so touch play is not made harder.
-  const hpMul = coarseInput ? 1 + t/110 : 1.12 + t/96;
-  const speedMul = coarseInput ? 1 + t/650 : 1.07 + t/560;
-  const eliteHp = elite ? 1.65 : 1, eliteSpeed = elite ? 1.10 : 1, eliteSize = elite ? 1.12 : 1;
+  const hpMul = coarseInput ? 1 + t/110 : 1.08 + t/135;
+  const speedMul = coarseInput ? 1 + t/650 : 1.04 + t/800;
+  const eliteHp = elite ? 1.50 : 1, eliteSpeed = elite ? 1.07 : 1, eliteSize = elite ? 1.10 : 1;
   foes.push({
     x:p.x, y:p.y, vx:0, vy:0, k, elite:!!elite, r:k.r*(scale||1)*eliteSize,
     hp:k.hp*hpMul*(scale||1)*eliteHp, max:k.hp*hpMul*(scale||1)*eliteHp,
@@ -469,7 +471,7 @@ function spawn(k, x, y, scale, elite){
 function director(dt){
   if (!coarseInput){
     if (surgeActive && t >= surgeEnd){
-      surgeActive = false; surgeAt = t + 42;
+      surgeActive = false; surgeAt = t + 50;
       const heal = Math.round(Math.max(8, S.maxhp*.08)), bonusXP = Math.min(9, 3 + surgeCount);
       S.hp = Math.min(S.maxhp, S.hp + heal);
       showMilestone("RUSH SURVIVED", "+" + heal + " HP · +" + bonusXP + " XP", 2.2);
@@ -491,7 +493,8 @@ function director(dt){
   const surgeElapsed = surgeActive ? 9 - Math.max(0, surgeEnd-t) : 0;
   const surgeRamp = clamp(surgeElapsed/2.5, 0, 1);
   const surgeMul = !coarseInput && surgeActive ? 1 + .34*surgeRamp : 1;
-  const rate = (coarseInput ? 0.70 + t*0.037 : 0.78 + t*0.041)*surgeMul;
+  const desktopRate = 0.76 + t*.030 + Math.max(0,t-180)*.007;
+  const rate = (coarseInput ? 0.70 + t*0.037 : desktopRate)*surgeMul;
   spawnAcc += dt*rate;
   const foeCap = coarseInput ? 150 : 240;
   while (spawnAcc >= 1 && foes.length < foeCap){
@@ -500,7 +503,7 @@ function director(dt){
     let tot = 0; for (const k of pool) tot += k.w;
     let r = Math.random()*tot, pick = pool[0];
     for (const k of pool){ if (r < k.w){ pick = k; break; } r -= k.w; }
-    const eliteChance = !coarseInput && t >= 55 ? Math.min(.18, .07 + (t-55)/1200) + (surgeActive ? .05 : 0) : 0;
+    const eliteChance = !coarseInput && t >= 120 ? Math.min(.15, .05 + (t-120)/1800) + (surgeActive ? .03 : 0) : 0;
     spawn(pick, undefined, undefined, 1, Math.random() < eliteChance);
   }
   if (t >= bossAt){ startBoss(); }
@@ -510,7 +513,7 @@ function startBoss(){
   const p = edgePoint();
   spawn(KIND.pons, p.x, p.y, 1);
   const boss = foes[foes.length-1];
-  boss.hp = boss.max = coarseInput ? 700 + t*9 : 825 + t*10.5;
+  boss.hp = boss.max = coarseInput ? 700 + t*9 : 800 + t*8.5;
   boss.entrance = 1.5; boss.phase = 1; boss.cd = 2.1;
   shake = 22; flash = .8;
   snd(60, .7, "sawtooth", .13);
@@ -826,7 +829,7 @@ function step(dt){
         if (f.tell <= 0){
           const cx = f.tx-f.x, cy = f.ty-f.y, cm = Math.hypot(cx,cy) || 1;
           f.vx = cx/cm*540; f.vy = cy/cm*540;
-          f.cd = coarseInput ? rnd(1.8,2.7) : rnd(1.55,2.30); f.av = 14; f.burst = .48;
+          f.cd = rnd(1.8,2.7)*attackPace(); f.av = 14; f.burst = .48;
           snd(150, .1, "square", .055);
         }
       } else if (f.cd <= 0 && dd < 350){
@@ -847,7 +850,7 @@ function step(dt){
           snd(420, .1, "sawtooth", .05);
         }
       } else if (dd < 320 && f.cd <= 0){
-        startTell(f, "pounce", .55); f.cd = coarseInput ? rnd(2.0,3.0) : rnd(1.75,2.55);
+        startTell(f, "pounce", .55); f.cd = rnd(2.0,3.0)*attackPace();
       } else {
         f.vx += ux*f.spd*dt*1.2; f.vy += uy*f.spd*dt*1.2;
       }
@@ -867,7 +870,7 @@ function step(dt){
         if (f.tell <= 0){
           const a = Math.atan2(f.ty-f.y, f.tx-f.x);
           hostileShot(f.x, f.y, a, 285, 7, 8, 3.2);
-          f.cd = coarseInput ? rnd(2.1,3.2) : rnd(1.85,2.75); snd(300, .08, "sine", .045);
+          f.cd = rnd(2.1,3.2)*attackPace(); snd(300, .08, "sine", .045);
         }
       } else if (f.cd <= 0 && dd < 480){
         startTell(f, "shot", .72);
@@ -899,7 +902,7 @@ function step(dt){
           }
           spawn(f.phase === 3 ? KIND.cat : KIND.dog, f.x + rnd(-40,40), f.y + rnd(-40,40));
           const bossPace = f.phase === 1 ? 3.2 : f.phase === 2 ? 2.6 : 2.05;
-          f.cd = coarseInput ? bossPace : bossPace*.88;
+          f.cd = bossPace*attackPace();
           shake = Math.max(shake, 11); snd(90, .3, "sawtooth", .075);
         }
       } else {
@@ -1511,9 +1514,9 @@ fit();
 if (coarseInput) $("controlHint").innerHTML = '<kbd>drag anywhere</kbd> to steer · farther is faster · lift to stop';
 updateRecordSummary();
 P = {x:W/2, y:H/2, r:17, a:0};
-S = {hp:100, maxhp:100, dmg:10, rate:2.8, multi:1, pierce:0, spd:330, mag:78, orbit:0, regen:0, crit:0, blast:0, bounce:0, dr:0, ifr:1, xpMul:1, bvel:1, brad:0, dbl:0, echo:0, kb:1, thorn:0, slug:0, seek:0, kit:0, deto:0, nova:0, novaT:0, slow:0, twin:0, second:0, adren:0, cd:0, iframe:0, orbA:0, taken:{}};
+S = {hp:STARTING_HP, maxhp:STARTING_HP, dmg:10, rate:2.8, multi:1, pierce:0, spd:330, mag:78, orbit:0, regen:0, crit:0, blast:0, bounce:0, dr:0, ifr:1, xpMul:1, bvel:1, brad:0, dbl:0, echo:0, kb:1, thorn:0, slug:0, seek:0, kit:0, deto:0, nova:0, novaT:0, slow:0, twin:0, second:0, adren:0, cd:0, iframe:0, orbA:0, taken:{}};
 foes = []; shots = []; orbs = []; bits = []; hostile = []; drops = [];
-t = 0; kills = 0; level = 1; xp = 0; xpNeed = 6; spawnAcc = 0; bossAt = 75; bossOn = false;
+t = 0; kills = 0; level = 1; xp = 0; xpNeed = 6; spawnAcc = 0; bossAt = coarseInput ? 75 : 90; bossOn = false;
 shake = 0; flash = 0; hurt = 0; running = false; over = false; paused = false;
 hud();
 requestAnimationFrame(frame);
