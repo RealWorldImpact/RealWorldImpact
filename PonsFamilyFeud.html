@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Pons Family Feud</title>
-<meta name="description" content="Ozzy versus the whole family. Move to survive, build your loadout, and outlast PONS in this automatic-shooting survival game.">
+<meta name="description" content="Ozzy versus the whole family. Move to survive, build your loadout, and battle through endless rounds in this automatic-shooting survival game.">
 <meta name="theme-color" content="#0B0B09">
 <link rel="canonical" href="https://www.rwihood.org/PonsFamilyFeud">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="RWIhood">
 <meta property="og:title" content="Pons Family Feud">
-<meta property="og:description" content="Ozzy versus the whole family. Move to survive. The shooting is automatic.">
+<meta property="og:description" content="Ozzy versus the whole family. Move to survive through endless rounds. The shooting is automatic.">
 <meta property="og:url" content="https://www.rwihood.org/PonsFamilyFeud">
 <meta property="og:image" content="https://www.rwihood.org/assets/pons-family-feud-share-v3.jpg">
 <meta property="og:image:url" content="https://www.rwihood.org/assets/pons-family-feud-share-v3.jpg">
@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="Pons Family Feud — Ozzy versus the whole family">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Pons Family Feud">
-<meta name="twitter:description" content="Move to survive. The shooting is automatic.">
+<meta name="twitter:description" content="Move to survive through endless rounds. The shooting is automatic.">
 <meta name="twitter:url" content="https://www.rwihood.org/PonsFamilyFeud">
 <meta name="twitter:image" content="https://www.rwihood.org/assets/pons-family-feud-share-v3.jpg">
 <meta name="twitter:image:alt" content="Pons Family Feud — Ozzy versus the whole family">
@@ -199,7 +199,7 @@
 
     <div class="veil" id="veil">
       <h2>Pons Family <em>Feud</em></h2>
-      <p>Move to survive — the shooting is automatic. Collect the shards they drop, and every level pick one upgrade. See how long you last.</p>
+      <p>Move to survive — the shooting is automatic. Collect the shards they drop, and every level pick one upgrade. Rounds continue forever; survive as long as you can.</p>
       <p id="controlHint" style="margin-top:2px"><kbd>mouse</kbd> or <kbd>WASD</kbd> to move · <kbd>Esc</kbd> frees the cursor</p>
       <div class="recordsummary" id="recordSummary"></div>
       <button id="startBtn">GO</button>
@@ -366,14 +366,21 @@ function formatTime(sec){
   const m = (sec/60)|0, s = ((sec%60)|0).toString().padStart(2,"0");
   return m + ":" + s;
 }
-const MILESTONES = [
-  {at:0, name:"THE OPENING"},
-  {at:30, name:"THE COUSINS ARRIVE"},
-  {at:60, name:"THE FAMILY CLOSES IN"},
-  {at:120, name:"NO ONE LEAVES EARLY"},
-  {at:180, name:"THE LONG HAUL"},
-  {at:300, name:"FIVE-MINUTE FEUD"}
+const ROUND_SECONDS = 60;
+const ROUND_NAMES = [
+  "THE OPENING",
+  "THE COUSINS ARRIVE",
+  "THE FAMILY CLOSES IN",
+  "NO ONE LEAVES EARLY",
+  "THE LONG HAUL",
+  "AFTER HOURS",
+  "NO LAST CALL",
+  "THE FEUD CONTINUES"
 ];
+function roundName(index){
+  const name = ROUND_NAMES[index % ROUND_NAMES.length];
+  return index < ROUND_NAMES.length ? name : name + " · OVERTIME " + (index-ROUND_NAMES.length+1);
+}
 let aim = {x:0, y:0}, keys = {}, usingKeys = false;
 let locked = false, lockPause = false, lockable = false;
 let sens = 1.5;
@@ -419,7 +426,7 @@ function reset(){
   running = true; over = false; paused = false;
   aim.x = P.x; aim.y = P.y;
   $("bossHud").hidden = true;
-  showMilestone("RUN START", MILESTONES[0].name, 1.8);
+  showMilestone("ROUND 1", roundName(0), 1.8);
   hud();
 }
 
@@ -713,10 +720,10 @@ function step(dt){
     milestoneTimer -= dt;
     if (milestoneTimer <= 0) $("milestone").classList.remove("show");
   }
-  while (milestoneIndex+1 < MILESTONES.length && t >= MILESTONES[milestoneIndex+1].at){
+  while (t >= (milestoneIndex+1)*ROUND_SECONDS){
     milestoneIndex++;
-    showMilestone("FAMILY WAVE", MILESTONES[milestoneIndex].name, 2.2);
-    snd(260 + milestoneIndex*35, .18, "triangle", .045);
+    showMilestone("ROUND " + (milestoneIndex+1), roundName(milestoneIndex), 2.2);
+    snd(260 + (milestoneIndex%6)*35, .18, "triangle", .045);
   }
   if (S.regen) S.hp = Math.min(S.maxhp, S.hp + S.regen*dt);
   if (toast){ toast.life -= dt; if (toast.life <= 0) toast = null; }
@@ -1316,13 +1323,12 @@ function hud(){
   $("clock").textContent = formatTime(t);
   $("bestRun").textContent = bestT > 0 ? "BEST " + formatTime(bestT) : "BEST —";
   $("bestRun").title = "Best score: " + bestScore + " · Most kills: " + records.kills + " · Most PONS: " + records.bosses;
-  const wave = MILESTONES[milestoneIndex] || MILESTONES[0];
-  $("phaseHud").querySelector("b").textContent = wave.name + (!coarseInput && surgeActive ? " · FAMILY RUSH" : "");
+  $("phaseHud").querySelector("b").textContent = "ROUND " + (milestoneIndex+1) + " · " + roundName(milestoneIndex) + (!coarseInput && surgeActive ? " · FAMILY RUSH" : "");
   const boss = foes && foes.find(f => !f.dead && f.k.ai === "boss");
   $("bossHud").hidden = !boss;
   if (boss){
     $("bossFill").style.transform = "scaleX(" + clamp(boss.hp/boss.max,0,1) + ")";
-    $("bossName").textContent = "$PONS · ROUND " + (bossesDefeated+1);
+    $("bossName").textContent = "$PONS · ENCOUNTER " + (bossesDefeated+1);
     $("bossPhase").textContent = boss.entrance > 0 ? "ARRIVING" : boss.phase === 1 ? "PHASE 1 · MEASURED" : boss.phase === 2 ? "PHASE 2 · PRESSED" : "PHASE 3 · LAST CALL";
   }
   if (buildDirty) renderBuild();
@@ -1349,7 +1355,7 @@ function gameOver(){
     '<div><b>' + level + '</b><span>LEVEL</span></div>' +
     '<div><b>' + sc + '</b><span>SCORE</span></div>' +
     '<div><b>' + bossesDefeated + '</b><span>PONS</span></div></div>' +
-    '<div class="recordsummary">RECORDS · <b>' + formatTime(records.time) + '</b> · SCORE <b>' + records.score + '</b> · KILLS <b>' + records.kills + '</b> · PONS <b>' + records.bosses + '</b></div>' +
+    '<div class="recordsummary">FINAL ROUND <b>' + (milestoneIndex+1) + '</b> · RECORDS · <b>' + formatTime(records.time) + '</b> · SCORE <b>' + records.score + '</b> · KILLS <b>' + records.kills + '</b> · PONS <b>' + records.bosses + '</b></div>' +
     '<button id="againBtn">RUN IT BACK</button>';
   v.hidden = false;
   $("againBtn").onclick = go;
