@@ -8,5 +8,26 @@
       "destination": "/docs",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/Impact",
+      "destination": "/Impact/impact.html"
+    },
+    {
+      "source": "/Impact/",
+      "destination": "/Impact/impact.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/Impact/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
   ]
 }
