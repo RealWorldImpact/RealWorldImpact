@@ -352,6 +352,7 @@ window.addEventListener("resize", fit);
 let P, S, foes, shots, orbs, bits, hostile, drops;
 let t, kills, level, xp, xpNeed, spawnAcc, bossAt, bossOn, shake, flash, hurt, running, over, paused;
 let bossesDefeated = 0, bossWarned = false, milestoneIndex = 0, milestoneTimer = 0, buildDirty = true, pendingPicks = 0;
+let surgeAt = 45, surgeEnd = 0, surgeActive = false, surgeCount = 0;
 const RECORD_KEY = "pons-family-feud.records.v2";
 const EMPTY_RECORDS = {time:0, score:0, level:1, kills:0, bosses:0};
 function loadRecords(){
@@ -413,6 +414,7 @@ function reset(){
   t = 0; kills = 0; level = 1; xp = 0; xpNeed = 6;
   spawnAcc = 0; bossAt = 75; bossOn = false; bossWarned = false; bossesDefeated = 0;
   milestoneIndex = 0; milestoneTimer = 0; buildDirty = true; pendingPicks = 0; touchStick = null;
+  surgeAt = 45; surgeEnd = 0; surgeActive = false; surgeCount = 0;
   shake = 0; flash = 0; hurt = 0;
   running = true; over = false; paused = false;
   aim.x = P.x; aim.y = P.y;
@@ -443,27 +445,44 @@ function edgePoint(){
   if (s === 2) return {x:rnd(0,W), y:H+m};
   return {x:-m, y:rnd(0,H)};
 }
-function spawn(k, x, y, scale){
+function spawn(k, x, y, scale, elite){
   const p = (x == null) ? edgePoint() : {x, y};
   // Desktop has more room and more precise controls, so it gets a firmer curve.
   // Keep the original mobile values exactly so touch play is not made harder.
   const hpMul = coarseInput ? 1 + t/110 : 1.12 + t/96;
   const speedMul = coarseInput ? 1 + t/650 : 1.07 + t/560;
+  const eliteHp = elite ? 1.65 : 1, eliteSpeed = elite ? 1.10 : 1, eliteSize = elite ? 1.12 : 1;
   foes.push({
-    x:p.x, y:p.y, vx:0, vy:0, k, r:k.r*(scale||1),
-    hp:k.hp*hpMul*(scale||1), max:k.hp*hpMul*(scale||1),
-    spd:k.spd*speedMul, a:rnd(0,6.28), av:rnd(-2,2),
+    x:p.x, y:p.y, vx:0, vy:0, k, elite:!!elite, r:k.r*(scale||1)*eliteSize,
+    hp:k.hp*hpMul*(scale||1)*eliteHp, max:k.hp*hpMul*(scale||1)*eliteHp,
+    spd:k.spd*speedMul*eliteSpeed, a:rnd(0,6.28), av:rnd(-2,2),
     cd:rnd(.5,2.5), st:0, flash:0, tell:0, tellMax:0, tellType:"", phase:0, entrance:0
   });
 }
 function director(dt){
+  if (!coarseInput){
+    if (surgeActive && t >= surgeEnd){
+      surgeActive = false; surgeAt = t + 42;
+      const heal = Math.round(Math.max(8, S.maxhp*.08)), bonusXP = Math.min(9, 3 + surgeCount);
+      S.hp = Math.min(S.maxhp, S.hp + heal);
+      showMilestone("RUSH SURVIVED", "+" + heal + " HP · +" + bonusXP + " XP", 2.2);
+      say("OZZY HOLDS THE FLOOR"); gainXP(bonusXP);
+      snd(660, .22, "triangle", .07);
+    } else if (!surgeActive && !bossOn && t >= surgeAt){
+      surgeActive = true; surgeEnd = t + 9; surgeCount++;
+      showMilestone("FAMILY RUSH " + surgeCount, "HOLD OUT FOR 9", 2.3);
+      say("THE FAMILY RUSHES IN"); shake = Math.max(shake, 12);
+      snd(105, .4, "sawtooth", .08);
+    }
+  }
   if (!bossOn && !bossWarned && bossAt > t && bossAt-t <= 10){
     bossWarned = true;
     showMilestone("BOSS WARNING", "$PONS IN 10", 2.4);
     snd(110, .35, "sawtooth", .06);
   }
   if (bossOn) return;
-  const rate = coarseInput ? 0.70 + t*0.037 : 0.84 + t*0.044; // mobile unchanged; desktop + pressure
+  const surgeMul = !coarseInput && surgeActive ? 1.42 : 1;
+  const rate = (coarseInput ? 0.70 + t*0.037 : 0.84 + t*0.044)*surgeMul;
   spawnAcc += dt*rate;
   const foeCap = coarseInput ? 150 : 240;
   while (spawnAcc >= 1 && foes.length < foeCap){
@@ -472,7 +491,8 @@ function director(dt){
     let tot = 0; for (const k of pool) tot += k.w;
     let r = Math.random()*tot, pick = pool[0];
     for (const k of pool){ if (r < k.w){ pick = k; break; } r -= k.w; }
-    spawn(pick);
+    const eliteChance = !coarseInput && t >= 55 ? Math.min(.18, .07 + (t-55)/1200) + (surgeActive ? .05 : 0) : 0;
+    spawn(pick, undefined, undefined, 1, Math.random() < eliteChance);
   }
   if (t >= bossAt){ startBoss(); }
 }
@@ -541,8 +561,9 @@ function killFoe(f, depth){
   if (f.dead) return;
   depth = depth || 0;
   f.dead = true; kills++;
-  for (let i = 0; i < Math.min(6, f.k.xp) && orbs.length < 650; i++)
-    orbs.push({x:f.x + rnd(-8,8), y:f.y + rnd(-8,8), vx:rnd(-70,70), vy:rnd(-70,70), v:Math.max(1, f.k.xp/Math.min(6,f.k.xp))});
+  const earnedXP = f.k.xp*(f.elite ? 1.75 : 1), shardCount = Math.min(f.elite ? 8 : 6, Math.max(1, Math.ceil(earnedXP)));
+  for (let i = 0; i < shardCount && orbs.length < 650; i++)
+    orbs.push({x:f.x + rnd(-8,8), y:f.y + rnd(-8,8), vx:rnd(-70,70), vy:rnd(-70,70), v:Math.max(1, earnedXP/shardCount)});
   burst(f.x, f.y, 8 + f.r/3, 90 + f.r*4);
   if (f.k.xp >= 3 && !f.small){
     const roll = Math.random();
@@ -1126,6 +1147,15 @@ function draw(){
   ctx.stroke();
   for (const f of foes){
     disc(f.x, f.y, f.r, f.k.key, f.a, f.flash);
+    if (f.elite){
+      ctx.save();
+      ctx.strokeStyle = "rgba(255,90,60," + (.68+Math.sin(t*8+f.a)*.18).toFixed(2) + ")";
+      ctx.lineWidth = 2.5; ctx.setLineDash([6,4]);
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r+6, 0, 6.2832); ctx.stroke();
+      ctx.setLineDash([]); ctx.fillStyle = "#FF5A3C";
+      ctx.font = "600 8px IBM Plex Mono, monospace"; ctx.textAlign = "center";
+      ctx.fillText("ELITE", f.x, f.y+f.r+15); ctx.restore();
+    }
     if (f.k.ai === "boss"){
       ctx.strokeStyle = "rgba(255,90,60," + (f.phase === 3 ? (.62+Math.sin(t*9)*.25) : .48).toFixed(2) + ")";
       ctx.lineWidth = f.phase === 3 ? 3 : 2;
@@ -1136,7 +1166,7 @@ function draw(){
     if (f.k.ai === "boss" || f.hp < f.max*.98){
       const w = f.r*2, pct = clamp(f.hp/f.max, 0, 1);
       ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(f.x-w/2, f.y-f.r-7, w, 3);
-      ctx.fillStyle = f.k.ai === "boss" ? "#FF5A3C" : "#CCFE06";
+      ctx.fillStyle = f.k.ai === "boss" || f.elite ? "#FF5A3C" : "#CCFE06";
       ctx.fillRect(f.x-w/2, f.y-f.r-7, w*pct, 3);
     }
   }
@@ -1285,7 +1315,7 @@ function hud(){
   $("bestRun").textContent = bestT > 0 ? "BEST " + formatTime(bestT) : "BEST —";
   $("bestRun").title = "Best score: " + bestScore + " · Most kills: " + records.kills + " · Most PONS: " + records.bosses;
   const wave = MILESTONES[milestoneIndex] || MILESTONES[0];
-  $("phaseHud").querySelector("b").textContent = wave.name;
+  $("phaseHud").querySelector("b").textContent = wave.name + (!coarseInput && surgeActive ? " · FAMILY RUSH" : "");
   const boss = foes && foes.find(f => !f.dead && f.k.ai === "boss");
   $("bossHud").hidden = !boss;
   if (boss){
