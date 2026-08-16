@@ -46,11 +46,11 @@
       ]
     },
     {
-      "source": "/assets/pons-family-feud-share-v2.png",
+      "source": "/assets/pons-family-feud-share-v3.jpg",
       "headers": [
         {
           "key": "Content-Type",
-          "value": "image/png"
+          "value": "image/jpeg"
         },
         {
           "key": "Cache-Control",
