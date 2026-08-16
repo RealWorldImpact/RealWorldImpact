@@ -7,21 +7,16 @@
       "source": "/whitepaper",
       "destination": "/docs",
       "permanent": true
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/Impact",
-      "destination": "/Impact/impact.html"
     },
     {
-      "source": "/Impact/",
-      "destination": "/Impact/impact.html"
+      "source": "/Impact",
+      "destination": "/impact",
+      "permanent": true
     }
   ],
   "headers": [
     {
-      "source": "/Impact/(.*)",
+      "source": "/impact",
       "headers": [
         {
           "key": "Cache-Control",
