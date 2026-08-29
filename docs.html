@@ -2585,6 +2585,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
        the injected body do not execute — index.html renders this table itself
        from its own copy of the array. ------------------------------------- */
     const DONATIONS = [
+      { name:'Convoy of Hope',                            usd:73.50,   date:'2026-08-29' },
+      { name:'World Central Kitchen',                     usd:73.50,   date:'2026-08-29' },
+      { name:'Save the Children',                         usd:73.50,   date:'2026-08-29' },
+      { name:'Direct Relief',                             usd:73.50,   date:'2026-08-29' },
+      { name:'All Hands & Hearts',                        usd:73.50,   date:'2026-08-29' },
       { name:'No Kid Hungry',                             usd:1832.22, date:'2026-07-21' },
       { name:'Coalition for the Homeless',                usd:270.87,  date:'2026-07-22' },
       { name:'Feed the Children',                         usd:244.67,  date:'2026-08-26' },
@@ -2599,7 +2604,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
       function money(n){ return '$' + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
       function esc(s){ return String(s).replace(/[&<>"']/g,function(c){
         return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-      var rows = DONATIONS.slice().sort(function(a,b){ return b.usd - a.usd; });
+      /* Newest first, matching index.html's ledger. Same-date entries fall back
+         to amount (largest first) so the order is deterministic rather than
+         dependent on array position. */
+      var rows = DONATIONS.slice().sort(function(a,b){
+        return b.date.localeCompare(a.date) || b.usd - a.usd; });
       var host = document.getElementById('wpLedgerRows');
       if(host){
         host.innerHTML = rows.map(function(d){
