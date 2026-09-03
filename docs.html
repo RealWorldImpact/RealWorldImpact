@@ -357,6 +357,7 @@
     .ledger-table .row,.ledger-table .totals{grid-template-columns:1fr auto}
     .ledger-table .row .date,.ledger-table .totals .date{display:none}
   }
+  a.dormant,.links a.dormant{opacity:.4;cursor:default;pointer-events:none}
 </style>
 <script>document.documentElement.classList.add('js')</script>
 <script>
@@ -453,7 +454,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'Ticker',
     'wp.cover.network':'Network',
     'wp.cover.chainName':'Robinhood Chain',
-    'wp.cover.contract':'Contract',
+    'wp.cover.contract':'Contract','wp.cover.relaunch':'Relaunching on Pons v2 soon','wp.refs.relaunch':'Relaunching on Pons v2 soon',
     'wp.cover.launched':'Launched',
     'wp.cover.launchDate':'July 18, 2026 · via Pons',
     'wp.cover.totalSupply':'Total supply',
@@ -476,7 +477,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'Recipient','wp.ledger.table.date':'Date',
     'wp.ledger.table.amount':'Amount',
     'wp.ledger.table.total':'Total to date',
-    'wp.token.deployment.body':'$RWI was deployed on Robinhood Chain (chain ID 4663) on July 18, 2026. The token contract is 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. The main liquidity pool pairs $RWI with $WETH on Uniswap at 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. A second, dedicated $RWI/$PONS pool at 0x62a9e7cf94049dded854c26ff6204079a1c8caed operates as the earn-and-burn pool described in section 03 — separate from the main venue and designed so that everything the project earns from it is destroyed.',
+    'wp.token.deployment.body':'$RWI was deployed on Robinhood Chain (chain ID 4663) on July 18, 2026. The token contract is TBA. The main liquidity pool pairs $RWI with $WETH on Uniswap at TBA. A second, dedicated $RWI/$PONS pool at TBA operates as the earn-and-burn pool described in section 03 — separate from the main venue and designed so that everything the project earns from it is destroyed.',
     'wp.token.supply.body':'Total supply is 1,000,000,000 $RWI, fixed at deployment. There is no mint function, and no owner privileges to change balances or freeze accounts. What was deployed is what exists, and it will not be changed. Any tokens sent to a burn address are removed from circulation permanently and can be counted onchain against total supply.',
     'wp.token.notwhat.body':'$RWI is not a security, is not a claim on a treasury, and is not a governance token. The onchain signal described in section 05 is advisory — it carries no contractual weight and confers no share of fee revenue. The project\'s charitable output is committed procedurally — through published donations against a public ledger — rather than contractually. This is a design choice: procedural commitments can be verified in the moment, while contractual ones require legal enforcement no memecoin can credibly provide.',
     'wp.token.fees.body':'Trading fees accrue to the project wallet on an ongoing basis. Fees earned in the main $RWI/$WETH pool are converted to $ETH and donated. Fees earned in the earn-and-burn $RWI/$PONS pool are burned in full. No portion of either stream is retained as personal compensation to the founder, and there is no development treasury being carved out for future spending.',
@@ -644,7 +645,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'Ticker',
     'wp.cover.network':'Jaringan',
     'wp.cover.chainName':'Robinhood Chain',
-    'wp.cover.contract':'Kontrak',
+    'wp.cover.contract':'Kontrak','wp.cover.relaunch':'Segera diluncurkan ulang di Pons v2','wp.refs.relaunch':'Segera diluncurkan ulang di Pons v2',
     'wp.cover.launched':'Diluncurkan',
     'wp.cover.launchDate':'18 Juli 2026 · via Pons',
     'wp.cover.totalSupply':'Total pasokan',
@@ -667,7 +668,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'Penerima','wp.ledger.table.date':'Tanggal',
     'wp.ledger.table.amount':'Jumlah',
     'wp.ledger.table.total':'Total hingga kini',
-    'wp.token.deployment.body':'$RWI di-deploy di Robinhood Chain (chain ID 4663) pada 18 Juli 2026. Kontrak token adalah 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. Pool likuiditas utama memasangkan $RWI dengan $WETH di Uniswap di 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Pool $RWI/$PONS kedua yang khusus di 0x62a9e7cf94049dded854c26ff6204079a1c8caed beroperasi sebagai pool earn-and-burn yang dijelaskan di bagian 03 — terpisah dari tempat utama dan dirancang agar semua yang diperoleh proyek darinya dihancurkan.',
+    'wp.token.deployment.body':'$RWI di-deploy di Robinhood Chain (chain ID 4663) pada 18 Juli 2026. Kontrak token adalah TBA. Pool likuiditas utama memasangkan $RWI dengan $WETH di Uniswap di TBA. Pool $RWI/$PONS kedua yang khusus di TBA beroperasi sebagai pool earn-and-burn yang dijelaskan di bagian 03 — terpisah dari tempat utama dan dirancang agar semua yang diperoleh proyek darinya dihancurkan.',
     'wp.token.supply.body':'Total pasokan adalah 1.000.000.000 $RWI, tetap saat deployment. Tidak ada fungsi mint, dan tidak ada hak istimewa pemilik untuk mengubah saldo atau membekukan akun. Apa yang di-deploy adalah apa yang ada, dan tidak akan diubah. Token apa pun yang dikirim ke alamat pembakaran dihapus dari peredaran secara permanen dan dapat dihitung onchain terhadap total pasokan.',
     'wp.token.notwhat.body':'$RWI bukan sekuritas, bukan klaim atas perbendaharaan, dan bukan token tata kelola. Sinyal onchain yang dijelaskan di bagian 05 bersifat penasihat — tidak membawa bobot kontraktual dan tidak memberikan bagian pendapatan biaya. Output amal proyek berkomitmen secara prosedural — melalui donasi yang dipublikasikan terhadap buku besar publik — bukan secara kontraktual. Ini adalah pilihan desain: komitmen prosedural dapat diverifikasi saat itu juga, sementara yang kontraktual memerlukan penegakan hukum yang tidak dapat diberikan secara kredibel oleh memecoin mana pun.',
     'wp.token.fees.body':'Biaya trading terakumulasi ke dompet proyek secara berkelanjutan. Biaya yang diperoleh di pool utama $RWI/$WETH diubah menjadi $ETH dan didonasikan. Biaya yang diperoleh di pool earn-and-burn $RWI/$PONS dibakar sepenuhnya. Tidak ada bagian dari aliran mana pun yang ditahan sebagai kompensasi pribadi untuk pendiri, dan tidak ada perbendaharaan pengembangan yang disisihkan untuk pengeluaran masa depan.',
@@ -835,7 +836,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'Ticker',
     'wp.cover.network':'Netzwerk',
     'wp.cover.chainName':'Robinhood Chain',
-    'wp.cover.contract':'Vertrag',
+    'wp.cover.contract':'Vertrag','wp.cover.relaunch':'Bald Relaunch auf Pons v2','wp.refs.relaunch':'Bald Relaunch auf Pons v2',
     'wp.cover.launched':'Gestartet',
     'wp.cover.launchDate':'18. Juli 2026 · über Pons',
     'wp.cover.totalSupply':'Gesamtangebot',
@@ -858,7 +859,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'Empfänger','wp.ledger.table.date':'Datum',
     'wp.ledger.table.amount':'Betrag',
     'wp.ledger.table.total':'Gesamt bis heute',
-    'wp.token.deployment.body':'$RWI wurde am 18. Juli 2026 auf der Robinhood Chain (Chain-ID 4663) bereitgestellt. Der Token-Vertrag ist 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. Der Haupt-Liquiditätspool paart $RWI mit $WETH auf Uniswap bei 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Ein zweiter, dedizierter $RWI/$PONS-Pool bei 0x62a9e7cf94049dded854c26ff6204079a1c8caed fungiert als der in Abschnitt 03 beschriebene Earn-and-Burn-Pool — getrennt vom Hauptort und so gestaltet, dass alles, was das Projekt daraus verdient, vernichtet wird.',
+    'wp.token.deployment.body':'$RWI wurde am 18. Juli 2026 auf der Robinhood Chain (Chain-ID 4663) bereitgestellt. Der Token-Vertrag ist TBA. Der Haupt-Liquiditätspool paart $RWI mit $WETH auf Uniswap bei TBA. Ein zweiter, dedizierter $RWI/$PONS-Pool bei TBA fungiert als der in Abschnitt 03 beschriebene Earn-and-Burn-Pool — getrennt vom Hauptort und so gestaltet, dass alles, was das Projekt daraus verdient, vernichtet wird.',
     'wp.token.supply.body':'Das Gesamtangebot beträgt 1.000.000.000 $RWI, festgelegt beim Deployment. Es gibt keine Mint-Funktion und keine Eigentümerprivilegien, um Guthaben zu ändern oder Konten einzufrieren. Was bereitgestellt wurde, ist das, was existiert, und es wird nicht geändert. Alle an eine Burn-Adresse gesendeten Token werden dauerhaft aus dem Umlauf entfernt und können onchain gegen das Gesamtangebot gezählt werden.',
     'wp.token.notwhat.body':'$RWI ist kein Wertpapier, kein Anspruch auf eine Schatzkammer und kein Governance-Token. Das in Abschnitt 05 beschriebene Onchain-Signal ist beratend — es hat kein vertragliches Gewicht und verleiht keinen Anteil an den Gebühreneinnahmen. Der wohltätige Output des Projekts ist prozedural verpflichtet — durch veröffentlichte Spenden gegen ein öffentliches Hauptbuch — statt vertraglich. Dies ist eine Designentscheidung: Prozedurale Verpflichtungen können im Moment überprüft werden, während vertragliche eine rechtliche Durchsetzung erfordern, die kein Memecoin glaubwürdig bieten kann.',
     'wp.token.fees.body':'Handelsgebühren sammeln sich fortlaufend in der Projekt-Wallet an. Im Haupt-Pool $RWI/$WETH verdiente Gebühren werden in $ETH umgewandelt und gespendet. Im Earn-and-Burn-Pool $RWI/$PONS verdiente Gebühren werden vollständig verbrannt. Kein Teil eines der beiden Ströme wird als persönliche Vergütung für den Gründer einbehalten, und es gibt keine Entwicklungs-Schatzkammer, die für zukünftige Ausgaben abgezweigt wird.',
@@ -975,7 +976,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'Símbolo',
     'wp.cover.network':'Red',
     'wp.cover.chainName':'Robinhood Chain',
-    'wp.cover.contract':'Contrato',
+    'wp.cover.contract':'Contrato','wp.cover.relaunch':'Próximamente relanzamiento en Pons v2','wp.refs.relaunch':'Próximamente relanzamiento en Pons v2',
     'wp.cover.launched':'Lanzado',
     'wp.cover.launchDate':'18 de julio de 2026 · vía Pons',
     'wp.cover.totalSupply':'Oferta total',
@@ -998,7 +999,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'Destinatario','wp.ledger.table.date':'Fecha',
     'wp.ledger.table.amount':'Cantidad',
     'wp.ledger.table.total':'Total hasta la fecha',
-    'wp.token.deployment.body':'$RWI se desplegó en Robinhood Chain (chain ID 4663) el 18 de julio de 2026. El contrato del token es 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. El pool de liquidez principal empareja $RWI con $WETH en Uniswap en 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Un segundo pool dedicado $RWI/$PONS en 0x62a9e7cf94049dded854c26ff6204079a1c8caed opera como el pool de ganar-y-quemar descrito en la sección 03 — separado del lugar principal y diseñado para que todo lo que el proyecto gana de él se destruya.',
+    'wp.token.deployment.body':'$RWI se desplegó en Robinhood Chain (chain ID 4663) el 18 de julio de 2026. El contrato del token es TBA. El pool de liquidez principal empareja $RWI con $WETH en Uniswap en TBA. Un segundo pool dedicado $RWI/$PONS en TBA opera como el pool de ganar-y-quemar descrito en la sección 03 — separado del lugar principal y diseñado para que todo lo que el proyecto gana de él se destruya.',
     'wp.token.supply.body':'La oferta total es de 1.000.000.000 $RWI, fijada en el despliegue. No hay función de acuñación, ni privilegios de propietario para cambiar saldos o congelar cuentas. Lo que se desplegó es lo que existe, y no se cambiará. Cualquier token enviado a una dirección de quema se retira de la circulación permanentemente y puede contarse on-chain contra la oferta total.',
     'wp.token.notwhat.body':'$RWI no es un valor, no es un derecho sobre una tesorería y no es un token de gobernanza. La señal onchain descrita en la sección 05 es consultiva — no tiene peso contractual ni confiere participación en los ingresos por comisiones. La producción caritativa del proyecto está comprometida de forma procedimental — mediante donaciones publicadas contra un libro público — más que contractualmente. Es una elección de diseño: los compromisos procedimentales pueden verificarse en el momento, mientras que los contractuales requieren una aplicación legal que ninguna memecoin puede proporcionar de forma creíble.',
     'wp.token.fees.body':'Las comisiones de trading se acumulan en la billetera del proyecto de forma continua. Las comisiones obtenidas en el pool principal $RWI/$WETH se convierten a $ETH y se donan. Las comisiones obtenidas en el pool de ganar-y-quemar $RWI/$PONS se queman por completo. Ninguna parte de ninguno de los flujos se retiene como compensación personal para el fundador, y no hay ninguna tesorería de desarrollo apartada para gastos futuros.',
@@ -1115,7 +1116,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'代号',
     'wp.cover.network':'网络',
     'wp.cover.chainName':'Robinhood 链',
-    'wp.cover.contract':'合约',
+    'wp.cover.contract':'合约','wp.cover.relaunch':'即将在 Pons v2 重新上线','wp.refs.relaunch':'即将在 Pons v2 重新上线',
     'wp.cover.launched':'启动时间',
     'wp.cover.launchDate':'2026 年 7 月 18 日 · 通过 Pons',
     'wp.cover.totalSupply':'总供应量',
@@ -1138,7 +1139,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'接收方','wp.ledger.table.date':'日期',
     'wp.ledger.table.amount':'金额',
     'wp.ledger.table.total':'迄今总计',
-    'wp.token.deployment.body':'$RWI 于 2026 年 7 月 18 日部署在 Robinhood 链(chain ID 4663)上。代币合约为 0x2286397228be256529BE1ae9ed8D7d16549e9C6A。主流动性池在 Uniswap 上将 $RWI 与 $WETH 配对,地址为 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697。位于 0x62a9e7cf94049dded854c26ff6204079a1c8caed 的第二个专用 $RWI/$PONS 池作为第 03 节所述的赚取与销毁池运行 — 与主场所分离,并设计为项目从中赚取的一切都被销毁。',
+    'wp.token.deployment.body':'$RWI 于 2026 年 7 月 18 日部署在 Robinhood 链(chain ID 4663)上。代币合约为 TBA。主流动性池在 Uniswap 上将 $RWI 与 $WETH 配对,地址为 TBA。位于 TBA 的第二个专用 $RWI/$PONS 池作为第 03 节所述的赚取与销毁池运行 — 与主场所分离,并设计为项目从中赚取的一切都被销毁。',
     'wp.token.supply.body':'总供应量为 1,000,000,000 $RWI,在部署时固定。没有铸造功能,也没有所有者更改余额或冻结账户的特权。部署的就是存在的,并且不会被更改。任何发送到销毁地址的代币都被永久移出流通,并可以在链上根据总供应量进行计算。',
     'wp.token.notwhat.body':'$RWI 不是证券,不是对资金库的索取权,也不是治理代币。第 05 节所述的链上信号是咨询性的 — 不具有合同效力,也不授予任何费用收入份额。项目的慈善产出是以程序性方式承诺的 — 通过针对公开账本发布的捐赠 — 而非合同性的。这是一个设计选择:程序性承诺可以当场验证,而合同性承诺需要任何 memecoin 都无法可信地提供的法律执行。',
     'wp.token.fees.body':'交易费用持续累积到项目钱包。在主 $RWI/$WETH 池中赚取的费用被转换为 $ETH 并捐赠。在赚取与销毁 $RWI/$PONS 池中赚取的费用被全部销毁。任何一个流的任何部分都不会作为创始人的个人报酬保留,也没有为未来支出划拨的开发资金库。',
@@ -1254,7 +1255,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'ティッカー',
     'wp.cover.network':'ネットワーク',
     'wp.cover.chainName':'Robinhood Chain',
-    'wp.cover.contract':'コントラクト',
+    'wp.cover.contract':'コントラクト','wp.cover.relaunch':'まもなく Pons v2 で再ローンチ','wp.refs.relaunch':'まもなく Pons v2 で再ローンチ',
     'wp.cover.launched':'ローンチ',
     'wp.cover.launchDate':'2026 年 7 月 18 日 · Pons 経由',
     'wp.cover.totalSupply':'総供給量',
@@ -1277,7 +1278,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'受取人','wp.ledger.table.date':'日付',
     'wp.ledger.table.amount':'金額',
     'wp.ledger.table.total':'現在までの合計',
-    'wp.token.deployment.body':'$RWI は 2026 年 7 月 18 日に Robinhood Chain(chain ID 4663)上にデプロイされました。トークンコントラクトは 0x2286397228be256529BE1ae9ed8D7d16549e9C6A です。メイン流動性プールは Uniswap 上で $RWI と $WETH を 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697 でペアリングします。0x62a9e7cf94049dded854c26ff6204079a1c8caed にある 2 つ目の専用 $RWI/$PONS プールは、セクション 03 で説明したアーン&バーンプールとして機能します — メイン会場とは別で、プロジェクトがそこから得たすべてが破壊されるように設計されています。',
+    'wp.token.deployment.body':'$RWI は 2026 年 7 月 18 日に Robinhood Chain(chain ID 4663)上にデプロイされました。トークンコントラクトは TBA です。メイン流動性プールは Uniswap 上で $RWI と $WETH を TBA でペアリングします。TBA にある 2 つ目の専用 $RWI/$PONS プールは、セクション 03 で説明したアーン&バーンプールとして機能します — メイン会場とは別で、プロジェクトがそこから得たすべてが破壊されるように設計されています。',
     'wp.token.supply.body':'総供給量は 1,000,000,000 $RWI で、デプロイ時に固定されています。ミント関数はなく、残高を変更したりアカウントを凍結したりするオーナー権限もありません。デプロイされたものが存在するものであり、変更されることはありません。バーンアドレスに送られたトークンは永久に流通から除去され、総供給量に対してオンチェーンでカウントできます。',
     'wp.token.notwhat.body':'$RWI は証券ではなく、財源への請求権でもなく、ガバナンストークンでもありません。セクション 05 で説明されるオンチェーンシグナルは諮問的です — 契約上の重みはなく、手数料収入の分け前を与えるものでもありません。プロジェクトの慈善的アウトプットは、契約的ではなく手続き的に — 公開台帳に対して公開された寄付を通じて — コミットされています。これは設計上の選択です:手続き的コミットメントはその場で検証できますが、契約的なものはいかなる memecoin も確実に提供できない法的執行を必要とします。',
     'wp.token.fees.body':'取引手数料は継続的にプロジェクトウォレットに蓄積されます。メイン $RWI/$WETH プールで得られた手数料は $ETH に変換され寄付されます。アーン&バーン $RWI/$PONS プールで得られた手数料は全額焼却されます。どちらのストリームの一部も創設者への個人的報酬として保持されず、将来の支出のために切り出される開発財源もありません。',
@@ -1393,7 +1394,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'티커',
     'wp.cover.network':'네트워크',
     'wp.cover.chainName':'Robinhood Chain',
-    'wp.cover.contract':'컨트랙트',
+    'wp.cover.contract':'컨트랙트','wp.cover.relaunch':'곷 Pons v2에서 재런칭','wp.refs.relaunch':'곷 Pons v2에서 재런칭',
     'wp.cover.launched':'출시',
     'wp.cover.launchDate':'2026년 7월 18일 · Pons를 통해',
     'wp.cover.totalSupply':'총 공급량',
@@ -1416,7 +1417,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'수혜자','wp.ledger.table.date':'날짜',
     'wp.ledger.table.amount':'금액',
     'wp.ledger.table.total':'현재까지 총계',
-    'wp.token.deployment.body':'$RWI는 2026년 7월 18일 Robinhood Chain(chain ID 4663)에 배포되었습니다. 토큰 컨트랙트는 0x2286397228be256529BE1ae9ed8D7d16549e9C6A입니다. 메인 유동성 풀은 Uniswap에서 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697에서 $RWI를 $WETH와 페어링합니다. 0x62a9e7cf94049dded854c26ff6204079a1c8caed에 있는 두 번째 전용 $RWI/$PONS 풀은 섹션 03에서 설명한 획득-및-소각 풀로 작동합니다 — 메인 장소와 분리되어 있고 프로젝트가 그것에서 얻는 모든 것이 파괴되도록 설계되었습니다.',
+    'wp.token.deployment.body':'$RWI는 2026년 7월 18일 Robinhood Chain(chain ID 4663)에 배포되었습니다. 토큰 컨트랙트는 TBA입니다. 메인 유동성 풀은 Uniswap에서 TBA에서 $RWI를 $WETH와 페어링합니다. TBA에 있는 두 번째 전용 $RWI/$PONS 풀은 섹션 03에서 설명한 획득-및-소각 풀로 작동합니다 — 메인 장소와 분리되어 있고 프로젝트가 그것에서 얻는 모든 것이 파괴되도록 설계되었습니다.',
     'wp.token.supply.body':'총 공급량은 1,000,000,000 $RWI로, 배포 시 고정됩니다. 민트 함수가 없으며, 잔액을 변경하거나 계정을 동결할 소유자 권한도 없습니다. 배포된 것이 존재하는 것이며, 변경되지 않습니다. 소각 주소로 전송된 모든 토큰은 영구적으로 유통에서 제거되며 총 공급량 대비 온체인에서 계산할 수 있습니다.',
     'wp.token.notwhat.body':'$RWI는 증권이 아니며, 재무에 대한 청구권이 아니고, 거버넌스 토큰도 아닙니다. 섹션 05에 설명된 온체인 신호는 자문적입니다 — 계약상 무게가 없으며 수수료 수익의 몫을 부여하지 않습니다. 프로젝트의 자선적 산출물은 계약적이 아니라 절차적으로 — 공개 원장에 대해 게시된 기부를 통해 — 약속됩니다. 이것은 설계 선택입니다: 절차적 약속은 즉시 검증할 수 있지만, 계약적 약속은 어떤 밈코인도 신뢰할 수 있게 제공할 수 없는 법적 집행을 필요로 합니다.',
     'wp.token.fees.body':'거래 수수료는 지속적으로 프로젝트 지갑에 누적됩니다. 메인 $RWI/$WETH 풀에서 얻은 수수료는 $ETH로 변환되어 기부됩니다. 획득-및-소각 $RWI/$PONS 풀에서 얻은 수수료는 전액 소각됩니다. 어느 흐름의 어떤 부분도 창립자에 대한 개인 보상으로 보유되지 않으며, 미래 지출을 위해 마련된 개발 재무도 없습니다.',
@@ -1532,7 +1533,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'Ticker',
     'wp.cover.network':'Rede',
     'wp.cover.chainName':'Robinhood Chain',
-    'wp.cover.contract':'Contrato',
+    'wp.cover.contract':'Contrato','wp.cover.relaunch':'Relançamento na Pons v2 em breve','wp.refs.relaunch':'Relançamento na Pons v2 em breve',
     'wp.cover.launched':'Lançado',
     'wp.cover.launchDate':'18 de julho de 2026 · via Pons',
     'wp.cover.totalSupply':'Oferta total',
@@ -1555,7 +1556,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'Destinatário','wp.ledger.table.date':'Data',
     'wp.ledger.table.amount':'Valor',
     'wp.ledger.table.total':'Total até o momento',
-    'wp.token.deployment.body':'$RWI foi implantado na Robinhood Chain (chain ID 4663) em 18 de julho de 2026. O contrato do token é 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. A pool de liquidez principal emparelha $RWI com $WETH na Uniswap em 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Uma segunda pool dedicada $RWI/$PONS em 0x62a9e7cf94049dded854c26ff6204079a1c8caed opera como a pool ganhar-e-queimar descrita na seção 03 — separada do local principal e projetada para que tudo o que o projeto ganha dela seja destruído.',
+    'wp.token.deployment.body':'$RWI foi implantado na Robinhood Chain (chain ID 4663) em 18 de julho de 2026. O contrato do token é TBA. A pool de liquidez principal emparelha $RWI com $WETH na Uniswap em TBA. Uma segunda pool dedicada $RWI/$PONS em TBA opera como a pool ganhar-e-queimar descrita na seção 03 — separada do local principal e projetada para que tudo o que o projeto ganha dela seja destruído.',
     'wp.token.supply.body':'A oferta total é de 1.000.000.000 $RWI, fixada na implantação. Não há função de cunhagem, nem privilégios de proprietário para alterar saldos ou congelar contas. O que foi implantado é o que existe, e não será alterado. Quaisquer tokens enviados a um endereço de queima são removidos de circulação permanentemente e podem ser contados onchain em relação à oferta total.',
     'wp.token.notwhat.body':'$RWI não é um valor mobiliário, não é um direito sobre uma tesouraria e não é um token de governança. O sinal onchain descrito na seção 05 é consultivo — não tem peso contratual nem confere participação nas receitas de taxas. A produção beneficente do projeto é comprometida procedimentalmente — através de doações publicadas contra um livro-razão público — em vez de contratualmente. Esta é uma escolha de design: compromissos procedimentais podem ser verificados no momento, enquanto os contratuais exigem uma aplicação legal que nenhuma memecoin pode fornecer de forma credível.',
     'wp.token.fees.body':'As taxas de negociação se acumulam na carteira do projeto de forma contínua. As taxas obtidas na pool principal $RWI/$WETH são convertidas em $ETH e doadas. As taxas obtidas na pool ganhar-e-queimar $RWI/$PONS são queimadas integralmente. Nenhuma parcela de qualquer um dos fluxos é retida como compensação pessoal ao fundador, e não há tesouraria de desenvolvimento sendo reservada para gastos futuros.',
@@ -1671,7 +1672,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'Ticker',
     'wp.cover.network':'Réseau',
     'wp.cover.chainName':'Robinhood Chain',
-    'wp.cover.contract':'Contrat',
+    'wp.cover.contract':'Contrat','wp.cover.relaunch':'Relancement sur Pons v2 bientôt','wp.refs.relaunch':'Relancement sur Pons v2 bientôt',
     'wp.cover.launched':'Lancé',
     'wp.cover.launchDate':'18 juillet 2026 · via Pons',
     'wp.cover.totalSupply':'Offre totale',
@@ -1694,7 +1695,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'Destinataire','wp.ledger.table.date':'Date',
     'wp.ledger.table.amount':'Montant',
     'wp.ledger.table.total':'Total à ce jour',
-    'wp.token.deployment.body':'$RWI a été déployé sur Robinhood Chain (chain ID 4663) le 18 juillet 2026. Le contrat du token est 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. Le pool de liquidité principal apparie $RWI avec $WETH sur Uniswap à 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Un deuxième pool dédié $RWI/$PONS à 0x62a9e7cf94049dded854c26ff6204079a1c8caed opère comme le pool gagner-et-burn décrit dans la section 03 — séparé du lieu principal et conçu pour que tout ce que le projet en tire soit détruit.',
+    'wp.token.deployment.body':'$RWI a été déployé sur Robinhood Chain (chain ID 4663) le 18 juillet 2026. Le contrat du token est TBA. Le pool de liquidité principal apparie $RWI avec $WETH sur Uniswap à TBA. Un deuxième pool dédié $RWI/$PONS à TBA opère comme le pool gagner-et-burn décrit dans la section 03 — séparé du lieu principal et conçu pour que tout ce que le projet en tire soit détruit.',
     'wp.token.supply.body':'L\'offre totale est de 1 000 000 000 $RWI, fixée au déploiement. Il n\'y a pas de fonction de mint, ni de privilèges de propriétaire pour modifier les soldes ou geler les comptes. Ce qui a été déployé est ce qui existe, et cela ne sera pas modifié. Tout token envoyé à une adresse de burn est retiré de la circulation de manière permanente et peut être compté onchain par rapport à l\'offre totale.',
     'wp.token.notwhat.body':'$RWI n\'est pas un titre, n\'est pas une créance sur une trésorerie, et n\'est pas un token de gouvernance. Le signal onchain décrit dans la section 05 est consultatif — il n\'a aucun poids contractuel et ne confère aucune part des revenus de frais. La production caritative du projet est engagée de manière procédurale — via des dons publiés contre un registre public — plutôt que contractuelle. C\'est un choix de conception : les engagements procéduraux peuvent être vérifiés sur le moment, tandis que les contractuels nécessitent une application légale qu\'aucun memecoin ne peut fournir de manière crédible.',
     'wp.token.fees.body':'Les frais de trading s\'accumulent dans le portefeuille du projet de manière continue. Les frais gagnés dans le pool principal $RWI/$WETH sont convertis en $ETH et donnés. Les frais gagnés dans le pool gagner-et-burn $RWI/$PONS sont brûlés intégralement. Aucune portion de l\'un ou l\'autre flux n\'est retenue comme compensation personnelle au fondateur, et il n\'y a pas de trésorerie de développement mise de côté pour des dépenses futures.',
@@ -1810,7 +1811,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'Тикер',
     'wp.cover.network':'Сеть',
     'wp.cover.chainName':'Robinhood Chain',
-    'wp.cover.contract':'Контракт',
+    'wp.cover.contract':'Контракт','wp.cover.relaunch':'Скоро перезапуск на Pons v2','wp.refs.relaunch':'Скоро перезапуск на Pons v2',
     'wp.cover.launched':'Запущено',
     'wp.cover.launchDate':'18 июля 2026 · через Pons',
     'wp.cover.totalSupply':'Общее предложение',
@@ -1833,7 +1834,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'Получатель','wp.ledger.table.date':'Дата',
     'wp.ledger.table.amount':'Сумма',
     'wp.ledger.table.total':'Итого на сегодня',
-    'wp.token.deployment.body':'$RWI был развёрнут на Robinhood Chain (chain ID 4663) 18 июля 2026 года. Контракт токена — 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. Основной пул ликвидности объединяет $RWI с $WETH на Uniswap по адресу 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Второй специализированный пул $RWI/$PONS по адресу 0x62a9e7cf94049dded854c26ff6204079a1c8caed работает как пул «заработай и сожги», описанный в разделе 03 — отдельно от основной площадки и спроектирован так, чтобы всё, что проект зарабатывает на нём, уничтожалось.',
+    'wp.token.deployment.body':'$RWI был развёрнут на Robinhood Chain (chain ID 4663) 18 июля 2026 года. Контракт токена — TBA. Основной пул ликвидности объединяет $RWI с $WETH на Uniswap по адресу TBA. Второй специализированный пул $RWI/$PONS по адресу TBA работает как пул «заработай и сожги», описанный в разделе 03 — отдельно от основной площадки и спроектирован так, чтобы всё, что проект зарабатывает на нём, уничтожалось.',
     'wp.token.supply.body':'Общее предложение составляет 1 000 000 000 $RWI, зафиксировано при развёртывании. Нет функции чеканки и нет привилегий владельца для изменения балансов или заморозки счетов. Что было развёрнуто, то и существует, и это не будет изменено. Любые токены, отправленные на адрес сжигания, навсегда изымаются из обращения и могут быть подсчитаны в блокчейне относительно общего предложения.',
     'wp.token.notwhat.body':'$RWI не является ценной бумагой, не является требованием к казне и не является токеном управления. Описанный в разделе 05 сигнал on-chain является консультативным — он не имеет договорного веса и не даёт доли в доходах от комиссий. Благотворительный результат проекта закреплён процедурно — через опубликованные пожертвования против публичного реестра — а не контрактно. Это выбор дизайна: процедурные обязательства можно проверить в момент, тогда как контрактные требуют юридического принуждения, которое ни один мемкоин не может достоверно обеспечить.',
     'wp.token.fees.body':'Торговые комиссии накапливаются в кошельке проекта на постоянной основе. Комиссии, полученные в основном пуле $RWI/$WETH, конвертируются в $ETH и жертвуются. Комиссии, полученные в пуле «заработай и сожги» $RWI/$PONS, сжигаются полностью. Никакая часть ни одного из потоков не удерживается в качестве личной компенсации основателю, и нет казны разработки, выделяемой для будущих расходов.',
@@ -1949,7 +1950,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'Sembol',
     'wp.cover.network':'Ağ',
     'wp.cover.chainName':'Robinhood Chain',
-    'wp.cover.contract':'Sözleşme',
+    'wp.cover.contract':'Sözleşme','wp.cover.relaunch':'Yakında Pons v2’de yeniden başlıyor','wp.refs.relaunch':'Yakında Pons v2’de yeniden başlıyor',
     'wp.cover.launched':'Lansman',
     'wp.cover.launchDate':'18 Temmuz 2026 · Pons üzerinden',
     'wp.cover.totalSupply':'Toplam arz',
@@ -1972,7 +1973,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'Alıcı','wp.ledger.table.date':'Tarih',
     'wp.ledger.table.amount':'Tutar',
     'wp.ledger.table.total':'Bugüne kadar toplam',
-    'wp.token.deployment.body':'$RWI, 18 Temmuz 2026\'da Robinhood Chain (chain ID 4663) üzerinde dağıtıldı. Token sözleşmesi 0x2286397228be256529BE1ae9ed8D7d16549e9C6A\'dır. Ana likidite havuzu, Uniswap\'te 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697 adresinde $RWI\'yi $WETH ile eşleştirir. 0x62a9e7cf94049dded854c26ff6204079a1c8caed adresindeki ikinci, özel bir $RWI/$PONS havuzu, bölüm 03\'te açıklanan kazan-ve-yak havuzu olarak çalışır — ana mekandan ayrı ve projenin ondan kazandığı her şeyin yok edilmesi için tasarlanmıştır.',
+    'wp.token.deployment.body':'$RWI, 18 Temmuz 2026\'da Robinhood Chain (chain ID 4663) üzerinde dağıtıldı. Token sözleşmesi TBA\'dır. Ana likidite havuzu, Uniswap\'te TBA adresinde $RWI\'yi $WETH ile eşleştirir. TBA adresindeki ikinci, özel bir $RWI/$PONS havuzu, bölüm 03\'te açıklanan kazan-ve-yak havuzu olarak çalışır — ana mekandan ayrı ve projenin ondan kazandığı her şeyin yok edilmesi için tasarlanmıştır.',
     'wp.token.supply.body':'Toplam arz, dağıtımda sabitlenmiş 1.000.000.000 $RWI\'dir. Mint fonksiyonu yoktur ve bakiyeleri değiştirmek veya hesapları dondurmak için sahip ayrıcalıkları yoktur. Dağıtılan, var olandır ve değiştirilmeyecektir. Bir yakma adresine gönderilen herhangi bir token kalıcı olarak dolaşımdan çıkarılır ve toplam arza karşı zincir üstünde sayılabilir.',
     'wp.token.notwhat.body':'$RWI bir menkul kıymet değildir, bir hazine üzerinde bir talep değildir ve bir yönetişim token\'ı değildir. Bölüm 05\'te açıklanan zincir üstü sinyal danışman niteliktedir — sözleşmesel ağırlık taşımaz ve ücret gelirinden pay vermez. Projenin hayırsever çıktısı, sözleşmesel olarak değil, prosedürel olarak — halka açık bir deftere karşı yayınlanan bağışlar aracılığıyla — taahhüt edilir. Bu bir tasarım tercihidir: prosedürel taahhütler anında doğrulanabilirken, sözleşmesel olanlar hiçbir memecoin\'in güvenilir bir şekilde sağlayamayacağı yasal uygulama gerektirir.',
     'wp.token.fees.body':'İşlem komisyonları sürekli olarak proje cüzdanında birikir. Ana $RWI/$WETH havuzunda kazanılan komisyonlar $ETH\'ye dönüştürülür ve bağışlanır. Kazan-ve-yak $RWI/$PONS havuzunda kazanılan komisyonlar tamamen yakılır. Her iki akışın hiçbir kısmı kurucuya kişisel tazminat olarak alıkonmaz ve gelecekteki harcamalar için ayrılan bir geliştirme hazinesi yoktur.',
@@ -2088,7 +2089,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'Mã',
     'wp.cover.network':'Mạng',
     'wp.cover.chainName':'Robinhood Chain',
-    'wp.cover.contract':'Hợp đồng',
+    'wp.cover.contract':'Hợp đồng','wp.cover.relaunch':'Sắp ra mắt lại trên Pons v2','wp.refs.relaunch':'Sắp ra mắt lại trên Pons v2',
     'wp.cover.launched':'Ra mắt',
     'wp.cover.launchDate':'18 tháng 7 năm 2026 · qua Pons',
     'wp.cover.totalSupply':'Tổng cung',
@@ -2111,7 +2112,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'Người nhận','wp.ledger.table.date':'Ngày',
     'wp.ledger.table.amount':'Số tiền',
     'wp.ledger.table.total':'Tổng đến nay',
-    'wp.token.deployment.body':'$RWI được triển khai trên Robinhood Chain (chain ID 4663) vào ngày 18 tháng 7 năm 2026. Hợp đồng token là 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. Pool thanh khoản chính ghép $RWI với $WETH trên Uniswap tại 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. Một pool $RWI/$PONS chuyên dụng thứ hai tại 0x62a9e7cf94049dded854c26ff6204079a1c8caed hoạt động như pool kiếm-và-đốt được mô tả trong phần 03 — tách biệt với nơi chính và được thiết kế để mọi thứ dự án kiếm được từ nó đều bị tiêu hủy.',
+    'wp.token.deployment.body':'$RWI được triển khai trên Robinhood Chain (chain ID 4663) vào ngày 18 tháng 7 năm 2026. Hợp đồng token là TBA. Pool thanh khoản chính ghép $RWI với $WETH trên Uniswap tại TBA. Một pool $RWI/$PONS chuyên dụng thứ hai tại TBA hoạt động như pool kiếm-và-đốt được mô tả trong phần 03 — tách biệt với nơi chính và được thiết kế để mọi thứ dự án kiếm được từ nó đều bị tiêu hủy.',
     'wp.token.supply.body':'Tổng cung là 1.000.000.000 $RWI, cố định khi triển khai. Không có hàm mint, và không có đặc quyền chủ sở hữu để thay đổi số dư hoặc đóng băng tài khoản. Những gì được triển khai là những gì tồn tại, và nó sẽ không bị thay đổi. Bất kỳ token nào được gửi đến địa chỉ đốt đều bị loại khỏi lưu thông vĩnh viễn và có thể được đếm onchain so với tổng cung.',
     'wp.token.notwhat.body':'$RWI không phải là chứng khoán, không phải là quyền đòi hỏi đối với kho bạc, và không phải là token quản trị. Tín hiệu onchain được mô tả trong phần 05 có tính tư vấn — không có trọng số hợp đồng và không cấp phần chia sẻ doanh thu phí. Đầu ra từ thiện của dự án được cam kết theo thủ tục — thông qua các khoản quyên góp được công bố đối chiếu với một sổ cái công khai — thay vì theo hợp đồng. Đây là một lựa chọn thiết kế: các cam kết theo thủ tục có thể được xác minh ngay lập tức, trong khi các cam kết theo hợp đồng đòi hỏi việc thực thi pháp lý mà không memecoin nào có thể cung cấp một cách đáng tin cậy.',
     'wp.token.fees.body':'Phí giao dịch tích lũy vào ví dự án trên cơ sở liên tục. Phí kiếm được trong pool $RWI/$WETH chính được chuyển đổi thành $ETH và quyên góp. Phí kiếm được trong pool kiếm-và-đốt $RWI/$PONS được đốt toàn bộ. Không phần nào của cả hai dòng được giữ lại làm khoản bồi thường cá nhân cho người sáng lập, và không có kho bạc phát triển nào được dành riêng cho chi tiêu tương lai.',
@@ -2227,7 +2228,7 @@ const TRANSLATIONS = {
     'wp.cover.ticker':'टिकर',
     'wp.cover.network':'नेटवर्क',
     'wp.cover.chainName':'Robinhood Chain',
-    'wp.cover.contract':'अनुबंध',
+    'wp.cover.contract':'अनुबंध','wp.cover.relaunch':'Pons v2 पर जल्द रीलॉन्च','wp.refs.relaunch':'Pons v2 पर जल्द रीलॉन्च',
     'wp.cover.launched':'लॉन्च',
     'wp.cover.launchDate':'18 जुलाई 2026 · Pons के माध्यम से',
     'wp.cover.totalSupply':'कुल आपूर्ति',
@@ -2250,7 +2251,7 @@ const TRANSLATIONS = {
     'wp.ledger.table.recipient':'प्राप्तकर्ता','wp.ledger.table.date':'तारीख',
     'wp.ledger.table.amount':'राशि',
     'wp.ledger.table.total':'आज तक कुल',
-    'wp.token.deployment.body':'$RWI को 18 जुलाई 2026 को Robinhood Chain (chain ID 4663) पर तैनात किया गया। टोकन अनुबंध 0x2286397228be256529BE1ae9ed8D7d16549e9C6A है। मुख्य लिक्विडिटी पूल Uniswap पर 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697 पर $RWI को $WETH के साथ जोड़ता है। 0x62a9e7cf94049dded854c26ff6204079a1c8caed पर एक दूसरा समर्पित $RWI/$PONS पूल खंड 03 में वर्णित कमाओ-और-बर्न पूल के रूप में संचालित होता है — मुख्य स्थल से अलग और इस तरह डिज़ाइन किया गया कि परियोजना इससे जो कुछ भी कमाती है वह नष्ट हो जाए।',
+    'wp.token.deployment.body':'$RWI को 18 जुलाई 2026 को Robinhood Chain (chain ID 4663) पर तैनात किया गया। टोकन अनुबंध TBA है। मुख्य लिक्विडिटी पूल Uniswap पर TBA पर $RWI को $WETH के साथ जोड़ता है। TBA पर एक दूसरा समर्पित $RWI/$PONS पूल खंड 03 में वर्णित कमाओ-और-बर्न पूल के रूप में संचालित होता है — मुख्य स्थल से अलग और इस तरह डिज़ाइन किया गया कि परियोजना इससे जो कुछ भी कमाती है वह नष्ट हो जाए।',
     'wp.token.supply.body':'कुल आपूर्ति 1,000,000,000 $RWI है, जो तैनाती पर निश्चित है। कोई mint फ़ंक्शन नहीं है, और शेष बदलने या खातों को फ़्रीज़ करने के लिए कोई स्वामी विशेषाधिकार नहीं है। जो तैनात किया गया वही मौजूद है, और इसे बदला नहीं जाएगा। बर्न पते पर भेजे गए किसी भी टोकन को स्थायी रूप से प्रचलन से हटा दिया जाता है और कुल आपूर्ति के विरुद्ध ऑनचेन गिना जा सकता है।',
     'wp.token.notwhat.body':'$RWI कोई प्रतिभूति नहीं है, किसी ट्रेजरी पर दावा नहीं है, और कोई शासन टोकन नहीं है। खंड 05 में वर्णित ऑनचेन संकेत सलाहकारी है — इसका कोई अनुबंधात्मक भार नहीं है और शुल्क राजस्व का कोई हिस्सा नहीं देता। परियोजना का धर्मार्थ उत्पादन प्रक्रियात्मक रूप से प्रतिबद्ध है — एक सार्वजनिक बहीखाते के विरुद्ध प्रकाशित दान के माध्यम से — न कि संविदात्मक रूप से। यह एक डिज़ाइन विकल्प है: प्रक्रियात्मक प्रतिबद्धताएँ उसी क्षण सत्यापित की जा सकती हैं, जबकि संविदात्मक प्रतिबद्धताओं के लिए कानूनी प्रवर्तन की आवश्यकता होती है जिसे कोई memecoin विश्वसनीय रूप से प्रदान नहीं कर सकता।',
     'wp.token.fees.body':'ट्रेडिंग शुल्क निरंतर आधार पर परियोजना वॉलेट में जमा होते हैं। मुख्य $RWI/$WETH पूल में अर्जित शुल्क $ETH में परिवर्तित होकर दान किए जाते हैं। कमाओ-और-बर्न $RWI/$PONS पूल में अर्जित शुल्क पूरी तरह बर्न किए जाते हैं। किसी भी धारा का कोई हिस्सा संस्थापक के व्यक्तिगत मुआवजे के रूप में नहीं रखा जाता, और भविष्य के खर्च के लिए कोई विकास ट्रेजरी अलग नहीं रखी जा रही है।',
@@ -2475,7 +2476,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       </div>
       <div class="links">
         <a href="#references" data-i18n="wp.nav.refs">References</a>
-        <a class="icon-link" href="https://dexscreener.com/robinhood/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697" target="_blank" rel="noopener" aria-label="Dexscreener" title="Dexscreener"><img src="data:image/png;base64,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" alt="" width="109" height="128" class="dexscreener-mark"></a><a class="icon-link" href="https://t.me/RWIonRobinhood" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#000" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a><a class="icon-link" href="https://x.com/RWIrobinhood" target="_blank" rel="noopener" aria-label="X" title="X"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#000" d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg></a>
+        <a class="icon-link dormant" data-v1-href="https://dexscreener.com/robinhood/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697" target="_blank" rel="noopener" aria-label="Dexscreener" title="Dexscreener"><img src="data:image/png;base64,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" alt="" width="109" height="128" class="dexscreener-mark"></a><a class="icon-link" href="https://t.me/RWIonRobinhood" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#000" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a><a class="icon-link" href="https://x.com/RWIrobinhood" target="_blank" rel="noopener" aria-label="X" title="X"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#000" d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg></a>
       </div>
     </div>
   </div>
@@ -2501,7 +2502,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       </div>
       <div>
         <span class="k" data-i18n="wp.cover.contract">Contract</span>
-        <span class="v">0x2286397228be256529BE1ae9ed8D7d16549e9C6A</span>
+        <span class="v" data-i18n="wp.cover.relaunch">Relaunching on Pons v2 soon</span>
       </div>
       <div>
         <span class="k" data-i18n="wp.cover.launched">Launched</span>
@@ -2648,7 +2649,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     <h2 data-i18n="wp.token.title">What exists, what does not.</h2>
 
     <h3 data-i18n="wp.token.deployment">Deployment</h3>
-    <p data-i18n="wp.token.deployment.body">$RWI was deployed on Robinhood Chain (chain ID 4663) on July 18, 2026. The token contract is 0x2286397228be256529BE1ae9ed8D7d16549e9C6A. The main liquidity pool pairs $RWI with $WETH on Uniswap at 0xff6aa24815d1274a9be0cfd17c7c7489cd40a697. A second, dedicated $RWI/$PONS pool at 0x62a9e7cf94049dded854c26ff6204079a1c8caed operates as the earn-and-burn pool described in section 03 — separate from the main venue and designed so that everything the project earns from it is destroyed.</p>
+    <p data-i18n="wp.token.deployment.body">$RWI was deployed on Robinhood Chain (chain ID 4663) on July 18, 2026. The token contract is TBA. The main liquidity pool pairs $RWI with $WETH on Uniswap at TBA. A second, dedicated $RWI/$PONS pool at TBA operates as the earn-and-burn pool described in section 03 — separate from the main venue and designed so that everything the project earns from it is destroyed.</p>
 
     <h3 data-i18n="wp.token.supply">Supply</h3>
     <p data-i18n="wp.token.supply.body">Total supply is 1,000,000,000 $RWI, fixed at deployment. There is no mint function, and no owner privileges to change balances or freeze accounts. What was deployed is what exists, and it will not be changed. Any tokens sent to a burn address are removed from circulation permanently and can be counted onchain against total supply.</p>
@@ -2708,9 +2709,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
     <p class="eyebrow" data-i18n="wp.refs.eyebrow">References — Addresses &amp; links</p>
     <h2 data-i18n="wp.refs.title">Everything, verifiable.</h2>
 
-    <div class="row"><div class="k" data-i18n="wp.refs.tokenContract">Token contract</div><div class="v">0x2286397228be256529BE1ae9ed8D7d16549e9C6A</div></div>
-    <div class="row"><div class="k" data-i18n="wp.refs.mainPool">Main pool</div><div class="v">$RWI / $WETH · <a href="https://dexscreener.com/robinhood/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697">0xff6aa24815d1274a9be0cfd17c7c7489cd40a697</a></div></div>
-    <div class="row"><div class="k" data-i18n="wp.refs.earnBurnPool">Earn &amp; burn pool</div><div class="v">$RWI / $PONS · <a href="https://www.dextools.io/app/robinhood/pair-explorer/0x62a9e7cf94049dded854c26ff6204079a1c8caed">0x62a9e7cf94049dded854c26ff6204079a1c8caed</a></div></div>
+    <div class="row"><div class="k" data-i18n="wp.refs.tokenContract">Token contract</div><div class="v" data-i18n="wp.refs.relaunch">Relaunching on Pons v2 soon</div></div>
+<!-- v1 DORMANT: restore with <a href="https://dexscreener.com/robinhood/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697">0xff6aa24815d1274a9be0cfd17c7c7489cd40a697</a> -->
+    <div class="row"><div class="k" data-i18n="wp.refs.mainPool">Main pool</div><div class="v" data-i18n="wp.refs.relaunch">Relaunching on Pons v2 soon</div></div>
+<!-- v1 DORMANT: restore with <a href="https://www.dextools.io/app/robinhood/pair-explorer/0x62a9e7cf94049dded854c26ff6204079a1c8caed">0x62a9e7cf94049dded854c26ff6204079a1c8caed</a> -->
+    <div class="row"><div class="k" data-i18n="wp.refs.earnBurnPool">Earn &amp; burn pool</div><div class="v" data-i18n="wp.refs.relaunch">Relaunching on Pons v2 soon</div></div>
     <div class="row"><div class="k" data-i18n="wp.refs.burnWallet">Dev wallet (performs burns)</div><div class="v">0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5</div></div>
     <div class="row"><div class="k" data-i18n="wp.refs.network">Network</div><div class="v">Robinhood Chain · Chain ID 4663</div></div>
     <div class="row"><div class="k" data-i18n="wp.refs.website">Website</div><div class="v"><a href="https://rwihood.org/">rwihood.org</a></div></div>
@@ -2749,7 +2752,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // (When loaded via the site's shadow-DOM swap, this script does not execute — the site's
   // ticker Set picks up the shadow ticker element via mount().)
   (function(){
+    // DORMANT until the Pons v2 relaunch. Flip TICKER_LIVE back to true and point
+    // PAIR/TOKEN at the v2 addresses to bring the live price back.
+    const TICKER_LIVE = false;
     const tick = document.getElementById('ticker');
+    if(!TICKER_LIVE) return;
     if(!tick) return;
     const PAIR = 'https://api.dexscreener.com/latest/dex/pairs/robinhood/0xff6aa24815d1274a9be0cfd17c7c7489cd40a697';
     const TOKEN = 'https://api.dexscreener.com/latest/dex/tokens/0x2286397228be256529BE1ae9ed8D7d16549e9C6A';
@@ -2929,6 +2936,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
+</script>
+<script>
+  /* ---- v1 market links: DORMANT until the Pons v2 relaunch ----
+     Flip V1_MARKET_LINKS_LIVE to true (and swap the data-v1-href values for the
+     v2 addresses) to bring the Dexscreener links back. Nothing else to change. */
+  const V1_MARKET_LINKS_LIVE = false;
+  if (V1_MARKET_LINKS_LIVE) {
+    document.querySelectorAll('[data-v1-href]').forEach(function(a){
+      a.setAttribute('href', a.getAttribute('data-v1-href'));
+      a.classList.remove('dormant');
+    });
+  }
 </script>
 </body>
 </html>
