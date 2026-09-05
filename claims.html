@@ -201,7 +201,7 @@
         <p>For every transaction where a filed wallet's v1 balance changed, the counter-value on the other side of that same transaction is measured: ETH sent, ETH returned internally, gas paid, and any transfer of a token priced below.</p>
         <p><code>net loss = spent − received − value still held</code></p>
         <p>Acquisitions add to <em>spent</em>, including the gas paid to make the purchase. Disposals add to <em>received</em>, net of the gas paid to sell. Transfers with no counter-value — airdrops, wallet-to-wallet sends, liquidity-pool moves — are counted at zero and flagged <b>unpriced</b>, because the chain alone cannot tell what they were worth to you.</p>
-        <p>Only wrapped ETH is matched by its actual contract address, and it's priced at that specific transaction's own rate — never today's — so a trade from months ago isn't valued at current prices. Stablecoins are matched by symbol alone, since a token can name itself "USDC" without being it; those are flagged <b>symbol-matched</b>. A transaction dated before the explorer's price history starts falls back to the current ETH rate and is flagged <b>est. rate</b>. A wallet with more history than one read can retrieve is flagged <b>history incomplete</b>, meaning its number is a floor, not the final word. A leg is only called <b>unpriced</b> when no counter-value could be found at all — a real net cost or gain, like a sale whose gas exceeded its proceeds, is folded into the total rather than dropped just because it came out negative.</p>
+        <p>Only wrapped ETH is matched by its actual contract address, and both it and native ETH are priced using that specific transaction's own calendar-day historical rate — never today's — so a trade from months ago isn't valued at current prices. Stablecoins are matched by symbol alone, since a token can name itself "USDC" without being it; those are flagged <b>symbol-matched</b>. When a day's historical rate can't be retrieved, today's rate is used as a fallback and flagged <b>est. rate</b>. A wallet with more history than one read can retrieve is flagged <b>history incomplete</b>, meaning its number is a floor, not the final word. A leg is only called <b>unpriced</b> when no counter-value could be found at all — a real net cost or gain, like a sale whose gas exceeded its proceeds, is folded into the total rather than dropped just because it came out negative.</p>
         <p>Per wallet, the calculator pulls its full transaction list, all token transfers, and all internal transfers in a handful of requests total — not one request per transaction. Multiple wallets are read in parallel. Everything is cached in your browser and can be recomputed from scratch at any time.</p>
       </div>
       <div>
@@ -269,7 +269,7 @@ const CFG = {
   // series, so that list gets a deep page cap — missing an early or late
   // buy would be worse than a slow load. A read that still hits this cap
   // is treated as unverifiable rather than guessed at.
-  MAX_PAGES_TOKEN: 100,
+  MAX_PAGES_TOKEN: 60,
   MAX_PAGES: 25,
   CONCURRENCY: 6,     // parallel HTTP requests to the explorer
   WALLET_POOL: 4,     // wallets calculated in parallel by "Calculate all"
@@ -320,18 +320,25 @@ async function api(path, params, opts={}) {
   while (inflight >= CFG.CONCURRENCY) await sleep(40);
   inflight++;
   try {
-    for (let attempt = 0; attempt < 4; attempt++) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      // Without a timeout, a single stalled request blocks this call — and
+      // anything awaiting it, like the eligibility check — forever, with no
+      // way to recover short of reloading the page.
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
       try {
-        const r = await fetch(url, { headers:{accept:'application/json'} });
-        if (r.status === 429 || r.status >= 500) { await sleep(400 * (attempt+1)); continue; }
+        const r = await fetch(url, { headers:{accept:'application/json'}, signal: controller.signal });
+        if (r.status === 429 || r.status >= 500) { await sleep(350 * (attempt+1)); continue; }
         if (r.status === 404) return null;
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const j = await r.json();
         if (ck) cache.set(ck, j);
         return j;
       } catch (e) {
-        if (attempt === 3) throw e;
+        if (attempt === 2) throw (e && e.name === 'AbortError') ? new Error('timed out') : e;
         await sleep(300 * (attempt+1));
+      } finally {
+        clearTimeout(timer);
       }
     }
   } finally { inflight--; }
@@ -352,6 +359,62 @@ async function paged(path, params, maxPages) {
     pages++;
   } while (next && pages < cap);
   return { items: out, truncated: !!next };
+}
+
+/* ------------------------------------------------------------------ *
+ * Historical ETH/USD pricing.
+ *
+ * Blockscout's transaction "exchange_rate" field is a LIVE rate, not a
+ * historical one — there is no per-block price in this API. Pricing a
+ * two-year-old trade at today's ETH price would be wrong, so daily
+ * historical prices are pulled from CoinGecko's public history endpoint
+ * instead, keyed by calendar day (a past day's price never changes, so
+ * this is cached in localStorage forever, not just per session). Lookups
+ * are deduplicated per day across an entire calculation, so a wallet with
+ * hundreds of transactions spread over a handful of days costs a handful
+ * of price requests, not hundreds.
+ * ------------------------------------------------------------------ */
+let priceInflight = 0;
+async function historicalEthPrice(day) {
+  const ck = 'ethpx.' + day;
+  const cached = cache.get(ck);
+  if (cached != null) return cached;
+
+  while (priceInflight >= 2) await sleep(60);   // gentle on CoinGecko's free tier
+  priceInflight++;
+  try {
+    const [y, m, d] = day.split('-');
+    const url = 'https://api.coingecko.com/api/v3/coins/ethereum/history?date=' + d + '-' + m + '-' + y + '&localization=false';
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10000);
+      try {
+        const r = await fetch(url, { signal: controller.signal });
+        if (r.status === 429) { await sleep(1500 * (attempt + 1)); continue; }
+        if (!r.ok) return null;
+        const j = await r.json();
+        const px = j && j.market_data && j.market_data.current_price && j.market_data.current_price.usd;
+        if (px) { cache.set(ck, px); return px; }
+        return null;
+      } catch (e) {
+        if (attempt === 1) return null;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    return null;
+  } finally { priceInflight--; }
+}
+
+// Resolves historical ETH prices for a whole set of calendar days at once,
+// a few in flight at a time, rather than one lookup per transaction.
+async function pricesForDays(days) {
+  const map = new Map();
+  await Promise.all([...days].map(async day => {
+    const px = await historicalEthPrice(day);
+    if (px != null) map.set(day, px);
+  }));
+  return map;
 }
 
 /* ------------------------------------------------------------------ *
@@ -438,28 +501,42 @@ async function loadClaims() {
  * purpose. Reuses the one fetch for both the check and the later loss
  * calculation, so checking costs one request.
  * ------------------------------------------------------------------ */
-async function checkEligibility(address) {
-  const { items: transfers, truncated } = await paged(
-    '/addresses/' + address + '/token-transfers', { token: CFG.TOKEN, type:'ERC-20' }, CFG.MAX_PAGES_TOKEN);
+async function checkEligibility(address, onProgress) {
+  let firstBuyTs = null, lateBuyTs = null, pages = 0, seen = 0, next = null;
+  const collected = [];
+  do {
+    const j = await api('/addresses/' + address + '/token-transfers',
+      Object.assign({ token: CFG.TOKEN, type:'ERC-20' }, next || {}));
+    if (!j) break;
+    const items = j.items || [];
+    collected.push(...items);
+    seen += items.length;
+    pages++;
+    if (onProgress) onProgress(pages, seen);
+
+    for (const tr of items) {
+      if (lc(tr.to && tr.to.hash) === lc(address)) {
+        const ts = tr.timestamp ? Date.parse(tr.timestamp) : null;
+        if (ts == null) continue;
+        if (firstBuyTs === null || ts < firstBuyTs) firstBuyTs = ts;
+        if (ts > CFG.CUTOFF_TS && (lateBuyTs === null || ts < lateBuyTs)) lateBuyTs = ts;
+      }
+    }
+    // A disqualifying buy is conclusive the moment it's found — no need to
+    // keep reading the rest of a long history just to confirm completeness.
+    if (lateBuyTs !== null) return { ok:false, reason:'late', firstBuyTs, lateBuyTs, truncated:false };
+
+    next = j.next_page_params || null;
+  } while (next && pages < CFG.MAX_PAGES_TOKEN);
 
   // An incomplete read can't prove a late buy ISN'T hiding in the pages we
   // didn't get. Block outright rather than assume the fetched portion is
   // representative; a real holder can retry.
-  if (truncated) return { ok:false, reason:'truncated', transfers, truncated };
-  if (!transfers.length) return { ok:false, reason:'no-history', transfers, truncated };
-
-  let firstBuyTs = null, lateBuyTs = null;
-  for (const tr of transfers) {
-    if (lc(tr.to && tr.to.hash) === lc(address)) {
-      const ts = tr.timestamp ? Date.parse(tr.timestamp) : null;
-      if (ts == null) continue;
-      if (firstBuyTs === null || ts < firstBuyTs) firstBuyTs = ts;
-      if (ts > CFG.CUTOFF_TS && (lateBuyTs === null || ts < lateBuyTs)) lateBuyTs = ts;
-    }
-  }
-  if (firstBuyTs === null) return { ok:false, reason:'no-buy', transfers, truncated };
-  if (lateBuyTs !== null) return { ok:false, reason:'late', firstBuyTs, lateBuyTs, transfers, truncated };
-  return { ok:true, firstBuyTs, transfers, truncated };
+  const truncated = !!next;
+  if (truncated) return { ok:false, reason:'truncated', truncated };
+  if (!seen) return { ok:false, reason:'no-history', truncated };
+  if (firstBuyTs === null) return { ok:false, reason:'no-buy', truncated };
+  return { ok:true, firstBuyTs, truncated:false, transfers: collected };
 }
 
 function alreadyFiled(addr) {
@@ -474,11 +551,13 @@ async function refreshEligibility() {
   st.textContent = 'Checking this wallet\'s v1 history…';
   $('btnFile').disabled = true;
   try {
-    state.elig = await checkEligibility(state.account);
+    state.elig = await checkEligibility(state.account, (pages, seen) => {
+      st.textContent = 'Checking this wallet\'s v1 history… (' + seen + ' transfer' + (seen===1?'':'s') + ' read so far)';
+    });
   } catch (e) {
     state.elig = { ok:false, reason:'error' };
     st.className = 'status err';
-    st.textContent = 'The explorer did not answer, so this wallet could not be verified. Try again in a moment.';
+    st.textContent = 'The explorer didn\'t answer (' + ((e && e.message) || 'network error') + '), so this wallet could not be verified. Try again in a moment.';
     return;
   }
   updateFileButton();
@@ -704,6 +783,14 @@ async function computeWallet(address, preTransfers, preTruncated) {
       intByHash.get(h).push(it);
     }
 
+    // One historical-price fetch per unique day, not per transaction.
+    const days = new Set();
+    for (const hash of byTx.keys()) {
+      const tx = txByHash.get(hash);
+      if (tx && tx.timestamp) days.add(tx.timestamp.slice(0, 10));
+    }
+    const dayPrices = days.size ? await pricesForDays(days) : new Map();
+
     for (const [hash, list] of byTx) {
       const dec = Number((list[0].token && list[0].token.decimals) || 18);
       let delta = 0;
@@ -715,8 +802,10 @@ async function computeWallet(address, preTransfers, preTruncated) {
       if (Math.abs(delta) < 1e-12) continue;
 
       const tx = txByHash.get(hash);
-      const historical = tx && tx.historical_exchange_rate;
-      const rate = Number(historical || (tx && tx.exchange_rate) || state.ethPrice || 0);
+      const day = tx && tx.timestamp ? tx.timestamp.slice(0, 10) : null;
+      const dayPrice = day ? dayPrices.get(day) : undefined;
+      const historical = dayPrice != null;
+      const rate = Number(dayPrice ?? (tx && tx.exchange_rate) ?? state.ethPrice ?? 0);
       let outUsd = 0, inUsd = 0, ethMoved = false, sawUnverified = false;
 
       // Native ETH the wallet paid to initiate this transaction.
