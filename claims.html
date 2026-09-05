@@ -62,6 +62,7 @@
   .btn.ghost{background:transparent;color:var(--text);border-color:var(--rule)}
   .btn.ghost:hover{border-color:var(--lime);color:var(--lime);background:transparent}
   .btn.sm{padding:7px 12px;font-size:12px}
+  @media(max-width:480px){ .btn{padding:13px 20px} .btn.sm{padding:11px 16px} }
   .status{margin-top:12px;font-size:13px;color:var(--muted);min-height:20px}
   .status.ok{color:var(--lime)}
   .status.err{color:var(--red)}
@@ -137,6 +138,15 @@
           <span class="addr" id="connAddr"></span>
         </div>
         <div id="walletList" class="controls" style="margin-top:10px;display:none"></div>
+        <div id="mobileHelp" style="display:none;margin-top:14px">
+          <p class="sub" style="margin-bottom:10px">A regular mobile browser tab can't see a wallet directly — open this page inside your wallet app's own browser instead, then tap Connect there.</p>
+          <div class="controls">
+            <button class="btn ghost sm" id="mmLink">Open in MetaMask</button>
+            <button class="btn ghost sm" id="twLink">Open in Trust Wallet</button>
+            <button class="btn ghost sm" id="cbLink">Open in Coinbase Wallet</button>
+            <button class="btn ghost sm" id="copyLinkBtn">Copy this page's link</button>
+          </div>
+        </div>
       </div>
       <div class="row">
         <span class="lbl">Filing</span>
@@ -347,12 +357,16 @@ async function api(path, params, opts={}) {
 // Fetches every page of a listing endpoint. Each page is cached individually,
 // so a wallet already read once reloads instantly from localStorage.
 // Returns { items, truncated } — truncated means the page cap was hit while
-// more pages remained, so the list may not be complete.
-async function paged(path, params, maxPages) {
+// more pages remained, so the list may not be complete. Pass bypassCache
+// for a listing that's expected to change between calls (the register's own
+// growing list of filings) — otherwise every page is cached indefinitely,
+// which is correct for a wallet's immutable past history but wrong for
+// something meant to reflect newly-added entries.
+async function paged(path, params, maxPages, bypassCache) {
   const cap = maxPages || CFG.MAX_PAGES;
   let out = [], next = null, pages = 0;
   do {
-    const j = await api(path, Object.assign({}, params, next||{}));
+    const j = await api(path, Object.assign({}, params, next||{}), { cache: !bypassCache });
     if (!j) break;
     out = out.concat(j.items || []);
     next = j.next_page_params || null;
@@ -444,7 +458,7 @@ async function loadClaims() {
   if (!state.claims.length) setEmpty('Loading the register from the explorer…');
   let r;
   try {
-    r = await paged('/addresses/' + CFG.CLAIM_BOX + '/transactions', { filter:'to' }, CFG.CLAIM_BOX_MAX_PAGES);
+    r = await paged('/addresses/' + CFG.CLAIM_BOX + '/transactions', { filter:'to' }, CFG.CLAIM_BOX_MAX_PAGES, true);
   } catch (e) {
     setEmpty('The explorer did not answer. Reload, or check ' + CFG.EXPLORER + '/address/' + CFG.CLAIM_BOX + ' directly.');
     return;
@@ -487,11 +501,26 @@ async function loadClaims() {
   }
 
   for (const c of state.claims) {
-    const hit = cache.get(resultCacheKey(lc(c.address)));
-    if (hit) state.results[lc(c.address)] = hit;
+    const k = lc(c.address);
+    if (state.results[k]) continue;
+    const hit = cache.get(resultCacheKey(k));
+    if (hit) state.results[k] = hit;
   }
   render();
   updateFileButton();
+  triggerAutoCalc();
+}
+
+// Runs calculateAll() in the background whenever the register loads or
+// refreshes, so losses show up without anyone having to press "Calculate
+// all" — that button remains for manually forcing a recheck. Guarded so
+// an overlapping call (e.g. Reload clicked while an earlier run is still
+// going) doesn't stack a second full pass on top of the first.
+let autoCalcRunning = false;
+async function triggerAutoCalc() {
+  if (autoCalcRunning) return;
+  autoCalcRunning = true;
+  try { await calculateAll(); } finally { autoCalcRunning = false; }
 }
 
 /* ------------------------------------------------------------------ *
@@ -501,9 +530,41 @@ async function loadClaims() {
  * purpose. Reuses the one fetch for both the check and the later loss
  * calculation, so checking costs one request.
  * ------------------------------------------------------------------ */
+// A post-cutoff incoming transfer alone isn't proof of a purchase — moving
+// tokens between your own wallets, withdrawing v1 from a pool you provided
+// liquidity to before the cutoff, a refund from a failed swap, or an
+// airdrop would all show up the same way. This checks whether the wallet
+// actually paid something for it in the same transaction: native ETH sent,
+// another token sent out, or ETH sent via an internal call. It mirrors the
+// same cost-detection the loss calculator itself uses, so a transaction
+// that can't be shown to have cost the wallet anything is treated the same
+// way here as it would be there — not confidently asserted either way.
+async function isGenuinePurchase(address, hash) {
+  const key = lc(address);
+  const [tx, tokTransfers, internals] = await Promise.all([
+    api('/transactions/' + hash, null, { cache:true }),
+    api('/transactions/' + hash + '/token-transfers', { type:'ERC-20' }, { cache:true }),
+    api('/transactions/' + hash + '/internal-transactions', null, { cache:true })
+  ]);
+  if (tx && lc(tx.from && tx.from.hash) === key && tx.value && tx.value !== '0') return true;
+  for (const tr of ((tokTransfers && tokTransfers.items) || [])) {
+    const tok = tr.token || {};
+    if (lc(tok.address || tok.address_hash) === lc(CFG.TOKEN)) continue;
+    if (lc(tr.from && tr.from.hash) === key) return true;
+  }
+  for (const it of ((internals && internals.items) || [])) {
+    if (lc(it.from && it.from.hash) === key && it.value && it.value !== '0') return true;
+  }
+  return false;
+}
+
 async function checkEligibility(address, onProgress) {
-  let firstBuyTs = null, lateBuyTs = null, pages = 0, seen = 0, next = null;
+  const key = lc(address);
+  let firstBuyTs = null, confirmedLateTs = null, pages = 0, seen = 0, next = null;
   const collected = [];
+  const byHash = new Map();       // hash -> this wallet's RWI transfer legs in it, across pages
+  const verified = new Map();     // hash -> true/false, so a hash is never re-checked
+
   do {
     const j = await api('/addresses/' + address + '/token-transfers',
       Object.assign({ token: CFG.TOKEN, type:'ERC-20' }, next || {}));
@@ -515,22 +576,59 @@ async function checkEligibility(address, onProgress) {
     if (onProgress) onProgress(pages, seen);
 
     for (const tr of items) {
-      if (lc(tr.to && tr.to.hash) === lc(address)) {
+      const h = tr.transaction_hash || tr.tx_hash;
+      if (h) { if (!byHash.has(h)) byHash.set(h, []); byHash.get(h).push(tr); }
+      if (lc(tr.to && tr.to.hash) === key) {
         const ts = tr.timestamp ? Date.parse(tr.timestamp) : null;
-        if (ts == null) continue;
-        if (firstBuyTs === null || ts < firstBuyTs) firstBuyTs = ts;
-        if (ts > CFG.CUTOFF_TS && (lateBuyTs === null || ts < lateBuyTs)) lateBuyTs = ts;
+        if (ts != null && (firstBuyTs === null || ts < firstBuyTs)) firstBuyTs = ts;
       }
     }
-    // A disqualifying buy is conclusive the moment it's found — no need to
-    // keep reading the rest of a long history just to confirm completeness.
-    if (lateBuyTs !== null) return { ok:false, reason:'late', firstBuyTs, lateBuyTs, truncated:false };
+
+    // Only a transaction with BOTH a net gain of RWI for this wallet AND
+    // real counter-value paid is a candidate disqualifying purchase. The
+    // extra verification call only runs for transactions that could
+    // actually matter — an eligible wallet with no late transfers at all
+    // pays nothing extra for this check.
+    for (const [h, legs] of byHash) {
+      if (verified.has(h)) continue;
+      const hasLateIncoming = legs.some(tr =>
+        lc(tr.to && tr.to.hash) === key && tr.timestamp && Date.parse(tr.timestamp) > CFG.CUTOFF_TS);
+      if (!hasLateIncoming) continue;
+
+      const dec = Number((legs[0].token && legs[0].token.decimals) || 18);
+      let delta = 0;
+      for (const tr of legs) {
+        const amt = units((tr.total && tr.total.value) || tr.value || '0', (tr.total && tr.total.decimals) ?? dec);
+        if (lc(tr.to   && tr.to.hash)   === key) delta += amt;
+        if (lc(tr.from && tr.from.hash) === key) delta -= amt;
+      }
+      if (delta <= 1e-12) { verified.set(h, false); continue; } // net wash within this tx — not an acquisition
+
+      let genuine;
+      try { genuine = await isGenuinePurchase(address, h); }
+      catch (e) { throw new Error('couldn\'t verify a transaction while checking eligibility'); }
+      verified.set(h, genuine);
+
+      if (genuine) {
+        for (const tr of legs) {
+          if (lc(tr.to && tr.to.hash) !== key || !tr.timestamp) continue;
+          const ts = Date.parse(tr.timestamp);
+          if (ts > CFG.CUTOFF_TS && (confirmedLateTs === null || ts < confirmedLateTs)) confirmedLateTs = ts;
+        }
+      }
+    }
+
+    // A confirmed, verified late purchase is conclusive the moment it's
+    // found — no need to keep reading the rest of a long history first.
+    if (confirmedLateTs !== null) {
+      return { ok:false, reason:'late', firstBuyTs, lateBuyTs: confirmedLateTs, truncated:false };
+    }
 
     next = j.next_page_params || null;
   } while (next && pages < CFG.MAX_PAGES_TOKEN);
 
-  // An incomplete read can't prove a late buy ISN'T hiding in the pages we
-  // didn't get. Block outright rather than assume the fetched portion is
+  // An incomplete read can't prove a late purchase ISN'T hiding in the pages
+  // we didn't get. Block outright rather than assume the fetched portion is
   // representative; a real holder can retry.
   const truncated = !!next;
   if (truncated) return { ok:false, reason:'truncated', truncated };
@@ -570,9 +668,7 @@ function updateFileButton() {
   if (!state.account) {
     btn.disabled = true;
     st.className = 'status';
-    st.textContent = availableProviders().length
-      ? 'Connect a wallet to check eligibility and file. You can read the register without connecting.'
-      : 'No wallet extension detected in this browser. The register still reads fine without one.';
+    st.textContent = 'Connect a wallet to check eligibility and file. You can read the register without connecting.';
     return;
   }
   if (alreadyFiled(state.account)) {
@@ -612,6 +708,17 @@ window.addEventListener('eip6963:announceProvider', e => {
   if (!providers.find(p => p.info.uuid === e.detail.info.uuid)) providers.push(e.detail);
 });
 window.dispatchEvent(new Event('eip6963:requestProvider'));
+
+const isMobile = /Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent);
+
+// Re-asks for providers rather than relying solely on the one-time
+// page-load request — some mobile wallet in-app browsers finish injecting
+// their provider slightly after the page loads, and a late announcement
+// would otherwise be missed entirely.
+async function refreshProviders() {
+  window.dispatchEvent(new Event('eip6963:requestProvider'));
+  await sleep(150);
+}
 
 function availableProviders() {
   if (providers.length) return providers;
@@ -884,6 +991,17 @@ function resultCacheKey(key) {
   return 'res.' + key + '.' + state.tokenPrice + '.' + bucket;
 }
 
+// Coalesces rapid render() requests into one per animation frame. Used
+// during batch calculation, where up to WALLET_POOL wallets can finish in
+// quick succession — without this, a register of N wallets would rebuild
+// its entire table up to N times during one "Calculate all" run.
+let renderScheduled = false;
+function scheduleRender() {
+  if (renderScheduled) return;
+  renderScheduled = true;
+  requestAnimationFrame(() => { renderScheduled = false; render(); });
+}
+
 // Runs several wallets' calculations concurrently instead of one at a time.
 async function calculateAll() {
   const pending = state.claims.filter(c => !state.results[lc(c.address)]);
@@ -905,10 +1023,11 @@ async function calculateAll() {
       done++;
       $('bar').style.width = Math.round(done / pending.length * 100) + '%';
       $('calcStatus').textContent = done + ' of ' + pending.length + ' calculated…';
-      render();
+      scheduleRender();
     }
   }
   await Promise.all(Array.from({ length: poolSize }, worker));
+  render();  // guarantee a final, immediate render once the batch is done
   $('calcStatus').textContent = 'Done. ' + done + ' wallet' + (done===1?'':'s') + ' recalculated.';
   setTimeout(()=>{ $('bar').style.width = '0'; }, 800);
 }
@@ -976,19 +1095,6 @@ function render() {
       '<td><button class="copy-addr" data-copy="' + c.address + '" title="Copy ' + c.address + '">' + short(c.address) + '</button></td>' +
       '<td class="num" style="color:var(--muted)">' + when + '</td>' + cells + '</tr>';
   }).join('');
-
-  rows.querySelectorAll('[data-copy]').forEach(b => {
-    b.addEventListener('click', () => copyAddress(b));
-  });
-
-  rows.querySelectorAll('[data-calc]').forEach(b => {
-    b.addEventListener('click', async () => {
-      const a = b.getAttribute('data-calc');
-      b.textContent = 'Reading…'; b.disabled = true;
-      try { await computeWallet(a); } catch { state.results[lc(a)] = {error:true, loss:null}; }
-      render();
-    });
-  });
 
   updateTotals();
 }
@@ -1075,13 +1181,23 @@ $('cutoffNote').innerHTML = 'Ineligible if the wallet made any v1 purchase after
   new Date(CFG.CUTOFF_TS).toISOString().slice(0,10) +
   ' — the <a href="' + CFG.CUTOFF_POST + '" target="_blank" rel="noopener">retirement notice</a>, even if it also held v1 earlier.';
 
-$('btnConnect').addEventListener('click', () => {
+$('btnConnect').addEventListener('click', async () => {
+  await refreshProviders();
   const list = availableProviders();
   if (!list.length) {
-    $('fileStatus').className = 'status err';
-    $('fileStatus').textContent = 'No wallet extension detected in this browser.';
+    $('walletList').style.display = 'none';
+    if (isMobile) {
+      $('mobileHelp').style.display = '';
+      $('fileStatus').className = 'status';
+      $('fileStatus').textContent = 'No wallet detected in this browser tab.';
+    } else {
+      $('mobileHelp').style.display = 'none';
+      $('fileStatus').className = 'status err';
+      $('fileStatus').textContent = 'No wallet extension detected in this browser.';
+    }
     return;
   }
+  $('mobileHelp').style.display = 'none';
   if (list.length === 1) return connect(list[0]);
   const box = $('walletList');
   box.style.display = 'flex';
@@ -1094,6 +1210,48 @@ $('btnConnect').addEventListener('click', () => {
     box.appendChild(b);
   });
 });
+
+// Deep links into each wallet app's own in-app browser, where a provider
+// will actually be injected. Formats can drift across wallet versions, so
+// "Copy this page's link" is the guaranteed fallback regardless of whether
+// a particular deep link still matches that wallet's current scheme.
+(function(){
+  const pageUrl = window.location.href;
+  const bareUrl = pageUrl.replace(/^https?:\/\//, '');
+  $('mmLink').addEventListener('click', () => { window.location.href = 'https://metamask.app.link/dapp/' + bareUrl; });
+  $('twLink').addEventListener('click', () => { window.location.href = 'https://link.trustwallet.com/open_url?url=' + encodeURIComponent(pageUrl); });
+  $('cbLink').addEventListener('click', () => { window.location.href = 'https://go.cb-w.com/dapp?cb_url=' + encodeURIComponent(pageUrl); });
+  $('copyLinkBtn').addEventListener('click', async () => {
+    const btn = $('copyLinkBtn'), original = btn.textContent;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(pageUrl);
+      else {
+        const ta = document.createElement('textarea');
+        ta.value = pageUrl; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      }
+      btn.textContent = 'Copied — paste it in your wallet app';
+    } catch (e) { btn.textContent = 'Copy failed'; }
+    setTimeout(() => { btn.textContent = original; }, 2500);
+  });
+})();
+
+// One listener for the whole table instead of rebinding per-row listeners
+// on every render — cheaper, and immune to any timing gap between a
+// render's DOM swap and re-attaching handlers.
+$('rows').addEventListener('click', async e => {
+  const copyBtn = e.target.closest('[data-copy]');
+  if (copyBtn) { copyAddress(copyBtn); return; }
+  const calcBtn = e.target.closest('[data-calc]');
+  if (calcBtn) {
+    const a = calcBtn.getAttribute('data-calc');
+    calcBtn.textContent = 'Reading…';
+    calcBtn.disabled = true;
+    try { await computeWallet(a); } catch { state.results[lc(a)] = { error:true, loss:null }; }
+    render();
+  }
+});
+
 $('btnFile').addEventListener('click', fileClaim);
 $('btnRefresh').addEventListener('click', loadClaims);
 $('btnCalcAll').addEventListener('click', calculateAll);
