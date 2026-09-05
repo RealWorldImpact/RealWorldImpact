@@ -325,15 +325,35 @@ const cache = {
 /* ------------------------------------------------------------------ *
  * Explorer API — throttled, retried, cached
  * ------------------------------------------------------------------ */
-let inflight = 0;
+// A small promise-based semaphore instead of a setTimeout poll loop. Slots
+// are handed off the instant one frees up rather than on a polling interval
+// — which matters because browsers throttle setTimeout in backgrounded
+// tabs (often to once a second), so a poll-based wait can crawl to a near-
+// halt if this page isn't the focused tab while it's calculating. A plain
+// promise resolution isn't subject to that throttling.
+function makeSemaphore(limit) {
+  let active = 0;
+  const queue = [];
+  return {
+    acquire() {
+      if (active < limit) { active++; return Promise.resolve(); }
+      return new Promise(resolve => queue.push(resolve));
+    },
+    release() {
+      const next = queue.shift();
+      if (next) next(); else active--;
+    }
+  };
+}
+const apiSlots = makeSemaphore(CFG.CONCURRENCY);
+
 async function api(path, params, opts={}) {
   const qs = params ? '?' + new URLSearchParams(params) : '';
   const url = CFG.API + path + qs;
   const ck  = opts.cache !== false ? 'req.' + url : null;   // cache by default
   if (ck) { const hit = cache.get(ck); if (hit) return hit; }
 
-  while (inflight >= CFG.CONCURRENCY) await sleep(40);
-  inflight++;
+  await apiSlots.acquire();
   try {
     const maxAttempts = 5;   // rate limits are the most likely failure under load, so worth riding out
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -364,7 +384,7 @@ async function api(path, params, opts={}) {
         clearTimeout(timer);
       }
     }
-  } finally { inflight--; }
+  } finally { apiSlots.release(); }
 }
 
 // Fetches every page of a listing endpoint. Each page is cached individually,
@@ -401,14 +421,13 @@ async function paged(path, params, maxPages, bypassCache) {
  * hundreds of transactions spread over a handful of days costs a handful
  * of price requests, not hundreds.
  * ------------------------------------------------------------------ */
-let priceInflight = 0;
+const priceSlots = makeSemaphore(2);   // gentle on CoinGecko's free tier
 async function historicalEthPrice(day) {
   const ck = 'ethpx.' + day;
   const cached = cache.get(ck);
   if (cached != null) return cached;
 
-  while (priceInflight >= 2) await sleep(60);   // gentle on CoinGecko's free tier
-  priceInflight++;
+  await priceSlots.acquire();
   try {
     const [y, m, d] = day.split('-');
     const url = 'https://api.coingecko.com/api/v3/coins/ethereum/history?date=' + d + '-' + m + '-' + y + '&localization=false';
@@ -430,7 +449,7 @@ async function historicalEthPrice(day) {
       }
     }
     return null;
-  } finally { priceInflight--; }
+  } finally { priceSlots.release(); }
 }
 
 // Resolves historical ETH prices for a whole set of calendar days at once,
@@ -459,7 +478,8 @@ const state = {
   account: null,
   provider: null,
   elig: null,       // eligibility result for the currently connected account
-  claimsReady: false
+  claimsReady: false,
+  calculating: false  // true while an auto/manual calculation batch is actively running
 };
 
 /* ------------------------------------------------------------------ *
@@ -519,7 +539,7 @@ async function loadClaims() {
     const hit = cache.get(resultCacheKey(k));
     if (hit) state.results[k] = hit;
   }
-  render();
+  safeRender();
   updateFileButton();
   triggerAutoCalc();
 }
@@ -533,7 +553,9 @@ let autoCalcRunning = false;
 async function triggerAutoCalc() {
   if (autoCalcRunning) return;
   autoCalcRunning = true;
-  try { await calculateAll(); } finally { autoCalcRunning = false; }
+  try { await calculateAll(); }
+  catch (e) { console.error('Automatic calculation failed:', e); }
+  finally { autoCalcRunning = false; }
 }
 
 /* ------------------------------------------------------------------ *
@@ -1039,7 +1061,7 @@ let renderScheduled = false;
 function scheduleRender() {
   if (renderScheduled) return;
   renderScheduled = true;
-  requestAnimationFrame(() => { renderScheduled = false; render(); });
+  requestAnimationFrame(() => { renderScheduled = false; safeRender(); });
 }
 
 // Runs several wallets' calculations concurrently instead of one at a time.
@@ -1054,6 +1076,8 @@ async function calculateAll() {
   }
   let done = 0, idx = 0;
   const poolSize = Math.min(CFG.WALLET_POOL, pending.length);
+  state.calculating = true;
+  safeRender();
 
   async function worker() {
     while (idx < pending.length) {
@@ -1066,10 +1090,24 @@ async function calculateAll() {
       scheduleRender();
     }
   }
-  await Promise.all(Array.from({ length: poolSize }, worker));
-  render();  // guarantee a final, immediate render once the batch is done
+  try {
+    await Promise.all(Array.from({ length: poolSize }, worker));
+  } finally {
+    state.calculating = false;
+    // A rendering hiccup here would otherwise silently leave the table
+    // showing stale placeholders even though every wallet actually
+    // finished computing — never let that fail invisibly.
+    safeRender();
+  }
   $('calcStatus').textContent = 'Done. ' + done + ' wallet' + (done===1?'':'s') + ' recalculated.';
   setTimeout(()=>{ $('bar').style.width = '0'; }, 800);
+}
+
+// render() wrapped defensively — an exception here should never be able to
+// silently prevent calcStatus/progress updates or leave results computed
+// in memory but never reflected on screen.
+function safeRender() {
+  try { render(); } catch (e) { console.error('render() failed:', e); }
 }
 
 /* ------------------------------------------------------------------ *
@@ -1111,8 +1149,8 @@ function render() {
     let cells;
     if (!r) {
       cells = '<td class="num pending">—</td><td class="num pending">—</td><td class="num pending">—</td>' +
-              '<td class="num pending">not calculated</td>' +
-              '<td class="num"><button class="btn ghost sm" data-calc="' + c.address + '">Calculate</button></td>';
+              '<td class="num pending">' + (state.calculating ? 'calculating…' : 'not yet calculated') + '</td>' +
+              '<td class="num"><button class="btn ghost sm" data-calc="' + c.address + '">' + (state.calculating ? 'Calculate now' : 'Calculate') + '</button></td>';
     } else if (r.error) {
       cells = '<td class="num pending">—</td><td class="num pending">—</td><td class="num pending">—</td>' +
               '<td class="num" style="color:var(--red)">read failed</td>' +
