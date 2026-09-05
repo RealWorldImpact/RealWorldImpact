@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>$RWI v1 loss ledger</title>
-<meta name="description" content="Public register of wallets that held $RWI v1. One entry per wallet, closed to purchases made after the retirement notice.">
+<meta name="description" content="Onchain register of wallets that held $RWI v1. Filed by the wallet itself with a small gas-only transaction; read directly from the chain so it's identical for everyone.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -51,27 +51,25 @@
   section h2{font-size:26px;margin-bottom:6px}
   section .sub{color:var(--muted);max-width:66ch;margin-bottom:24px}
 
-  .panel{border:1px solid var(--rule);background:var(--ink-2);padding:20px}
-  .form{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
-  .form .field{flex:1 1 420px;min-width:240px}
-  input[type=text],input[type=number]{font-family:var(--mono);font-size:14px;background:var(--ink);color:var(--text);border:1px solid var(--rule);padding:12px 12px;border-radius:0;width:100%}
-  input:focus{border-color:var(--lime)}
-  input.bad{border-color:var(--red)}
-  .btn{font-family:var(--mono);font-size:13px;cursor:pointer;background:var(--lime);color:var(--ink);border:1px solid var(--lime);padding:12px 20px;border-radius:0;font-weight:500}
+  .panel{border:1px solid var(--rule);background:var(--ink-2)}
+  .panel .row{padding:18px;border-bottom:1px solid var(--rule)}
+  .panel .row:last-child{border-bottom:0}
+  .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .addr{font-size:13px;word-break:break-all;color:var(--text)}
+  .btn{font-family:var(--mono);font-size:13px;cursor:pointer;background:var(--lime);color:var(--ink);border:1px solid var(--lime);padding:11px 18px;border-radius:0;font-weight:500}
   .btn:hover{background:#DBFF3D;border-color:#DBFF3D}
   .btn[disabled]{background:transparent;color:var(--muted);border-color:var(--rule);cursor:not-allowed}
   .btn.ghost{background:transparent;color:var(--text);border-color:var(--rule)}
   .btn.ghost:hover{border-color:var(--lime);color:var(--lime);background:transparent}
   .btn.sm{padding:7px 12px;font-size:12px}
-  .status{margin-top:14px;font-size:13px;color:var(--muted);min-height:20px}
+  .status{margin-top:12px;font-size:13px;color:var(--muted);min-height:20px}
   .status.ok{color:var(--lime)}
   .status.err{color:var(--red)}
-  .note{margin-top:16px;padding-top:16px;border-top:1px solid var(--rule);color:var(--muted);font-size:12px;max-width:70ch}
-  .note.warn{color:var(--red);border-top-color:var(--red);background:rgba(255,107,74,.08);padding:12px 14px;border:1px solid var(--red);margin-top:16px}
-  .note.warn code{color:var(--text);background:var(--ink-3);padding:1px 4px}
 
   .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
   .bar .grow{flex:1 1 200px;min-width:160px}
+  input[type=text],input[type=number]{font-family:var(--mono);font-size:14px;background:var(--ink);color:var(--text);border:1px solid var(--rule);padding:9px 10px;border-radius:0;width:100%}
+  input:focus{border-color:var(--lime)}
   .tablewrap{border:1px solid var(--rule);overflow-x:auto}
   table{width:100%;border-collapse:collapse;font-size:13px}
   th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap}
@@ -82,6 +80,7 @@
   tbody tr:hover{background:var(--ink-2)}
   tbody tr:last-child td{border-bottom:0}
   tr.mine{border-left:2px solid var(--lime)}
+  tr.pending{opacity:.6}
   .copy-addr{background:none;border:0;padding:0;font:inherit;color:var(--text);cursor:pointer;border-bottom:1px dashed var(--muted)}
   .copy-addr:hover{color:var(--lime);border-bottom-color:var(--lime)}
   .copy-addr.copied{color:var(--lime);border-bottom-style:solid}
@@ -92,6 +91,7 @@
   .empty{padding:40px 18px;color:var(--muted);text-align:center;white-space:normal}
   .progress{height:2px;background:var(--rule);margin-top:14px}
   .progress i{display:block;height:2px;background:var(--lime);width:0;transition:width .2s linear}
+  .trunc-note{font-size:11px;color:var(--muted);margin-top:10px}
 
   .method{display:grid;grid-template-columns:1fr 1fr;gap:28px}
   @media(max-width:800px){.method{grid-template-columns:1fr}}
@@ -116,28 +116,35 @@
 
   <div class="hero">
     <h1>A public register of what v1 cost its holders.</h1>
-    <p>The v1 contract is retired. Paste the wallet that held it and submit — one entry per address. Every entry is visible to everyone who opens this page, and each wallet's loss is recomputed from its own transfer history on Robinhood Chain.</p>
+    <p>The v1 contract is retired. File the wallet that held it by sending a small transaction from that wallet itself — gas only, no tokens move, no signature beyond the transaction. One filing per wallet, and the register is read straight from the chain, so everyone who opens this page sees exactly the same list — there's no database behind it to disagree with.</p>
     <div class="cutoff" id="cutoffNote"></div>
     <div class="totals">
-      <div class="tot"><span class="lbl">Wallets submitted</span><div class="v" id="totWallets">—</div></div>
+      <div class="tot"><span class="lbl">Wallets filed</span><div class="v" id="totWallets">—</div></div>
       <div class="tot"><span class="lbl">Loss recorded</span><div class="v" id="totLoss">—</div></div>
       <div class="tot"><span class="lbl">Calculated</span><div class="v dim" id="totPriced">—</div></div>
     </div>
   </div>
 
   <section id="file">
-    <h2>Submit a wallet</h2>
-    <p class="sub">Paste the address, hit submit. The register checks that the address touched v1 before the retirement notice, then adds it once. Nothing here will ever ask for a seed phrase or a signature.</p>
+    <h2>File your wallet</h2>
+    <p class="sub">Connect the wallet that held v1. It's checked against the chain before you're asked to send anything, so you're never paying gas just to find out you're not eligible.</p>
 
     <div class="panel">
-      <div class="form">
-        <div class="field">
-          <input type="text" id="addrInput" placeholder="0x…" spellcheck="false" autocomplete="off" aria-label="Wallet address">
+      <div class="row">
+        <span class="lbl">Wallet</span>
+        <div class="controls" style="margin-top:10px">
+          <button class="btn" id="btnConnect">Connect wallet</button>
+          <span class="addr" id="connAddr"></span>
         </div>
-        <button class="btn" id="btnSubmit">Submit wallet</button>
+        <div id="walletList" class="controls" style="margin-top:10px;display:none"></div>
       </div>
-      <div class="status" id="fileStatus" role="status" aria-live="polite"></div>
-      <div class="note" id="storeNote"></div>
+      <div class="row">
+        <span class="lbl">Filing</span>
+        <div class="controls" style="margin-top:10px">
+          <button class="btn" id="btnFile" disabled>File claim</button>
+        </div>
+        <div class="status" id="fileStatus" role="status" aria-live="polite">Loading the register…</div>
+      </div>
     </div>
   </section>
 
@@ -149,7 +156,7 @@
       <div class="grow"><input type="text" id="search" placeholder="Filter by address" aria-label="Filter by address"></div>
       <button class="btn ghost sm" id="btnCalcAll">Calculate all</button>
       <button class="btn ghost sm" id="btnCsv">Download CSV</button>
-      <button class="btn ghost sm" id="btnRefresh" title="Fetches new submissions. Does not recompute wallets already calculated.">Reload</button>
+      <button class="btn ghost sm" id="btnRefresh" title="Re-reads the claim box for new filings. Does not recompute wallets already calculated.">Reload</button>
       <button class="btn ghost sm" id="btnClearCache" title="Forces every wallet to be recomputed from scratch on next calculation.">Clear cache</button>
     </div>
 
@@ -159,7 +166,7 @@
           <tr>
             <th style="width:34px" class="num">#</th>
             <th class="sortable" data-sort="address">Wallet</th>
-            <th class="sortable num" data-sort="ts">Submitted</th>
+            <th class="sortable num" data-sort="ts">Filed</th>
             <th class="num">Bought</th>
             <th class="num">Sold</th>
             <th class="num">Still holds</th>
@@ -168,7 +175,7 @@
           </tr>
         </thead>
         <tbody id="rows">
-          <tr><td colspan="8" class="empty">Loading the register…</td></tr>
+          <tr><td colspan="8" class="empty">Loading the register from the explorer…</td></tr>
         </tbody>
         <tfoot id="foot" style="display:none">
           <tr>
@@ -182,6 +189,7 @@
         </tfoot>
       </table>
     </div>
+    <p class="trunc-note" id="truncNote" style="display:none"></p>
     <div class="progress"><i id="bar"></i></div>
     <div class="status" id="calcStatus" role="status" aria-live="polite"></div>
   </section>
@@ -190,12 +198,11 @@
     <h2>How the number is built</h2>
     <div class="method">
       <div>
-        <p>For every transaction where a submitted wallet's v1 balance changed, the counter-value on the other side of that same transaction is measured: ETH sent, ETH returned internally, gas paid, and any transfer of a token priced below.</p>
+        <p>For every transaction where a filed wallet's v1 balance changed, the counter-value on the other side of that same transaction is measured: ETH sent, ETH returned internally, gas paid, and any transfer of a token priced below.</p>
         <p><code>net loss = spent − received − value still held</code></p>
         <p>Acquisitions add to <em>spent</em>, including the gas paid to make the purchase. Disposals add to <em>received</em>, net of the gas paid to sell. Transfers with no counter-value — airdrops, wallet-to-wallet sends, liquidity-pool moves — are counted at zero and flagged <b>unpriced</b>, because the chain alone cannot tell what they were worth to you.</p>
-        <p>Only wrapped ETH is matched by its actual contract address, and it's priced at that specific transaction's own rate — never today's — so a trade from months ago isn't valued at current prices. Stablecoins are matched by symbol alone, since a token can name itself "USDC" without being it. Symbol-only matches are still priced — dropping them would understate real swaps — but flagged <b>symbol-matched</b> so that isn't mistaken for a verified read. A transaction dated before the explorer's price history starts falls back to the current ETH rate and is flagged <b>est. rate</b>. A wallet with more history than one read can retrieve is flagged <b>history incomplete</b>, meaning its number is a floor, not the final word — recalculating later may raise it. A leg is only called <b>unpriced</b> when no counter-value could be found at all; a real net cost or gain — a sale whose gas exceeded its proceeds, for instance — is folded into the total rather than dropped just because it came out negative.</p>
-        <p>A batched transaction that bundles the v1 trade with unrelated swaps can misattribute value between them; this is rare on simple router trades but worth knowing about for anything wallet-shaped rather than person-shaped.</p>
-        <p>Per wallet, the calculator pulls its full transaction list, all token transfers, and all internal transfers in a handful of requests total — not one request per transaction — so a wallet with hundreds of transfers reads about as fast as one with a handful. Multiple wallets are read in parallel. Everything is cached in your browser and can be recomputed from scratch at any time.</p>
+        <p>Only wrapped ETH is matched by its actual contract address, and it's priced at that specific transaction's own rate — never today's — so a trade from months ago isn't valued at current prices. Stablecoins are matched by symbol alone, since a token can name itself "USDC" without being it; those are flagged <b>symbol-matched</b>. A transaction dated before the explorer's price history starts falls back to the current ETH rate and is flagged <b>est. rate</b>. A wallet with more history than one read can retrieve is flagged <b>history incomplete</b>, meaning its number is a floor, not the final word. A leg is only called <b>unpriced</b> when no counter-value could be found at all — a real net cost or gain, like a sale whose gas exceeded its proceeds, is folded into the total rather than dropped just because it came out negative.</p>
+        <p>Per wallet, the calculator pulls its full transaction list, all token transfers, and all internal transfers in a handful of requests total — not one request per transaction. Multiple wallets are read in parallel. Everything is cached in your browser and can be recomputed from scratch at any time.</p>
       </div>
       <div>
         <span class="lbl">Prices used for valuation (USD)</span>
@@ -211,7 +218,7 @@
   </section>
 
   <footer>
-    Submissions are public. Anyone can enter any address, so an entry records interest in a wallet, not ownership of it. Any wallet that bought v1 after the retirement notice is ineligible, even if it also held v1 earlier. This register reports what the chain shows; it is not a promise of repayment, and it is not financial or tax advice.
+    Every entry is a transaction sent from that wallet itself — nobody can file on another wallet's behalf, and there is no separate database to fall out of sync with the chain. Any wallet that bought v1 after the retirement notice is ineligible, even if it also held v1 earlier. This register reports what the chain shows; it is not a promise of repayment, and it is not financial or tax advice.
   </footer>
 </div>
 
@@ -223,28 +230,32 @@ const CFG = {
   EXPLORER : 'https://robinhoodchain.blockscout.com',
   API      : 'https://robinhoodchain.blockscout.com/api/v2',
   CHAIN_ID : 4663,
+  CHAIN_HEX: '0x1237',
+  RPC      : 'https://rpc.mainnet.chain.robinhood.com',
   TOKEN    : '0x2286397228be256529BE1ae9ed8D7d16549e9C6A',   // $RWI v1 (retired)
 
-  // Cutoff for eligibility: a wallet's FIRST v1 acquisition must be at or
-  // before this moment. Timestamp decoded from the post's own snowflake ID
-  // (X blocks direct fetches of post text), not guessed:
+  // Where filings are recorded: a zero-value transaction to this address
+  // carrying CLAIM_TAG as calldata. The register is just this address's
+  // transaction history, read fresh from the chain — no backend, so every
+  // viewer sees the same thing without any configuration.
+  CLAIM_BOX: '0x434c41494d000000000000000000000000000000', // "CLAIM" + zero padding
+  CLAIM_TAG: 'RWI-V1-CLAIM',
+  CLAIM_BOX_MAX_PAGES: 40,
+
+  // Cutoff for eligibility: a wallet is blocked if it made ANY v1
+  // acquisition after this moment, even if it also held v1 earlier.
+  // Timestamp decoded from the post's own snowflake ID (X blocks direct
+  // fetches of post text), not guessed:
   // https://x.com/RWIrobinhood/status/2095333107905786214
   CUTOFF_TS   : Date.parse('2026-09-03T02:08:36.988Z'),
   CUTOFF_POST : 'https://x.com/RWIrobinhood/status/2095333107905786214',
-
-  // Register backend. Set this to make submissions genuinely shared across
-  // every visitor once this file is hosted on its own domain — see
-  // worker.js (shipped alongside this file) for a ready-made backend.
-  // Priority if unset: Claude's chat-preview storage (works only inside
-  // Claude, never once hosted elsewhere) -> this browser only.
-  CLAIMS_ENDPOINT: null,   // e.g. 'https://rwi-claims.<your-subdomain>.workers.dev'
 
   // Quote assets recognised as counter-value in a swap. Matching by
   // contract address is trustworthy; matching by symbol alone is not — any
   // token can name itself "USDC" — so entries without a verified address
   // are still priced (better than silently dropping the leg) but flagged
   // "symbol-matched" per wallet so that isn't mistaken for a verified read.
-  // usd:null means "use the live/historical ETH rate".
+  // usd:null means "use that transaction's own historical/fallback ETH rate".
   QUOTES: [
     { symbol:'WETH', address:'0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73', usd:null }, // verified canonical WETH on Robinhood Chain
     { symbol:'ETH',  address:null, usd:null },
@@ -255,14 +266,18 @@ const CFG = {
   ],
 
   // The wallet's own v1 transfers decide eligibility and the whole delta
-  // series, so that list gets a deeper page cap than the general
-  // pricing-context lists — missing an early buy would be worse than a slow load.
+  // series, so that list gets a deep page cap — missing an early or late
+  // buy would be worse than a slow load. A read that still hits this cap
+  // is treated as unverifiable rather than guessed at.
   MAX_PAGES_TOKEN: 100,
   MAX_PAGES: 25,
   CONCURRENCY: 6,     // parallel HTTP requests to the explorer
   WALLET_POOL: 4,     // wallets calculated in parallel by "Calculate all"
   COUNT_GAS: true      // include gas fees the wallet paid as part of its cost
 };
+
+const CLAIM_DATA = '0x' + [...new TextEncoder().encode(CFG.CLAIM_TAG)]
+  .map(b => b.toString(16).padStart(2,'0')).join('');
 
 /* ------------------------------------------------------------------ *
  * Helpers
@@ -291,96 +306,6 @@ const cache = {
   set(k,v){ try { localStorage.setItem(CACHE_PREFIX+k, JSON.stringify(v)); } catch {} },
   clear(){ try { Object.keys(localStorage).filter(k=>k.startsWith(CACHE_PREFIX)).forEach(k=>localStorage.removeItem(k)); } catch {} }
 };
-
-/* ------------------------------------------------------------------ *
- * The register store
- *   key shape: claim:<lowercase address>:<ms timestamp>
- *   one list() call returns the whole register, so no per-row fetches.
- *
- * IMPORTANT: window.storage only exists inside Claude's own chat preview —
- * it is injected by Claude.ai and is NOT a standard browser API. Once this
- * file is hosted on an actual domain (rwihood.org or anywhere else),
- * window.storage does not exist, and without CLAIMS_ENDPOINT configured the
- * register silently falls back to per-browser storage: every visitor gets
- * their own private, unshared copy, and the page still looks like it's
- * working. That's the failure mode that already happened once. A real
- * CLAIMS_ENDPOINT is therefore checked FIRST — it's the only mode that's
- * still correct after this file leaves Claude's preview — and anything
- * short of a real shared backend now shows a hard-to-miss warning instead
- * of a quiet footnote.
- * ------------------------------------------------------------------ */
-const store = {
-  mode: 'local',
-  shared: false,
-
-  init() {
-    if (CFG.CLAIMS_ENDPOINT) {
-      this.mode = 'rest';
-      this.shared = true;
-    } else if (typeof window !== 'undefined' && window.storage && window.storage.list) {
-      this.mode = 'shared';
-      this.shared = true;
-    } else {
-      this.mode = 'local';
-      this.shared = false;
-    }
-    renderStoreNote();
-  },
-
-  async list() {
-    if (this.mode === 'rest') {
-      const r = await fetch(CFG.CLAIMS_ENDPOINT, { headers:{accept:'application/json'} });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const j = await r.json();
-      const arr = Array.isArray(j) ? j : (j.claims || []);
-      return arr.map(c => ({ address: c.address, ts: c.ts || c.timestamp || 0 }));
-    }
-    if (this.mode === 'shared') {
-      const res = await window.storage.list('claim:', true);
-      return (res && res.keys ? res.keys : []).map(parseKey).filter(Boolean);
-    }
-    return cache.get('local.claims') || [];
-  },
-
-  async add(address, ts) {
-    const key = 'claim:' + lc(address) + ':' + ts;
-    if (this.mode === 'rest') {
-      const r = await fetch(CFG.CLAIMS_ENDPOINT, {
-        method:'POST', headers:{'content-type':'application/json'},
-        body: JSON.stringify({ address, ts })
-      });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return;
-    }
-    if (this.mode === 'shared') {
-      await window.storage.set(key, JSON.stringify({ address, ts }), true);
-      return;
-    }
-    const all = cache.get('local.claims') || [];
-    all.push({ address, ts });
-    cache.set('local.claims', all);
-  }
-};
-
-function renderStoreNote() {
-  const el = $('storeNote');
-  if (store.mode === 'rest') {
-    el.className = 'note';
-    el.textContent = 'Entries are stored at ' + CFG.CLAIMS_ENDPOINT + ' and are visible to everyone who opens this page.';
-  } else if (store.mode === 'shared') {
-    el.className = 'note warn';
-    el.innerHTML = '<b>Preview-only storage.</b> This register is currently backed by Claude\'s chat-preview storage, which does not exist once this page is hosted elsewhere. Deploy the register backend and set <code>CLAIMS_ENDPOINT</code> before treating this as the real, public register — otherwise submissions here will not appear once this file is hosted on its own domain.';
-  } else {
-    el.className = 'note warn';
-    el.innerHTML = '<b>Not shared.</b> No register backend is configured, so submissions are saved only in this browser — nobody else will see them, and reopening this page elsewhere shows an empty register even though it isn\'t. Set <code>CLAIMS_ENDPOINT</code> to a real backend to fix this.';
-  }
-}
-
-function parseKey(k) {
-  const parts = String(k).split(':');            // claim : addr : ts
-  if (parts.length < 3 || !isAddr(parts[1])) return null;
-  return { address: parts[1], ts: Number(parts[2]) || 0 };
-}
 
 /* ------------------------------------------------------------------ *
  * Explorer API — throttled, retried, cached
@@ -415,7 +340,7 @@ async function api(path, params, opts={}) {
 // Fetches every page of a listing endpoint. Each page is cached individually,
 // so a wallet already read once reloads instantly from localStorage.
 // Returns { items, truncated } — truncated means the page cap was hit while
-// more pages remained, so the list may not be the wallet's full history.
+// more pages remained, so the list may not be complete.
 async function paged(path, params, maxPages) {
   const cap = maxPages || CFG.MAX_PAGES;
   let out = [], next = null, pages = 0;
@@ -433,39 +358,77 @@ async function paged(path, params, maxPages) {
  * State
  * ------------------------------------------------------------------ */
 const state = {
-  claims: [],       // {address, ts}
-  results: {},      // address(lc) -> {spent, received, held, heldUsd, loss, unpriced}
+  claims: [],       // {address, block, ts, hash, pending?}
+  pending: [],       // filings sent this session, not yet visible on chain
+  results: {},      // address(lc) -> {spent, received, held, heldUsd, loss, ...}
   ethPrice: null,
   tokenPrice: 0,
   sortKey: 'loss',
   sortDir: -1,
   filter: '',
-  mine: JSON.parse(localStorage.getItem(CACHE_PREFIX+'mine') || '[]')
+  account: null,
+  provider: null,
+  elig: null,       // eligibility result for the currently connected account
+  claimsReady: false
 };
 
 /* ------------------------------------------------------------------ *
- * Load
+ * Claims register — read directly from the claim box's transaction
+ * history. This is the entire "backend": no database, so nothing to
+ * misconfigure or fall out of sync — every viewer runs this same read.
  * ------------------------------------------------------------------ */
 async function loadClaims() {
+  if (!state.claims.length) setEmpty('Loading the register from the explorer…');
+  let r;
   try {
-    const raw = await store.list();
-    const seen = new Map();
-    for (const c of raw) {
-      if (!c || !isAddr(c.address)) continue;
-      const k = lc(c.address);
-      const prev = seen.get(k);
-      if (!prev || (c.ts && c.ts < prev.ts)) seen.set(k, { address: lc(c.address), ts: c.ts || 0 });
-    }
-    state.claims = [...seen.values()].sort((a,b) => a.ts - b.ts);
+    r = await paged('/addresses/' + CFG.CLAIM_BOX + '/transactions', { filter:'to' }, CFG.CLAIM_BOX_MAX_PAGES);
   } catch (e) {
-    setEmpty('The register could not be read right now. Reload, or check that the store is reachable.');
+    setEmpty('The explorer did not answer. Reload, or check ' + CFG.EXPLORER + '/address/' + CFG.CLAIM_BOX + ' directly.');
     return;
   }
+  const seen = new Map();
+  for (const t of r.items) {
+    const input = lc(t.raw_input || t.input || '');
+    if (!input.startsWith(lc(CLAIM_DATA))) continue;
+    if (t.status && t.status !== 'ok') continue;
+    const from = t.from && t.from.hash;
+    if (!from) continue;
+    const key = lc(from);
+    const block = t.block_number ?? t.block ?? 0;
+    const ts = t.timestamp ? Date.parse(t.timestamp) : 0;
+    const rec = { address: key, block, ts, hash: t.hash };
+    const prev = seen.get(key);
+    if (!prev || block < prev.block) seen.set(key, rec); // first filing wins
+  }
+  // Carry over this session's just-sent filings until the chain catches up,
+  // so a filed wallet doesn't briefly vanish from the list while indexing.
+  for (const p of state.pending) {
+    if (!seen.has(p.address)) {
+      seen.set(p.address, { address: p.address, block: Number.MAX_SAFE_INTEGER, ts: p.ts, hash: p.hash, pending:true });
+    }
+  }
+  state.pending = state.pending.filter(p => {
+    const c = seen.get(p.address);
+    return !c || c.pending;
+  });
+
+  state.claims = [...seen.values()].sort((a,b) => a.block - b.block);
+  state.claimsReady = true;
+
+  const tn = $('truncNote');
+  if (r.truncated) {
+    tn.style.display = '';
+    tn.textContent = 'This register has more filings than could be read in one pass — some older entries may be missing until you reload.';
+  } else {
+    tn.style.display = 'none';
+  }
+
   for (const c of state.claims) {
     const hit = cache.get(resultCacheKey(lc(c.address)));
     if (hit) state.results[lc(c.address)] = hit;
   }
   render();
+  updateFileButton();
 }
 
 /* ------------------------------------------------------------------ *
@@ -473,15 +436,14 @@ async function loadClaims() {
  * CFG.CUTOFF_TS — not just if its first one was late. A wallet that bought
  * early and bought again after the notice is still a late buyer for this
  * purpose. Reuses the one fetch for both the check and the later loss
- * calculation, so submitting costs one request.
+ * calculation, so checking costs one request.
  * ------------------------------------------------------------------ */
 async function checkEligibility(address) {
   const { items: transfers, truncated } = await paged(
     '/addresses/' + address + '/token-transfers', { token: CFG.TOKEN, type:'ERC-20' }, CFG.MAX_PAGES_TOKEN);
 
   // An incomplete read can't prove a late buy ISN'T hiding in the pages we
-  // didn't get — Blockscout's page order isn't something this reads to rely
-  // on either way. Block outright rather than assume the fetched portion is
+  // didn't get. Block outright rather than assume the fetched portion is
   // representative; a real holder can retry.
   if (truncated) return { ok:false, reason:'truncated', transfers, truncated };
   if (!transfers.length) return { ok:false, reason:'no-history', transfers, truncated };
@@ -500,85 +462,174 @@ async function checkEligibility(address) {
   return { ok:true, firstBuyTs, transfers, truncated };
 }
 
-async function submit() {
-  const input = $('addrInput');
+function alreadyFiled(addr) {
+  return !!state.claims.find(c => lc(c.address) === lc(addr||''));
+}
+
+async function refreshEligibility() {
+  state.elig = null;
+  if (!state.account || alreadyFiled(state.account)) { updateFileButton(); return; }
   const st = $('fileStatus');
-  const raw = input.value.trim();
   st.className = 'status';
-
-  if (!isAddr(raw)) {
-    input.classList.add('bad');
-    st.className = 'status err';
-    st.textContent = 'That is not a wallet address. It needs to be 0x followed by 40 hex characters.';
-    return;
-  }
-  input.classList.remove('bad');
-  const addr = lc(raw);
-
-  if (state.claims.find(c => lc(c.address) === addr)) {
-    st.className = 'status err';
-    st.textContent = 'That wallet is already on the register. Each address is counted once.';
-    return;
-  }
-
-  $('btnSubmit').disabled = true;
-  st.textContent = 'Checking the chain for v1 history…';
-
-  let elig;
+  st.textContent = 'Checking this wallet\'s v1 history…';
+  $('btnFile').disabled = true;
   try {
-    elig = await checkEligibility(addr);
+    state.elig = await checkEligibility(state.account);
   } catch (e) {
+    state.elig = { ok:false, reason:'error' };
     st.className = 'status err';
-    st.textContent = 'The explorer did not answer, so this could not be verified. Try again in a moment.';
-    $('btnSubmit').disabled = false;
+    st.textContent = 'The explorer did not answer, so this wallet could not be verified. Try again in a moment.';
     return;
   }
+  updateFileButton();
+}
+
+function updateFileButton() {
+  const btn = $('btnFile'), st = $('fileStatus');
+  if (!state.claimsReady) { btn.disabled = true; return; } // status text already says "Loading…"
+
+  if (!state.account) {
+    btn.disabled = true;
+    st.className = 'status';
+    st.textContent = availableProviders().length
+      ? 'Connect a wallet to check eligibility and file. You can read the register without connecting.'
+      : 'No wallet extension detected in this browser. The register still reads fine without one.';
+    return;
+  }
+  if (alreadyFiled(state.account)) {
+    btn.disabled = true;
+    st.className = 'status ok';
+    st.textContent = 'This wallet is already on the register. One filing per wallet.';
+    return;
+  }
+  const elig = state.elig;
+  if (!elig) { btn.disabled = true; return; } // still checking; status text already set
 
   if (!elig.ok) {
+    btn.disabled = true;
     st.className = 'status err';
     if (elig.reason === 'late') {
       const when = new Date(elig.lateBuyTs).toISOString().slice(0,10);
-      st.innerHTML = 'That wallet bought v1 on ' + when + ', after the <a href="' + CFG.CUTOFF_POST + '" target="_blank" rel="noopener">retirement notice</a>. Any purchase after the notice makes a wallet ineligible, even if it also held v1 earlier.';
+      st.innerHTML = 'This wallet bought v1 on ' + when + ', after the <a href="' + CFG.CUTOFF_POST + '" target="_blank" rel="noopener">retirement notice</a>. Any purchase after the notice makes a wallet ineligible, even if it also held v1 earlier.';
     } else if (elig.reason === 'truncated') {
       st.textContent = 'This wallet has more v1 history than could be verified in one pass, so a purchase after the retirement notice can\'t be ruled out with confidence. Try again in a moment.';
+    } else if (elig.reason === 'no-buy' || elig.reason === 'no-history') {
+      st.textContent = 'No v1 acquisition found for this wallet.';
     } else {
-      st.textContent = 'No v1 acquisition found for that address. Check it, or submit the wallet that actually held the token.';
+      st.textContent = 'This wallet could not be verified. Try again.';
     }
-    $('btnSubmit').disabled = false;
     return;
   }
+  btn.disabled = false;
+  st.className = 'status';
+  st.textContent = 'Eligible. Filing sends a zero-value transaction to the claim box with a short tag — gas only, no tokens move.';
+}
 
-  const ts = Date.now();
+/* ------------------------------------------------------------------ *
+ * Wallet connection (EIP-6963 with a legacy window.ethereum fallback)
+ * ------------------------------------------------------------------ */
+const providers = [];
+window.addEventListener('eip6963:announceProvider', e => {
+  if (!providers.find(p => p.info.uuid === e.detail.info.uuid)) providers.push(e.detail);
+});
+window.dispatchEvent(new Event('eip6963:requestProvider'));
+
+function availableProviders() {
+  if (providers.length) return providers;
+  if (window.ethereum) return [{ info:{name:'Browser wallet', uuid:'legacy'}, provider: window.ethereum }];
+  return [];
+}
+
+async function connect(entry) {
+  const p = entry.provider;
+  const accounts = await p.request({ method:'eth_requestAccounts' });
+  state.provider = p;
+  state.account  = lc(accounts[0]);
+  $('connAddr').textContent = accounts[0];
+  $('btnConnect').textContent = 'Change wallet';
+  $('walletList').style.display = 'none';
+  p.on && p.on('accountsChanged', a => {
+    state.account = a[0] ? lc(a[0]) : null;
+    $('connAddr').textContent = a[0] || '';
+    refreshEligibility();
+    render();
+  });
+  await ensureChain(p);
+  await refreshEligibility();
+  render();
+}
+
+async function ensureChain(p) {
   try {
-    await store.add(addr, ts);
+    const id = await p.request({ method:'eth_chainId' });
+    if (parseInt(id,16) === CFG.CHAIN_ID) return true;
+    await p.request({ method:'wallet_switchEthereumChain', params:[{ chainId: CFG.CHAIN_HEX }] });
+    return true;
+  } catch (e) {
+    if (e && (e.code === 4902 || e.code === -32603)) {
+      try {
+        await p.request({ method:'wallet_addEthereumChain', params:[{
+          chainId: CFG.CHAIN_HEX, chainName:'Robinhood Chain',
+          nativeCurrency:{ name:'Ether', symbol:'ETH', decimals:18 },
+          rpcUrls:[CFG.RPC], blockExplorerUrls:[CFG.EXPLORER]
+        }]});
+        return true;
+      } catch {}
+    }
+    return false;
+  }
+}
+
+async function fileClaim() {
+  const st = $('fileStatus');
+  if (!state.provider || !state.account) return;
+  if (alreadyFiled(state.account)) { updateFileButton(); return; }
+  if (!state.elig || !state.elig.ok) { updateFileButton(); return; }
+
+  const ok = await ensureChain(state.provider);
+  if (!ok) { st.className = 'status err'; st.textContent = 'Switch the wallet to Robinhood Chain (4663) and try again.'; return; }
+
+  $('btnFile').disabled = true;
+  st.className = 'status';
+  st.textContent = 'Confirm the transaction in your wallet.';
+  try {
+    const hash = await state.provider.request({ method:'eth_sendTransaction', params:[{
+      from: state.account, to: CFG.CLAIM_BOX, value: '0x0', data: CLAIM_DATA
+    }]});
+    st.className = 'status ok';
+    st.innerHTML = 'Filed. <a href="' + CFG.EXPLORER + '/tx/' + hash + '" target="_blank" rel="noopener">' + short(hash) + '</a> — the register updates once it confirms.';
+
+    state.pending.push({ address: state.account, hash, ts: Date.now() });
+    if (!alreadyFiled(state.account)) {
+      state.claims.push({ address: state.account, block: Number.MAX_SAFE_INTEGER, ts: Date.now(), hash, pending:true });
+    }
+    // Already have this wallet's transfers from the eligibility check —
+    // compute now rather than waiting for the filing tx itself to index.
+    try { await computeWallet(state.account, state.elig.transfers, state.elig.truncated); }
+    catch { state.results[state.account] = { error:true, loss:null }; }
+    render();
+    updateFileButton();
+
+    setTimeout(loadClaims, 6000);
+    setTimeout(loadClaims, 20000);
   } catch (e) {
     st.className = 'status err';
-    st.textContent = 'The register would not accept the entry: ' + ((e && e.message) || 'unknown error') + '. Try again.';
-    $('btnSubmit').disabled = false;
-    return;
+    st.textContent = (e && e.code === 4001)
+      ? 'Filing cancelled in the wallet. Nothing was sent.'
+      : 'The transaction did not go through: ' + ((e && e.message) || 'unknown error') + '.';
+    $('btnFile').disabled = false;
   }
-
-  state.mine.push(addr);
-  localStorage.setItem(CACHE_PREFIX+'mine', JSON.stringify(state.mine));
-  input.value = '';
-  $('btnSubmit').disabled = false;
-  st.className = 'status ok';
-  st.textContent = short(addr) + ' is on the register. Calculating its loss now.';
-
-  await loadClaims();
-  try { await computeWallet(addr, elig.transfers, elig.truncated); } catch { state.results[addr] = { error:true, loss:null }; }
-  render();
 }
 
 /* ------------------------------------------------------------------ *
  * Loss calculation for one wallet.
  *
  * Performance: instead of one API call per transaction the wallet was
- * party to (the old N+1 pattern), this pulls three address-level lists —
- * transactions, token transfers, internal transfers — each in a small
- * number of paginated requests regardless of how many transactions the
- * wallet has, then joins them client-side by hash. A wallet with 500
- * transactions costs the same ~6-9 requests as one with 20.
+ * party to, this pulls three address-level lists — transactions, token
+ * transfers, internal transfers — each in a small number of paginated
+ * requests regardless of transaction count, then joins them client-side
+ * by hash. A wallet with 500 transactions costs the same handful of
+ * requests as one with 20.
  * ------------------------------------------------------------------ */
 // Resolves a transfer's token to a USD price. Address match is trusted;
 // symbol-only match is priced too (dropping it would understate loss for the
@@ -751,7 +802,7 @@ async function calculateAll() {
   if (!pending.length) {
     $('calcStatus').textContent = state.claims.length
       ? 'Every wallet on the register is already calculated.'
-      : 'Nothing to calculate yet — no wallets have been submitted.';
+      : 'Nothing to calculate yet — no wallets have filed.';
     return;
   }
   let done = 0, idx = 0;
@@ -792,20 +843,23 @@ function render() {
     const ra = state.results[lc(a.address)], rb = state.results[lc(b.address)];
     const haveA = !!(ra && !ra.error && ra.loss != null);
     const haveB = !!(rb && !rb.error && rb.loss != null);
-    // Not-yet-calculated / failed wallets always sit at the end — a numeric
-    // sentinel here could collide with a genuine negative loss (a net gain).
     if (haveA !== haveB) return haveA ? -1 : 1;
     if (!haveA) return 0;
     return state.sortDir * (ra.loss - rb.loss);
   });
 
-  if (!state.claims.length) { setEmpty('Nobody has submitted a wallet yet. The first entry shows up here immediately.'); updateTotals(); return; }
-  if (!list.length) { setEmpty('No submitted wallet matches that address.'); return; }
+  if (!state.claims.length) {
+    setEmpty(state.claimsReady ? 'No wallet has filed yet. The first entry appears here within a block or two of the transaction confirming.' : 'Loading the register from the explorer…');
+    updateTotals();
+    return;
+  }
+  if (!list.length) { setEmpty('No filed wallet matches that address.'); return; }
 
   rows.innerHTML = list.map((c, i) => {
     const r = state.results[lc(c.address)];
-    const when = c.ts ? new Date(c.ts).toISOString().slice(0,10) : '—';
-    const mine = state.mine.includes(lc(c.address));
+    const when = c.pending ? 'pending' : (c.ts ? new Date(c.ts).toISOString().slice(0,10) : '#' + c.block);
+    const mine = state.account && lc(state.account) === lc(c.address);
+    const linkHref = CFG.EXPLORER + (c.pending ? '/tx/' + c.hash : '/address/' + c.address);
     let cells;
     if (!r) {
       cells = '<td class="num pending">—</td><td class="num pending">—</td><td class="num pending">—</td>' +
@@ -825,9 +879,10 @@ function render() {
               '<td class="num">' + usdShort(r.received) + '</td>' +
               '<td class="num">' + (r.held ? r.held.toLocaleString('en-US',{maximumFractionDigits:0}) : '0') + '</td>' +
               '<td class="num loss">' + usdShort(r.loss) + flags + '</td>' +
-              '<td class="num"><a href="' + CFG.EXPLORER + '/address/' + c.address + '" target="_blank" rel="noopener">chain</a></td>';
+              '<td class="num"><a href="' + linkHref + '" target="_blank" rel="noopener">chain</a></td>';
     }
-    return '<tr' + (mine ? ' class="mine"' : '') + '>' +
+    const trClass = (mine ? 'mine' : '') + (c.pending ? ' pending' : '');
+    return '<tr' + (trClass.trim() ? ' class="' + trClass.trim() + '"' : '') + '>' +
       '<td class="num" style="color:var(--muted)">' + (i+1) + '</td>' +
       '<td><button class="copy-addr" data-copy="' + c.address + '" title="Copy ' + c.address + '">' + short(c.address) + '</button></td>' +
       '<td class="num" style="color:var(--muted)">' + when + '</td>' + cells + '</tr>';
@@ -896,12 +951,12 @@ function updateTotals() {
 function csv() {
   const usd2 = n => (n==null || !isFinite(n)) ? '' : n.toFixed(2);
   const tok6 = n => (n==null || !isFinite(n)) ? '' : n.toFixed(6);
-  const head = ['rank','wallet','submitted_at','relevant_txs','usd_spent','usd_received','tokens_held','usd_still_held','net_loss_usd',
+  const head = ['rank','wallet','filed_at','filing_tx','relevant_txs','usd_spent','usd_received','tokens_held','usd_still_held','net_loss_usd',
     'unpriced_transfers','symbol_matched_transfers','estimated_rate_transfers','history_possibly_incomplete'];
   const lines = [head.join(',')];
   state.claims.forEach((c,i) => {
     const r = state.results[lc(c.address)] || {};
-    lines.push([i+1, c.address, c.ts ? new Date(c.ts).toISOString() : '', (r.txs??''),
+    lines.push([i+1, c.address, c.ts ? new Date(c.ts).toISOString() : '', c.hash, (r.txs??''),
       usd2(r.spent), usd2(r.received), tok6(r.held), usd2(r.heldUsd), usd2(r.loss),
       (r.unpriced??''), (r.unverified??''), (r.estimated??''), (r.truncated ? 'yes' : '')].join(','));
   });
@@ -931,9 +986,26 @@ $('cutoffNote').innerHTML = 'Ineligible if the wallet made any v1 purchase after
   new Date(CFG.CUTOFF_TS).toISOString().slice(0,10) +
   ' — the <a href="' + CFG.CUTOFF_POST + '" target="_blank" rel="noopener">retirement notice</a>, even if it also held v1 earlier.';
 
-$('btnSubmit').addEventListener('click', submit);
-$('addrInput').addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
-$('addrInput').addEventListener('input', () => $('addrInput').classList.remove('bad'));
+$('btnConnect').addEventListener('click', () => {
+  const list = availableProviders();
+  if (!list.length) {
+    $('fileStatus').className = 'status err';
+    $('fileStatus').textContent = 'No wallet extension detected in this browser.';
+    return;
+  }
+  if (list.length === 1) return connect(list[0]);
+  const box = $('walletList');
+  box.style.display = 'flex';
+  box.innerHTML = '';
+  list.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'btn ghost sm';
+    b.textContent = p.info.name;
+    b.addEventListener('click', () => connect(p));
+    box.appendChild(b);
+  });
+});
+$('btnFile').addEventListener('click', fileClaim);
 $('btnRefresh').addEventListener('click', loadClaims);
 $('btnCalcAll').addEventListener('click', calculateAll);
 $('btnCsv').addEventListener('click', csv);
@@ -962,10 +1034,6 @@ $('pxEth').addEventListener('change', e => {
   const v = Number(e.target.value);
   if (!v || v === state.ethPrice) return;
   state.ethPrice = v;
-  // Spent/received are baked in at calculation time for any leg priced off
-  // the live rate, so a price change has to force those wallets to
-  // recompute — updating the variable alone would leave stale numbers on
-  // screen despite the method section's claim that changing it recalculates.
   state.results = {};
   render();
   $('calcStatus').textContent = 'ETH price updated. Recalculating…';
@@ -973,16 +1041,12 @@ $('pxEth').addEventListener('change', e => {
 });
 
 (async function boot() {
-  store.init();
   try {
     const stats = await api('/stats', null, { cache:false });
     state.ethPrice = Number((stats && stats.coin_price) || 0) || null;
   } catch {}
   $('pxEth').value = state.ethPrice || '';
   if (!state.ethPrice) {
-    // Without a live rate, any transaction lacking its own historical rate
-    // would otherwise be priced at zero and misread as "no data" rather than
-    // a real, unpriced cost — so calculation is worth blocking on this.
     $('calcStatus').className = 'status err';
     $('calcStatus').textContent = 'Could not fetch the live ETH rate. Enter one manually above before calculating, or transactions without their own historical rate will be undercounted rather than flagged.';
   }
