@@ -238,19 +238,22 @@
  * ------------------------------------------------------------------ */
 const CFG = {
   EXPLORER : 'https://robinhoodchain.blockscout.com',  // used for LINKS (plain navigation, never fetched) — not subject to CORS
-  // robinhoodchain.blockscout.com (the self-hosted instance) sends no
-  // Access-Control-Allow-Origin header, so a browser fetch() to it is
-  // blocked outright, regardless of retries — that's enforced by the
-  // browser before the request even reaches the server. Blockscout's own
-  // multi-chain PRO API (api.blockscout.com) is a separate service built
-  // specifically for third-party apps to call from the browser, so it's
-  // used here instead — same v2 REST shape, just with a chain ID in the
-  // path and a free API key.
+  // Both robinhoodchain.blockscout.com AND api.blockscout.com (Blockscout's
+  // own multi-chain PRO API) were confirmed live, by checking the actual
+  // browser console, to send no Access-Control-Allow-Origin header — the
+  // request server-side succeeds (a real 200 OK), but the browser refuses
+  // to hand the page the response either way. That's enforced by the
+  // browser itself, before the request reaches either server, so no amount
+  // of retrying fixes it — only a proxy that fetches server-side can.
   //
-  // Get a free key: sign up at https://dev.blockscout.com — no payment
-  // info needed, no server to deploy. Paste it below.
-  API_KEY  : 'proapi_fftelwBBB5w3khnPHlENU88CvrVB5Ho4u7wxUsrjdDCopAs0JjiOlgF6vwsOVBpUC_epsTn3',   // <-- paste your free api.blockscout.com key here
-  API      : 'https://api.blockscout.com/4663/api/v2',
+  // See val-town-proxy.ts (shipped alongside this file) — a small HTTP
+  // endpoint on Val Town (val.town) that does exactly that, with your API
+  // key attached on its end rather than exposed here. No CLI, no
+  // Cloudflare account: sign up, paste the code in, done.
+  //
+  // PASTE YOUR DEPLOYED VAL'S URL HERE — nothing on this page works until
+  // this points at a real, deployed proxy.
+  API      : 'https://YOUR-VAL-NAME.web.val.run/api/v2',
   CHAIN_ID : 4663,
   CHAIN_HEX: '0x1237',
   RPC      : 'https://rpc.mainnet.chain.robinhood.com',
@@ -362,8 +365,7 @@ const apiSlots = makeSemaphore(CFG.CONCURRENCY);
 
 async function api(path, params, opts={}) {
   const p = new URLSearchParams(params || {});
-  if (CFG.API_KEY) p.set('apikey', CFG.API_KEY);
-  const qs = [...p.keys()].length ? '?' + p.toString() : '';
+  const qs = p.toString() ? '?' + p.toString() : '';
   const url = CFG.API + path + qs;
   const ck  = opts.cache !== false ? 'req.' + url : null;   // cache by default
   if (ck) { const hit = cache.get(ck); if (hit) return hit; }
