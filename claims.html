@@ -210,7 +210,8 @@
       <div>
         <p>For every transaction where a filed wallet's v1 balance changed, the counter-value on the other side of that same transaction is measured: ETH sent, ETH returned internally, gas paid, and any transfer of a token priced below.</p>
         <p><code>net loss = spent − received − value still held</code></p>
-        <p>Acquisitions add to <em>spent</em>, including the gas paid to make the purchase. Disposals add to <em>received</em>, net of the gas paid to sell. Transfers with no counter-value — airdrops, wallet-to-wallet sends, liquidity-pool moves — are counted at zero and flagged <b>unpriced</b>, because the chain alone cannot tell what they were worth to you.</p>
+        <p>Acquisitions add to <em>spent</em>, including the gas paid to make the purchase. Disposals add to <em>received</em>, net of the gas paid to sell. A transfer that moved v1 without any payment in the same transaction — a wallet-to-wallet move, an airdrop, a liquidity-pool deposit or withdrawal — is counted at zero and flagged <b>unpriced</b>, because the chain alone cannot show what it was worth to you.</p>
+        <p>Where a wallet has enough unrelated activity to push its older v1 trades past the bulk read, those specific transactions are fetched individually rather than left blank — otherwise a real buy or sell would be silently valued at zero and quietly understate the loss. <b>History incomplete</b> therefore means something genuinely couldn't be resolved, not just that a list was long.</p>
         <p>Only wrapped ETH is matched by its actual contract address, and both it and native ETH are priced using that specific transaction's own calendar-day historical rate — never today's — so a trade from months ago isn't valued at current prices. Stablecoins are matched by symbol alone, since a token can name itself "USDC" without being it; those are flagged <b>symbol-matched</b>. When a day's historical rate can't be retrieved, today's rate is used as a fallback and flagged <b>est. rate</b>. A wallet with more history than one read can retrieve is flagged <b>history incomplete</b>, meaning its number is a floor, not the final word. If a wallet's current balance specifically can't be read, that's flagged <b>balance unknown</b> rather than assumed to be zero. A leg is only called <b>unpriced</b> when no counter-value could be found at all — a real net cost or gain, like a sale whose gas exceeded its proceeds, is folded into the total rather than dropped just because it came out negative.</p>
         <p>Per wallet, the calculator pulls its full transaction list, all token transfers, and all internal transfers in a handful of requests total — not one request per transaction. Multiple wallets are read in parallel. Everything is cached in your browser and can be recomputed from scratch at any time.</p>
       </div>
@@ -302,6 +303,11 @@ const CFG = {
   // to keep request volume down, especially now that every wallet on the
   // register calculates automatically rather than one at a time on demand.
   MAX_PAGES: 10,
+  // Cap on individually-fetched v1 transactions when the capped address-level
+  // lists left gaps. This is per wallet and only covers its v1 trades, so it
+  // is normally a handful; the per-transaction endpoints are immutable and
+  // cache permanently, so a re-run costs nothing.
+  BACKFILL_MAX: 120,
   CONCURRENCY: 4,     // parallel HTTP requests to the explorer
   WALLET_POOL: 3,     // wallets calculated in parallel by "Calculate all"
   COUNT_GAS: true      // include gas fees the wallet paid as part of its cost
@@ -916,7 +922,8 @@ async function computeWallet(address, preTransfers, preTruncated) {
     unpriced:0,      // legs with no discoverable counter-value — counted at zero
     unverified:0,    // legs priced only by symbol match, not a verified contract address
     estimated:0,     // legs priced with a live rate because no historical rate was available
-    truncated:false, // true if any source list may be missing older pages
+    truncated:false, // true if the v1 series is incomplete or a trade couldn't be resolved
+    unresolved:0,    // v1 transactions whose record couldn't be fetched even individually
     balanceUnavailable:false,
     txs:0
   };
@@ -939,7 +946,9 @@ async function computeWallet(address, preTransfers, preTruncated) {
     settled(paged('/addresses/' + address + '/token-transfers', null, CFG.MAX_PAGES_TOKEN)),
     settled(paged('/addresses/' + address + '/internal-transactions', null, CFG.MAX_PAGES))
   ]);
-  if (txsR.truncated || intR.truncated || (tokR.truncated && preTransfers)) res.truncated = true;
+  // Context-list truncation is NOT flagged here — the targeted backfill
+  // below closes those gaps. res.truncated is set after it, based on whether
+  // the numbers were actually affected.
 
   // If v1 transfers weren't already supplied, they only come from tokR —
   // a genuine failure there (not just pagination truncation) means there is
@@ -957,7 +966,6 @@ async function computeWallet(address, preTransfers, preTruncated) {
     rwiTransfers = tokR.items.filter(tr => lc((tr.token||{}).address || (tr.token||{}).address_hash) === lc(CFG.TOKEN));
     rwiTruncated = tokR.truncated;
   }
-  if (rwiTruncated) res.truncated = true;
 
   const byTx = new Map();
   for (const tr of rwiTransfers) {
@@ -983,6 +991,61 @@ async function computeWallet(address, preTransfers, preTruncated) {
     if (!intByHash.has(h)) intByHash.set(h, []);
     intByHash.get(h).push(it);
   }
+
+  // ---- Targeted backfill -------------------------------------------------
+  // The three address-level lists above are capped, and a wallet with a lot
+  // of unrelated activity can push its older v1 trades past that cap. When
+  // that happens the trade is still in byTx (it came from the token-transfer
+  // list) but its transaction record is absent — so tx is undefined below,
+  // meaning no ETH value, no gas, no timestamp, no rate. Both sides then
+  // compute to zero and the trade gets counted as "unpriced" at $0, which
+  // both understates the real loss and trips "history incomplete".
+  //
+  // Rather than paginating those lists deeper for every wallet (expensive,
+  // and still not guaranteed to reach far enough), this fetches only the
+  // specific v1 transactions that are actually missing. That's a small,
+  // bounded number — a wallet's v1 trades, not its whole history — and the
+  // per-transaction endpoints are immutable, so they cache permanently.
+  const gaps = [];
+  for (const h of byTx.keys()) {
+    const needTx  = !txByHash.has(h);
+    // A tx legitimately may have no internal transfers or no other token
+    // legs, so absence only means "missing" when the source list was capped.
+    const needInt = intR.truncated && !intByHash.has(h);
+    const needTok = tokR.truncated && !tokByHash.has(h);
+    if (needTx || needInt || needTok) gaps.push({ h, needTx, needInt, needTok });
+  }
+
+  let unresolved = 0;
+  if (gaps.length) {
+    const doable = gaps.slice(0, CFG.BACKFILL_MAX);
+    unresolved = gaps.length - doable.length;
+    await Promise.all(doable.map(async g => {
+      try {
+        const [tx, tok, int] = await Promise.all([
+          g.needTx  ? api('/transactions/' + g.h, null, { cache:true }) : null,
+          g.needTok ? api('/transactions/' + g.h + '/token-transfers', { type:'ERC-20' }, { cache:true }) : null,
+          g.needInt ? api('/transactions/' + g.h + '/internal-transactions', null, { cache:true }) : null
+        ]);
+        if (tx) txByHash.set(g.h, tx);
+        if (tok && tok.items) tokByHash.set(g.h, (tokByHash.get(g.h) || []).concat(tok.items));
+        if (int && int.items) intByHash.set(g.h, (intByHash.get(g.h) || []).concat(int.items));
+        // Still missing the transaction record after an explicit fetch means
+        // this one genuinely can't be priced — count it rather than let it
+        // masquerade as a $0 trade.
+        if (g.needTx && !txByHash.has(g.h)) unresolved++;
+      } catch (e) {
+        unresolved++;
+      }
+    }));
+  }
+
+  // "History incomplete" should mean the numbers are actually affected — not
+  // merely that a context list was capped, since the backfill above closes
+  // exactly those gaps. Flag it only when the v1 transfer series itself is
+  // incomplete, or when a specific trade couldn't be resolved.
+  res.truncated = rwiTruncated || unresolved > 0;
+  res.unresolved = unresolved;
 
   // One historical-price fetch per unique day, not per transaction.
   const days = new Set();
@@ -1194,9 +1257,9 @@ function render() {
               '<td class="num"><button class="btn ghost sm" data-calc="' + c.address + '">Retry</button></td>';
     } else {
       const flagParts = [];
-      if (r.truncated) flagParts.push('<span class="flag" title="This wallet has more history than could be fully read — treat the figure as a lower bound">history incomplete</span>');
+      if (r.truncated) flagParts.push('<span class="flag" title="' + (r.unresolved ? r.unresolved + ' v1 transaction(s) could not be read even individually, so their value is missing' : 'This wallet has more v1 transfer history than could be fully read — treat the figure as a lower bound') + '">history incomplete</span>');
       if (r.balanceUnavailable) flagParts.push('<span class="flag" title="Current token balance could not be read — \'still holds\' and net loss may understate anything still held">balance unknown</span>');
-      if (r.unpriced) flagParts.push('<span class="flag" title="' + r.unpriced + ' transfer(s) had no discoverable counter-value and were counted at zero">' + r.unpriced + ' unpriced</span>');
+      if (r.unpriced) flagParts.push('<span class="flag" title="' + r.unpriced + ' v1 transfer(s) moved tokens without any payment in the same transaction — wallet-to-wallet moves, airdrops or liquidity-pool moves. These are counted at zero because the chain cannot show what they were worth.">' + r.unpriced + ' unpriced</span>');
       if (r.unverified) flagParts.push('<span class="flag" title="' + r.unverified + ' transaction(s) priced a token by symbol only, without a verified contract address">' + r.unverified + ' symbol-matched</span>');
       if (r.estimated) flagParts.push('<span class="flag" title="' + r.estimated + ' transaction(s) used the current ETH rate because no historical rate was available for that block">' + r.estimated + ' est. rate</span>');
       const flags = flagParts.length ? ' ' + flagParts.join(' ') : '';
@@ -1264,13 +1327,13 @@ function csv() {
   const usd2 = n => (n==null || !isFinite(n)) ? '' : n.toFixed(2);
   const tok6 = n => (n==null || !isFinite(n)) ? '' : n.toFixed(6);
   const head = ['rank','wallet','filed_at','filing_tx','relevant_txs','usd_spent','usd_received','tokens_held','usd_still_held','net_loss_usd',
-    'unpriced_transfers','symbol_matched_transfers','estimated_rate_transfers','history_possibly_incomplete','balance_unavailable'];
+    'unpriced_transfers','symbol_matched_transfers','estimated_rate_transfers','history_possibly_incomplete','unresolved_txs','balance_unavailable'];
   const lines = [head.join(',')];
   state.claims.forEach((c,i) => {
     const r = state.results[lc(c.address)] || {};
     lines.push([i+1, c.address, c.ts ? new Date(c.ts).toISOString() : '', c.hash, (r.txs??''),
       usd2(r.spent), usd2(r.received), tok6(r.held), usd2(r.heldUsd), usd2(r.loss),
-      (r.unpriced??''), (r.unverified??''), (r.estimated??''), (r.truncated ? 'yes' : ''), (r.balanceUnavailable ? 'yes' : '')].join(','));
+      (r.unpriced??''), (r.unverified??''), (r.estimated??''), (r.truncated ? 'yes' : ''), (r.unresolved??''), (r.balanceUnavailable ? 'yes' : '')].join(','));
   });
   const blob = new Blob([lines.join('\n')], {type:'text/csv'});
   const a = document.createElement('a');
