@@ -237,8 +237,20 @@
  * Config
  * ------------------------------------------------------------------ */
 const CFG = {
-  EXPLORER : 'https://robinhoodchain.blockscout.com',
-  API      : 'https://robinhoodchain.blockscout.com/api/v2',
+  EXPLORER : 'https://robinhoodchain.blockscout.com',  // used for LINKS (plain navigation, never fetched) — not subject to CORS
+  // robinhoodchain.blockscout.com (the self-hosted instance) sends no
+  // Access-Control-Allow-Origin header, so a browser fetch() to it is
+  // blocked outright, regardless of retries — that's enforced by the
+  // browser before the request even reaches the server. Blockscout's own
+  // multi-chain PRO API (api.blockscout.com) is a separate service built
+  // specifically for third-party apps to call from the browser, so it's
+  // used here instead — same v2 REST shape, just with a chain ID in the
+  // path and a free API key.
+  //
+  // Get a free key: sign up at https://dev.blockscout.com — no payment
+  // info needed, no server to deploy. Paste it below.
+  API_KEY  : '',   // <-- paste your free api.blockscout.com key here
+  API      : 'https://api.blockscout.com/4663/api/v2',
   CHAIN_ID : 4663,
   CHAIN_HEX: '0x1237',
   RPC      : 'https://rpc.mainnet.chain.robinhood.com',
@@ -349,7 +361,9 @@ function makeSemaphore(limit) {
 const apiSlots = makeSemaphore(CFG.CONCURRENCY);
 
 async function api(path, params, opts={}) {
-  const qs = params ? '?' + new URLSearchParams(params) : '';
+  const p = new URLSearchParams(params || {});
+  if (CFG.API_KEY) p.set('apikey', CFG.API_KEY);
+  const qs = [...p.keys()].length ? '?' + p.toString() : '';
   const url = CFG.API + path + qs;
   const ck  = opts.cache !== false ? 'req.' + url : null;   // cache by default
   if (ck) { const hit = cache.get(ck); if (hit) return hit; }
@@ -510,7 +524,11 @@ async function loadClaims() {
   try {
     r = await paged('/addresses/' + CFG.CLAIM_BOX + '/transactions', { filter:'to' }, CFG.CLAIM_BOX_MAX_PAGES, true);
   } catch (e) {
-    setEmpty('The explorer did not answer. Reload, or check ' + CFG.EXPLORER + '/address/' + CFG.CLAIM_BOX + ' directly.');
+    const detail = (e instanceof TypeError)
+      ? 'network/CORS error — the request may have been blocked before reaching the explorer (' + e.message + ')'
+      : ((e && e.message) || 'unknown error');
+    console.error('Register load failed:', detail);
+    setEmpty('The explorer did not answer (' + detail + '). Reload, or check ' + CFG.EXPLORER + '/address/' + CFG.CLAIM_BOX + ' directly.');
     return;
   }
   const seen = new Map();
@@ -1385,14 +1403,29 @@ $('pxEth').addEventListener('change', e => {
 });
 
 (async function boot() {
+  let ethPriceError = null;
   try {
     const stats = await api('/stats', null, { cache:false });
     state.ethPrice = Number((stats && stats.coin_price) || 0) || null;
-  } catch {}
+    if (!state.ethPrice) ethPriceError = 'the explorer answered but returned no coin_price';
+  } catch (e) {
+    // A generic "failed to fetch" TypeError with no HTTP status usually
+    // means the browser blocked the request before it reached the server —
+    // most likely CORS, not something retrying again will fix. An HTTP
+    // status or "timed out" means the request reached the server and is
+    // more likely transient. Surfacing which one it is is worth more than
+    // a generic message, since the two point at completely different fixes.
+    if (e instanceof TypeError) {
+      ethPriceError = 'network/CORS error (the request may have been blocked before reaching the explorer) — ' + e.message;
+    } else {
+      ethPriceError = (e && e.message) || 'unknown error';
+    }
+  }
   $('pxEth').value = state.ethPrice || '';
   if (!state.ethPrice) {
     $('calcStatus').className = 'status err';
-    $('calcStatus').textContent = 'Could not fetch the live ETH rate. Enter one manually above before calculating, or transactions without their own historical rate will be undercounted rather than flagged.';
+    $('calcStatus').textContent = 'Could not fetch the live ETH rate (' + ethPriceError + '). Enter one manually above before calculating, or transactions without their own historical rate will be undercounted rather than flagged.';
+    console.error('Live ETH rate fetch failed:', ethPriceError);
   }
   await loadClaims();
 })();
