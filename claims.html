@@ -211,7 +211,7 @@
         <p>For every transaction where a filed wallet's v1 balance changed, the counter-value on the other side of that same transaction is measured: ETH sent, ETH returned internally, gas paid, and any transfer of a token priced below.</p>
         <p><code>net loss = spent − received − value still held</code></p>
         <p>Acquisitions add to <em>spent</em>, including the gas paid to make the purchase. Disposals add to <em>received</em>, net of the gas paid to sell. Transfers with no counter-value — airdrops, wallet-to-wallet sends, liquidity-pool moves — are counted at zero and flagged <b>unpriced</b>, because the chain alone cannot tell what they were worth to you.</p>
-        <p>Only wrapped ETH is matched by its actual contract address, and both it and native ETH are priced using that specific transaction's own calendar-day historical rate — never today's — so a trade from months ago isn't valued at current prices. Stablecoins are matched by symbol alone, since a token can name itself "USDC" without being it; those are flagged <b>symbol-matched</b>. When a day's historical rate can't be retrieved, today's rate is used as a fallback and flagged <b>est. rate</b>. A wallet with more history than one read can retrieve is flagged <b>history incomplete</b>, meaning its number is a floor, not the final word. A leg is only called <b>unpriced</b> when no counter-value could be found at all — a real net cost or gain, like a sale whose gas exceeded its proceeds, is folded into the total rather than dropped just because it came out negative.</p>
+        <p>Only wrapped ETH is matched by its actual contract address, and both it and native ETH are priced using that specific transaction's own calendar-day historical rate — never today's — so a trade from months ago isn't valued at current prices. Stablecoins are matched by symbol alone, since a token can name itself "USDC" without being it; those are flagged <b>symbol-matched</b>. When a day's historical rate can't be retrieved, today's rate is used as a fallback and flagged <b>est. rate</b>. A wallet with more history than one read can retrieve is flagged <b>history incomplete</b>, meaning its number is a floor, not the final word. If a wallet's current balance specifically can't be read, that's flagged <b>balance unknown</b> rather than assumed to be zero. A leg is only called <b>unpriced</b> when no counter-value could be found at all — a real net cost or gain, like a sale whose gas exceeded its proceeds, is folded into the total rather than dropped just because it came out negative.</p>
         <p>Per wallet, the calculator pulls its full transaction list, all token transfers, and all internal transfers in a handful of requests total — not one request per transaction. Multiple wallets are read in parallel. Everything is cached in your browser and can be recomputed from scratch at any time.</p>
       </div>
       <div>
@@ -280,9 +280,14 @@ const CFG = {
   // buy would be worse than a slow load. A read that still hits this cap
   // is treated as unverifiable rather than guessed at.
   MAX_PAGES_TOKEN: 60,
-  MAX_PAGES: 25,
-  CONCURRENCY: 6,     // parallel HTTP requests to the explorer
-  WALLET_POOL: 4,     // wallets calculated in parallel by "Calculate all"
+  // General pricing-context lists (transactions, internal-transactions) degrade
+  // gracefully when incomplete — a missed page just means a leg falls back to
+  // an estimated rate rather than the wallet failing — so this stays shallow
+  // to keep request volume down, especially now that every wallet on the
+  // register calculates automatically rather than one at a time on demand.
+  MAX_PAGES: 10,
+  CONCURRENCY: 4,     // parallel HTTP requests to the explorer
+  WALLET_POOL: 3,     // wallets calculated in parallel by "Calculate all"
   COUNT_GAS: true      // include gas fees the wallet paid as part of its cost
 };
 
@@ -330,7 +335,9 @@ async function api(path, params, opts={}) {
   while (inflight >= CFG.CONCURRENCY) await sleep(40);
   inflight++;
   try {
-    for (let attempt = 0; attempt < 3; attempt++) {
+    const maxAttempts = 5;   // rate limits are the most likely failure under load, so worth riding out
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const last = attempt === maxAttempts - 1;
       // Without a timeout, a single stalled request blocks this call — and
       // anything awaiting it, like the eligibility check — forever, with no
       // way to recover short of reloading the page.
@@ -338,15 +345,21 @@ async function api(path, params, opts={}) {
       const timer = setTimeout(() => controller.abort(), 12000);
       try {
         const r = await fetch(url, { headers:{accept:'application/json'}, signal: controller.signal });
-        if (r.status === 429 || r.status >= 500) { await sleep(350 * (attempt+1)); continue; }
+        if (r.status === 429 || r.status >= 500) {
+          if (last) throw new Error('HTTP ' + r.status);
+          const retryAfter = Number(r.headers.get('retry-after'));
+          const backoff = retryAfter ? retryAfter * 1000 : Math.min(6000, 400 * 2 ** attempt) + Math.random() * 250;
+          await sleep(backoff);
+          continue;
+        }
         if (r.status === 404) return null;
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const j = await r.json();
         if (ck) cache.set(ck, j);
         return j;
       } catch (e) {
-        if (attempt === 2) throw (e && e.name === 'AbortError') ? new Error('timed out') : e;
-        await sleep(300 * (attempt+1));
+        if (last) throw (e && e.name === 'AbortError') ? new Error('timed out') : e;
+        await sleep(Math.min(4000, 300 * 2 ** attempt) + Math.random() * 200);
       } finally {
         clearTimeout(timer);
       }
@@ -845,13 +858,45 @@ async function computeWallet(address, preTransfers, preTruncated) {
     unverified:0,    // legs priced only by symbol match, not a verified contract address
     estimated:0,     // legs priced with a live rate because no historical rate was available
     truncated:false, // true if any source list may be missing older pages
+    balanceUnavailable:false,
     txs:0
   };
 
-  let rwiTransfers = preTransfers, rwiTruncated = !!preTruncated;
-  if (!rwiTransfers) {
-    const r = await paged('/addresses/' + address + '/token-transfers', { token: CFG.TOKEN, type:'ERC-20' }, CFG.MAX_PAGES_TOKEN);
-    rwiTransfers = r.items; rwiTruncated = r.truncated;
+  // A fetch that fails after all retries degrades to an empty, flagged
+  // result rather than failing the whole wallet — one flaky endpoint
+  // (internal-transactions in particular has a much lower rate limit than
+  // the others) shouldn't mean "read failed" for everything. The token-
+  // transfers fetch is the one exception: it doubles as the source of this
+  // wallet's own v1 transfers when they weren't already supplied, so a
+  // genuine failure there is tracked separately (ok:false) rather than
+  // silently treated as "this wallet has no v1 activity" — that would
+  // report a confident zero loss instead of an honest failure.
+  const settled = p => p.then(v => ({ ok:true, ...v }), () => ({ ok:false, items: [], truncated: true }));
+
+  // Three bulk, paginated reads cover every transaction at once instead of
+  // one request per transaction.
+  const [txsR, tokR, intR] = await Promise.all([
+    settled(paged('/addresses/' + address + '/transactions', null, CFG.MAX_PAGES)),
+    settled(paged('/addresses/' + address + '/token-transfers', null, CFG.MAX_PAGES_TOKEN)),
+    settled(paged('/addresses/' + address + '/internal-transactions', null, CFG.MAX_PAGES))
+  ]);
+  if (txsR.truncated || intR.truncated || (tokR.truncated && preTransfers)) res.truncated = true;
+
+  // If v1 transfers weren't already supplied, they only come from tokR —
+  // a genuine failure there (not just pagination truncation) means there is
+  // no reliable way to know what this wallet did, so this fails loudly
+  // rather than silently reporting a zero loss that looks confident but isn't.
+  if (!preTransfers && !tokR.ok) {
+    throw new Error('could not read this wallet\'s token transfers');
+  }
+
+  let rwiTransfers, rwiTruncated;
+  if (preTransfers) {
+    rwiTransfers = preTransfers;
+    rwiTruncated = !!preTruncated;
+  } else {
+    rwiTransfers = tokR.items.filter(tr => lc((tr.token||{}).address || (tr.token||{}).address_hash) === lc(CFG.TOKEN));
+    rwiTruncated = tokR.truncated;
   }
   if (rwiTruncated) res.truncated = true;
 
@@ -864,115 +909,110 @@ async function computeWallet(address, preTransfers, preTruncated) {
   }
   res.txs = byTx.size;
 
-  if (byTx.size) {
-    // Three bulk, paginated reads cover every transaction at once instead of
-    // one request per transaction.
-    const [txsR, tokR, intR] = await Promise.all([
-      paged('/addresses/' + address + '/transactions'),
-      paged('/addresses/' + address + '/token-transfers'),          // unfiltered: every token, so swap legs are included
-      paged('/addresses/' + address + '/internal-transactions')
-    ]);
-    if (txsR.truncated || tokR.truncated || intR.truncated) res.truncated = true;
+  const txByHash = new Map(txsR.items.map(t => [t.hash, t]));
+  const tokByHash = new Map();
+  for (const tr of tokR.items) {
+    const h = tr.transaction_hash || tr.tx_hash;
+    if (!h) continue;
+    if (!tokByHash.has(h)) tokByHash.set(h, []);
+    tokByHash.get(h).push(tr);
+  }
+  const intByHash = new Map();
+  for (const it of intR.items) {
+    const h = it.transaction_hash || it.tx_hash;
+    if (!h) continue;
+    if (!intByHash.has(h)) intByHash.set(h, []);
+    intByHash.get(h).push(it);
+  }
 
-    const txByHash = new Map(txsR.items.map(t => [t.hash, t]));
-    const tokByHash = new Map();
-    for (const tr of tokR.items) {
-      const h = tr.transaction_hash || tr.tx_hash;
-      if (!h) continue;
-      if (!tokByHash.has(h)) tokByHash.set(h, []);
-      tokByHash.get(h).push(tr);
-    }
-    const intByHash = new Map();
-    for (const it of intR.items) {
-      const h = it.transaction_hash || it.tx_hash;
-      if (!h) continue;
-      if (!intByHash.has(h)) intByHash.set(h, []);
-      intByHash.get(h).push(it);
-    }
+  // One historical-price fetch per unique day, not per transaction.
+  const days = new Set();
+  for (const hash of byTx.keys()) {
+    const tx = txByHash.get(hash);
+    if (tx && tx.timestamp) days.add(tx.timestamp.slice(0, 10));
+  }
+  const dayPrices = days.size ? await pricesForDays(days) : new Map();
 
-    // One historical-price fetch per unique day, not per transaction.
-    const days = new Set();
-    for (const hash of byTx.keys()) {
-      const tx = txByHash.get(hash);
-      if (tx && tx.timestamp) days.add(tx.timestamp.slice(0, 10));
+  for (const [hash, list] of byTx) {
+    const dec = Number((list[0].token && list[0].token.decimals) || 18);
+    let delta = 0;
+    for (const tr of list) {
+      const amt = units((tr.total && tr.total.value) || tr.value || '0', (tr.total && tr.total.decimals) ?? dec);
+      if (lc(tr.to   && tr.to.hash)   === key) delta += amt;
+      if (lc(tr.from && tr.from.hash) === key) delta -= amt;
     }
-    const dayPrices = days.size ? await pricesForDays(days) : new Map();
+    if (Math.abs(delta) < 1e-12) continue;
 
-    for (const [hash, list] of byTx) {
-      const dec = Number((list[0].token && list[0].token.decimals) || 18);
-      let delta = 0;
-      for (const tr of list) {
-        const amt = units((tr.total && tr.total.value) || tr.value || '0', (tr.total && tr.total.decimals) ?? dec);
-        if (lc(tr.to   && tr.to.hash)   === key) delta += amt;
-        if (lc(tr.from && tr.from.hash) === key) delta -= amt;
+    const tx = txByHash.get(hash);
+    const day = tx && tx.timestamp ? tx.timestamp.slice(0, 10) : null;
+    const dayPrice = day ? dayPrices.get(day) : undefined;
+    const historical = dayPrice != null;
+    const rate = Number(dayPrice ?? (tx && tx.exchange_rate) ?? state.ethPrice ?? 0);
+    let outUsd = 0, inUsd = 0, ethMoved = false, sawUnverified = false;
+
+    // Native ETH the wallet paid to initiate this transaction.
+    if (tx && lc(tx.from && tx.from.hash) === key && tx.value && tx.value !== '0') {
+      outUsd += units(tx.value, 18) * rate;
+      ethMoved = true;
+    }
+    // Gas the wallet paid to send it — a real dollar cost either way.
+    if (CFG.COUNT_GAS && tx && lc(tx.from && tx.from.hash) === key) {
+      let feeWei = null;
+      if (tx.fee && tx.fee.value != null) feeWei = tx.fee.value;
+      else if (tx.gas_used != null && tx.gas_price != null) {
+        try { feeWei = (BigInt(tx.gas_used) * BigInt(tx.gas_price)).toString(); } catch {}
       }
-      if (Math.abs(delta) < 1e-12) continue;
-
-      const tx = txByHash.get(hash);
-      const day = tx && tx.timestamp ? tx.timestamp.slice(0, 10) : null;
-      const dayPrice = day ? dayPrices.get(day) : undefined;
-      const historical = dayPrice != null;
-      const rate = Number(dayPrice ?? (tx && tx.exchange_rate) ?? state.ethPrice ?? 0);
-      let outUsd = 0, inUsd = 0, ethMoved = false, sawUnverified = false;
-
-      // Native ETH the wallet paid to initiate this transaction.
-      if (tx && lc(tx.from && tx.from.hash) === key && tx.value && tx.value !== '0') {
-        outUsd += units(tx.value, 18) * rate;
+      if (feeWei && feeWei !== '0') { outUsd += units(feeWei, 18) * rate; ethMoved = true; }
+    }
+    // Native ETH returned to the wallet through an internal call (router refunds, sells).
+    for (const it of (intByHash.get(hash) || [])) {
+      if (lc(it.to && it.to.hash) === key && it.value && it.value !== '0') {
+        inUsd += units(it.value, 18) * rate;
         ethMoved = true;
       }
-      // Gas the wallet paid to send it — a real dollar cost either way.
-      if (CFG.COUNT_GAS && tx && lc(tx.from && tx.from.hash) === key) {
-        let feeWei = null;
-        if (tx.fee && tx.fee.value != null) feeWei = tx.fee.value;
-        else if (tx.gas_used != null && tx.gas_price != null) {
-          try { feeWei = (BigInt(tx.gas_used) * BigInt(tx.gas_price)).toString(); } catch {}
-        }
-        if (feeWei && feeWei !== '0') { outUsd += units(feeWei, 18) * rate; ethMoved = true; }
-      }
-      // Native ETH returned to the wallet through an internal call (router refunds, sells).
-      for (const it of (intByHash.get(hash) || [])) {
-        if (lc(it.to && it.to.hash) === key && it.value && it.value !== '0') {
-          inUsd += units(it.value, 18) * rate;
-          ethMoved = true;
-        }
-      }
-      // Any other recognised token moving in the same transaction.
-      for (const tr of (tokByHash.get(hash) || [])) {
-        const tok = tr.token || {};
-        if (lc(tok.address || tok.address_hash) === lc(CFG.TOKEN)) continue;
-        const q = quoteFor(tok, rate);
-        if (q == null) continue;
-        if (!q.verified) sawUnverified = true;
-        if (tok.symbol && ['WETH','ETH'].includes(tok.symbol.toUpperCase())) ethMoved = true;
-        const amt = units((tr.total && tr.total.value) || tr.value || '0',
-                          (tr.total && tr.total.decimals) ?? tok.decimals ?? 18);
-        if (lc(tr.from && tr.from.hash) === key) outUsd += amt * q.usd;
-        if (lc(tr.to   && tr.to.hash)   === key) inUsd  += amt * q.usd;
-      }
-      if (ethMoved && !historical) res.estimated++;
-      if (sawUnverified) res.unverified++;
+    }
+    // Any other recognised token moving in the same transaction.
+    for (const tr of (tokByHash.get(hash) || [])) {
+      const tok = tr.token || {};
+      if (lc(tok.address || tok.address_hash) === lc(CFG.TOKEN)) continue;
+      const q = quoteFor(tok, rate);
+      if (q == null) continue;
+      if (!q.verified) sawUnverified = true;
+      if (tok.symbol && ['WETH','ETH'].includes(tok.symbol.toUpperCase())) ethMoved = true;
+      const amt = units((tr.total && tr.total.value) || tr.value || '0',
+                        (tr.total && tr.total.decimals) ?? tok.decimals ?? 18);
+      if (lc(tr.from && tr.from.hash) === key) outUsd += amt * q.usd;
+      if (lc(tr.to   && tr.to.hash)   === key) inUsd  += amt * q.usd;
+    }
+    if (ethMoved && !historical) res.estimated++;
+    if (sawUnverified) res.unverified++;
 
-      // "Unpriced" means no priced counter-value was found on either side —
-      // not that the net happened to come out at or below zero. A sale whose
-      // gas cost exceeded its proceeds, for instance, is a real (negative)
-      // proceeds figure, not an absence of data, and belongs in the totals.
-      const noPricedValue = Math.abs(outUsd) < 1e-9 && Math.abs(inUsd) < 1e-9;
-      if (noPricedValue) {
-        res.unpriced++;
-      } else if (delta > 0) {
-        res.spent += (outUsd - inUsd);
-      } else {
-        res.received += (inUsd - outUsd);
-      }
+    // "Unpriced" means no priced counter-value was found on either side —
+    // not that the net happened to come out at or below zero. A sale whose
+    // gas cost exceeded its proceeds, for instance, is a real (negative)
+    // proceeds figure, not an absence of data, and belongs in the totals.
+    const noPricedValue = Math.abs(outUsd) < 1e-9 && Math.abs(inUsd) < 1e-9;
+    if (noPricedValue) {
+      res.unpriced++;
+    } else if (delta > 0) {
+      res.spent += (outUsd - inUsd);
+    } else {
+      res.received += (inUsd - outUsd);
     }
   }
 
   // Current balance is a snapshot, not history — never served from cache,
-  // or a wallet's "still holds" figure would freeze at its first calculation.
-  const bal = await api('/addresses/' + address + '/token-balances', null, { cache:false });
-  if (Array.isArray(bal)) {
-    const row = bal.find(b => lc((b.token||{}).address || (b.token||{}).address_hash) === lc(CFG.TOKEN));
-    if (row) res.held = units(row.value, (row.token && row.token.decimals) || 18);
+  // or a wallet's "still holds" figure would freeze at its first
+  // calculation. Its own failure is flagged rather than failing the whole
+  // wallet — everything computed above is still worth showing.
+  try {
+    const bal = await api('/addresses/' + address + '/token-balances', null, { cache:false });
+    if (Array.isArray(bal)) {
+      const row = bal.find(b => lc((b.token||{}).address || (b.token||{}).address_hash) === lc(CFG.TOKEN));
+      if (row) res.held = units(row.value, (row.token && row.token.decimals) || 18);
+    }
+  } catch (e) {
+    res.balanceUnavailable = true;
   }
   res.heldUsd = res.held * (state.tokenPrice || 0);
   res.loss = res.spent - res.received - res.heldUsd;
@@ -1080,12 +1120,13 @@ function render() {
     } else {
       const flags =
         (r.truncated ? '<span class="flag" title="This wallet has more history than could be fully read — treat the figure as a lower bound">history incomplete</span>' : '') +
+        (r.balanceUnavailable ? '<span class="flag" title="Current token balance could not be read — \'still holds\' and net loss may understate anything still held">balance unknown</span>' : '') +
         (r.unpriced   ? '<span class="flag" title="' + r.unpriced + ' transfer(s) had no discoverable counter-value and were counted at zero">' + r.unpriced + ' unpriced</span>' : '') +
         (r.unverified ? '<span class="flag" title="' + r.unverified + ' transaction(s) priced a token by symbol only, without a verified contract address">' + r.unverified + ' symbol-matched</span>' : '') +
         (r.estimated  ? '<span class="flag" title="' + r.estimated + ' transaction(s) used the current ETH rate because no historical rate was available for that block">' + r.estimated + ' est. rate</span>' : '');
       cells = '<td class="num">' + usdShort(r.spent) + '</td>' +
               '<td class="num">' + usdShort(r.received) + '</td>' +
-              '<td class="num">' + (r.held ? r.held.toLocaleString('en-US',{maximumFractionDigits:0}) : '0') + '</td>' +
+              '<td class="num">' + (r.held ? r.held.toLocaleString('en-US',{maximumFractionDigits:0}) : (r.balanceUnavailable ? '?' : '0')) + '</td>' +
               '<td class="num loss">' + usdShort(r.loss) + flags + '</td>' +
               '<td class="num"><a href="' + linkHref + '" target="_blank" rel="noopener">chain</a></td>';
     }
@@ -1147,13 +1188,13 @@ function csv() {
   const usd2 = n => (n==null || !isFinite(n)) ? '' : n.toFixed(2);
   const tok6 = n => (n==null || !isFinite(n)) ? '' : n.toFixed(6);
   const head = ['rank','wallet','filed_at','filing_tx','relevant_txs','usd_spent','usd_received','tokens_held','usd_still_held','net_loss_usd',
-    'unpriced_transfers','symbol_matched_transfers','estimated_rate_transfers','history_possibly_incomplete'];
+    'unpriced_transfers','symbol_matched_transfers','estimated_rate_transfers','history_possibly_incomplete','balance_unavailable'];
   const lines = [head.join(',')];
   state.claims.forEach((c,i) => {
     const r = state.results[lc(c.address)] || {};
     lines.push([i+1, c.address, c.ts ? new Date(c.ts).toISOString() : '', c.hash, (r.txs??''),
       usd2(r.spent), usd2(r.received), tok6(r.held), usd2(r.heldUsd), usd2(r.loss),
-      (r.unpriced??''), (r.unverified??''), (r.estimated??''), (r.truncated ? 'yes' : '')].join(','));
+      (r.unpriced??''), (r.unverified??''), (r.estimated??''), (r.truncated ? 'yes' : ''), (r.balanceUnavailable ? 'yes' : '')].join(','));
   });
   const blob = new Blob([lines.join('\n')], {type:'text/csv'});
   const a = document.createElement('a');
