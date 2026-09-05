@@ -134,7 +134,7 @@
         </div>
         <button class="btn" id="btnSubmit">Submit wallet</button>
       </div>
-      <div class="status" id="fileStatus"></div>
+      <div class="status" id="fileStatus" role="status" aria-live="polite"></div>
       <div class="note" id="storeNote"></div>
     </div>
   </section>
@@ -147,8 +147,8 @@
       <div class="grow"><input type="text" id="search" placeholder="Filter by address" aria-label="Filter by address"></div>
       <button class="btn ghost sm" id="btnCalcAll">Calculate all</button>
       <button class="btn ghost sm" id="btnCsv">Download CSV</button>
-      <button class="btn ghost sm" id="btnRefresh">Reload</button>
-      <button class="btn ghost sm" id="btnClearCache">Clear cache</button>
+      <button class="btn ghost sm" id="btnRefresh" title="Fetches new submissions. Does not recompute wallets already calculated.">Reload</button>
+      <button class="btn ghost sm" id="btnClearCache" title="Forces every wallet to be recomputed from scratch on next calculation.">Clear cache</button>
     </div>
 
     <div class="tablewrap">
@@ -181,7 +181,7 @@
       </table>
     </div>
     <div class="progress"><i id="bar"></i></div>
-    <div class="status" id="calcStatus"></div>
+    <div class="status" id="calcStatus" role="status" aria-live="polite"></div>
   </section>
 
   <section id="method">
@@ -191,7 +191,7 @@
         <p>For every transaction where a submitted wallet's v1 balance changed, the counter-value on the other side of that same transaction is measured: ETH sent, ETH returned internally, gas paid, and any transfer of a token priced below.</p>
         <p><code>net loss = spent − received − value still held</code></p>
         <p>Acquisitions add to <em>spent</em>, including the gas paid to make the purchase. Disposals add to <em>received</em>, net of the gas paid to sell. Transfers with no counter-value — airdrops, wallet-to-wallet sends, liquidity-pool moves — are counted at zero and flagged <b>unpriced</b>, because the chain alone cannot tell what they were worth to you.</p>
-        <p>Only wrapped ETH is matched by its actual contract address; stablecoins are matched by symbol alone, since a token can name itself "USDC" without being it. Symbol-only matches are still priced — dropping them would understate real swaps — but flagged <b>symbol-matched</b> so that isn't mistaken for a verified read. A transaction dated before the explorer's price history starts falls back to the current ETH rate and is flagged <b>est. rate</b>. A wallet with more history than one read can retrieve is flagged <b>history incomplete</b>, meaning its number is a floor, not the final word — recalculating later may raise it.</p>
+        <p>Only wrapped ETH is matched by its actual contract address, and it's priced at that specific transaction's own rate — never today's — so a trade from months ago isn't valued at current prices. Stablecoins are matched by symbol alone, since a token can name itself "USDC" without being it. Symbol-only matches are still priced — dropping them would understate real swaps — but flagged <b>symbol-matched</b> so that isn't mistaken for a verified read. A transaction dated before the explorer's price history starts falls back to the current ETH rate and is flagged <b>est. rate</b>. A wallet with more history than one read can retrieve is flagged <b>history incomplete</b>, meaning its number is a floor, not the final word — recalculating later may raise it. A leg is only called <b>unpriced</b> when no counter-value could be found at all; a real net cost or gain — a sale whose gas exceeded its proceeds, for instance — is folded into the total rather than dropped just because it came out negative.</p>
         <p>A batched transaction that bundles the v1 trade with unrelated swaps can misattribute value between them; this is rare on simple router trades but worth knowing about for anything wallet-shaped rather than person-shaped.</p>
         <p>Per wallet, the calculator pulls its full transaction list, all token transfers, and all internal transfers in a handful of requests total — not one request per transaction — so a wallet with hundreds of transfers reads about as fast as one with a handful. Multiple wallets are read in parallel. Everything is cached in your browser and can be recomputed from scratch at any time.</p>
       </div>
@@ -268,10 +268,11 @@ const short = a => a.slice(0,6) + '…' + a.slice(-4);
 const isAddr = a => /^0x[0-9a-fA-F]{40}$/.test((a||'').trim());
 const usdShort = n => {
   if (n==null || !isFinite(n)) return '—';
+  const sign = n < 0 ? '-' : '';
   const a = Math.abs(n);
-  if (a >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
-  if (a >= 1e4) return '$' + Math.round(n).toLocaleString('en-US');
-  return (n<0?'-':'') + '$' + Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  if (a >= 1e6) return sign + '$' + (a/1e6).toFixed(2) + 'M';
+  if (a >= 1e4) return sign + '$' + Math.round(a).toLocaleString('en-US');
+  return sign + '$' + a.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 };
 const units = (raw, dec) => {
   try { return Number(BigInt(raw)) / Math.pow(10, Number(dec||18)); }
@@ -430,7 +431,7 @@ async function loadClaims() {
     return;
   }
   for (const c of state.claims) {
-    const hit = cache.get('res.' + lc(c.address) + '.' + state.tokenPrice);
+    const hit = cache.get(resultCacheKey(lc(c.address)));
     if (hit) state.results[lc(c.address)] = hit;
   }
   render();
@@ -546,17 +547,17 @@ async function submit() {
 // symbol-only match is priced too (dropping it would understate loss for the
 // common case of a real stablecoin) but is reported back as unverified so the
 // row can flag it rather than present it as equally solid.
-function quoteFor(tok) {
+function quoteFor(tok, ethRate) {
   const addr = lc(tok.address || tok.address_hash);
   const sym  = (tok.symbol || '').toUpperCase();
   for (const q of CFG.QUOTES) {
     if (q.address && addr && lc(q.address) === addr) {
-      return { usd: q.usd === null ? (state.ethPrice || 0) : q.usd, verified: true };
+      return { usd: q.usd === null ? ethRate : q.usd, verified: true };
     }
   }
   for (const q of CFG.QUOTES) {
     if (q.symbol.toUpperCase() === sym) {
-      return { usd: q.usd === null ? (state.ethPrice || 0) : q.usd, verified: !!q.address };
+      return { usd: q.usd === null ? ethRate : q.usd, verified: !!q.address };
     }
   }
   return null;
@@ -655,9 +656,10 @@ async function computeWallet(address, preTransfers, preTruncated) {
       for (const tr of (tokByHash.get(hash) || [])) {
         const tok = tr.token || {};
         if (lc(tok.address || tok.address_hash) === lc(CFG.TOKEN)) continue;
-        const q = quoteFor(tok);
+        const q = quoteFor(tok, rate);
         if (q == null) continue;
         if (!q.verified) sawUnverified = true;
+        if (tok.symbol && ['WETH','ETH'].includes(tok.symbol.toUpperCase())) ethMoved = true;
         const amt = units((tr.total && tr.total.value) || tr.value || '0',
                           (tr.total && tr.total.decimals) ?? tok.decimals ?? 18);
         if (lc(tr.from && tr.from.hash) === key) outUsd += amt * q.usd;
@@ -666,17 +668,24 @@ async function computeWallet(address, preTransfers, preTruncated) {
       if (ethMoved && !historical) res.estimated++;
       if (sawUnverified) res.unverified++;
 
-      if (delta > 0) {
-        const cost = outUsd - inUsd;
-        if (cost > 0.000001) res.spent += cost; else res.unpriced++;
+      // "Unpriced" means no priced counter-value was found on either side —
+      // not that the net happened to come out at or below zero. A sale whose
+      // gas cost exceeded its proceeds, for instance, is a real (negative)
+      // proceeds figure, not an absence of data, and belongs in the totals.
+      const noPricedValue = Math.abs(outUsd) < 1e-9 && Math.abs(inUsd) < 1e-9;
+      if (noPricedValue) {
+        res.unpriced++;
+      } else if (delta > 0) {
+        res.spent += (outUsd - inUsd);
       } else {
-        const proceeds = inUsd - outUsd;
-        if (proceeds > 0.000001) res.received += proceeds; else res.unpriced++;
+        res.received += (inUsd - outUsd);
       }
     }
   }
 
-  const bal = await api('/addresses/' + address + '/token-balances');
+  // Current balance is a snapshot, not history — never served from cache,
+  // or a wallet's "still holds" figure would freeze at its first calculation.
+  const bal = await api('/addresses/' + address + '/token-balances', null, { cache:false });
   if (Array.isArray(bal)) {
     const row = bal.find(b => lc((b.token||{}).address || (b.token||{}).address_hash) === lc(CFG.TOKEN));
     if (row) res.held = units(row.value, (row.token && row.token.decimals) || 18);
@@ -685,14 +694,29 @@ async function computeWallet(address, preTransfers, preTruncated) {
   res.loss = res.spent - res.received - res.heldUsd;
 
   state.results[key] = res;
-  cache.set('res.' + key + '.' + state.tokenPrice, res);
+  cache.set(resultCacheKey(key), res);
   return res;
+}
+
+// Rounds to the nearest $25 so ordinary price noise doesn't bust the cache,
+// but a materially different live rate (a new session, days later) does —
+// otherwise a wallet's "estimated rate" legs would silently stay priced at
+// whatever ETH cost the first time it was calculated.
+function resultCacheKey(key) {
+  const bucket = Math.round((state.ethPrice || 0) / 25) * 25;
+  return 'res.' + key + '.' + state.tokenPrice + '.' + bucket;
 }
 
 // Runs several wallets' calculations concurrently instead of one at a time.
 async function calculateAll() {
   const pending = state.claims.filter(c => !state.results[lc(c.address)]);
-  if (!pending.length) { $('calcStatus').textContent = 'Every wallet on the register is already calculated.'; return; }
+  $('calcStatus').className = 'status';
+  if (!pending.length) {
+    $('calcStatus').textContent = state.claims.length
+      ? 'Every wallet on the register is already calculated.'
+      : 'Nothing to calculate yet — no wallets have been submitted.';
+    return;
+  }
   let done = 0, idx = 0;
   const poolSize = Math.min(CFG.WALLET_POOL, pending.length);
 
@@ -729,8 +753,13 @@ function render() {
     if (state.sortKey === 'address') return state.sortDir * lc(a.address).localeCompare(lc(b.address));
     if (state.sortKey === 'ts')      return state.sortDir * ((a.ts||0) - (b.ts||0));
     const ra = state.results[lc(a.address)], rb = state.results[lc(b.address)];
-    const va = ra && !ra.error ? ra.loss : -1, vb = rb && !rb.error ? rb.loss : -1;
-    return state.sortDir * (va - vb);
+    const haveA = !!(ra && !ra.error && ra.loss != null);
+    const haveB = !!(rb && !rb.error && rb.loss != null);
+    // Not-yet-calculated / failed wallets always sit at the end — a numeric
+    // sentinel here could collide with a genuine negative loss (a net gain).
+    if (haveA !== haveB) return haveA ? -1 : 1;
+    if (!haveA) return 0;
+    return state.sortDir * (ra.loss - rb.loss);
   });
 
   if (!state.claims.length) { setEmpty('Nobody has submitted a wallet yet. The first entry shows up here immediately.'); updateTotals(); return; }
@@ -828,13 +857,15 @@ function updateTotals() {
  * CSV
  * ------------------------------------------------------------------ */
 function csv() {
-  const head = ['rank','wallet','submitted_at','usd_spent','usd_received','tokens_held','usd_still_held','net_loss_usd',
+  const usd2 = n => (n==null || !isFinite(n)) ? '' : n.toFixed(2);
+  const tok6 = n => (n==null || !isFinite(n)) ? '' : n.toFixed(6);
+  const head = ['rank','wallet','submitted_at','relevant_txs','usd_spent','usd_received','tokens_held','usd_still_held','net_loss_usd',
     'unpriced_transfers','symbol_matched_transfers','estimated_rate_transfers','history_possibly_incomplete'];
   const lines = [head.join(',')];
   state.claims.forEach((c,i) => {
     const r = state.results[lc(c.address)] || {};
-    lines.push([i+1, c.address, c.ts ? new Date(c.ts).toISOString() : '',
-      (r.spent??''), (r.received??''), (r.held??''), (r.heldUsd??''), (r.loss??''),
+    lines.push([i+1, c.address, c.ts ? new Date(c.ts).toISOString() : '', (r.txs??''),
+      usd2(r.spent), usd2(r.received), tok6(r.held), usd2(r.heldUsd), usd2(r.loss),
       (r.unpriced??''), (r.unverified??''), (r.estimated??''), (r.truncated ? 'yes' : '')].join(','));
   });
   const blob = new Blob([lines.join('\n')], {type:'text/csv'});
@@ -859,7 +890,7 @@ $('tokenLink').textContent = short(CFG.TOKEN);
     (bySymbol.length ? bySymbol.join(', ') + ' (matched by symbol only — flagged "symbol-matched" where used)' : '') +
     '. Anything else moving against v1 is treated as unpriced.';
 })();
-$('cutoffNote').innerHTML = 'Eligible if the wallet\'s first v1 buy was before ' +
+$('cutoffNote').innerHTML = 'Eligible if the wallet\'s first v1 buy was at or before ' +
   new Date(CFG.CUTOFF_TS).toISOString().slice(0,10) +
   ' — the <a href="' + CFG.CUTOFF_POST + '" target="_blank" rel="noopener">retirement notice</a>.';
 
@@ -890,15 +921,34 @@ $('pxToken').addEventListener('change', e => {
   }
   render();
 });
-$('pxEth').addEventListener('change', e => { state.ethPrice = Number(e.target.value) || state.ethPrice; });
+$('pxEth').addEventListener('change', e => {
+  const v = Number(e.target.value);
+  if (!v || v === state.ethPrice) return;
+  state.ethPrice = v;
+  // Spent/received are baked in at calculation time for any leg priced off
+  // the live rate, so a price change has to force those wallets to
+  // recompute — updating the variable alone would leave stale numbers on
+  // screen despite the method section's claim that changing it recalculates.
+  state.results = {};
+  render();
+  $('calcStatus').textContent = 'ETH price updated. Recalculating…';
+  calculateAll();
+});
 
 (async function boot() {
   store.init();
   try {
-    const stats = await api('/stats');
+    const stats = await api('/stats', null, { cache:false });
     state.ethPrice = Number((stats && stats.coin_price) || 0) || null;
   } catch {}
   $('pxEth').value = state.ethPrice || '';
+  if (!state.ethPrice) {
+    // Without a live rate, any transaction lacking its own historical rate
+    // would otherwise be priced at zero and misread as "no data" rather than
+    // a real, unpriced cost — so calculation is worth blocking on this.
+    $('calcStatus').className = 'status err';
+    $('calcStatus').textContent = 'Could not fetch the live ETH rate. Enter one manually above before calculating, or transactions without their own historical rate will be undercounted rather than flagged.';
+  }
   await loadClaims();
 })();
 </script>
