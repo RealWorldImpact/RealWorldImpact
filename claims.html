@@ -67,6 +67,8 @@
   .status.ok{color:var(--lime)}
   .status.err{color:var(--red)}
   .note{margin-top:16px;padding-top:16px;border-top:1px solid var(--rule);color:var(--muted);font-size:12px;max-width:70ch}
+  .note.warn{color:var(--red);border-top-color:var(--red);background:rgba(255,107,74,.08);padding:12px 14px;border:1px solid var(--red);margin-top:16px}
+  .note.warn code{color:var(--text);background:var(--ink-3);padding:1px 4px}
 
   .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
   .bar .grow{flex:1 1 200px;min-width:160px}
@@ -230,9 +232,12 @@ const CFG = {
   CUTOFF_TS   : Date.parse('2026-09-03T02:08:36.988Z'),
   CUTOFF_POST : 'https://x.com/RWIrobinhood/status/2095333107905786214',
 
-  // Where submissions live. Leave null to auto-detect:
-  //   window.storage (shared)  ->  REST endpoint below  ->  this browser only.
-  CLAIMS_ENDPOINT: null,   // e.g. 'https://rwihood.org/api/v1-claims'
+  // Register backend. Set this to make submissions genuinely shared across
+  // every visitor once this file is hosted on its own domain — see
+  // worker.js (shipped alongside this file) for a ready-made backend.
+  // Priority if unset: Claude's chat-preview storage (works only inside
+  // Claude, never once hosted elsewhere) -> this browser only.
+  CLAIMS_ENDPOINT: null,   // e.g. 'https://rwi-claims.<your-subdomain>.workers.dev'
 
   // Quote assets recognised as counter-value in a swap. Matching by
   // contract address is trustworthy; matching by symbol alone is not — any
@@ -291,30 +296,38 @@ const cache = {
  * The register store
  *   key shape: claim:<lowercase address>:<ms timestamp>
  *   one list() call returns the whole register, so no per-row fetches.
+ *
+ * IMPORTANT: window.storage only exists inside Claude's own chat preview —
+ * it is injected by Claude.ai and is NOT a standard browser API. Once this
+ * file is hosted on an actual domain (rwihood.org or anywhere else),
+ * window.storage does not exist, and without CLAIMS_ENDPOINT configured the
+ * register silently falls back to per-browser storage: every visitor gets
+ * their own private, unshared copy, and the page still looks like it's
+ * working. That's the failure mode that already happened once. A real
+ * CLAIMS_ENDPOINT is therefore checked FIRST — it's the only mode that's
+ * still correct after this file leaves Claude's preview — and anything
+ * short of a real shared backend now shows a hard-to-miss warning instead
+ * of a quiet footnote.
  * ------------------------------------------------------------------ */
 const store = {
   mode: 'local',
-  label: '',
+  shared: false,
 
   init() {
-    if (typeof window !== 'undefined' && window.storage && window.storage.list) {
-      this.mode = 'shared';
-      this.label = 'Entries are stored with this page and are visible to everyone who opens it.';
-    } else if (CFG.CLAIMS_ENDPOINT) {
+    if (CFG.CLAIMS_ENDPOINT) {
       this.mode = 'rest';
-      this.label = 'Entries are stored at ' + CFG.CLAIMS_ENDPOINT + ' and are visible to everyone.';
+      this.shared = true;
+    } else if (typeof window !== 'undefined' && window.storage && window.storage.list) {
+      this.mode = 'shared';
+      this.shared = true;
     } else {
       this.mode = 'local';
-      this.label = 'No shared store is configured, so entries stay in this browser only. Point CLAIMS_ENDPOINT at a store to make the register public.';
+      this.shared = false;
     }
-    $('storeNote').textContent = this.label;
+    renderStoreNote();
   },
 
   async list() {
-    if (this.mode === 'shared') {
-      const res = await window.storage.list('claim:', true);
-      return (res && res.keys ? res.keys : []).map(parseKey).filter(Boolean);
-    }
     if (this.mode === 'rest') {
       const r = await fetch(CFG.CLAIMS_ENDPOINT, { headers:{accept:'application/json'} });
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -322,15 +335,15 @@ const store = {
       const arr = Array.isArray(j) ? j : (j.claims || []);
       return arr.map(c => ({ address: c.address, ts: c.ts || c.timestamp || 0 }));
     }
+    if (this.mode === 'shared') {
+      const res = await window.storage.list('claim:', true);
+      return (res && res.keys ? res.keys : []).map(parseKey).filter(Boolean);
+    }
     return cache.get('local.claims') || [];
   },
 
   async add(address, ts) {
     const key = 'claim:' + lc(address) + ':' + ts;
-    if (this.mode === 'shared') {
-      await window.storage.set(key, JSON.stringify({ address, ts }), true);
-      return;
-    }
     if (this.mode === 'rest') {
       const r = await fetch(CFG.CLAIMS_ENDPOINT, {
         method:'POST', headers:{'content-type':'application/json'},
@@ -339,11 +352,29 @@ const store = {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return;
     }
+    if (this.mode === 'shared') {
+      await window.storage.set(key, JSON.stringify({ address, ts }), true);
+      return;
+    }
     const all = cache.get('local.claims') || [];
     all.push({ address, ts });
     cache.set('local.claims', all);
   }
 };
+
+function renderStoreNote() {
+  const el = $('storeNote');
+  if (store.mode === 'rest') {
+    el.className = 'note';
+    el.textContent = 'Entries are stored at ' + CFG.CLAIMS_ENDPOINT + ' and are visible to everyone who opens this page.';
+  } else if (store.mode === 'shared') {
+    el.className = 'note warn';
+    el.innerHTML = '<b>Preview-only storage.</b> This register is currently backed by Claude\'s chat-preview storage, which does not exist once this page is hosted elsewhere. Deploy the register backend and set <code>CLAIMS_ENDPOINT</code> before treating this as the real, public register — otherwise submissions here will not appear once this file is hosted on its own domain.';
+  } else {
+    el.className = 'note warn';
+    el.innerHTML = '<b>Not shared.</b> No register backend is configured, so submissions are saved only in this browser — nobody else will see them, and reopening this page elsewhere shows an empty register even though it isn\'t. Set <code>CLAIMS_ENDPOINT</code> to a real backend to fix this.';
+  }
+}
 
 function parseKey(k) {
   const parts = String(k).split(':');            // claim : addr : ts
