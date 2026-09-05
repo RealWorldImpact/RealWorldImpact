@@ -1,9 +1,0 @@
-name = "rwi-claims"
-main = "worker.js"
-compatibility_date = "2024-01-01"
-
-# Created by: wrangler kv namespace create RWI_CLAIMS
-# Paste the id it prints below.
-[[kv_namespaces]]
-binding = "RWI_CLAIMS"
-id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
