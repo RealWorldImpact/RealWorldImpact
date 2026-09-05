@@ -209,7 +209,7 @@
   </section>
 
   <footer>
-    Submissions are public. Anyone can enter any address, so an entry records interest in a wallet, not ownership of it. Wallets whose first v1 acquisition came after the retirement notice are not eligible. This register reports what the chain shows; it is not a promise of repayment, and it is not financial or tax advice.
+    Submissions are public. Anyone can enter any address, so an entry records interest in a wallet, not ownership of it. Any wallet that bought v1 after the retirement notice is ineligible, even if it also held v1 earlier. This register reports what the chain shows; it is not a promise of repayment, and it is not financial or tax advice.
   </footer>
 </div>
 
@@ -252,7 +252,7 @@ const CFG = {
   // The wallet's own v1 transfers decide eligibility and the whole delta
   // series, so that list gets a deeper page cap than the general
   // pricing-context lists — missing an early buy would be worse than a slow load.
-  MAX_PAGES_TOKEN: 60,
+  MAX_PAGES_TOKEN: 100,
   MAX_PAGES: 25,
   CONCURRENCY: 6,     // parallel HTTP requests to the explorer
   WALLET_POOL: 4,     // wallets calculated in parallel by "Calculate all"
@@ -438,28 +438,34 @@ async function loadClaims() {
 }
 
 /* ------------------------------------------------------------------ *
- * Eligibility: wallet must have v1 history, and its first acquisition
- * must be at or before CFG.CUTOFF_TS. Reuses the one fetch for both the
- * check and the later loss calculation, so submitting costs one request.
+ * Eligibility: a wallet is blocked if it made ANY v1 acquisition after
+ * CFG.CUTOFF_TS — not just if its first one was late. A wallet that bought
+ * early and bought again after the notice is still a late buyer for this
+ * purpose. Reuses the one fetch for both the check and the later loss
+ * calculation, so submitting costs one request.
  * ------------------------------------------------------------------ */
 async function checkEligibility(address) {
   const { items: transfers, truncated } = await paged(
     '/addresses/' + address + '/token-transfers', { token: CFG.TOKEN, type:'ERC-20' }, CFG.MAX_PAGES_TOKEN);
+
+  // An incomplete read can't prove a late buy ISN'T hiding in the pages we
+  // didn't get — Blockscout's page order isn't something this reads to rely
+  // on either way. Block outright rather than assume the fetched portion is
+  // representative; a real holder can retry.
+  if (truncated) return { ok:false, reason:'truncated', transfers, truncated };
   if (!transfers.length) return { ok:false, reason:'no-history', transfers, truncated };
 
-  let firstBuyTs = null;
+  let firstBuyTs = null, lateBuyTs = null;
   for (const tr of transfers) {
     if (lc(tr.to && tr.to.hash) === lc(address)) {
       const ts = tr.timestamp ? Date.parse(tr.timestamp) : null;
-      if (ts != null && (firstBuyTs === null || ts < firstBuyTs)) firstBuyTs = ts;
+      if (ts == null) continue;
+      if (firstBuyTs === null || ts < firstBuyTs) firstBuyTs = ts;
+      if (ts > CFG.CUTOFF_TS && (lateBuyTs === null || ts < lateBuyTs)) lateBuyTs = ts;
     }
   }
-  // A truncated read only found this wallet's most recent v1 transfers, so an
-  // untruncated first-buy timestamp couldn't be established — never guess.
-  if (firstBuyTs === null && truncated) return { ok:false, reason:'truncated', transfers, truncated };
   if (firstBuyTs === null) return { ok:false, reason:'no-buy', transfers, truncated };
-  if (firstBuyTs > CFG.CUTOFF_TS && truncated) return { ok:false, reason:'truncated', transfers, truncated };
-  if (firstBuyTs > CFG.CUTOFF_TS) return { ok:false, reason:'late', firstBuyTs, transfers, truncated };
+  if (lateBuyTs !== null) return { ok:false, reason:'late', firstBuyTs, lateBuyTs, transfers, truncated };
   return { ok:true, firstBuyTs, transfers, truncated };
 }
 
@@ -500,10 +506,10 @@ async function submit() {
   if (!elig.ok) {
     st.className = 'status err';
     if (elig.reason === 'late') {
-      const when = new Date(elig.firstBuyTs).toISOString().slice(0,10);
-      st.innerHTML = 'That wallet\'s first v1 buy was on ' + when + ', after the <a href="' + CFG.CUTOFF_POST + '" target="_blank" rel="noopener">retirement notice</a>. It is not eligible for this register.';
+      const when = new Date(elig.lateBuyTs).toISOString().slice(0,10);
+      st.innerHTML = 'That wallet bought v1 on ' + when + ', after the <a href="' + CFG.CUTOFF_POST + '" target="_blank" rel="noopener">retirement notice</a>. Any purchase after the notice makes a wallet ineligible, even if it also held v1 earlier.';
     } else if (elig.reason === 'truncated') {
-      st.textContent = 'This wallet has more v1 history than could be read in one pass, so its first buy could not be pinned down with confidence. Try again — a cached partial read is sometimes enough on a second attempt — or use "Calculate all" after a manual add.';
+      st.textContent = 'This wallet has more v1 history than could be verified in one pass, so a purchase after the retirement notice can\'t be ruled out with confidence. Try again in a moment.';
     } else {
       st.textContent = 'No v1 acquisition found for that address. Check it, or submit the wallet that actually held the token.';
     }
@@ -890,9 +896,9 @@ $('tokenLink').textContent = short(CFG.TOKEN);
     (bySymbol.length ? bySymbol.join(', ') + ' (matched by symbol only — flagged "symbol-matched" where used)' : '') +
     '. Anything else moving against v1 is treated as unpriced.';
 })();
-$('cutoffNote').innerHTML = 'Eligible if the wallet\'s first v1 buy was at or before ' +
+$('cutoffNote').innerHTML = 'Ineligible if the wallet made any v1 purchase after ' +
   new Date(CFG.CUTOFF_TS).toISOString().slice(0,10) +
-  ' — the <a href="' + CFG.CUTOFF_POST + '" target="_blank" rel="noopener">retirement notice</a>.';
+  ' — the <a href="' + CFG.CUTOFF_POST + '" target="_blank" rel="noopener">retirement notice</a>, even if it also held v1 earlier.';
 
 $('btnSubmit').addEventListener('click', submit);
 $('addrInput').addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
