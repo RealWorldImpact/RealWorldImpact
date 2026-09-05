@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>$RWI v1 loss ledger</title>
-<meta name="description" content="Public register of wallets that held $RWI v1. One entry per wallet. Losses are computed from onchain history.">
+<meta name="description" content="Public register of wallets that held $RWI v1. One entry per wallet, closed to purchases made after the retirement notice.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -40,7 +40,8 @@
   .hero{padding:52px 0 40px;border-bottom:1px solid var(--rule)}
   .hero h1{font-size:clamp(30px,5.2vw,54px);line-height:1.06;max-width:16ch;font-weight:300}
   .hero p{max-width:62ch;color:var(--muted);margin:18px 0 0}
-  .totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:34px}
+  .cutoff{display:inline-flex;gap:8px;align-items:baseline;margin-top:16px;font-size:12px;color:var(--muted);border-left:2px solid var(--lime);padding-left:10px}
+  .totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:28px}
   .tot{background:var(--ink);padding:18px 16px}
   .tot .v{font-family:var(--serif);font-size:clamp(24px,3.4vw,34px);line-height:1.1;margin-top:6px}
   .tot .v.dim{color:var(--muted)}
@@ -111,6 +112,7 @@
   <div class="hero">
     <h1>A public register of what v1 cost its holders.</h1>
     <p>The v1 contract is retired. Paste the wallet that held it and submit — one entry per address. Every entry is visible to everyone who opens this page, and each wallet's loss is recomputed from its own transfer history on Robinhood Chain.</p>
+    <div class="cutoff" id="cutoffNote"></div>
     <div class="totals">
       <div class="tot"><span class="lbl">Wallets submitted</span><div class="v" id="totWallets">—</div></div>
       <div class="tot"><span class="lbl">Loss recorded</span><div class="v" id="totLoss">—</div></div>
@@ -120,7 +122,7 @@
 
   <section id="file">
     <h2>Submit a wallet</h2>
-    <p class="sub">Paste the address, hit submit. The register checks that the address is well formed and that it actually touched the v1 contract, then adds it once. Nothing here will ever ask for a seed phrase or a signature.</p>
+    <p class="sub">Paste the address, hit submit. The register checks that the address touched v1 before the retirement notice, then adds it once. Nothing here will ever ask for a seed phrase or a signature.</p>
 
     <div class="panel">
       <div class="form">
@@ -136,7 +138,7 @@
 
   <section id="ledger">
     <h2>The register</h2>
-    <p class="sub">Loss is reconstructed per wallet from its v1 transfers and the value that moved against them in the same transaction. Anyone can rerun it; the inputs are public.</p>
+    <p class="sub">Loss is reconstructed per wallet from its v1 transfers and the value that moved against them in the same transactions. Anyone can rerun it; the inputs are public.</p>
 
     <div class="bar">
       <div class="grow"><input type="text" id="search" placeholder="Filter by address" aria-label="Filter by address"></div>
@@ -186,7 +188,7 @@
         <p>For every transaction where a submitted wallet's v1 balance changed, the counter-value on the other side of that same transaction is measured: ETH sent, ETH returned internally, and any transfer of a token priced below.</p>
         <p><code>net loss = spent − received − value still held</code></p>
         <p>Acquisitions add to <em>spent</em>. Disposals add to <em>received</em>. Transfers with no counter-value — airdrops, wallet-to-wallet sends, liquidity moves — are counted at zero and flagged, because the chain alone cannot tell what they were worth to you.</p>
-        <p>ETH is valued at the rate the explorer recorded for that block where available, otherwise at the current rate. Results are cached in your browser and can be recomputed from scratch at any time.</p>
+        <p>Per wallet, the calculator pulls its full transaction list, all token transfers, and all internal transfers in three requests total — not one request per transaction — so a wallet with hundreds of transfers reads about as fast as one with a handful. Multiple wallets are read in parallel. Everything is cached in your browser and can be recomputed from scratch at any time.</p>
       </div>
       <div>
         <span class="lbl">Prices used for valuation (USD)</span>
@@ -202,7 +204,7 @@
   </section>
 
   <footer>
-    Submissions are public. Anyone can enter any address, so an entry records interest in a wallet, not ownership of it. This register reports what the chain shows; it is not a promise of repayment, and it is not financial or tax advice.
+    Submissions are public. Anyone can enter any address, so an entry records interest in a wallet, not ownership of it. Wallets whose first v1 acquisition came after the retirement notice are not eligible. This register reports what the chain shows; it is not a promise of repayment, and it is not financial or tax advice.
   </footer>
 </div>
 
@@ -216,17 +218,22 @@ const CFG = {
   CHAIN_ID : 4663,
   TOKEN    : '0x2286397228be256529BE1ae9ed8D7d16549e9C6A',   // $RWI v1 (retired)
 
+  // Cutoff for eligibility: a wallet's FIRST v1 acquisition must be at or
+  // before this moment. Timestamp decoded from the post's own snowflake ID
+  // (X blocks direct fetches of post text), not guessed:
+  // https://x.com/RWIrobinhood/status/2095333107905786214
+  CUTOFF_TS   : Date.parse('2026-09-03T02:08:36.988Z'),
+  CUTOFF_POST : 'https://x.com/RWIrobinhood/status/2095333107905786214',
+
   // Where submissions live. Leave null to auto-detect:
   //   window.storage (shared)  ->  REST endpoint below  ->  this browser only.
   CLAIMS_ENDPOINT: null,   // e.g. 'https://rwihood.org/api/v1-claims'
 
-  // Reject addresses with no v1 history. Set false to accept anything.
-  REQUIRE_HISTORY: true,
-
   // symbol -> USD. null means "use the live ETH rate".
   QUOTES   : { WETH:null, ETH:null, USDC:1, USDT:1, USDbC:1, DAI:1 },
-  MAX_PAGES: 30,
-  CONCURRENCY: 3
+  MAX_PAGES: 20,
+  CONCURRENCY: 6,     // parallel HTTP requests to the explorer
+  WALLET_POOL: 4      // wallets calculated in parallel by "Calculate all"
 };
 
 /* ------------------------------------------------------------------ *
@@ -327,16 +334,16 @@ let inflight = 0;
 async function api(path, params, opts={}) {
   const qs = params ? '?' + new URLSearchParams(params) : '';
   const url = CFG.API + path + qs;
-  const ck  = opts.cache ? 'req.' + url : null;
+  const ck  = opts.cache !== false ? 'req.' + url : null;   // cache by default
   if (ck) { const hit = cache.get(ck); if (hit) return hit; }
 
-  while (inflight >= CFG.CONCURRENCY) await sleep(60);
+  while (inflight >= CFG.CONCURRENCY) await sleep(40);
   inflight++;
   try {
     for (let attempt = 0; attempt < 4; attempt++) {
       try {
         const r = await fetch(url, { headers:{accept:'application/json'} });
-        if (r.status === 429 || r.status >= 500) { await sleep(500 * (attempt+1)); continue; }
+        if (r.status === 429 || r.status >= 500) { await sleep(400 * (attempt+1)); continue; }
         if (r.status === 404) return null;
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const j = await r.json();
@@ -344,12 +351,14 @@ async function api(path, params, opts={}) {
         return j;
       } catch (e) {
         if (attempt === 3) throw e;
-        await sleep(400 * (attempt+1));
+        await sleep(300 * (attempt+1));
       }
     }
   } finally { inflight--; }
 }
 
+// Fetches every page of a listing endpoint. Each page is cached individually,
+// so a wallet already read once reloads instantly from localStorage.
 async function paged(path, params) {
   let out = [], next = null, pages = 0;
   do {
@@ -377,7 +386,7 @@ const state = {
 };
 
 /* ------------------------------------------------------------------ *
- * Load + submit
+ * Load
  * ------------------------------------------------------------------ */
 async function loadClaims() {
   try {
@@ -401,9 +410,25 @@ async function loadClaims() {
   render();
 }
 
-async function hasTokenHistory(address) {
-  const j = await api('/addresses/' + address + '/token-transfers', { token: CFG.TOKEN, type:'ERC-20' });
-  return !!(j && j.items && j.items.length);
+/* ------------------------------------------------------------------ *
+ * Eligibility: wallet must have v1 history, and its first acquisition
+ * must be at or before CFG.CUTOFF_TS. Reuses the one fetch for both the
+ * check and the later loss calculation, so submitting costs one request.
+ * ------------------------------------------------------------------ */
+async function checkEligibility(address) {
+  const transfers = await paged('/addresses/' + address + '/token-transfers', { token: CFG.TOKEN, type:'ERC-20' });
+  if (!transfers.length) return { ok:false, reason:'no-history', transfers };
+
+  let firstBuyTs = null;
+  for (const tr of transfers) {
+    if (lc(tr.to && tr.to.hash) === lc(address)) {
+      const ts = tr.timestamp ? Date.parse(tr.timestamp) : null;
+      if (ts != null && (firstBuyTs === null || ts < firstBuyTs)) firstBuyTs = ts;
+    }
+  }
+  if (firstBuyTs === null) return { ok:false, reason:'no-buy', transfers };
+  if (firstBuyTs > CFG.CUTOFF_TS) return { ok:false, reason:'late', firstBuyTs, transfers };
+  return { ok:true, firstBuyTs, transfers };
 }
 
 async function submit() {
@@ -428,20 +453,28 @@ async function submit() {
   }
 
   $('btnSubmit').disabled = true;
-  st.textContent = 'Checking the chain for v1 activity…';
+  st.textContent = 'Checking the chain for v1 history…';
 
-  if (CFG.REQUIRE_HISTORY) {
-    try {
-      const ok = await hasTokenHistory(addr);
-      if (!ok) {
-        st.className = 'status err';
-        st.textContent = 'No v1 transfers found for that address. Check it, or submit the wallet that actually held the token.';
-        $('btnSubmit').disabled = false;
-        return;
-      }
-    } catch (e) {
-      st.textContent = 'The explorer did not answer, so the address goes on unverified.';
+  let elig;
+  try {
+    elig = await checkEligibility(addr);
+  } catch (e) {
+    st.className = 'status err';
+    st.textContent = 'The explorer did not answer, so this could not be verified. Try again in a moment.';
+    $('btnSubmit').disabled = false;
+    return;
+  }
+
+  if (!elig.ok) {
+    st.className = 'status err';
+    if (elig.reason === 'late') {
+      const when = new Date(elig.firstBuyTs).toISOString().slice(0,10);
+      st.innerHTML = 'That wallet\'s first v1 buy was on ' + when + ', after the <a href="' + CFG.CUTOFF_POST + '" target="_blank" rel="noopener">retirement notice</a>. It is not eligible for this register.';
+    } else {
+      st.textContent = 'No v1 acquisition found for that address. Check it, or submit the wallet that actually held the token.';
     }
+    $('btnSubmit').disabled = false;
+    return;
   }
 
   const ts = Date.now();
@@ -462,12 +495,19 @@ async function submit() {
   st.textContent = short(addr) + ' is on the register. Calculating its loss now.';
 
   await loadClaims();
-  try { await computeWallet(addr); } catch { state.results[addr] = { error:true, loss:null }; }
+  try { await computeWallet(addr, elig.transfers); } catch { state.results[addr] = { error:true, loss:null }; }
   render();
 }
 
 /* ------------------------------------------------------------------ *
- * Loss calculation for one wallet
+ * Loss calculation for one wallet.
+ *
+ * Performance: instead of one API call per transaction the wallet was
+ * party to (the old N+1 pattern), this pulls three address-level lists —
+ * transactions, token transfers, internal transfers — each in a small
+ * number of paginated requests regardless of how many transactions the
+ * wallet has, then joins them client-side by hash. A wallet with 500
+ * transactions costs the same ~6-9 requests as one with 20.
  * ------------------------------------------------------------------ */
 function quoteUsd(symbol) {
   const s = (symbol||'').toUpperCase();
@@ -480,15 +520,14 @@ function quoteUsd(symbol) {
   return null;
 }
 
-async function computeWallet(address) {
+async function computeWallet(address, preTransfers) {
   const key = lc(address);
   const res = { spent:0, received:0, held:0, heldUsd:0, loss:0, unpriced:0, txs:0 };
 
-  const transfers = await paged('/addresses/' + address + '/token-transfers',
-    { token: CFG.TOKEN, type:'ERC-20' });
+  const rwiTransfers = preTransfers || await paged('/addresses/' + address + '/token-transfers', { token: CFG.TOKEN, type:'ERC-20' });
 
   const byTx = new Map();
-  for (const tr of transfers) {
+  for (const tr of rwiTransfers) {
     const h = tr.transaction_hash || tr.tx_hash;
     if (!h) continue;
     if (!byTx.has(h)) byTx.set(h, []);
@@ -496,50 +535,70 @@ async function computeWallet(address) {
   }
   res.txs = byTx.size;
 
-  for (const [hash, list] of byTx) {
-    const dec = Number((list[0].token && list[0].token.decimals) || 18);
-    let delta = 0;
-    for (const tr of list) {
-      const amt = units((tr.total && tr.total.value) || tr.value || '0', (tr.total && tr.total.decimals) ?? dec);
-      if (lc(tr.to   && tr.to.hash)   === key) delta += amt;
-      if (lc(tr.from && tr.from.hash) === key) delta -= amt;
-    }
-    if (Math.abs(delta) < 1e-12) continue;
-
-    const [tx, txTransfers, internals] = await Promise.all([
-      api('/transactions/' + hash, null, {cache:true}),
-      api('/transactions/' + hash + '/token-transfers', {type:'ERC-20'}, {cache:true}),
-      api('/transactions/' + hash + '/internal-transactions', null, {cache:true})
+  if (byTx.size) {
+    // Three bulk, paginated reads cover every transaction at once.
+    const [allTxs, allTokenTransfers, allInternals] = await Promise.all([
+      paged('/addresses/' + address + '/transactions'),
+      paged('/addresses/' + address + '/token-transfers'),          // unfiltered: every token, so swap legs are included
+      paged('/addresses/' + address + '/internal-transactions')
     ]);
 
-    const rate = Number((tx && (tx.historical_exchange_rate || tx.exchange_rate)) || state.ethPrice || 0);
-    let outUsd = 0, inUsd = 0;
-
-    if (tx && lc(tx.from && tx.from.hash) === key && tx.value && tx.value !== '0') {
-      outUsd += units(tx.value, 18) * rate;
+    const txByHash = new Map(allTxs.map(t => [t.hash, t]));
+    const tokByHash = new Map();
+    for (const tr of allTokenTransfers) {
+      const h = tr.transaction_hash || tr.tx_hash;
+      if (!h) continue;
+      if (!tokByHash.has(h)) tokByHash.set(h, []);
+      tokByHash.get(h).push(tr);
     }
-    for (const it of ((internals && internals.items) || [])) {
-      if (lc(it.to && it.to.hash) === key && it.value && it.value !== '0') {
-        inUsd += units(it.value, 18) * rate;
+    const intByHash = new Map();
+    for (const it of allInternals) {
+      const h = it.transaction_hash || it.tx_hash;
+      if (!h) continue;
+      if (!intByHash.has(h)) intByHash.set(h, []);
+      intByHash.get(h).push(it);
+    }
+
+    for (const [hash, list] of byTx) {
+      const dec = Number((list[0].token && list[0].token.decimals) || 18);
+      let delta = 0;
+      for (const tr of list) {
+        const amt = units((tr.total && tr.total.value) || tr.value || '0', (tr.total && tr.total.decimals) ?? dec);
+        if (lc(tr.to   && tr.to.hash)   === key) delta += amt;
+        if (lc(tr.from && tr.from.hash) === key) delta -= amt;
       }
-    }
-    for (const tr of ((txTransfers && txTransfers.items) || [])) {
-      const tok = tr.token || {};
-      if (lc(tok.address || tok.address_hash) === lc(CFG.TOKEN)) continue;
-      const px = quoteUsd(tok.symbol);
-      if (px == null) continue;
-      const amt = units((tr.total && tr.total.value) || tr.value || '0',
-                        (tr.total && tr.total.decimals) ?? tok.decimals ?? 18);
-      if (lc(tr.from && tr.from.hash) === key) outUsd += amt * px;
-      if (lc(tr.to   && tr.to.hash)   === key) inUsd  += amt * px;
-    }
+      if (Math.abs(delta) < 1e-12) continue;
 
-    if (delta > 0) {
-      const cost = outUsd - inUsd;
-      if (cost > 0.000001) res.spent += cost; else res.unpriced++;
-    } else {
-      const proceeds = inUsd - outUsd;
-      if (proceeds > 0.000001) res.received += proceeds; else res.unpriced++;
+      const tx = txByHash.get(hash);
+      const rate = Number((tx && (tx.historical_exchange_rate || tx.exchange_rate)) || state.ethPrice || 0);
+      let outUsd = 0, inUsd = 0;
+
+      if (tx && lc(tx.from && tx.from.hash) === key && tx.value && tx.value !== '0') {
+        outUsd += units(tx.value, 18) * rate;
+      }
+      for (const it of (intByHash.get(hash) || [])) {
+        if (lc(it.to && it.to.hash) === key && it.value && it.value !== '0') {
+          inUsd += units(it.value, 18) * rate;
+        }
+      }
+      for (const tr of (tokByHash.get(hash) || [])) {
+        const tok = tr.token || {};
+        if (lc(tok.address || tok.address_hash) === lc(CFG.TOKEN)) continue;
+        const px = quoteUsd(tok.symbol);
+        if (px == null) continue;
+        const amt = units((tr.total && tr.total.value) || tr.value || '0',
+                          (tr.total && tr.total.decimals) ?? tok.decimals ?? 18);
+        if (lc(tr.from && tr.from.hash) === key) outUsd += amt * px;
+        if (lc(tr.to   && tr.to.hash)   === key) inUsd  += amt * px;
+      }
+
+      if (delta > 0) {
+        const cost = outUsd - inUsd;
+        if (cost > 0.000001) res.spent += cost; else res.unpriced++;
+      } else {
+        const proceeds = inUsd - outUsd;
+        if (proceeds > 0.000001) res.received += proceeds; else res.unpriced++;
+      }
     }
   }
 
@@ -556,18 +615,25 @@ async function computeWallet(address) {
   return res;
 }
 
+// Runs several wallets' calculations concurrently instead of one at a time.
 async function calculateAll() {
   const pending = state.claims.filter(c => !state.results[lc(c.address)]);
   if (!pending.length) { $('calcStatus').textContent = 'Every wallet on the register is already calculated.'; return; }
-  let done = 0;
-  for (const c of pending) {
-    $('calcStatus').textContent = 'Reading ' + short(c.address) + ' — ' + (done+1) + ' of ' + pending.length + '.';
-    try { await computeWallet(c.address); }
-    catch { state.results[lc(c.address)] = { error:true, loss:null }; }
-    done++;
-    $('bar').style.width = Math.round(done / pending.length * 100) + '%';
-    render();
+  let done = 0, idx = 0;
+  const poolSize = Math.min(CFG.WALLET_POOL, pending.length);
+
+  async function worker() {
+    while (idx < pending.length) {
+      const c = pending[idx++];
+      try { await computeWallet(c.address); }
+      catch { state.results[lc(c.address)] = { error:true, loss:null }; }
+      done++;
+      $('bar').style.width = Math.round(done / pending.length * 100) + '%';
+      $('calcStatus').textContent = done + ' of ' + pending.length + ' calculated…';
+      render();
+    }
   }
+  await Promise.all(Array.from({ length: poolSize }, worker));
   $('calcStatus').textContent = 'Done. ' + done + ' wallet' + (done===1?'':'s') + ' recalculated.';
   setTimeout(()=>{ $('bar').style.width = '0'; }, 800);
 }
@@ -679,6 +745,9 @@ $('tokenLink').href = CFG.EXPLORER + '/token/' + CFG.TOKEN;
 $('tokenLink').textContent = short(CFG.TOKEN);
 $('quoteList').textContent = Object.keys(CFG.QUOTES).join(', ') +
   ' — anything else moving against v1 is treated as unpriced.';
+$('cutoffNote').innerHTML = 'Eligible if the wallet\'s first v1 buy was before ' +
+  new Date(CFG.CUTOFF_TS).toISOString().slice(0,10) +
+  ' — the <a href="' + CFG.CUTOFF_POST + '" target="_blank" rel="noopener">retirement notice</a>.';
 
 $('btnSubmit').addEventListener('click', submit);
 $('addrInput').addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
