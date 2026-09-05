@@ -88,7 +88,7 @@
   td.loss{color:var(--lime)}
   td.pending{color:var(--muted)}
   tfoot td{background:var(--ink-2);border-top:1px solid var(--rule);border-bottom:0;font-weight:500}
-  .flag{color:var(--red);font-size:11px;margin-left:6px}
+  .flag{color:var(--red);font-size:11px;margin-left:2px}
   .empty{padding:40px 18px;color:var(--muted);text-align:center;white-space:normal}
   .progress{height:2px;background:var(--rule);margin-top:14px}
   .progress i{display:block;height:2px;background:var(--lime);width:0;transition:width .2s linear}
@@ -267,7 +267,8 @@ const CFG = {
   // "symbol-matched" per wallet so that isn't mistaken for a verified read.
   // usd:null means "use that transaction's own historical/fallback ETH rate".
   QUOTES: [
-    { symbol:'WETH', address:'0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73', usd:null }, // verified canonical WETH on Robinhood Chain
+    { symbol:'WETH', address:'0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73', usd:null }, // verified canonical WETH on Robinhood Chain (docs.robinhood.com/chain/contracts)
+    { symbol:'USDG', address:'0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168', usd:1 },     // verified canonical USDG on Robinhood Chain (docs.robinhood.com/chain/contracts)
     { symbol:'ETH',  address:null, usd:null },
     { symbol:'USDC', address:null, usd:1 },
     { symbol:'USDT', address:null, usd:1 },
@@ -421,17 +422,31 @@ async function paged(path, params, maxPages, bypassCache) {
  * hundreds of transactions spread over a handful of days costs a handful
  * of price requests, not hundreds.
  * ------------------------------------------------------------------ */
-const priceSlots = makeSemaphore(2);   // gentle on CoinGecko's free tier
+// A concurrency cap alone doesn't bound requests per minute — 2-at-a-time
+// can still exceed CoinGecko's free-tier limit under sustained load (an
+// independent measurement put it as low as 5-15 req/min). This spaces
+// actual requests out in time instead, since accuracy here matters more
+// than shaving a few seconds off a cold calculation: a request that
+// succeeds gets a real historical price, one that gets rate-limited falls
+// back to today's rate and is flagged "estimated".
+let nextPriceSlot = 0;
+async function throttlePriceRequest() {
+  const now = Date.now();
+  const wait = Math.max(0, nextPriceSlot - now);
+  nextPriceSlot = Math.max(now, nextPriceSlot) + 4500;   // ~13/min, safely under the tightest observed limit
+  if (wait) await sleep(wait);
+}
+
 async function historicalEthPrice(day) {
   const ck = 'ethpx.' + day;
   const cached = cache.get(ck);
   if (cached != null) return cached;
 
-  await priceSlots.acquire();
   try {
     const [y, m, d] = day.split('-');
     const url = 'https://api.coingecko.com/api/v3/coins/ethereum/history?date=' + d + '-' + m + '-' + y + '&localization=false';
     for (let attempt = 0; attempt < 2; attempt++) {
+      await throttlePriceRequest();
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 10000);
       try {
@@ -449,7 +464,9 @@ async function historicalEthPrice(day) {
       }
     }
     return null;
-  } finally { priceSlots.release(); }
+  } catch (e) {
+    return null;
+  }
 }
 
 // Resolves historical ETH prices for a whole set of calendar days at once,
@@ -1156,12 +1173,13 @@ function render() {
               '<td class="num" style="color:var(--red)">read failed</td>' +
               '<td class="num"><button class="btn ghost sm" data-calc="' + c.address + '">Retry</button></td>';
     } else {
-      const flags =
-        (r.truncated ? '<span class="flag" title="This wallet has more history than could be fully read — treat the figure as a lower bound">history incomplete</span>' : '') +
-        (r.balanceUnavailable ? '<span class="flag" title="Current token balance could not be read — \'still holds\' and net loss may understate anything still held">balance unknown</span>' : '') +
-        (r.unpriced   ? '<span class="flag" title="' + r.unpriced + ' transfer(s) had no discoverable counter-value and were counted at zero">' + r.unpriced + ' unpriced</span>' : '') +
-        (r.unverified ? '<span class="flag" title="' + r.unverified + ' transaction(s) priced a token by symbol only, without a verified contract address">' + r.unverified + ' symbol-matched</span>' : '') +
-        (r.estimated  ? '<span class="flag" title="' + r.estimated + ' transaction(s) used the current ETH rate because no historical rate was available for that block">' + r.estimated + ' est. rate</span>' : '');
+      const flagParts = [];
+      if (r.truncated) flagParts.push('<span class="flag" title="This wallet has more history than could be fully read — treat the figure as a lower bound">history incomplete</span>');
+      if (r.balanceUnavailable) flagParts.push('<span class="flag" title="Current token balance could not be read — \'still holds\' and net loss may understate anything still held">balance unknown</span>');
+      if (r.unpriced) flagParts.push('<span class="flag" title="' + r.unpriced + ' transfer(s) had no discoverable counter-value and were counted at zero">' + r.unpriced + ' unpriced</span>');
+      if (r.unverified) flagParts.push('<span class="flag" title="' + r.unverified + ' transaction(s) priced a token by symbol only, without a verified contract address">' + r.unverified + ' symbol-matched</span>');
+      if (r.estimated) flagParts.push('<span class="flag" title="' + r.estimated + ' transaction(s) used the current ETH rate because no historical rate was available for that block">' + r.estimated + ' est. rate</span>');
+      const flags = flagParts.length ? ' ' + flagParts.join(' ') : '';
       cells = '<td class="num">' + usdShort(r.spent) + '</td>' +
               '<td class="num">' + usdShort(r.received) + '</td>' +
               '<td class="num">' + (r.held ? r.held.toLocaleString('en-US',{maximumFractionDigits:0}) : (r.balanceUnavailable ? '?' : '0')) + '</td>' +
