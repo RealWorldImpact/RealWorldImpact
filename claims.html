@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$RWI v1 loss ledger</title>
+<meta name="description" content="Public register of wallets that held $RWI v1. One entry per wallet. Losses are computed from onchain history.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lime:#CCFE06;
+    --ink:#0B0B09;
+    --ink-2:#131311;
+    --ink-3:#1C1C18;
+    --rule:#2A2A24;
+    --text:#EDEDE4;
+    --muted:#8C8C80;
+    --red:#FF6B4A;
+    --serif:"Newsreader",Georgia,"Times New Roman",serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--ink);color:var(--text);font-family:var(--mono);font-size:14px;line-height:1.5;font-variant-numeric:tabular-nums}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  a{color:var(--lime);text-decoration:none;border-bottom:1px solid rgba(204,254,6,.3)}
+  a:hover{border-bottom-color:var(--lime)}
+  :focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+  h1,h2{font-family:var(--serif);font-weight:400;letter-spacing:-.01em;margin:0}
+  .lbl{font-size:11px;color:var(--muted);letter-spacing:.04em}
+
+  header{border-bottom:1px solid var(--rule)}
+  .head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:18px 0;flex-wrap:wrap}
+  .mark{font-family:var(--serif);font-size:19px}
+  .mark b{color:var(--lime);font-weight:500}
+  .chain{font-size:11px;color:var(--muted)}
+
+  .hero{padding:52px 0 40px;border-bottom:1px solid var(--rule)}
+  .hero h1{font-size:clamp(30px,5.2vw,54px);line-height:1.06;max-width:16ch;font-weight:300}
+  .hero p{max-width:62ch;color:var(--muted);margin:18px 0 0}
+  .totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:34px}
+  .tot{background:var(--ink);padding:18px 16px}
+  .tot .v{font-family:var(--serif);font-size:clamp(24px,3.4vw,34px);line-height:1.1;margin-top:6px}
+  .tot .v.dim{color:var(--muted)}
+  @media(max-width:720px){.totals{grid-template-columns:1fr}}
+
+  section{padding:44px 0;border-bottom:1px solid var(--rule)}
+  section h2{font-size:26px;margin-bottom:6px}
+  section .sub{color:var(--muted);max-width:66ch;margin-bottom:24px}
+
+  .panel{border:1px solid var(--rule);background:var(--ink-2);padding:20px}
+  .form{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+  .form .field{flex:1 1 420px;min-width:240px}
+  input[type=text],input[type=number]{font-family:var(--mono);font-size:14px;background:var(--ink);color:var(--text);border:1px solid var(--rule);padding:12px 12px;border-radius:0;width:100%}
+  input:focus{border-color:var(--lime)}
+  input.bad{border-color:var(--red)}
+  .btn{font-family:var(--mono);font-size:13px;cursor:pointer;background:var(--lime);color:var(--ink);border:1px solid var(--lime);padding:12px 20px;border-radius:0;font-weight:500}
+  .btn:hover{background:#DBFF3D;border-color:#DBFF3D}
+  .btn[disabled]{background:transparent;color:var(--muted);border-color:var(--rule);cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--text);border-color:var(--rule)}
+  .btn.ghost:hover{border-color:var(--lime);color:var(--lime);background:transparent}
+  .btn.sm{padding:7px 12px;font-size:12px}
+  .status{margin-top:14px;font-size:13px;color:var(--muted);min-height:20px}
+  .status.ok{color:var(--lime)}
+  .status.err{color:var(--red)}
+  .note{margin-top:16px;padding-top:16px;border-top:1px solid var(--rule);color:var(--muted);font-size:12px;max-width:70ch}
+
+  .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .bar .grow{flex:1 1 200px;min-width:160px}
+  .tablewrap{border:1px solid var(--rule);overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap}
+  th{font-size:11px;color:var(--muted);font-weight:400;background:var(--ink-2)}
+  th.num,td.num{text-align:right}
+  th.sortable{cursor:pointer}
+  th.sortable:hover{color:var(--lime)}
+  tbody tr:hover{background:var(--ink-2)}
+  tbody tr:last-child td{border-bottom:0}
+  tr.mine{border-left:2px solid var(--lime)}
+  td.loss{color:var(--lime)}
+  td.pending{color:var(--muted)}
+  tfoot td{background:var(--ink-2);border-top:1px solid var(--rule);border-bottom:0;font-weight:500}
+  .flag{color:var(--red);font-size:11px;margin-left:6px}
+  .empty{padding:40px 18px;color:var(--muted);text-align:center;white-space:normal}
+  .progress{height:2px;background:var(--rule);margin-top:14px}
+  .progress i{display:block;height:2px;background:var(--lime);width:0;transition:width .2s linear}
+
+  .method{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  @media(max-width:800px){.method{grid-template-columns:1fr}}
+  .method p{color:var(--muted);margin:0 0 14px}
+  .method code{color:var(--text);background:var(--ink-3);padding:2px 5px}
+  .prices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+  .prices .lbl{margin-bottom:4px;display:block}
+  footer{padding:34px 0 60px;color:var(--muted);font-size:12px}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head">
+    <div class="mark"><b>$RWI</b> v1 loss ledger</div>
+    <div class="chain">Robinhood Chain · 4663 · contract <a id="tokenLink" href="#" target="_blank" rel="noopener">0x2286…9C6A</a></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h1>A public register of what v1 cost its holders.</h1>
+    <p>The v1 contract is retired. Paste the wallet that held it and submit — one entry per address. Every entry is visible to everyone who opens this page, and each wallet's loss is recomputed from its own transfer history on Robinhood Chain.</p>
+    <div class="totals">
+      <div class="tot"><span class="lbl">Wallets submitted</span><div class="v" id="totWallets">—</div></div>
+      <div class="tot"><span class="lbl">Loss recorded</span><div class="v" id="totLoss">—</div></div>
+      <div class="tot"><span class="lbl">Calculated</span><div class="v dim" id="totPriced">—</div></div>
+    </div>
+  </div>
+
+  <section id="file">
+    <h2>Submit a wallet</h2>
+    <p class="sub">Paste the address, hit submit. The register checks that the address is well formed and that it actually touched the v1 contract, then adds it once. Nothing here will ever ask for a seed phrase or a signature.</p>
+
+    <div class="panel">
+      <div class="form">
+        <div class="field">
+          <input type="text" id="addrInput" placeholder="0x…" spellcheck="false" autocomplete="off" aria-label="Wallet address">
+        </div>
+        <button class="btn" id="btnSubmit">Submit wallet</button>
+      </div>
+      <div class="status" id="fileStatus"></div>
+      <div class="note" id="storeNote"></div>
+    </div>
+  </section>
+
+  <section id="ledger">
+    <h2>The register</h2>
+    <p class="sub">Loss is reconstructed per wallet from its v1 transfers and the value that moved against them in the same transaction. Anyone can rerun it; the inputs are public.</p>
+
+    <div class="bar">
+      <div class="grow"><input type="text" id="search" placeholder="Filter by address" aria-label="Filter by address"></div>
+      <button class="btn ghost sm" id="btnCalcAll">Calculate all</button>
+      <button class="btn ghost sm" id="btnCsv">Download CSV</button>
+      <button class="btn ghost sm" id="btnRefresh">Reload</button>
+      <button class="btn ghost sm" id="btnClearCache">Clear cache</button>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:34px" class="num">#</th>
+            <th class="sortable" data-sort="address">Wallet</th>
+            <th class="sortable num" data-sort="ts">Submitted</th>
+            <th class="num">Bought</th>
+            <th class="num">Sold</th>
+            <th class="num">Still holds</th>
+            <th class="sortable num" data-sort="loss">Net loss</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="8" class="empty">Loading the register…</td></tr>
+        </tbody>
+        <tfoot id="foot" style="display:none">
+          <tr>
+            <td></td><td>Total</td><td></td>
+            <td class="num" id="fBought">—</td>
+            <td class="num" id="fSold">—</td>
+            <td class="num" id="fHold">—</td>
+            <td class="num" id="fLoss">—</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="progress"><i id="bar"></i></div>
+    <div class="status" id="calcStatus"></div>
+  </section>
+
+  <section id="method">
+    <h2>How the number is built</h2>
+    <div class="method">
+      <div>
+        <p>For every transaction where a submitted wallet's v1 balance changed, the counter-value on the other side of that same transaction is measured: ETH sent, ETH returned internally, and any transfer of a token priced below.</p>
+        <p><code>net loss = spent − received − value still held</code></p>
+        <p>Acquisitions add to <em>spent</em>. Disposals add to <em>received</em>. Transfers with no counter-value — airdrops, wallet-to-wallet sends, liquidity moves — are counted at zero and flagged, because the chain alone cannot tell what they were worth to you.</p>
+        <p>ETH is valued at the rate the explorer recorded for that block where available, otherwise at the current rate. Results are cached in your browser and can be recomputed from scratch at any time.</p>
+      </div>
+      <div>
+        <span class="lbl">Prices used for valuation (USD)</span>
+        <div class="prices">
+          <label><span class="lbl">ETH</span><input type="number" id="pxEth" step="0.01" min="0"></label>
+          <label><span class="lbl">Residual v1 token</span><input type="number" id="pxToken" step="0.00000001" min="0" value="0"></label>
+        </div>
+        <p style="margin-top:14px">v1 is retired and priced at zero by default, so anything a wallet still holds counts fully as loss. Change either figure and the register recalculates.</p>
+        <span class="lbl">Quote assets recognised</span>
+        <p id="quoteList" style="margin-top:6px"></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Submissions are public. Anyone can enter any address, so an entry records interest in a wallet, not ownership of it. This register reports what the chain shows; it is not a promise of repayment, and it is not financial or tax advice.
+  </footer>
+</div>
+
+<script>
+/* ------------------------------------------------------------------ *
+ * Config
+ * ------------------------------------------------------------------ */
+const CFG = {
+  EXPLORER : 'https://robinhoodchain.blockscout.com',
+  API      : 'https://robinhoodchain.blockscout.com/api/v2',
+  CHAIN_ID : 4663,
+  TOKEN    : '0x2286397228be256529BE1ae9ed8D7d16549e9C6A',   // $RWI v1 (retired)
+
+  // Where submissions live. Leave null to auto-detect:
+  //   window.storage (shared)  ->  REST endpoint below  ->  this browser only.
+  CLAIMS_ENDPOINT: null,   // e.g. 'https://rwihood.org/api/v1-claims'
+
+  // Reject addresses with no v1 history. Set false to accept anything.
+  REQUIRE_HISTORY: true,
+
+  // symbol -> USD. null means "use the live ETH rate".
+  QUOTES   : { WETH:null, ETH:null, USDC:1, USDT:1, USDbC:1, DAI:1 },
+  MAX_PAGES: 30,
+  CONCURRENCY: 3
+};
+
+/* ------------------------------------------------------------------ *
+ * Helpers
+ * ------------------------------------------------------------------ */
+const $  = id => document.getElementById(id);
+const lc = s => (s||'').toLowerCase();
+const short = a => a.slice(0,6) + '…' + a.slice(-4);
+const isAddr = a => /^0x[0-9a-fA-F]{40}$/.test((a||'').trim());
+const usdShort = n => {
+  if (n==null || !isFinite(n)) return '—';
+  const a = Math.abs(n);
+  if (a >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
+  if (a >= 1e4) return '$' + Math.round(n).toLocaleString('en-US');
+  return (n<0?'-':'') + '$' + Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+};
+const units = (raw, dec) => {
+  try { return Number(BigInt(raw)) / Math.pow(10, Number(dec||18)); }
+  catch { return Number(raw||0) / Math.pow(10, Number(dec||18)); }
+};
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const CACHE_PREFIX = 'rwi.v1claims.';
+const cache = {
+  get(k){ try { const v = localStorage.getItem(CACHE_PREFIX+k); return v ? JSON.parse(v) : null; } catch { return null; } },
+  set(k,v){ try { localStorage.setItem(CACHE_PREFIX+k, JSON.stringify(v)); } catch {} },
+  clear(){ try { Object.keys(localStorage).filter(k=>k.startsWith(CACHE_PREFIX)).forEach(k=>localStorage.removeItem(k)); } catch {} }
+};
+
+/* ------------------------------------------------------------------ *
+ * The register store
+ *   key shape: claim:<lowercase address>:<ms timestamp>
+ *   one list() call returns the whole register, so no per-row fetches.
+ * ------------------------------------------------------------------ */
+const store = {
+  mode: 'local',
+  label: '',
+
+  init() {
+    if (typeof window !== 'undefined' && window.storage && window.storage.list) {
+      this.mode = 'shared';
+      this.label = 'Entries are stored with this page and are visible to everyone who opens it.';
+    } else if (CFG.CLAIMS_ENDPOINT) {
+      this.mode = 'rest';
+      this.label = 'Entries are stored at ' + CFG.CLAIMS_ENDPOINT + ' and are visible to everyone.';
+    } else {
+      this.mode = 'local';
+      this.label = 'No shared store is configured, so entries stay in this browser only. Point CLAIMS_ENDPOINT at a store to make the register public.';
+    }
+    $('storeNote').textContent = this.label;
+  },
+
+  async list() {
+    if (this.mode === 'shared') {
+      const res = await window.storage.list('claim:', true);
+      return (res && res.keys ? res.keys : []).map(parseKey).filter(Boolean);
+    }
+    if (this.mode === 'rest') {
+      const r = await fetch(CFG.CLAIMS_ENDPOINT, { headers:{accept:'application/json'} });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      const arr = Array.isArray(j) ? j : (j.claims || []);
+      return arr.map(c => ({ address: c.address, ts: c.ts || c.timestamp || 0 }));
+    }
+    return cache.get('local.claims') || [];
+  },
+
+  async add(address, ts) {
+    const key = 'claim:' + lc(address) + ':' + ts;
+    if (this.mode === 'shared') {
+      await window.storage.set(key, JSON.stringify({ address, ts }), true);
+      return;
+    }
+    if (this.mode === 'rest') {
+      const r = await fetch(CFG.CLAIMS_ENDPOINT, {
+        method:'POST', headers:{'content-type':'application/json'},
+        body: JSON.stringify({ address, ts })
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return;
+    }
+    const all = cache.get('local.claims') || [];
+    all.push({ address, ts });
+    cache.set('local.claims', all);
+  }
+};
+
+function parseKey(k) {
+  const parts = String(k).split(':');            // claim : addr : ts
+  if (parts.length < 3 || !isAddr(parts[1])) return null;
+  return { address: parts[1], ts: Number(parts[2]) || 0 };
+}
+
+/* ------------------------------------------------------------------ *
+ * Explorer API — throttled, retried, cached
+ * ------------------------------------------------------------------ */
+let inflight = 0;
+async function api(path, params, opts={}) {
+  const qs = params ? '?' + new URLSearchParams(params) : '';
+  const url = CFG.API + path + qs;
+  const ck  = opts.cache ? 'req.' + url : null;
+  if (ck) { const hit = cache.get(ck); if (hit) return hit; }
+
+  while (inflight >= CFG.CONCURRENCY) await sleep(60);
+  inflight++;
+  try {
+    for (let attempt = 0; attempt < 4; attempt++) {
+      try {
+        const r = await fetch(url, { headers:{accept:'application/json'} });
+        if (r.status === 429 || r.status >= 500) { await sleep(500 * (attempt+1)); continue; }
+        if (r.status === 404) return null;
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const j = await r.json();
+        if (ck) cache.set(ck, j);
+        return j;
+      } catch (e) {
+        if (attempt === 3) throw e;
+        await sleep(400 * (attempt+1));
+      }
+    }
+  } finally { inflight--; }
+}
+
+async function paged(path, params) {
+  let out = [], next = null, pages = 0;
+  do {
+    const j = await api(path, Object.assign({}, params, next||{}));
+    if (!j) break;
+    out = out.concat(j.items || []);
+    next = j.next_page_params || null;
+    pages++;
+  } while (next && pages < CFG.MAX_PAGES);
+  return out;
+}
+
+/* ------------------------------------------------------------------ *
+ * State
+ * ------------------------------------------------------------------ */
+const state = {
+  claims: [],       // {address, ts}
+  results: {},      // address(lc) -> {spent, received, held, heldUsd, loss, unpriced}
+  ethPrice: null,
+  tokenPrice: 0,
+  sortKey: 'loss',
+  sortDir: -1,
+  filter: '',
+  mine: JSON.parse(localStorage.getItem(CACHE_PREFIX+'mine') || '[]')
+};
+
+/* ------------------------------------------------------------------ *
+ * Load + submit
+ * ------------------------------------------------------------------ */
+async function loadClaims() {
+  try {
+    const raw = await store.list();
+    const seen = new Map();
+    for (const c of raw) {
+      if (!c || !isAddr(c.address)) continue;
+      const k = lc(c.address);
+      const prev = seen.get(k);
+      if (!prev || (c.ts && c.ts < prev.ts)) seen.set(k, { address: lc(c.address), ts: c.ts || 0 });
+    }
+    state.claims = [...seen.values()].sort((a,b) => a.ts - b.ts);
+  } catch (e) {
+    setEmpty('The register could not be read right now. Reload, or check that the store is reachable.');
+    return;
+  }
+  for (const c of state.claims) {
+    const hit = cache.get('res.' + lc(c.address) + '.' + state.tokenPrice);
+    if (hit) state.results[lc(c.address)] = hit;
+  }
+  render();
+}
+
+async function hasTokenHistory(address) {
+  const j = await api('/addresses/' + address + '/token-transfers', { token: CFG.TOKEN, type:'ERC-20' });
+  return !!(j && j.items && j.items.length);
+}
+
+async function submit() {
+  const input = $('addrInput');
+  const st = $('fileStatus');
+  const raw = input.value.trim();
+  st.className = 'status';
+
+  if (!isAddr(raw)) {
+    input.classList.add('bad');
+    st.className = 'status err';
+    st.textContent = 'That is not a wallet address. It needs to be 0x followed by 40 hex characters.';
+    return;
+  }
+  input.classList.remove('bad');
+  const addr = lc(raw);
+
+  if (state.claims.find(c => lc(c.address) === addr)) {
+    st.className = 'status err';
+    st.textContent = 'That wallet is already on the register. Each address is counted once.';
+    return;
+  }
+
+  $('btnSubmit').disabled = true;
+  st.textContent = 'Checking the chain for v1 activity…';
+
+  if (CFG.REQUIRE_HISTORY) {
+    try {
+      const ok = await hasTokenHistory(addr);
+      if (!ok) {
+        st.className = 'status err';
+        st.textContent = 'No v1 transfers found for that address. Check it, or submit the wallet that actually held the token.';
+        $('btnSubmit').disabled = false;
+        return;
+      }
+    } catch (e) {
+      st.textContent = 'The explorer did not answer, so the address goes on unverified.';
+    }
+  }
+
+  const ts = Date.now();
+  try {
+    await store.add(addr, ts);
+  } catch (e) {
+    st.className = 'status err';
+    st.textContent = 'The register would not accept the entry: ' + ((e && e.message) || 'unknown error') + '. Try again.';
+    $('btnSubmit').disabled = false;
+    return;
+  }
+
+  state.mine.push(addr);
+  localStorage.setItem(CACHE_PREFIX+'mine', JSON.stringify(state.mine));
+  input.value = '';
+  $('btnSubmit').disabled = false;
+  st.className = 'status ok';
+  st.textContent = short(addr) + ' is on the register. Calculating its loss now.';
+
+  await loadClaims();
+  try { await computeWallet(addr); } catch { state.results[addr] = { error:true, loss:null }; }
+  render();
+}
+
+/* ------------------------------------------------------------------ *
+ * Loss calculation for one wallet
+ * ------------------------------------------------------------------ */
+function quoteUsd(symbol) {
+  const s = (symbol||'').toUpperCase();
+  for (const k in CFG.QUOTES) {
+    if (k.toUpperCase() === s) {
+      const v = CFG.QUOTES[k];
+      return v === null ? (state.ethPrice || 0) : v;
+    }
+  }
+  return null;
+}
+
+async function computeWallet(address) {
+  const key = lc(address);
+  const res = { spent:0, received:0, held:0, heldUsd:0, loss:0, unpriced:0, txs:0 };
+
+  const transfers = await paged('/addresses/' + address + '/token-transfers',
+    { token: CFG.TOKEN, type:'ERC-20' });
+
+  const byTx = new Map();
+  for (const tr of transfers) {
+    const h = tr.transaction_hash || tr.tx_hash;
+    if (!h) continue;
+    if (!byTx.has(h)) byTx.set(h, []);
+    byTx.get(h).push(tr);
+  }
+  res.txs = byTx.size;
+
+  for (const [hash, list] of byTx) {
+    const dec = Number((list[0].token && list[0].token.decimals) || 18);
+    let delta = 0;
+    for (const tr of list) {
+      const amt = units((tr.total && tr.total.value) || tr.value || '0', (tr.total && tr.total.decimals) ?? dec);
+      if (lc(tr.to   && tr.to.hash)   === key) delta += amt;
+      if (lc(tr.from && tr.from.hash) === key) delta -= amt;
+    }
+    if (Math.abs(delta) < 1e-12) continue;
+
+    const [tx, txTransfers, internals] = await Promise.all([
+      api('/transactions/' + hash, null, {cache:true}),
+      api('/transactions/' + hash + '/token-transfers', {type:'ERC-20'}, {cache:true}),
+      api('/transactions/' + hash + '/internal-transactions', null, {cache:true})
+    ]);
+
+    const rate = Number((tx && (tx.historical_exchange_rate || tx.exchange_rate)) || state.ethPrice || 0);
+    let outUsd = 0, inUsd = 0;
+
+    if (tx && lc(tx.from && tx.from.hash) === key && tx.value && tx.value !== '0') {
+      outUsd += units(tx.value, 18) * rate;
+    }
+    for (const it of ((internals && internals.items) || [])) {
+      if (lc(it.to && it.to.hash) === key && it.value && it.value !== '0') {
+        inUsd += units(it.value, 18) * rate;
+      }
+    }
+    for (const tr of ((txTransfers && txTransfers.items) || [])) {
+      const tok = tr.token || {};
+      if (lc(tok.address || tok.address_hash) === lc(CFG.TOKEN)) continue;
+      const px = quoteUsd(tok.symbol);
+      if (px == null) continue;
+      const amt = units((tr.total && tr.total.value) || tr.value || '0',
+                        (tr.total && tr.total.decimals) ?? tok.decimals ?? 18);
+      if (lc(tr.from && tr.from.hash) === key) outUsd += amt * px;
+      if (lc(tr.to   && tr.to.hash)   === key) inUsd  += amt * px;
+    }
+
+    if (delta > 0) {
+      const cost = outUsd - inUsd;
+      if (cost > 0.000001) res.spent += cost; else res.unpriced++;
+    } else {
+      const proceeds = inUsd - outUsd;
+      if (proceeds > 0.000001) res.received += proceeds; else res.unpriced++;
+    }
+  }
+
+  const bal = await api('/addresses/' + address + '/token-balances');
+  if (Array.isArray(bal)) {
+    const row = bal.find(b => lc((b.token||{}).address || (b.token||{}).address_hash) === lc(CFG.TOKEN));
+    if (row) res.held = units(row.value, (row.token && row.token.decimals) || 18);
+  }
+  res.heldUsd = res.held * (state.tokenPrice || 0);
+  res.loss = res.spent - res.received - res.heldUsd;
+
+  state.results[key] = res;
+  cache.set('res.' + key + '.' + state.tokenPrice, res);
+  return res;
+}
+
+async function calculateAll() {
+  const pending = state.claims.filter(c => !state.results[lc(c.address)]);
+  if (!pending.length) { $('calcStatus').textContent = 'Every wallet on the register is already calculated.'; return; }
+  let done = 0;
+  for (const c of pending) {
+    $('calcStatus').textContent = 'Reading ' + short(c.address) + ' — ' + (done+1) + ' of ' + pending.length + '.';
+    try { await computeWallet(c.address); }
+    catch { state.results[lc(c.address)] = { error:true, loss:null }; }
+    done++;
+    $('bar').style.width = Math.round(done / pending.length * 100) + '%';
+    render();
+  }
+  $('calcStatus').textContent = 'Done. ' + done + ' wallet' + (done===1?'':'s') + ' recalculated.';
+  setTimeout(()=>{ $('bar').style.width = '0'; }, 800);
+}
+
+/* ------------------------------------------------------------------ *
+ * Render
+ * ------------------------------------------------------------------ */
+function setEmpty(msg) {
+  $('rows').innerHTML = '<tr><td colspan="8" class="empty">' + msg + '</td></tr>';
+  $('foot').style.display = 'none';
+}
+
+function render() {
+  const rows = $('rows');
+  let list = state.claims.slice();
+  if (state.filter) list = list.filter(c => lc(c.address).includes(lc(state.filter)));
+
+  list.sort((a,b) => {
+    if (state.sortKey === 'address') return state.sortDir * lc(a.address).localeCompare(lc(b.address));
+    if (state.sortKey === 'ts')      return state.sortDir * ((a.ts||0) - (b.ts||0));
+    const ra = state.results[lc(a.address)], rb = state.results[lc(b.address)];
+    const va = ra && !ra.error ? ra.loss : -1, vb = rb && !rb.error ? rb.loss : -1;
+    return state.sortDir * (va - vb);
+  });
+
+  if (!state.claims.length) { setEmpty('Nobody has submitted a wallet yet. The first entry shows up here immediately.'); updateTotals(); return; }
+  if (!list.length) { setEmpty('No submitted wallet matches that address.'); return; }
+
+  rows.innerHTML = list.map((c, i) => {
+    const r = state.results[lc(c.address)];
+    const when = c.ts ? new Date(c.ts).toISOString().slice(0,10) : '—';
+    const mine = state.mine.includes(lc(c.address));
+    let cells;
+    if (!r) {
+      cells = '<td class="num pending">—</td><td class="num pending">—</td><td class="num pending">—</td>' +
+              '<td class="num pending">not calculated</td>' +
+              '<td class="num"><button class="btn ghost sm" data-calc="' + c.address + '">Calculate</button></td>';
+    } else if (r.error) {
+      cells = '<td class="num pending">—</td><td class="num pending">—</td><td class="num pending">—</td>' +
+              '<td class="num" style="color:var(--red)">read failed</td>' +
+              '<td class="num"><button class="btn ghost sm" data-calc="' + c.address + '">Retry</button></td>';
+    } else {
+      cells = '<td class="num">' + usdShort(r.spent) + '</td>' +
+              '<td class="num">' + usdShort(r.received) + '</td>' +
+              '<td class="num">' + (r.held ? r.held.toLocaleString('en-US',{maximumFractionDigits:0}) : '0') + '</td>' +
+              '<td class="num loss">' + usdShort(r.loss) +
+                (r.unpriced ? '<span class="flag" title="' + r.unpriced + ' transfer(s) had no counter-value and were counted at zero">' + r.unpriced + ' unpriced</span>' : '') +
+              '</td>' +
+              '<td class="num"><a href="' + CFG.EXPLORER + '/address/' + c.address + '" target="_blank" rel="noopener">chain</a></td>';
+    }
+    return '<tr' + (mine ? ' class="mine"' : '') + '>' +
+      '<td class="num" style="color:var(--muted)">' + (i+1) + '</td>' +
+      '<td><a href="' + CFG.EXPLORER + '/address/' + c.address + '" target="_blank" rel="noopener" title="' + c.address + '">' + short(c.address) + '</a></td>' +
+      '<td class="num" style="color:var(--muted)">' + when + '</td>' + cells + '</tr>';
+  }).join('');
+
+  rows.querySelectorAll('[data-calc]').forEach(b => {
+    b.addEventListener('click', async () => {
+      const a = b.getAttribute('data-calc');
+      b.textContent = 'Reading…'; b.disabled = true;
+      try { await computeWallet(a); } catch { state.results[lc(a)] = {error:true, loss:null}; }
+      render();
+    });
+  });
+
+  updateTotals();
+}
+
+function updateTotals() {
+  const done = state.claims.map(c => state.results[lc(c.address)]).filter(r => r && !r.error);
+  const sum = k => done.reduce((s,r) => s + (r[k] || 0), 0);
+  $('totWallets').textContent = state.claims.length || '0';
+  $('totLoss').textContent    = done.length ? usdShort(sum('loss')) : '—';
+  $('totPriced').textContent  = done.length + ' of ' + state.claims.length;
+  if (done.length) {
+    $('foot').style.display = '';
+    $('fBought').textContent = usdShort(sum('spent'));
+    $('fSold').textContent   = usdShort(sum('received'));
+    $('fHold').textContent   = sum('held').toLocaleString('en-US',{maximumFractionDigits:0});
+    $('fLoss').textContent   = usdShort(sum('loss'));
+  } else {
+    $('foot').style.display = 'none';
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * CSV
+ * ------------------------------------------------------------------ */
+function csv() {
+  const head = ['rank','wallet','submitted_at','usd_spent','usd_received','tokens_held','usd_still_held','net_loss_usd','unpriced_transfers'];
+  const lines = [head.join(',')];
+  state.claims.forEach((c,i) => {
+    const r = state.results[lc(c.address)] || {};
+    lines.push([i+1, c.address, c.ts ? new Date(c.ts).toISOString() : '',
+      (r.spent??''), (r.received??''), (r.held??''), (r.heldUsd??''), (r.loss??''), (r.unpriced??'')].join(','));
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'rwi-v1-loss-ledger.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ------------------------------------------------------------------ *
+ * Boot
+ * ------------------------------------------------------------------ */
+$('tokenLink').href = CFG.EXPLORER + '/token/' + CFG.TOKEN;
+$('tokenLink').textContent = short(CFG.TOKEN);
+$('quoteList').textContent = Object.keys(CFG.QUOTES).join(', ') +
+  ' — anything else moving against v1 is treated as unpriced.';
+
+$('btnSubmit').addEventListener('click', submit);
+$('addrInput').addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+$('addrInput').addEventListener('input', () => $('addrInput').classList.remove('bad'));
+$('btnRefresh').addEventListener('click', loadClaims);
+$('btnCalcAll').addEventListener('click', calculateAll);
+$('btnCsv').addEventListener('click', csv);
+$('btnClearCache').addEventListener('click', () => {
+  cache.clear(); state.results = {}; render();
+  $('calcStatus').textContent = 'Cache cleared. Calculating again will re-read the chain.';
+});
+$('search').addEventListener('input', e => { state.filter = e.target.value.trim(); render(); });
+document.querySelectorAll('th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const k = th.getAttribute('data-sort');
+    state.sortDir = (state.sortKey === k) ? -state.sortDir : (k === 'address' ? 1 : -1);
+    state.sortKey = k;
+    render();
+  });
+});
+$('pxToken').addEventListener('change', e => {
+  state.tokenPrice = Number(e.target.value) || 0;
+  for (const k in state.results) {
+    const r = state.results[k];
+    if (r && !r.error) { r.heldUsd = r.held * state.tokenPrice; r.loss = r.spent - r.received - r.heldUsd; }
+  }
+  render();
+});
+$('pxEth').addEventListener('change', e => { state.ethPrice = Number(e.target.value) || state.ethPrice; });
+
+(async function boot() {
+  store.init();
+  try {
+    const stats = await api('/stats');
+    state.ethPrice = Number((stats && stats.coin_price) || 0) || null;
+  } catch {}
+  $('pxEth').value = state.ethPrice || '';
+  await loadClaims();
+})();
+</script>
+</body>
+</html>
