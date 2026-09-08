@@ -2631,10 +2631,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     animation:burnPulse 2s ease-in-out infinite;
   }
   .reward-live-stats{
-    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;
     margin-top:18px;background:rgba(204,254,6,.35);border:1px solid rgba(204,254,6,.35);
   }
-  .reward-live-stats.has-pons{grid-template-columns:repeat(4,minmax(0,1fr))}
   .reward-stat{min-width:0;padding:16px;background:var(--ink)}
   .reward-stat strong{
     display:block;font-family:var(--mono);font-size:clamp(1.15rem,3vw,1.65rem);
@@ -2650,7 +2649,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   .reward-status{margin-left:auto;opacity:.6;font-size:10px;letter-spacing:.08em;text-align:right}
   @media (max-width:700px){
     .reward-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .reward-live-stats,.reward-live-stats.has-pons{grid-template-columns:1fr}
+    .reward-live-stats{grid-template-columns:1fr}
   }
   @media (prefers-reduced-motion:reduce){.reward-live-head .dot{animation:none}}
 
@@ -3033,8 +3032,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
             <strong id="indexRewardsPaid">—</strong>
             <small>$INDEX <span data-i18n="index.rewards.distributed">distributed to holders</span></small>
           </div>
-          <div class="reward-stat" id="ponsRewardsStat" hidden>
-            <strong id="ponsRewardsPaid">—</strong>
+          <div class="reward-stat" id="ponsRewardsStat">
+            <strong id="ponsRewardsPaid">$0.00</strong>
             <small>$PONS <span data-i18n="index.rewards.distributed">distributed to holders</span></small>
           </div>
           <div class="reward-stat">
@@ -3103,17 +3102,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
 (function(){
   var indexPaid=document.getElementById('indexRewardsPaid');
   var ponsPaid=document.getElementById('ponsRewardsPaid');
-  var ponsStat=document.getElementById('ponsRewardsStat');
   var burned=document.getElementById('indexRwiBurned');
   var rounds=document.getElementById('indexRounds');
   var status=document.getElementById('rewardStatus');
-  var stats=document.getElementById('rewardLiveStats');
-  if(!indexPaid||!burned||!rounds||!status)return;
+  if(!indexPaid||!ponsPaid||!burned||!rounds||!status)return;
 
-  function amount(value){
+  function usd(value){
     var n=Number(value);
     if(!Number.isFinite(n))return '—';
-    return n.toLocaleString('en-US',{maximumFractionDigits:4});
+    return n.toLocaleString('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2});
   }
 
   fetch('/api/index-rewards',{headers:{accept:'application/json'},cache:'no-store'})
@@ -3122,13 +3119,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
       var paid=Array.isArray(data.distributed)?data.distributed:[];
       var index=paid.find(function(item){return item.symbol==='INDEX';});
       var pons=paid.find(function(item){return item.symbol==='PONS';});
-      indexPaid.textContent=index?amount(index.amount)+' $INDEX':'—';
-      if(pons&&ponsPaid&&ponsStat){
-        ponsPaid.textContent=amount(pons.amount)+' $PONS';
-        ponsStat.hidden=false;
-        if(stats)stats.classList.add('has-pons');
-      }
-      burned.textContent=amount(data.rwiBurned)+' $RWI';
+      indexPaid.textContent=index?usd(index.usdValue):'—';
+      ponsPaid.textContent=pons?usd(pons.usdValue):'$0.00';
+      burned.textContent=usd(data.rwiBurnedUsd);
       rounds.textContent=Number(data.rounds||0).toLocaleString('en-US');
       var stamp=new Date(data.updatedAt);
       status.textContent='Live'+(Number.isNaN(stamp.getTime())?'':' · '+stamp.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}));

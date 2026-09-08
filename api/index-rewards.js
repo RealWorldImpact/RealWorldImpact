@@ -1,4 +1,5 @@
 const INDEXER_URL = 'https://indices.theindex.finance/api/indexer';
+const GECKO_TOKEN_URL = 'https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/';
 const TREASURY = '0xb2c088db84293a6e3dee0765596f1cfdc2b9334d';
 const TOKEN = '0xda2598c976e62e7e15dcca75169b404712e48b04';
 const ASSETS = {
@@ -6,6 +7,11 @@ const ASSETS = {
   '0x0000000000000000000000000000000000000002': 'LIQUIDITY',
   '0x56910d4409f3a0c78c64dd8d0545ff0705389870': 'INDEX',
   '0x39dbed3a2bd333467115de45665cc57f813c4571': 'PONS',
+};
+const PRICE_ASSETS = {
+  RWI: TOKEN,
+  INDEX: '0x56910d4409f3a0c78c64dd8d0545ff0705389870',
+  PONS: '0x39dbed3a2bd333467115de45665cc57f813c4571',
 };
 
 const CACHE_MS = 30_000;
@@ -30,7 +36,36 @@ function formatUnits(raw, decimals = 18) {
   return `${negative ? '-' : ''}${whole}${fraction ? `.${fraction}` : ''}`;
 }
 
-function buildPayload(body) {
+function toUsdValue(amount, priceUsd) {
+  const tokenAmount = Number(amount);
+  if (tokenAmount === 0) return '0';
+  if (priceUsd === null || priceUsd === undefined || priceUsd === '') return null;
+  const total = tokenAmount * Number(priceUsd);
+  return Number.isFinite(total) ? String(total) : null;
+}
+
+async function fetchPricesUsd() {
+  const entries = await Promise.all(Object.entries(PRICE_ASSETS).map(async ([symbol, address]) => {
+    try {
+      const response = await fetch(`${GECKO_TOKEN_URL}${address}`, {
+        headers: { accept: 'application/json' },
+        signal: AbortSignal.timeout(8_000),
+      });
+      if (!response.ok) return [symbol, null];
+      const body = await response.json();
+      const price = body?.data?.attributes?.price_usd;
+      const numericPrice = Number(price);
+      return [symbol, price !== null && price !== undefined && price !== '' && Number.isFinite(numericPrice)
+        ? String(price)
+        : null];
+    } catch {
+      return [symbol, null];
+    }
+  }));
+  return Object.fromEntries(entries);
+}
+
+function buildPayload(body, pricesUsd) {
   if (body?.errors?.length) throw new Error(body.errors[0]?.message || 'Index query failed');
 
   const treasury = body?.data?.treasurys?.items?.[0];
@@ -44,13 +79,20 @@ function buildPayload(body) {
     weightBps: Number(weightBps),
   }));
 
-  const distributed = (body?.data?.treasuryAssets?.items || []).map(item => {
+  const paidBySymbol = new Map((body?.data?.treasuryAssets?.items || []).map(item => {
     const raw = BigInt(item.totalPaid || '0') + BigInt(item.totalSwept || '0');
+    return [ASSETS[String(item.asset).toLowerCase()] || 'UNKNOWN', formatUnits(raw)];
+  }));
+  const distributed = ['INDEX', 'PONS'].map(symbol => {
+    const amount = paidBySymbol.get(symbol) || '0';
     return {
-      symbol: ASSETS[String(item.asset).toLowerCase()] || 'UNKNOWN',
-      amount: formatUnits(raw),
+      symbol,
+      amount,
+      priceUsd: pricesUsd[symbol],
+      usdValue: toUsdValue(amount, pricesUsd[symbol]),
     };
-  }).filter(item => item.symbol !== 'UNKNOWN' && item.amount !== '0');
+  });
+  const rwiBurned = formatUnits(treasury.burned);
 
   return {
     source: `https://indices.theindex.finance/coin/${TREASURY}`,
@@ -58,7 +100,9 @@ function buildPayload(body) {
     token: TOKEN,
     allocation,
     distributed,
-    rwiBurned: formatUnits(treasury.burned),
+    pricesUsd,
+    rwiBurned,
+    rwiBurnedUsd: toUsdValue(rwiBurned, pricesUsd.RWI),
     liquiditySpentWei: String(treasury.liquiditySpent || '0'),
     rounds: Number(treasury.rounds || 0),
     epochLengthSeconds: Number(treasury.epochLength || 0),
@@ -84,7 +128,8 @@ export default async function handler(req, res) {
     const body = await upstream.json();
     if (!upstream.ok) return res.status(upstream.status).json({ error: 'The Index is temporarily unavailable' });
 
-    const payload = buildPayload(body);
+    const pricesUsd = await fetchPricesUsd();
+    const payload = buildPayload(body, pricesUsd);
     cached = { timestamp: Date.now(), body: payload };
     res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=120');
     return res.status(200).json(payload);
