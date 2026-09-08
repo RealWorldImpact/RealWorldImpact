@@ -1,6 +1,6 @@
 {
   "name": "Real World Impact",
-  "description": "A charity coin on Robinhood Chain. Trading fee revenue funds nonprofit donations vetted by The Giving Block; a dedicated pool's earnings are burned permanently. This card describes a static, informational site — not a live task-processing agent server. There is no HTTP endpoint here that accepts A2A JSON-RPC calls (message/send, tasks/get, etc.); every fact below is readable directly, and every onchain action requires a human-signed wallet transaction, not a request to this domain.",
+  "description": "A charity coin on Robinhood Chain. Trading fee revenue funds vetted nonprofit donations. RWI holders have received PONS and INDEX automatically through The Index, whose tokenomics also buy back and burn RWI and add locked liquidity. This is an informational site, not a task-processing agent server; every onchain action requires a human-signed wallet transaction.",
   "url": "https://rwihood.org/",
   "iconUrl": "https://rwihood.org/og.png",
   "provider": {
@@ -26,6 +26,16 @@
       "examples": [
         "What is the $RWI token contract address?",
         "What chain ID does Real World Impact deploy on?"
+      ]
+    },
+    {
+      "id": "read-holder-rewards",
+      "name": "Read holder rewards and automated tokenomics",
+      "description": "RWI holders have received PONS and INDEX automatically simply for holding. The current Index treasury allocates 40% to INDEX rewards, 40% to PONS rewards, 10% to automatic RWI buyback and burn, and 10% to automatically added locked liquidity. Live source: https://indices.theindex.finance/coin/0xb2c088db84293a6e3dee0765596f1cfdc2b9334d",
+      "tags": ["read-only", "onchain", "rewards", "tokenomics"],
+      "examples": [
+        "What rewards have RWI holders received?",
+        "How do RWI's automatic burn and liquidity functions work?"
       ]
     },
     {
