@@ -6,7 +6,8 @@
 > dedicated liquidity pool earns the project's share of $PONS and forwards
 > it to the burn address, permanently removing it from circulation. Holders
 > have also received $PONS and $INDEX automatically through The Index simply
-> for holding $RWI. The current Index treasury allocation is 40% $INDEX
+> for holding $RWI. Forty percent of RWI's entire revenue stream is directed
+> to The Index. Within that Index-directed portion, the treasury allocation is 40% $INDEX
 > rewards, 40% $PONS rewards, 10% automatic $RWI buyback and burn, and 10%
 > automatically added locked liquidity. Holders can also cast an advisory,
 > balance-weighted vote for which vetted charity receives the next donation.
@@ -93,7 +94,8 @@ $5 burn payment without the user's specific, explicit request to do so.
 - Dev wallet (forwards PONS to the burn address; publicly traceable):
   `0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5`
 - The Index treasury: `0xb2c088db84293a6e3dee0765596f1cfdc2b9334d`
-- The Index allocation: 40% $INDEX holder rewards, 40% $PONS holder rewards,
+- 40% of RWI's entire revenue stream is directed to The Index. Within that
+  Index-directed portion, the allocation is 40% $INDEX holder rewards, 40% $PONS holder rewards,
   10% automatic $RWI buyback and burn, 10% automatically added locked
   liquidity
 - Live Index rewards ledger:
