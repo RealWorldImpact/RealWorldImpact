@@ -12,6 +12,7 @@ const PRICE_ASSETS = {
   RWI: TOKEN,
   INDEX: '0x56910d4409f3a0c78c64dd8d0545ff0705389870',
   PONS: '0x39dbed3a2bd333467115de45665cc57f813c4571',
+  WETH: '0x0000000000000000000000000000000000000000',
 };
 
 const CACHE_MS = 30_000;
@@ -19,7 +20,7 @@ let cached = null;
 
 const QUERY = `{
   treasurys(where: { id: "${TREASURY}" }, limit: 1) {
-    items { id boundToken basket rounds burned liquiditySpent epochLength distributeBps }
+    items { id boundToken basket rounds burned liquiditySpent numeraire epochLength distributeBps }
   }
   treasuryAssets(where: { treasury_in: ["${TREASURY}"] }, limit: 200) {
     items { asset totalPaid totalSwept }
@@ -93,6 +94,7 @@ function buildPayload(body, pricesUsd) {
     };
   });
   const rwiBurned = formatUnits(treasury.burned);
+  const liquiditySpent = formatUnits(treasury.liquiditySpent);
 
   return {
     source: `https://indices.theindex.finance/coin/${TREASURY}`,
@@ -103,6 +105,9 @@ function buildPayload(body, pricesUsd) {
     pricesUsd,
     rwiBurned,
     rwiBurnedUsd: toUsdValue(rwiBurned, pricesUsd.RWI),
+    numeraire: treasury.numeraire,
+    liquiditySpent,
+    liquiditySpentUsd: toUsdValue(liquiditySpent, pricesUsd.WETH),
     liquiditySpentWei: String(treasury.liquiditySpent || '0'),
     rounds: Number(treasury.rounds || 0),
     epochLengthSeconds: Number(treasury.epochLength || 0),

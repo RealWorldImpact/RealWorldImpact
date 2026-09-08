@@ -80,7 +80,7 @@ const TRANSLATIONS = {
     'index.rewards.mechanics':'The tokenomics run automatically on every cycle: 40% to $INDEX rewards, 40% to $PONS rewards, 10% to $RWI buyback and burn, and 10% to added, locked liquidity.',
     'index.rewards.holders':'to holder rewards','index.rewards.burn':'Auto buyback + burn','index.rewards.liquidity':'Auto locked liquidity',
     'index.rewards.live':'Live from The Index','index.rewards.distributed':'distributed to holders','index.rewards.autoBurned':'$RWI auto-burned',
-    'index.rewards.rounds':'automated distributions','index.rewards.source':'Open the live rewards ledger ↗',
+    'index.rewards.liquidityLocked':'locked in liquidity','index.rewards.source':'Open the live rewards ledger ↗',
     'index.mech.eyebrow':'The mechanism',
     'index.mech.trade':'Trade','index.mech.donate':'Donate','index.mech.prove':'Prove',
     'index.mech.trade.body':'Every swap of $RWI on Robinhood Chain generates creator revenue automatically. No taxes on holders, no special mechanics — just volume doing work.',
@@ -3041,8 +3041,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
             <small data-i18n="index.rewards.autoBurned">$RWI auto-burned</small>
           </div>
           <div class="reward-stat">
-            <strong id="indexRounds">—</strong>
-            <small data-i18n="index.rewards.rounds">automated distributions</small>
+            <strong id="indexLiquidityLocked">—</strong>
+            <small data-i18n="index.rewards.liquidityLocked">locked in liquidity</small>
           </div>
         </div>
         <a class="reward-source" href="https://indices.theindex.finance/coin/0xb2c088db84293a6e3dee0765596f1cfdc2b9334d" target="_blank" rel="noopener" data-i18n="index.rewards.source">Open the live rewards ledger ↗</a>
@@ -3103,9 +3103,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   var indexPaid=document.getElementById('indexRewardsPaid');
   var ponsPaid=document.getElementById('ponsRewardsPaid');
   var burned=document.getElementById('indexRwiBurned');
-  var rounds=document.getElementById('indexRounds');
+  var liquidity=document.getElementById('indexLiquidityLocked');
   var status=document.getElementById('rewardStatus');
-  if(!indexPaid||!ponsPaid||!burned||!rounds||!status)return;
+  if(!indexPaid||!ponsPaid||!burned||!liquidity||!status)return;
 
   function usd(value){
     var n=Number(value);
@@ -3122,7 +3122,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       indexPaid.textContent=index?usd(index.usdValue):'—';
       ponsPaid.textContent=pons?usd(pons.usdValue):'$0.00';
       burned.textContent=usd(data.rwiBurnedUsd);
-      rounds.textContent=Number(data.rounds||0).toLocaleString('en-US');
+      liquidity.textContent=usd(data.liquiditySpentUsd);
       var stamp=new Date(data.updatedAt);
       status.textContent='Live'+(Number.isNaN(stamp.getTime())?'':' · '+stamp.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}));
     })
