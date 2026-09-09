@@ -2400,6 +2400,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
   .r-name{grid-area:name;font-family:var(--serif);font-size:clamp(1rem,2.1vw,1.22rem);font-weight:500;line-height:1.3}
   .r-amt{grid-area:amt;font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  @media (max-width:779px){
+    .receipt{column-gap:24px}
+    .r-name{min-width:0;overflow-wrap:anywhere}
+    .r-amt{justify-self:end;transform:translateX(6px)}
+  }
   @media (min-width:780px){ .r-amt{text-align:right} }
   .r-links{grid-area:links;display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;opacity:.78}
   .r-links a{text-decoration:none;border-bottom:1px solid rgba(204,254,6,.5);white-space:nowrap}
