@@ -1,6 +1,6 @@
 {
   "name": "Real World Impact",
-  "description": "A charity coin on Robinhood Chain. Trading fee revenue funds vetted nonprofit donations. Forty percent of RWI's entire revenue stream is directed to The Index, through which holders have received PONS and INDEX and whose tokenomics also buy back and burn RWI and add locked liquidity. This is an informational site, not a task-processing agent server; every onchain action requires a human-signed wallet transaction.",
+  "description": "A charity coin on Robinhood Chain. Trading fee revenue funds vetted nonprofit donations. Forty percent of RWI's entire revenue stream is directed to The Index, which allocates PONS and INDEX holder rewards and whose tokenomics also buy back and burn RWI and add locked liquidity. Live totals report only amounts actually distributed. This is an informational site, not a task-processing agent server; every onchain action requires a human-signed wallet transaction.",
   "url": "https://rwihood.org/",
   "iconUrl": "https://rwihood.org/og.png",
   "provider": {
@@ -31,7 +31,7 @@
     {
       "id": "read-holder-rewards",
       "name": "Read holder rewards and automated tokenomics",
-      "description": "Forty percent of RWI's entire revenue stream is directed to The Index. Within that Index-directed portion, holders have received PONS and INDEX automatically simply for holding, and the treasury allocates 40% to INDEX rewards, 40% to PONS rewards, 10% to automatic RWI buyback and burn, and 10% to automatically added locked liquidity. Live source: https://indices.theindex.finance/coin/0xb2c088db84293a6e3dee0765596f1cfdc2b9334d",
+      "description": "Forty percent of RWI's entire revenue stream is directed to The Index. Within that Index-directed portion, the treasury allocates 40% to INDEX holder rewards, 40% to PONS holder rewards, 10% to automatic RWI buyback and burn, and 10% to automatically added locked liquidity. Reward distribution is automatic for eligible holders; live totals report only amounts actually distributed, so a configured reward can remain at $0.00 until a payout occurs. Live source: https://indices.theindex.finance/coin/0xb2c088db84293a6e3dee0765596f1cfdc2b9334d",
       "tags": ["read-only", "onchain", "rewards", "tokenomics"],
       "examples": [
         "What rewards have RWI holders received?",

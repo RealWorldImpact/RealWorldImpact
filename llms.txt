@@ -2,8 +2,10 @@
 
 > A charity coin on Robinhood Chain. Trading it generates revenue that funds
 > donations verified through The Giving Block; every donation is published
-> onchain and every receipt is publicly traceable. Holders have also received
-> $PONS and $INDEX automatically through The Index simply for holding $RWI.
+> onchain and every receipt is publicly traceable. The Index automatically
+> allocates $INDEX and $PONS holder rewards for eligible $RWI holders; live
+> totals report only amounts actually distributed, so either reward can remain
+> at $0.00 until a payout occurs.
 > Forty percent of RWI's entire revenue stream is directed to The Index. Within
 > that Index-directed portion, the allocation is 40% $INDEX holder rewards, 40%
 > $PONS holder rewards, 10% automatic $RWI buyback and burn, and 10%
