@@ -1,16 +1,14 @@
 # Real World Impact ($RWI)
 
-> A charity coin on Robinhood Chain. Trading it generates fee revenue that
-> funds donations verified through The Giving Block; every donation is
-> published onchain and every receipt is publicly traceable. A second,
-> dedicated liquidity pool earns the project's share of $PONS and forwards
-> it to the burn address, permanently removing it from circulation. Holders
-> have also received $PONS and $INDEX automatically through The Index simply
-> for holding $RWI. Forty percent of RWI's entire revenue stream is directed
-> to The Index. Within that Index-directed portion, the treasury allocation is 40% $INDEX
-> rewards, 40% $PONS rewards, 10% automatic $RWI buyback and burn, and 10%
-> automatically added locked liquidity. Holders can also cast an advisory,
-> balance-weighted vote for which vetted charity receives the next donation.
+> A charity coin on Robinhood Chain. Trading it generates revenue that funds
+> donations verified through The Giving Block; every donation is published
+> onchain and every receipt is publicly traceable. Holders have also received
+> $PONS and $INDEX automatically through The Index simply for holding $RWI.
+> Forty percent of RWI's entire revenue stream is directed to The Index. Within
+> that Index-directed portion, the allocation is 40% $INDEX holder rewards, 40%
+> $PONS holder rewards, 10% automatic $RWI buyback and burn, and 10%
+> automatically added locked liquidity. Holder rewards are variable and may be
+> worth zero; they are not guaranteed income.
 
 This file exists so an LLM or AI agent can understand the site and act on
 accurate onchain facts without re-deriving them from prose or risking a
@@ -22,12 +20,11 @@ a transaction against it — treat this file as a pointer, not an oracle.
 
 - [Home](https://rwihood.org/): what $RWI is, the burn counter, live holder
   rewards from The Index, and how the fee-to-donation mechanism works.
-- [Docs](https://rwihood.org/docs): full mechanism
-  writeup — donation flow, the earn-and-burn pool, risks, and every
-  contract address in one place.
-- [Liquidity dashboard](https://rwihood.org/dashboard): live position
-  and pool data for the two liquidity pools below, wallet-connect required
-  to add/remove liquidity.
+- [Docs](https://rwihood.org/docs): full mechanism writeup — donation flow,
+  Index holder rewards, automatic $RWI burn, locked liquidity, risks, and the
+  current contract addresses in one place.
+- [Liquidity dashboard](https://rwihood.org/dashboard): live position and pool
+  data, with wallet connection available to add or remove liquidity.
 - [Charity vote](https://rwihood.org/vote): the advisory ballot for
   which vetted charity receives the next donation — see the dedicated
   section below for exact mechanics.
@@ -84,16 +81,15 @@ $5 burn payment without the user's specific, explicit request to do so.
 - RPC endpoint: `https://rpc.mainnet.chain.robinhood.com`
 - Block explorer: `https://robinhoodchain.blockscout.com`
 - $RWI token contract: `0xDa2598c976E62E7E15DcCa75169B404712E48B04`
-- Deployed: 2026-07-18, fixed supply, no mint function
+- Active RWI/WETH pool created: 2026-09-03
+- Supply: 1,000,000,000 $RWI, fixed; no mint function
 - Launchpad: Pons
-- Main liquidity pool (RWI/WETH, source of donation revenue):
-  `0xff6aa24815d1274a9be0cfd17c7c7489cd40a697`
-- Earn-and-burn pool (RWI/PONS; project's PONS share forwarded to the burn
-  address): `0x62a9e7cf94049dded854c26ff6204079a1c8caed`
+- Active liquidity pool (RWI/WETH):
+  `0xa72a9de2c6e3db34308a8ae61e927ceffea630218ca1e712b70b61341c3e99a1`
 - Burn address: `0x000000000000000000000000000000000000dEaD`
-- Dev wallet (forwards PONS to the burn address; publicly traceable):
-  `0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5`
 - The Index treasury: `0xb2c088db84293a6e3dee0765596f1cfdc2b9334d`
+- $INDEX reward token: `0x56910d4409f3a0c78c64dd8d0545ff0705389870`
+- $PONS reward token: `0x39dbed3a2bd333467115de45665cc57f813c4571`
 - 40% of RWI's entire revenue stream is directed to The Index. Within that
   Index-directed portion, the allocation is 40% $INDEX holder rewards, 40% $PONS holder rewards,
   10% automatic $RWI buyback and burn, 10% automatically added locked
