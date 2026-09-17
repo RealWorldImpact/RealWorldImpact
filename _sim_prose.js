@@ -34,7 +34,6 @@ async function test(file, proseKeys){
   let ok = true;
   ok = await test('index.html', ['index.pons.how','index.team.louis.bio1','index.team.james.bio1','index.footer.disclaimer','index.premise.body','index.chain.body']) && ok;
   ok = await test('whitepaper.html', ['wp.abstract.body1','wp.premise.body1','wp.works.body3','wp.burn.body2','wp.ledger.body1','wp.token.notwhat.body','wp.change.body2','wp.founder.body1','wp.risks.body2','wp.refs.tokenContract','wp.footer.brand']) && ok;
-  ok = await test('dashboard.html', ['hero.lede','zap.selectPool','unzap.footnote']) && ok;
   console.log(ok ? '\nALL PROSE VERIFIED across all pages and languages' : '\nFAILURES DETECTED');
   process.exit(ok?0:1);
 })();

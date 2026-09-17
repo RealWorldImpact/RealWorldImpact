@@ -35,7 +35,6 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://www.rwihood.org/docs?lang=de"/>
     <xhtml:link rel="alternate" hreflang="id" href="https://www.rwihood.org/docs?lang=id"/>
   </url>
-  <url><loc>https://www.rwihood.org/dashboard</loc></url>
   <url><loc>https://www.rwihood.org/burn</loc></url>
   <url><loc>https://www.rwihood.org/impact</loc></url>
   <url><loc>https://www.rwihood.org/claims</loc></url>

@@ -18,8 +18,6 @@ starting point and verify addresses and transactions independently.
   receipts, burn display, holder rewards, and founder information.
 - [Docs](https://www.rwihood.org/docs): mechanism, token details, sources,
   limitations, and risks.
-- [Liquidity dashboard](https://www.rwihood.org/dashboard): pool information
-  and optional wallet-based liquidity controls.
 - [Burn list](https://www.rwihood.org/burn): Pons Family token burns.
 - [Impact](https://www.rwihood.org/impact): public project page.
 - [Claims register](https://www.rwihood.org/claims): historical claims record.

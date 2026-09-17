@@ -53,8 +53,8 @@ async function test(file){
   dom.window.close();
 }
 (async()=>{
-  for(const f of ['index.html','whitepaper.html','dashboard.html']){
+  for(const f of ['index.html','whitepaper.html']){
     try{ await test(f); } catch(e){ console.error('FAIL', f, e.message); process.exit(1); }
   }
-  console.log('all three pages · floating widget verified: open, close, switch, persist, ESC');
+  console.log('both pages · floating widget verified: open, close, switch, persist, ESC');
 })();
