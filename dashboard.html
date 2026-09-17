@@ -107,6 +107,9 @@
   .card.sel{background:var(--ink);color:var(--lime)}
   .card.sel a{color:var(--lime)}
   .card .pair{font-size:22px;font-weight:500;letter-spacing:-.01em;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .card .pool-select{width:100%;padding:0;border:0;background:none;color:inherit;text-align:left;font-family:inherit;cursor:pointer}
+  .card .pool-select:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+  .card.sel .pool-select:focus-visible{outline-color:var(--lime)}
   .card .tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;border:1px solid currentColor;padding:2px 7px;opacity:.8}
   .card .desc{font-size:14px;font-style:italic;margin-top:4px;opacity:.85}
   .stats{margin-top:14px;font-family:var(--mono);font-size:12px;letter-spacing:.03em;line-height:2}
@@ -291,7 +294,7 @@
     </div>
     <div class="links">
       <a href="/" data-i18n="nav.home.arrow">← rwihood.org</a>
-      <a href="/whitepaper" data-i18n="nav.whitepaper">Whitepaper</a>
+      <a href="/docs" data-i18n="nav.whitepaper">Whitepaper</a>
     </div>
   </div>
 </header>
@@ -2853,6 +2856,8 @@ function vetChecks(p){
 
 function renderCards(){
   const grid = $('poolGrid');
+  const focusedPair = grid.contains(document.activeElement) && document.activeElement.classList.contains('pool-select')
+    ? document.activeElement.closest('.card').dataset.pair : null;
   grid.innerHTML = '';
   pools.forEach(p=>{
     const ds = p.ds||{};
@@ -2860,10 +2865,14 @@ function renderCards(){
     const sym1 = (p.token1&&p.token1.sym) || (ds.quoteToken&&ds.quoteToken.symbol) || '…';
     const labels = (ds.labels||[]).join(' ').toLowerCase();
     const isV3plus = /v3|v4/.test(labels);
+    const selectLabel = (sym0==='…' || sym1==='…')
+      ? (p.note || 'Pool '+p.pair.slice(0,10)+'…'+p.pair.slice(-4))
+      : '$'+sym0+' / $'+sym1+' pool';
     const card = document.createElement('div');
     card.className = 'card'+(selected===p.pair?' sel':'');
+    card.dataset.pair = p.pair;
     card.innerHTML = `
-      <div class="pair">$${esc(sym0)} / $${esc(sym1)} <span class="tag">${esc((ds.dexId||'dex')+(ds.labels&&ds.labels.length?' '+ds.labels.join(','):''))}</span></div>
+      <button type="button" class="pair pool-select" aria-label="Select ${esc(selectLabel)}" aria-pressed="${selected===p.pair}" aria-controls="zap">$${esc(sym0)} / $${esc(sym1)} <span class="tag">${esc((ds.dexId||'dex')+(ds.labels&&ds.labels.length?' '+ds.labels.join(','):''))}</span></button>
       ${p.note?`<p class="desc">${esc(p.note)}</p>`:''}
       <div class="stats">
         <div class="row"><span>Price</span><span>${ds.priceUsd?'$'+esc(ds.priceUsd):'—'}</span></div>
@@ -2879,10 +2888,15 @@ function renderCards(){
       </div>`;
     card.addEventListener('click', e=>{
       if(e.target.closest('a')) return;
+      if(zapBusy) return;
       selected = p.pair; renderCards(); openZap(p, isV3plus);
     });
     grid.appendChild(card);
   });
+  if (focusedPair) {
+    const focusedCard = [...grid.children].find(card=>card.dataset.pair===focusedPair);
+    focusedCard?.querySelector('.pool-select')?.focus({preventScroll:true});
+  }
 }
 
 
