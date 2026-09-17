@@ -3067,9 +3067,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       indexPaid.textContent=paidTotal(index);
       ponsPaid.textContent=paidTotal(pons);
       burned.textContent=usd(data.rwiBurnedUsd);
-      var liquidityUsd=usd(data.liquiditySpentUsd);
-      var liquidityEth=amount(data.liquiditySpent,6);
-      liquidity.textContent=liquidityUsd==='—'?(liquidityEth==='—'?'—':liquidityEth+' ETH'):liquidityUsd;
+      liquidity.textContent=usd(data.liquiditySpentUsd);
       var stamp=new Date(data.updatedAt);
       status.textContent='Live'+(Number.isNaN(stamp.getTime())?'':' · '+stamp.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}));
     })

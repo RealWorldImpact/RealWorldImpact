@@ -2,6 +2,7 @@ const INDEXER_URL = 'https://indices.theindex.finance/api/indexer';
 const GECKO_TOKEN_URL = 'https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/';
 const TREASURY = '0xb2c088db84293a6e3dee0765596f1cfdc2b9334d';
 const TOKEN = '0xda2598c976e62e7e15dcca75169b404712e48b04';
+const NATIVE_TOKEN = '0x0000000000000000000000000000000000000000';
 const DEX_RWI_URL = `https://api.dexscreener.com/tokens/v1/robinhood/${TOKEN}`;
 const ASSETS = {
   '0x0000000000000000000000000000000000000001': 'BURN',
@@ -13,7 +14,7 @@ const PRICE_ASSETS = {
   RWI: TOKEN,
   INDEX: '0x56910d4409f3a0c78c64dd8d0545ff0705389870',
   PONS: '0x39dbed3a2bd333467115de45665cc57f813c4571',
-  WETH: '0x0000000000000000000000000000000000000000',
+  WETH: NATIVE_TOKEN,
 };
 
 const CACHE_MS = 30_000;
@@ -46,29 +47,38 @@ function toUsdValue(amount, priceUsd) {
   return Number.isFinite(total) ? String(total) : null;
 }
 
-async function fetchDexRwiPriceUsd() {
+async function fetchDexPricesUsd() {
   try {
     const response = await fetch(DEX_RWI_URL, {
       headers: { accept: 'application/json' },
       signal: AbortSignal.timeout(5_000),
     });
-    if (!response.ok) return null;
+    if (!response.ok) return { RWI: null, WETH: null };
     const pairs = await response.json();
-    if (!Array.isArray(pairs)) return null;
+    if (!Array.isArray(pairs)) return { RWI: null, WETH: null };
     const rwiPairs = pairs.filter(pair =>
       pair.chainId === 'robinhood' &&
       String(pair.baseToken?.address).toLowerCase() === TOKEN &&
       Number.isFinite(Number(pair.priceUsd)) && Number(pair.priceUsd) > 0
     );
     rwiPairs.sort((a, b) => Number(b.liquidity?.usd || 0) - Number(a.liquidity?.usd || 0));
-    return rwiPairs[0] ? String(rwiPairs[0].priceUsd) : null;
+    const nativePair = rwiPairs.find(pair =>
+      String(pair.quoteToken?.address).toLowerCase() === NATIVE_TOKEN &&
+      Number.isFinite(Number(pair.priceNative)) && Number(pair.priceNative) > 0
+    );
+    // In an RWI/native pair, USD per native coin = RWI's USD price / its native price.
+    const nativeUsd = nativePair ? Number(nativePair.priceUsd) / Number(nativePair.priceNative) : null;
+    return {
+      RWI: rwiPairs[0] ? String(rwiPairs[0].priceUsd) : null,
+      WETH: Number.isFinite(nativeUsd) && nativeUsd > 0 ? String(nativeUsd) : null,
+    };
   } catch {
-    return null;
+    return { RWI: null, WETH: null };
   }
 }
 
 async function fetchPricesUsd() {
-  const dexRwiPricePromise = fetchDexRwiPriceUsd();
+  const dexPricesPromise = fetchDexPricesUsd();
   const entries = await Promise.all(Object.entries(PRICE_ASSETS).map(async ([symbol, address]) => {
     try {
       const response = await fetch(`${GECKO_TOKEN_URL}${address}`, {
@@ -87,7 +97,11 @@ async function fetchPricesUsd() {
     }
   }));
   const prices = Object.fromEntries(entries);
-  if (prices.RWI === null) prices.RWI = await dexRwiPricePromise;
+  if (prices.RWI === null || prices.WETH === null) {
+    const dexPrices = await dexPricesPromise;
+    if (prices.RWI === null) prices.RWI = dexPrices.RWI;
+    if (prices.WETH === null) prices.WETH = dexPrices.WETH;
+  }
   return prices;
 }
 
