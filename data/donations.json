@@ -1,0 +1,163 @@
+{
+  "name": "Real World Impact donation ledger",
+  "currency": "USD",
+  "updatedThrough": "2026-09-09",
+  "source": "https://www.rwihood.org/#ledger",
+  "note": "Published donation records. Amounts are reported USD values; follow each transaction and announcement link to verify. This is a published ledger, not a live chain index.",
+  "donations": [
+    {
+      "recipient": "NepalRelief.org",
+      "amountUsd": 190.0,
+      "date": "2026-09-09",
+      "transactionUrl": "https://app.trails.build/intent/0x66b00cd1f9e4dd78911f3e52427e14a764ac11bb2453323ee917658006f37801",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2097858812824666440"
+    },
+    {
+      "recipient": "NepalRelief.org",
+      "amountUsd": 200.0,
+      "date": "2026-09-07",
+      "transactionUrl": "https://app.trails.build/intent/0x8830bc0763dd5c04446b62614460baaaf40bef627d4f99d8de8179ebd2b41401",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2097032283739803907"
+    },
+    {
+      "recipient": "All Hands & Hearts",
+      "amountUsd": 400.36,
+      "date": "2026-09-05",
+      "transactionUrl": "https://etherscan.io/tx/0xcf96303183afa4ea7581dbf1600a2121b534ecadf1fd7ddaea2b10e1ddbe85c8",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2096433564560585066"
+    },
+    {
+      "recipient": "Convoy of Hope",
+      "amountUsd": 1006.67,
+      "date": "2026-09-04",
+      "transactionUrl": "https://etherscan.io/tx/0x53feb71cb5e9b5fb018116439799673614cc37a8f094957c698a203723f18190",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2095990707697713441"
+    },
+    {
+      "recipient": "World Central Kitchen",
+      "amountUsd": 1000.44,
+      "date": "2026-09-03",
+      "transactionUrl": "https://etherscan.io/tx/0x7ff240ed3e260cac615c14d023a0bedf7fd5644126303acf8974dda0af6294dc",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2095702763313184796"
+    },
+    {
+      "recipient": "Save the Children",
+      "amountUsd": 69.84,
+      "date": "2026-09-01",
+      "transactionUrl": "https://etherscan.io/tx/0x9cc3c7277ab58f21d8f6289fe8fcca12af5628af00a54bf84b728debb9c9733b",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2094955913341800534"
+    },
+    {
+      "recipient": "All Hands & Hearts",
+      "amountUsd": 61.68,
+      "date": "2026-08-31",
+      "transactionUrl": "https://etherscan.io/tx/0xbf207aecf44ad2a92316e4b2cc470b694ce16e19410009f2d5e7105bbb35eaaa",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2094552139028725978"
+    },
+    {
+      "recipient": "Direct Relief",
+      "amountUsd": 61.68,
+      "date": "2026-08-31",
+      "transactionUrl": "https://etherscan.io/tx/0xaf3541800dd9ef2f5500144d8d6b6821f27930daebc953f0a2027fe17d6780fe",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2094552139028725978"
+    },
+    {
+      "recipient": "Convoy of Hope",
+      "amountUsd": 73.5,
+      "date": "2026-08-29",
+      "transactionUrl": "https://etherscan.io/tx/0xab82dd0e4a0aed6440674f957f2735c8a9ddc9c593a07aac791b31c95da28519",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2093810899387650102"
+    },
+    {
+      "recipient": "World Central Kitchen",
+      "amountUsd": 73.5,
+      "date": "2026-08-29",
+      "transactionUrl": "https://etherscan.io/tx/0x629dc76a5e2a4a188a69660b6c59369c85b2da2d6ff49dea06463fae6976ca45",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2093810125370778060"
+    },
+    {
+      "recipient": "Save the Children",
+      "amountUsd": 73.5,
+      "date": "2026-08-29",
+      "transactionUrl": "https://etherscan.io/tx/0x90954b1b9aeee70936d264a114689266e77b4d3739b273777e08862780f1133f",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2093809290494517291"
+    },
+    {
+      "recipient": "Direct Relief",
+      "amountUsd": 73.5,
+      "date": "2026-08-29",
+      "transactionUrl": "https://etherscan.io/tx/0x366a3c3a81351e153e4da629162c7bf88a3417d2bfa1cfb5fad9b87231cb74b6",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2093809288313475274"
+    },
+    {
+      "recipient": "All Hands & Hearts",
+      "amountUsd": 73.5,
+      "date": "2026-08-29",
+      "transactionUrl": "https://etherscan.io/tx/0xe8f9f6243dd559ff4c70bab2fb618885c9d7914f9fdff0b8e4fb5c588b7c4acb",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2093809286220566938"
+    },
+    {
+      "recipient": "Feed the Children",
+      "amountUsd": 244.67,
+      "date": "2026-08-26",
+      "transactionUrl": "https://etherscan.io/tx/0x589402ee0021e6d94924c3c07443407cf58a7576de37e77b5901c6b6cc9b5b89",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2092626041529368757"
+    },
+    {
+      "recipient": "Muttville Senior Dog Rescue",
+      "amountUsd": 75.02,
+      "date": "2026-08-26",
+      "transactionUrl": "https://etherscan.io/tx/0x7ebd3e922f89e68d1f86d3f70606ca12e3f321623d3fbe48f6a2fa2eb75e81e4",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2092737920322969918"
+    },
+    {
+      "recipient": "Primate Rescue Center",
+      "amountUsd": 100.51,
+      "date": "2026-08-07",
+      "transactionUrl": "https://etherscan.io/tx/0x1a587ca9e0c29df2a05b94fecaeb4ca3af4b7699183ff6f3ec68f0829bbb352a",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2085869934291140642"
+    },
+    {
+      "recipient": "PAWS",
+      "amountUsd": 199.8,
+      "date": "2026-07-29",
+      "transactionUrl": "https://etherscan.io/tx/0x10f6e4eff0c8d805dc799a92d6c935a9ed6f4b5cfc457b56953587886045eaee",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2082596817061957987"
+    },
+    {
+      "recipient": "Treegens",
+      "amountUsd": 210.18,
+      "date": "2026-07-26",
+      "transactionUrl": "https://robinhoodchain.blockscout.com/tx/0x41aee4fb96647793d244ee2f83611bb8e638c9741697475cbe79a1bafb17b38d",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2081439363943002324"
+    },
+    {
+      "recipient": "Coalition for the Homeless",
+      "amountUsd": 270.87,
+      "date": "2026-07-22",
+      "transactionUrl": "https://etherscan.io/tx/0x5acdf5f3626c533abed7ea2e9e234f8694b1bfc1c23563c32755db87afe86968",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2080055556174155911"
+    },
+    {
+      "recipient": "No Kid Hungry",
+      "amountUsd": 1832.22,
+      "date": "2026-07-21",
+      "transactionUrl": "https://etherscan.io/tx/0xa8249ff4184223ca322b036c33e46073a804c6fdf52ef379e7fb94beecad7aca",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2079526167405572176"
+    },
+    {
+      "recipient": "Ronald McDonald House",
+      "amountUsd": 93.47,
+      "date": "2026-07-19",
+      "transactionUrl": "https://etherscan.io/tx/0x03e27b6d1e256c70c6ff006ee9971c3e0ac0c18db81d1b3b5907808140ab0aed",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2078666080751690238"
+    },
+    {
+      "recipient": "Children’s Miracle Network Hospitals",
+      "amountUsd": 74.61,
+      "date": "2026-07-19",
+      "transactionUrl": "https://etherscan.io/tx/0xfe60e6bf56c2356a8d819ce90a45691441461fcbedac56fb661955f00856c0fc",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2078905278272000291"
+    }
+  ]
+}

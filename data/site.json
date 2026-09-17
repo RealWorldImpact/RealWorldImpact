@@ -1,0 +1,44 @@
+{
+  "name": "Real World Impact",
+  "symbol": "RWI",
+  "description": "A charity coin on Robinhood Chain with published donation receipts and automatic allocations through The Index.",
+  "canonicalUrl": "https://www.rwihood.org/",
+  "scope": "Read-only information. This website does not process agent tasks or HTTP transaction requests.",
+  "network": {
+    "name": "Robinhood Chain",
+    "chainId": 4663,
+    "rpcUrl": "https://rpc.mainnet.chain.robinhood.com",
+    "explorerUrl": "https://robinhoodchain.blockscout.com"
+  },
+  "token": {
+    "address": "0xDa2598c976E62E7E15DcCa75169B404712E48B04",
+    "fixedSupply": "1000000000",
+    "supplyUnit": "RWI",
+    "mintable": false,
+    "activeRwiWethPoolId": "0xa72a9de2c6e3db34308a8ae61e927ceffea630218ca1e712b70b61341c3e99a1",
+    "burnAddress": "0x000000000000000000000000000000000000dEaD"
+  },
+  "indexAllocation": {
+    "shareOfEntireRwiRevenuePercent": 40,
+    "withinAllocationPercent": {
+      "indexHolderRewards": 40,
+      "ponsHolderRewards": 40,
+      "rwiBuybackAndBurn": 10,
+      "addedLockedLiquidity": 10
+    },
+    "treasuryAddress": "0xb2c088db84293a6e3dee0765596f1cfdc2b9334d",
+    "indexRewardTokenAddress": "0x56910d4409f3a0c78c64dd8d0545ff0705389870",
+    "ponsRewardTokenAddress": "0x39dbed3a2bd333467115de45665cc57f813c4571",
+    "liveLedgerUrl": "https://indices.theindex.finance/coin/0xb2c088db84293a6e3dee0765596f1cfdc2b9334d"
+  },
+  "donations": {
+    "vettingPlatform": "The Giving Block",
+    "publishedLedgerUrl": "https://www.rwihood.org/data/donations.json",
+    "readableLedgerUrl": "https://www.rwihood.org/#ledger",
+    "dataScope": "Published records, updated when a donation is added to the site; not a live chain index."
+  },
+  "documentationUrl": "https://www.rwihood.org/docs",
+  "sitemapUrl": "https://www.rwihood.org/sitemap.xml",
+  "llmsUrl": "https://www.rwihood.org/llms.txt",
+  "riskNote": "RWI is a volatile memecoin. Rewards are variable and not guaranteed. Buying RWI is not a tax-deductible donation."
+}

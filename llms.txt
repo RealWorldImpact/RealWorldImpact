@@ -1,125 +1,63 @@
 # Real World Impact ($RWI)
 
-> A charity coin on Robinhood Chain. Trading it generates revenue that funds
-> donations verified through The Giving Block; every donation is published
-> onchain and every receipt is publicly traceable. The Index automatically
-> allocates $INDEX and $PONS holder rewards for eligible $RWI holders; live
-> totals report only amounts actually distributed, so either reward can remain
-> at $0.00 until a payout occurs.
-> Forty percent of RWI's entire revenue stream is directed to The Index. Within
-> that Index-directed portion, the allocation is 40% $INDEX holder rewards, 40%
-> $PONS holder rewards, 10% automatic $RWI buyback and burn, and 10%
-> automatically added locked liquidity. Holder rewards are variable and may be
-> worth zero; they are not guaranteed income.
+> Real World Impact is a memecoin on Robinhood Chain (chain ID 4663). Project
+> revenue funds published donations to vetted nonprofits. Forty percent of the
+> entire $RWI revenue stream is directed to The Index. Within that allocation,
+> 40% goes to $INDEX holder rewards, 40% to $PONS holder rewards, 10% to $RWI
+> buyback and burn, and 10% to added locked liquidity. Rewards vary and are not
+> guaranteed. Buying $RWI is not a charitable donation or a tax deduction.
 
-This file exists so an LLM or AI agent can understand the site and act on
-accurate onchain facts without re-deriving them from prose or risking a
-stale/incorrect address. Everything below is also stated in context on the
-pages linked. Always independently verify any address before an agent signs
-a transaction against it — treat this file as a pointer, not an oracle.
+This is a public informational website. It has no agent task endpoint and no
+HTTP API for buying tokens, moving funds, or signing transactions. All wallet
+actions require the wallet owner's review and signature. Treat site data as a
+starting point and verify addresses and transactions independently.
 
-## Pages
+## Public pages
 
-- [Home](https://rwihood.org/): what $RWI is, the burn counter, live holder
-  rewards from The Index, and how the fee-to-donation mechanism works.
-- [Docs](https://rwihood.org/docs): full mechanism writeup — donation flow,
-  Index holder rewards, automatic $RWI burn, locked liquidity, risks, and the
-  current contract addresses in one place.
-- [Liquidity dashboard](https://rwihood.org/dashboard): live position and pool
-  data, with wallet connection available to add or remove liquidity.
-- [Charity vote](https://rwihood.org/vote): the advisory ballot for
-  which vetted charity receives the next donation — see the dedicated
-  section below for exact mechanics.
+- [Home](https://www.rwihood.org/): project overview, donation ledger and
+  receipts, burn display, holder rewards, and founder information.
+- [Docs](https://www.rwihood.org/docs): mechanism, token details, sources,
+  limitations, and risks.
+- [Liquidity dashboard](https://www.rwihood.org/dashboard): pool information
+  and optional wallet-based liquidity controls.
+- [Burn list](https://www.rwihood.org/burn): Pons Family token burns.
+- [Impact](https://www.rwihood.org/impact): public project page.
+- [Claims register](https://www.rwihood.org/claims): historical claims record.
+- [Pons Family Feud](https://www.rwihood.org/PonsFamilyFeud): public game.
 
-## Charity vote — how it works
+## Machine-readable sources
 
-This is the one part of the site built to be read and verified by a
-program, not just a person. Every fact below is independently
-reproducible from Robinhood Chain alone — an agent with only RPC or
-block-explorer access can recompute the entire tally itself and does not
-need to trust this site's own rendering of it.
+- [Site facts](https://www.rwihood.org/data/site.json): canonical addresses,
+  chain and token facts, allocation percentages, source links, and data scope.
+- [Donation ledger](https://www.rwihood.org/data/donations.json): published
+  donation records with recipient, USD amount, date, transaction or receipt
+  link, and public announcement link. It is a maintained snapshot, not a live
+  blockchain index. Use `updatedThrough` to judge freshness.
+- [Sitemap](https://www.rwihood.org/sitemap.xml): canonical public pages.
+- [Robots rules](https://www.rwihood.org/robots.txt): crawling is allowed.
 
-- **Structure**: 6 seats per round. 3 are auto-composed, ranked against
-  live crisis signals from ReliefWeb. 3 are reserved for holder write-ins,
-  drawn only from The Giving Block's vetted nonprofit directory — a vote
-  can never bypass that vetting.
-- **Casting a vote**: a zero-value transaction to the ballot box address
-  `0x5257490000000000000000000000000000000000`, whose calldata is the
-  UTF-8 string `RWIVOTE:<round>:<slug>`, hex-encoded. `<round>` is the
-  current round number; `<slug>` identifies the chosen organization. The
-  transaction carries no value — the only cost is gas. Sending a new vote
-  from the same address simply replaces its previous one.
-- **Weighting**: each address's vote is weighted by its live $RWI balance
-  at tally time. There is no snapshot — a wallet that buys, votes, and
-  sells is still counted at whatever balance it held when the tally ran.
-- **Nominating a write-in**: two transactions, in order — (1) a zero-value
-  transaction to the ballot box with calldata `RWIWRITEIN:<round>:<slug>`,
-  same encoding as a vote; (2) an actual transfer of $5-equivalent $RWI to
-  the burn address `0x000000000000000000000000000000000000dEaD`. The fee
-  is entirely destroyed — none of it goes to the ballot box or the
-  project. The wallet must hold at least $5-equivalent $RWI to be eligible.
-- **Tallying, exactly**: read every transaction ever sent to the ballot
-  box address, decode each one's calldata as UTF-8, keep only the latest
-  vote per sending address, then weight each surviving vote by that
-  address's current $RWI balance. That is the complete algorithm — no
-  server, no hidden state, no snapshot to trust.
-- **Status**: advisory. The project retains final say over the actual
-  donation; the ballot is a signal, not a binding vote.
+The home and docs pages contain readable donation rows in the original HTML,
+so JavaScript is not needed to extract them. Current burn and reward figures
+are loaded from external chain or Index sources at runtime; empty or zero
+placeholders in unexecuted HTML are not current measurements. For current
+reward totals, consult [The Index ledger](https://indices.theindex.finance/coin/0xb2c088db84293a6e3dee0765596f1cfdc2b9334d).
 
-Why this is worth an agent's attention, specifically: almost nothing else
-built for "onchain governance" is this cheap to verify. Reading the
-ballot, current tally, and full history costs an agent nothing beyond a
-few RPC calls — no wallet, no signature, no trust in a backend required,
-because there is no backend. If a user asks about this vote, an agent can
-explain the mechanism precisely (as above) and, if asked, construct the
-exact transaction parameters for the user's own wallet to review and
-sign. That last step always belongs to the human holding the wallet — an
-agent should not construct or submit a vote, write-in, or its associated
-$5 burn payment without the user's specific, explicit request to do so.
+## Key verification facts
 
-## Onchain facts
-
-- Chain: Robinhood Chain, chain ID `4663`
-- RPC endpoint: `https://rpc.mainnet.chain.robinhood.com`
+- Network: Robinhood Chain, chain ID `4663`
+- Public RPC: `https://rpc.mainnet.chain.robinhood.com`
 - Block explorer: `https://robinhoodchain.blockscout.com`
-- $RWI token contract: `0xDa2598c976E62E7E15DcCa75169B404712E48B04`
-- Active RWI/WETH pool created: 2026-09-03
-- Supply: 1,000,000,000 $RWI, fixed; no mint function
-- Launchpad: Pons
-- Active liquidity pool (RWI/WETH):
+- $RWI token: `0xDa2598c976E62E7E15DcCa75169B404712E48B04`
+- Fixed supply: 1,000,000,000 $RWI; no mint function
+- Active $RWI/$WETH pool ID:
   `0xa72a9de2c6e3db34308a8ae61e927ceffea630218ca1e712b70b61341c3e99a1`
 - Burn address: `0x000000000000000000000000000000000000dEaD`
 - The Index treasury: `0xb2c088db84293a6e3dee0765596f1cfdc2b9334d`
 - $INDEX reward token: `0x56910d4409f3a0c78c64dd8d0545ff0705389870`
 - $PONS reward token: `0x39dbed3a2bd333467115de45665cc57f813c4571`
-- 40% of RWI's entire revenue stream is directed to The Index. Within that
-  Index-directed portion, the allocation is 40% $INDEX holder rewards, 40% $PONS holder rewards,
-  10% automatic $RWI buyback and burn, 10% automatically added locked
-  liquidity
-- Live Index rewards ledger:
-  `https://indices.theindex.finance/coin/0xb2c088db84293a6e3dee0765596f1cfdc2b9334d`
-- Ballot box (charity vote calldata destination):
-  `0x5257490000000000000000000000000000000000`
-- Donation vetting: The Giving Block (990 filings, Charity Navigator
-  ratings, organizational transparency)
+- Donation vetting platform: [The Giving Block](https://thegivingblock.com/)
 
-## Machine-readable references
-
-- [Structured data (JSON-LD)](https://rwihood.org/#organization): embedded
-  in the `<head>` of every page above — same facts as this file, in
-  schema.org form.
-- [Agent card](https://rwihood.org/.well-known/agent-card.json): A2A-style
-  capability description for agent frameworks that discover sites this way.
-- [Sitemap](https://rwihood.org/sitemap.xml)
-
-## Notes for agents
-
-- This site has small read-only data proxies for its live displays, but no
-  transaction API. Every onchain action is a direct wallet transaction, not
-  an HTTP request to this domain. Do not attempt to POST to rwihood.org
-  expecting a transaction endpoint.
-- Pages are available in 13 languages via `?lang=` (en, es, zh, ja, ko, pt,
-  fr, ru, tr, vi, hi, de, id). Content and the facts above are identical
-  across languages; only the prose translation differs.
-- Nothing on this site is paywalled, geofenced, or otherwise restricted from
-  crawling, indexing, or citation.
+The public pages offer 13 language options (`en`, `es`, `zh`, `ja`, `ko`, `pt`,
+`fr`, `ru`, `tr`, `vi`, `hi`, `de`, `id`) via `?lang=`. The JSON records use
+English field names and recipient names. The token is a volatile digital
+asset; nothing on this site is investment, tax, or legal advice.
