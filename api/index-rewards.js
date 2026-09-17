@@ -2,6 +2,7 @@ const INDEXER_URL = 'https://indices.theindex.finance/api/indexer';
 const GECKO_TOKEN_URL = 'https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/';
 const TREASURY = '0xb2c088db84293a6e3dee0765596f1cfdc2b9334d';
 const TOKEN = '0xda2598c976e62e7e15dcca75169b404712e48b04';
+const DEX_RWI_URL = `https://api.dexscreener.com/tokens/v1/robinhood/${TOKEN}`;
 const ASSETS = {
   '0x0000000000000000000000000000000000000001': 'BURN',
   '0x0000000000000000000000000000000000000002': 'LIQUIDITY',
@@ -45,7 +46,29 @@ function toUsdValue(amount, priceUsd) {
   return Number.isFinite(total) ? String(total) : null;
 }
 
+async function fetchDexRwiPriceUsd() {
+  try {
+    const response = await fetch(DEX_RWI_URL, {
+      headers: { accept: 'application/json' },
+      signal: AbortSignal.timeout(5_000),
+    });
+    if (!response.ok) return null;
+    const pairs = await response.json();
+    if (!Array.isArray(pairs)) return null;
+    const rwiPairs = pairs.filter(pair =>
+      pair.chainId === 'robinhood' &&
+      String(pair.baseToken?.address).toLowerCase() === TOKEN &&
+      Number.isFinite(Number(pair.priceUsd)) && Number(pair.priceUsd) > 0
+    );
+    rwiPairs.sort((a, b) => Number(b.liquidity?.usd || 0) - Number(a.liquidity?.usd || 0));
+    return rwiPairs[0] ? String(rwiPairs[0].priceUsd) : null;
+  } catch {
+    return null;
+  }
+}
+
 async function fetchPricesUsd() {
+  const dexRwiPricePromise = fetchDexRwiPriceUsd();
   const entries = await Promise.all(Object.entries(PRICE_ASSETS).map(async ([symbol, address]) => {
     try {
       const response = await fetch(`${GECKO_TOKEN_URL}${address}`, {
@@ -56,14 +79,16 @@ async function fetchPricesUsd() {
       const body = await response.json();
       const price = body?.data?.attributes?.price_usd;
       const numericPrice = Number(price);
-      return [symbol, price !== null && price !== undefined && price !== '' && Number.isFinite(numericPrice)
+      return [symbol, Number.isFinite(numericPrice) && numericPrice > 0
         ? String(price)
         : null];
     } catch {
       return [symbol, null];
     }
   }));
-  return Object.fromEntries(entries);
+  const prices = Object.fromEntries(entries);
+  if (prices.RWI === null) prices.RWI = await dexRwiPricePromise;
+  return prices;
 }
 
 function buildPayload(body, pricesUsd) {
@@ -124,6 +149,7 @@ export default async function handler(req, res) {
   }
 
   try {
+    const pricesPromise = fetchPricesUsd();
     const upstream = await fetch(INDEXER_URL, {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'application/json' },
@@ -133,7 +159,7 @@ export default async function handler(req, res) {
     const body = await upstream.json();
     if (!upstream.ok) return res.status(upstream.status).json({ error: 'The Index is temporarily unavailable' });
 
-    const pricesUsd = await fetchPricesUsd();
+    const pricesUsd = await pricesPromise;
     const payload = buildPayload(body, pricesUsd);
     cached = { timestamp: Date.now(), body: payload };
     res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=120');

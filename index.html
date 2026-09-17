@@ -2975,7 +2975,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             <small>$INDEX <span data-i18n="index.rewards.distributed">distributed to holders</span></small>
           </div>
           <div class="reward-stat" id="ponsRewardsStat">
-            <strong id="ponsRewardsPaid">$0.00</strong>
+            <strong id="ponsRewardsPaid">—</strong>
             <small>$PONS <span data-i18n="index.rewards.distributed">distributed to holders</span></small>
           </div>
           <div class="reward-stat">
@@ -3042,9 +3042,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if(!indexPaid||!ponsPaid||!burned||!liquidity||!status)return;
 
   function usd(value){
+    if(value===null||value===undefined||value==='')return '—';
     var n=Number(value);
     if(!Number.isFinite(n))return '—';
     return n.toLocaleString('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+  function amount(value, digits){
+    if(value===null||value===undefined||value==='')return '—';
+    var n=Number(value);
+    return Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:digits}):'—';
+  }
+  function paidTotal(item){
+    if(!item)return '—';
+    var dollars=usd(item.usdValue);
+    return dollars==='—'?amount(item.amount,Math.abs(Number(item.amount))<1?6:2):dollars;
   }
 
   fetch('/api/index-rewards',{headers:{accept:'application/json'},cache:'no-store'})
@@ -3053,10 +3064,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
       var paid=Array.isArray(data.distributed)?data.distributed:[];
       var index=paid.find(function(item){return item.symbol==='INDEX';});
       var pons=paid.find(function(item){return item.symbol==='PONS';});
-      indexPaid.textContent=index?usd(index.usdValue):'—';
-      ponsPaid.textContent=pons?usd(pons.usdValue):'$0.00';
+      indexPaid.textContent=paidTotal(index);
+      ponsPaid.textContent=paidTotal(pons);
       burned.textContent=usd(data.rwiBurnedUsd);
-      liquidity.textContent=usd(data.liquiditySpentUsd);
+      var liquidityUsd=usd(data.liquiditySpentUsd);
+      var liquidityEth=amount(data.liquiditySpent,6);
+      liquidity.textContent=liquidityUsd==='—'?(liquidityEth==='—'?'—':liquidityEth+' ETH'):liquidityUsd;
       var stamp=new Date(data.updatedAt);
       status.textContent='Live'+(Number.isNaN(stamp.getTime())?'':' · '+stamp.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}));
     })
