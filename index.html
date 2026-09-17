@@ -2609,6 +2609,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   .reward-token img{width:28px;height:28px;flex:none;border-radius:4px;object-fit:cover}
   .reward-token-art{width:28px;height:28px;flex:none;overflow:hidden;border-radius:4px;background:#fff}
   .reward-token-art img{display:block;transform:scale(1.65)}
+  .reward-token-symbol{
+    display:grid;place-items:center;width:28px;height:28px;flex:none;
+    border-radius:4px;background:#fff;font-family:system-ui,sans-serif;
+    font-size:18px;line-height:1;letter-spacing:0;text-transform:none;
+  }
   .reward-card small{display:block;margin-top:5px;font-size:14px;line-height:1.35}
   .reward-live{
     margin-top:24px;padding:22px;background:var(--ink);color:var(--lime);
@@ -2951,10 +2956,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
           <strong>40%</strong><b class="reward-token"><span class="reward-token-art"><img src="assets/pons-logo.jpg" alt="" width="28" height="28" loading="lazy" decoding="async"></span>$PONS</b><small data-i18n="index.rewards.holders">to holder rewards</small>
         </div>
         <div class="reward-card">
-          <strong>10%</strong><b>$RWI</b><small data-i18n="index.rewards.burn">Auto buyback + burn</small>
+          <strong>10%</strong><b class="reward-token"><span class="reward-token-symbol" aria-hidden="true">🔥</span>$RWI</b><small data-i18n="index.rewards.burn">Auto buyback + burn</small>
         </div>
         <div class="reward-card">
-          <strong>10%</strong><b>LP</b><small data-i18n="index.rewards.liquidity">Auto locked liquidity</small>
+          <strong>10%</strong><b class="reward-token"><span class="reward-token-symbol" aria-hidden="true">🔒</span>LP</b><small data-i18n="index.rewards.liquidity">Auto locked liquidity</small>
         </div>
       </div>
 
