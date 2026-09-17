@@ -2605,6 +2605,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     display:block;margin-top:12px;font-family:var(--mono);font-size:13px;
     font-weight:500;letter-spacing:.14em;text-transform:uppercase;
   }
+  .reward-card b.reward-token{display:flex;align-items:center;gap:7px}
+  .reward-token img{width:28px;height:28px;flex:none;border-radius:4px;object-fit:cover}
   .reward-card small{display:block;margin-top:5px;font-size:14px;line-height:1.35}
   .reward-live{
     margin-top:24px;padding:22px;background:var(--ink);color:var(--lime);
@@ -2941,7 +2943,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
       <div class="reward-grid" aria-label="The Index treasury allocation">
         <div class="reward-card">
-          <strong>40%</strong><b>$INDEX</b><small data-i18n="index.rewards.holders">to holder rewards</small>
+          <strong>40%</strong><b class="reward-token"><img src="assets/index-logo.jpg" alt="" width="28" height="28" loading="lazy" decoding="async">$INDEX</b><small data-i18n="index.rewards.holders">to holder rewards</small>
         </div>
         <div class="reward-card">
           <strong>40%</strong><b>$PONS</b><small data-i18n="index.rewards.holders">to holder rewards</small>
