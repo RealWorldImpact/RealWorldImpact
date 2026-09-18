@@ -2341,7 +2341,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     padding:0;background:transparent;color:var(--ink);cursor:pointer;
     font-family:var(--mono);font-size:12.5px;
   }
-  .ca .label{padding:10px 14px;background:var(--ink);color:var(--lime);letter-spacing:.1em}
+  .ca .label{align-self:stretch;display:inline-flex;align-items:center;padding:10px 14px;background:var(--ink);color:var(--lime);letter-spacing:.1em}
   .ca code{padding:10px 14px;font-family:inherit;font-size:inherit;letter-spacing:.02em;white-space:nowrap}
   .ca:hover code,.ca:focus-visible code,.ca[data-copy-state="success"] code{
     background:var(--ink);color:var(--lime);
@@ -2711,17 +2711,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
   @media (max-width:600px){
     .ca{
-      display:flex;width:min(360px,calc(100vw - 24px));max-width:none;
-      position:relative;left:50%;transform:translateX(-50%);margin:22px 0 0;
+      display:inline-flex;width:100%;max-width:360px;
     }
     .ca .label{flex:none;padding:8px;font-size:10px}
     .ca code{
-      flex:1;min-width:0;padding:8px 4px;font-size:clamp(8px,3.2vw,12px);
+      flex:1;min-width:0;padding:8px 4px;font-size:clamp(6.5px,2.7vw,11.5px);
       letter-spacing:0;text-align:center;
     }
   }
   @media (max-width:300px){
     .ca .label{display:none}
+    .ca code{padding:8px 3px}
   }
 </style>
 <style>
