@@ -107,7 +107,7 @@
   /* ---------- sections ---------- */
   section{border-top:1px solid var(--rule-strong)}
   section:first-of-type{border-top:0}
-  .sec-inner{padding-top:64px;padding-bottom:64px}
+  .sec-inner{padding-top:64px;padding-bottom:64px;overflow-wrap:anywhere}
   .eyebrow{
     font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;
     margin-bottom:20px;
@@ -256,6 +256,11 @@
     header .links a.icon-link svg{width:13px;height:13px}
     header .links a.icon-link img.dexscreener-mark{width:12px}
     header .links a.icon-link img.coingecko-mark{width:13px;height:13px}
+  }
+  @media (max-width: 320px){
+    header .strip{flex-wrap:wrap;justify-content:center;gap:2px;padding:4px 0}
+    header .strip>:first-child{flex:0 0 100%;justify-content:center}
+    header .links{justify-content:center;gap:8px}
   }
 
   /* ---------- print ---------- */
