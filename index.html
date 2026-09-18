@@ -2711,13 +2711,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
     .up-logo{width:64px;height:64px}
   }
   @media (max-width:600px){
-    .ca{display:grid;grid-template-columns:1fr auto;width:100%;border-radius:16px}
-    .ca .label{grid-column:1;grid-row:1;text-align:left}
-    .ca button{grid-column:2;grid-row:1}
-    .ca code{
-      grid-column:1/-1;grid-row:2;min-width:0;border-top:1px solid var(--rule-strong);
-      white-space:normal;overflow-wrap:anywhere;text-align:left;
+    .ca{
+      display:flex;width:min(360px,calc(100vw - 24px));max-width:none;
+      position:relative;left:50%;transform:translateX(-50%);margin:22px 0 0;
     }
+    .ca .label{flex:none;padding:8px;font-size:10px}
+    .ca button{flex:none;padding:8px;font-size:10px}
+    .ca code{
+      flex:1;min-width:0;padding:8px 4px;font-size:clamp(6px,2.5vw,10px);
+      letter-spacing:0;text-align:center;
+    }
+  }
+  @media (max-width:300px){
+    .ca .label{display:none}
+    .ca button{padding:8px 6px;font-size:9px}
   }
 </style>
 <style>
