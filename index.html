@@ -2341,7 +2341,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     font-family:var(--mono);font-size:12.5px;
   }
   .ca .label{padding:10px 14px;background:var(--ink);color:var(--lime);letter-spacing:.1em}
-  .ca code{padding:10px 14px;letter-spacing:.02em;max-width:52vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ca code{padding:10px 14px;letter-spacing:.02em;white-space:nowrap}
   .ca button{
     border:0;border-left:1px solid var(--rule-strong);background:transparent;
     font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
@@ -2709,7 +2709,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
     .pool-link::after{font-size:13px}
     .liquidity-heading{gap:16px}
     .up-logo{width:64px;height:64px}
-    .ca code{max-width:40vw}
+  }
+  @media (max-width:600px){
+    .ca{display:grid;grid-template-columns:1fr auto;width:100%;border-radius:16px}
+    .ca .label{grid-column:1;grid-row:1;text-align:left}
+    .ca button{grid-column:2;grid-row:1}
+    .ca code{
+      grid-column:1/-1;grid-row:2;min-width:0;border-top:1px solid var(--rule-strong);
+      white-space:normal;overflow-wrap:anywhere;text-align:left;
+    }
   }
 </style>
 <style>
