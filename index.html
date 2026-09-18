@@ -2395,7 +2395,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   .step b{font-family:var(--mono);font-weight:500;font-size:13px;letter-spacing:.14em;text-transform:uppercase;padding-top:5px}
   .step p{max-width:52ch}
 
-  .pool-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:360px;margin-top:20px}
+  .pool-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;max-width:360px;margin:20px auto 0}
   .pool-link{
     position:relative;display:inline-flex;align-items:center;justify-content:space-between;gap:8px;
     min-width:0;min-height:44px;padding:0 14px;border:1px solid var(--ink);border-radius:999px;
@@ -2411,10 +2411,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   .liquidity-heading{display:flex;align-items:center;justify-content:space-between;gap:24px}
   .up-logo{width:80px;height:80px;flex:none;border:1px solid var(--rule-strong);border-radius:10px;object-fit:cover}
   .up-market-stats{
-    display:flex;flex-wrap:wrap;gap:6px;width:max-content;max-width:100%;
-    margin-top:18px;
+    display:flex;justify-content:center;flex-wrap:wrap;gap:6px;width:100%;
+    margin:18px auto 0;
   }
-  .up-market-stat{min-width:0;padding:6px 10px;border:1px solid var(--ink)}
+  .up-market-stat{min-width:0;max-width:100%;padding:6px 10px;border:1px solid var(--ink);background:var(--ink);color:var(--lime);text-align:center}
   .up-market-stat span{
     display:block;font-family:var(--mono);font-size:9px;line-height:1.1;
     letter-spacing:0;text-transform:uppercase;
@@ -2425,9 +2425,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     font-variant-numeric:tabular-nums;overflow-wrap:anywhere;
   }
   .sec-inner>.up-market-meta{
-    display:flex;justify-content:flex-start;flex-wrap:wrap;gap:4px 16px;
-    width:max-content;max-width:100%;margin-top:5px;font-family:var(--mono);font-size:10px;
-    letter-spacing:.04em;
+    display:flex;justify-content:center;flex-wrap:wrap;gap:4px 16px;
+    width:100%;margin:5px auto 0;font-family:var(--mono);font-size:10px;
+    letter-spacing:.04em;text-align:center;
   }
   .up-market-meta a{text-decoration:none;border-bottom:1px solid var(--rule-strong)}
   .up-market-meta a:hover,.up-market-meta a:focus-visible{border-bottom-color:transparent}
@@ -2761,6 +2761,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
     .up-market-stat{padding:5px 8px}
     .up-market-stat span{font-size:8px}
     .up-market-stat strong{font-size:14px}
+  }
+  @media (max-width:300px){
+    .pool-link{padding:0 8px;gap:2px}
+    .pool-link strong{font-size:10px}
+    .pool-link::after{font-size:12px}
   }
   @media (max-width:600px){
     .ca-wrap{

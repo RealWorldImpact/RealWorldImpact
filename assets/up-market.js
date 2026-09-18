@@ -10,6 +10,16 @@
   const currency = new Intl.NumberFormat('en-US', {
     style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2,
   });
+  const compactCurrency = new Intl.NumberFormat('en-US', {
+    style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 2,
+  });
+
+  function showCurrency(element, value) {
+    const exact = currency.format(value);
+    element.textContent = value >= 100000 ? compactCurrency.format(value) : exact;
+    element.title = exact;
+    element.setAttribute('aria-label', exact);
+  }
 
   function amount(value) {
     const number = Number(value);
@@ -174,12 +184,16 @@
             pool.totalValueLockedToken0, pool.totalValueLockedToken1, prices);
           totalVolume += usdVolume(pool, hour.usd, hour.token0, hour.token1, prices);
         }
-        liquidity.textContent = currency.format(totalLiquidity);
-        volume.textContent = currency.format(totalVolume);
+        showCurrency(liquidity, totalLiquidity);
+        showCurrency(volume, totalVolume);
         setStatus(status, 'index.liquidity.live', 'Live from Up');
       } catch (error) {
         liquidity.textContent = '—';
         volume.textContent = '—';
+        liquidity.removeAttribute('title');
+        volume.removeAttribute('title');
+        liquidity.removeAttribute('aria-label');
+        volume.removeAttribute('aria-label');
         setStatus(status, 'index.liquidity.unavailable', 'Live totals unavailable');
         console.warn('Up liquidity totals unavailable', error);
       } finally {
