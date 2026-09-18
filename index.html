@@ -2343,15 +2343,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
     font-family:var(--mono);font-size:12.5px;
   }
   .ca .label{align-self:stretch;display:inline-flex;align-items:center;padding:10px 14px;background:var(--ink);color:var(--lime);letter-spacing:.1em}
-  .ca code{padding:10px 14px;font-family:inherit;font-size:inherit;letter-spacing:.02em;white-space:nowrap}
-  .ca[data-copy-state="flash"] code{
-    background:var(--ink);color:var(--lime);
+  .ca code{position:relative;padding:10px 14px;font-family:inherit;font-size:inherit;letter-spacing:.02em;white-space:nowrap}
+  .ca[data-copy-state="success"] code{color:transparent}
+  .ca[data-copy-state="success"] code::after{
+    content:"Copied!";position:absolute;inset:0;display:flex;
+    align-items:center;justify-content:center;color:var(--ink);
   }
-  .copy-status{
-    position:absolute;top:calc(100% + 4px);left:0;width:100%;
-    font-family:var(--mono);font-size:11px;line-height:1.3;text-align:center;
-    pointer-events:none;
-  }
+  .ca.is-flashing code{background:var(--ink)}
+  .ca.is-flashing code::after{color:var(--lime)}
+  .copy-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
   /* ---------- manifesto sections ---------- */
   section{border-top:1px solid var(--rule-strong)}
@@ -2715,17 +2715,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
     .up-logo{width:64px;height:64px}
   }
   @media (max-width:600px){
-    .ca-wrap{display:block;width:100%;max-width:360px;margin-left:auto;margin-right:auto}
+    .ca-wrap{
+      display:block;width:min(360px,calc(100vw - 24px));max-width:none;
+      left:50%;transform:translateX(-50%);
+    }
     .ca{
       display:inline-flex;width:100%;max-width:360px;
     }
     .ca .label{flex:none;padding:8px;font-size:10px}
     .ca code{
-      flex:1;min-width:0;padding:8px 4px;font-size:clamp(6.5px,calc(2.7vw - 1.25px),11.5px);
+      flex:1;min-width:0;padding:8px 4px;font-size:clamp(8px,3.2vw,12px);
       letter-spacing:0;text-align:center;
     }
   }
-  @media (max-width:300px){
+  @media (max-width:250px){
     .ca .label{display:none}
     .ca code{padding:8px 3px}
   }
@@ -3161,9 +3164,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // copy contract address
   const btn=document.getElementById('copyBtn');
   const copyStatus=document.getElementById('copyStatus');
-  let copyFlashTimer,copyStatusTimer;
+  const contractAddress=document.getElementById('caText').textContent.trim();
+  let copyFlashTimer,copyResetTimer;
   btn.addEventListener('click',async()=>{
-    const txt=document.getElementById('caText').textContent.trim();
+    const txt=contractAddress;
     let ok=false;
     try{await navigator.clipboard.writeText(txt);ok=true}
     catch(e){
@@ -3176,16 +3180,22 @@ document.addEventListener('DOMContentLoaded', ()=>{
       ta.remove();
     }
     clearTimeout(copyFlashTimer);
-    clearTimeout(copyStatusTimer);
+    clearTimeout(copyResetTimer);
     if(ok){
-      btn.dataset.copyState='flash';
-      copyStatus.textContent='Copied!';
-      copyFlashTimer=setTimeout(()=>{delete btn.dataset.copyState;},350);
+      btn.dataset.copyState='success';
+      btn.classList.add('is-flashing');
+      copyStatus.textContent='Contract address copied';
+      copyFlashTimer=setTimeout(()=>{btn.classList.remove('is-flashing');},350);
     }else{
       delete btn.dataset.copyState;
+      btn.classList.remove('is-flashing');
       copyStatus.textContent='Could not copy';
     }
-    copyStatusTimer=setTimeout(()=>{copyStatus.textContent='';},2000);
+    copyResetTimer=setTimeout(()=>{
+      delete btn.dataset.copyState;
+      btn.classList.remove('is-flashing');
+      copyStatus.textContent='';
+    },2000);
   });
   // live price ticker (Dexscreener public API, refreshes every 30s)
   // Multi-target: registered elements (site + shadow whitepaper) all update from the same poll.
