@@ -369,6 +369,7 @@
   }
 </style>
 <script>document.documentElement.classList.add('js')</script>
+<script src="/assets/i18n-updates.js"></script>
 <script>
 /* ==========================================================================
    i18n — Shared runtime multi-language support (index / whitepaper / dashboard).
@@ -1849,6 +1850,9 @@ const TRANSLATIONS = {
 
 };
 
+for(const [lang, additions] of Object.entries(window.RWI_I18N_UPDATES || {})){
+  if(TRANSLATIONS[lang]) Object.assign(TRANSLATIONS[lang], additions);
+}
 let LANG = 'en';
 var META_TITLE_KEY='meta.title.wp'; var META_DESC_KEY='wp.cover.sub';
 
@@ -1912,6 +1916,9 @@ function t(key, vars){
 }
 function applyI18n(root){
   (root||document).querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
+  for(const attr of ['aria-label','title','placeholder','alt']){
+    (root||document).querySelectorAll('[data-i18n-'+attr+']').forEach(el=>el.setAttribute(attr,t(el.getAttribute('data-i18n-'+attr))));
+  }
 }
 function setLang(l){
   if(!TRANSLATIONS[l]) l = 'en';
@@ -2028,8 +2035,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   <div class="wrap">
     <div class="strip">
       <div class="wp-left">
-        <a class="wp-brand" href="/" aria-label="Back to site">Real World Impact</a>
-        <a class="wp-ticker" href="/" aria-label="Back to site">$RWI&nbsp;<span id="ticker" aria-live="polite"></span></a>
+        <a class="wp-brand" href="/" aria-label="Back to site" data-i18n-aria-label="common.backSite">Real World Impact</a>
+        <a class="wp-ticker" href="/" aria-label="Back to site" data-i18n-aria-label="common.backSite">$RWI&nbsp;<span id="ticker" aria-live="polite"></span></a>
       </div>
       <div class="links">
         <a href="#references" data-i18n="wp.nav.refs">References</a>
@@ -2121,13 +2128,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
     <p data-i18n="wp.burn.body1">Forty percent of the entire $RWI revenue stream is directed to The Index. The 40/40/10/10 percentages below apply only within that Index-directed portion — not to 100% of $RWI revenue.</p>
     <p data-i18n="wp.burn.body2">Through The Index, $RWI's configured holder rewards are $INDEX and $PONS. Distribution is automatic for eligible holders, with no staking transaction, lockup, or separate claim step. The live ledger reports only amounts actually distributed, so a configured reward token may remain at $0.00 until its first payout. Reward amounts and timing are variable and are not guaranteed.</p>
     <div class="equation">
-      <div class="step"><b>40%</b><span>$INDEX holder rewards</span></div>
-      <div class="step"><b>40%</b><span>$PONS holder rewards</span></div>
-      <div class="step"><b>10%</b><span>Automatic $RWI buyback + burn</span></div>
-      <div class="step"><b>10%</b><span>Automatically added locked liquidity</span></div>
+      <div class="step"><b>40%</b><span data-i18n="wp.burn.indexReward">$INDEX holder rewards</span></div>
+      <div class="step"><b>40%</b><span data-i18n="wp.burn.ponsReward">$PONS holder rewards</span></div>
+      <div class="step"><b>10%</b><span data-i18n="wp.burn.buyback">Automatic $RWI buyback + burn</span></div>
+      <div class="step"><b>10%</b><span data-i18n="wp.burn.locked">Automatically added locked liquidity</span></div>
     </div>
     <p data-i18n="wp.burn.body3">The same automated cycle uses 10% of the Index allocation for $RWI buyback and burn and 10% for added, locked liquidity. The Index ledger publishes cumulative holder distributions, automatic burns, and liquidity activity from the treasury.</p>
-    <p><a href="https://indices.theindex.finance/coin/0xb2c088db84293a6e3dee0765596f1cfdc2b9334d" target="_blank" rel="noopener">Open the live Index rewards ledger ↗</a></p>
+    <p><a href="https://indices.theindex.finance/coin/0xb2c088db84293a6e3dee0765596f1cfdc2b9334d" target="_blank" rel="noopener" data-i18n="index.rewards.source">Open the live rewards ledger ↗</a></p>
   </div>
 </section>
 
@@ -2341,14 +2348,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
     setInterval(()=>{if(!document.hidden) update()}, 30000);
   })();
 </script>
-<button id="langBtn" aria-haspopup="true" aria-expanded="false" aria-controls="langPanel" aria-label="Change language" type="button"><span id="langBtnLabel">EN</span><span class="caret" aria-hidden="true">▾</span></button>
-<div id="langPanel" role="menu" aria-label="Language">
+<button id="langBtn" aria-haspopup="true" aria-expanded="false" aria-controls="langPanel" aria-label="Change language" data-i18n-aria-label="common.changeLanguage" type="button"><span id="langBtnLabel">EN</span><span class="caret" aria-hidden="true">▾</span></button>
+<div id="langPanel" role="menu" aria-label="Language" data-i18n-aria-label="common.language">
   <button data-lang="en" role="menuitemradio">EN</button><button data-lang="es" role="menuitemradio">ES</button><button data-lang="zh" role="menuitemradio">中文</button><button data-lang="ja" role="menuitemradio">日本語</button><button data-lang="ko" role="menuitemradio">한국어</button><button data-lang="pt" role="menuitemradio">PT</button><button data-lang="fr" role="menuitemradio">FR</button><button data-lang="ru" role="menuitemradio">RU</button><button data-lang="tr" role="menuitemradio">TR</button><button data-lang="vi" role="menuitemradio">VI</button><button data-lang="hi" role="menuitemradio">हिन्दी</button><button data-lang="de" role="menuitemradio">DE</button><button data-lang="id" role="menuitemradio">ID</button>
 </div>
 <div id="burnListModal" role="dialog" aria-modal="true" aria-labelledby="burnListTitle">
   <div class="burn-list-panel">
-    <div class="burn-list-head"><span id="burnListTitle">Pons Family Burn List</span><button id="burnListClose" type="button" aria-label="Close Burn List">&#10005;</button></div>
-    <iframe id="burnListFrame" data-src="https://www.rwihood.org/burn" title="Pons Family Burn List"></iframe>
+    <div class="burn-list-head"><span id="burnListTitle" data-i18n="common.burnList">Pons Family Burn List</span><button id="burnListClose" type="button" aria-label="Close Burn List" data-i18n-aria-label="common.closeBurnList">&#10005;</button></div>
+    <iframe id="burnListFrame" data-src="https://www.rwihood.org/burn" title="Pons Family Burn List" data-i18n-title="common.burnList"></iframe>
   </div>
 </div>
 <script>
@@ -2407,12 +2414,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
       <span><span id="chartModalTitle" data-i18n="index.chart.title">Live chart</span> <span class="pair">· $RWI / $WETH</span></span>
       <span class="chart-actions">
         <a href="https://www.geckoterminal.com/robinhood/pools/0xa72a9de2c6e3db34308a8ae61e927ceffea630218ca1e712b70b61341c3e99a1" target="_blank" rel="noopener" data-i18n="index.chart.open">Open on GeckoTerminal &#8599;</a>
-        <button type="button" id="chartClose" aria-label="Close">&#10005;</button>
+        <button type="button" id="chartClose" aria-label="Close" data-i18n-aria-label="common.close">&#10005;</button>
       </span>
     </div>
     <div class="chart-body">
       <div class="chart-loading" id="chartLoading" data-i18n="index.chart.title">Live chart</div>
-      <iframe id="chartFrame" title="GeckoTerminal price chart" loading="lazy" allow="clipboard-write" allowfullscreen></iframe>
+      <iframe id="chartFrame" title="GeckoTerminal price chart" data-i18n-title="common.priceChart" loading="lazy" allow="clipboard-write" allowfullscreen></iframe>
     </div>
   </div>
 </div>
