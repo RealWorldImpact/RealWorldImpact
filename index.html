@@ -2334,8 +2334,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
   /* ---------- contract pill ---------- */
+  .ca-wrap{display:inline-block;position:relative;max-width:100%;margin-top:22px;vertical-align:top}
   .ca{
-    margin:22px auto 0;display:inline-flex;align-items:center;gap:0;
+    display:inline-flex;align-items:center;gap:0;
     max-width:100%;
     border:1px solid var(--rule-strong);border-radius:999px;overflow:hidden;
     padding:0;background:transparent;color:var(--ink);cursor:pointer;
@@ -2343,10 +2344,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
   .ca .label{align-self:stretch;display:inline-flex;align-items:center;padding:10px 14px;background:var(--ink);color:var(--lime);letter-spacing:.1em}
   .ca code{padding:10px 14px;font-family:inherit;font-size:inherit;letter-spacing:.02em;white-space:nowrap}
-  .ca:hover code,.ca:focus-visible code,.ca[data-copy-state="success"] code{
+  .ca[data-copy-state="flash"] code{
     background:var(--ink);color:var(--lime);
   }
-  .copy-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  .copy-status{
+    position:absolute;top:calc(100% + 4px);left:0;width:100%;
+    font-family:var(--mono);font-size:11px;line-height:1.3;text-align:center;
+    pointer-events:none;
+  }
 
   /* ---------- manifesto sections ---------- */
   section{border-top:1px solid var(--rule-strong)}
@@ -2710,12 +2715,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
     .up-logo{width:64px;height:64px}
   }
   @media (max-width:600px){
+    .ca-wrap{display:block;width:100%;max-width:360px;margin-left:auto;margin-right:auto}
     .ca{
       display:inline-flex;width:100%;max-width:360px;
     }
     .ca .label{flex:none;padding:8px;font-size:10px}
     .ca code{
-      flex:1;min-width:0;padding:8px 4px;font-size:clamp(6.5px,2.7vw,11.5px);
+      flex:1;min-width:0;padding:8px 4px;font-size:clamp(6.5px,calc(2.7vw - 1.25px),11.5px);
       letter-spacing:0;text-align:center;
     }
   }
@@ -2857,11 +2863,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
       <a class="btn" id="buy" href="https://ponsfamily.com/launchpad/0xDa2598c976E62E7E15DcCa75169B404712E48B04" target="_blank" rel="noopener" data-i18n="index.cta.buy">Buy $RWI on Pons</a>
       <a class="btn ghost" href="#ledger" data-i18n="index.cta.donations">View Donations</a>
     </div>
-    <button class="ca" id="copyBtn" type="button" aria-label="Copy contract address">
-      <span class="label" data-i18n="index.ca.label">CA</span>
-      <code id="caText">0xDa2598c976E62E7E15DcCa75169B404712E48B04</code>
-    </button>
-    <span class="copy-status" id="copyStatus" role="status" aria-live="polite"></span>
+    <div class="ca-wrap">
+      <button class="ca" id="copyBtn" type="button" aria-label="Copy contract address">
+        <span class="label" data-i18n="index.ca.label">CA</span>
+        <code id="caText">0xDa2598c976E62E7E15DcCa75169B404712E48B04</code>
+      </button>
+      <span class="copy-status" id="copyStatus" role="status" aria-live="polite"></span>
+    </div>
   </div>
 
   <section class="ledger" id="ledger">
@@ -3153,7 +3161,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // copy contract address
   const btn=document.getElementById('copyBtn');
   const copyStatus=document.getElementById('copyStatus');
-  let copyResetTimer;
+  let copyFlashTimer,copyStatusTimer;
   btn.addEventListener('click',async()=>{
     const txt=document.getElementById('caText').textContent.trim();
     let ok=false;
@@ -3167,10 +3175,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
       try{ok=document.execCommand('copy')}catch(_){}
       ta.remove();
     }
-    btn.dataset.copyState=ok?'success':'error';
-    copyStatus.textContent=ok?'Contract address copied':'Could not copy contract address';
-    clearTimeout(copyResetTimer);
-    copyResetTimer=setTimeout(()=>{delete btn.dataset.copyState;copyStatus.textContent='';},1600);
+    clearTimeout(copyFlashTimer);
+    clearTimeout(copyStatusTimer);
+    if(ok){
+      btn.dataset.copyState='flash';
+      copyStatus.textContent='Copied!';
+      copyFlashTimer=setTimeout(()=>{delete btn.dataset.copyState;},350);
+    }else{
+      delete btn.dataset.copyState;
+      copyStatus.textContent='Could not copy';
+    }
+    copyStatusTimer=setTimeout(()=>{copyStatus.textContent='';},2000);
   });
   // live price ticker (Dexscreener public API, refreshes every 30s)
   // Multi-target: registered elements (site + shadow whitepaper) all update from the same poll.
