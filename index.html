@@ -2922,48 +2922,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     </div>
   </section>
 
-  <section id="burn">
-    <div class="wrap sec-inner reveal">
-      <p class="eyebrow" data-i18n="index.burn.eyebrow">The burn</p>
-      <h2 data-i18n="index.burn.title">Supply only goes down.</h2>
-      <p data-i18n="index.burn.body">Any $RWI sent to the burn address is gone for good — no key, no owner, no way back. The figure below is read live from Robinhood Chain every time you load this page.</p>
-      <div class="burn-fig">
-        <div class="burn-num"><span id="burnAmt">—</span><span class="unit" data-i18n="index.burn.unit">$RWI burned</span></div>
-        <p class="pons-usd" id="burnUsd">&nbsp;</p>
-        <div class="burn-bar" role="img" id="burnBar" aria-label="Share of total supply burned"><i id="burnFill"></i></div>
-        <div class="burn-meta">
-          <span id="burnPct" data-i18n="index.burn.share">— of total supply</span>
-          <span id="burnStatus"></span>
-          <a href="https://robinhoodchain.blockscout.com/address/0x000000000000000000000000000000000000dEaD?tab=tokens" target="_blank" rel="noopener" data-i18n="index.burn.verify">Verify burn address ↗</a>
-        </div>
-        <div class="pons-burn">
-          <div class="pons-row">
-            <div class="pons-col">
-              <p class="pons-label"><span data-i18n="index.pons.burnedBy">$PONS burned by</span> <a href="https://robinhoodchain.blockscout.com/address/0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5?tab=token_transfers" target="_blank" rel="noopener">0x9CD7&hellip;A5e5</a></p>
-              <div class="pons-fig"><span id="ponsAmt">—</span><span class="unit">$PONS</span></div>
-              <p class="pons-usd" id="ponsUsd">&nbsp;</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="liquidity">
-    <div class="wrap sec-inner reveal">
-      <p class="eyebrow" data-i18n="index.liquidity.eyebrow">Liquidity</p>
-      <div class="liquidity-heading">
-        <h2 data-i18n="index.liquidity.title">Add liquidity on Up.</h2>
-        <img class="up-logo" src="assets/up-logo.jpg" alt="Up exchange logo" width="80" height="80" loading="lazy" decoding="async">
-      </div>
-      <p data-i18n="index.liquidity.body">Up is the native (3,3) exchange and liquidity layer of Robinhood Chain, bringing token swaps and liquidity pools together. Choose a $RWI pair below to review the pool and add liquidity.</p>
-      <div class="pool-links">
-        <a class="pool-link" href="https://up33.xyz/liquidity/pool/v2/0xbe506decf33b40c36bf643e6ce9aed5d36c5c861" target="_blank" rel="noopener noreferrer"><strong>$RWI/$UP</strong><span data-i18n="index.liquidity.action">Add liquidity ↗</span></a>
-        <a class="pool-link" href="https://up33.xyz/liquidity/pool/v2/0x476e171d3047bbf884d3def3d6e384ff8d8be3fe" target="_blank" rel="noopener noreferrer"><strong>$RWI/$WETH</strong><span data-i18n="index.liquidity.action">Add liquidity ↗</span></a>
-      </div>
-    </div>
-  </section>
-
   <section id="rewards">
     <div class="wrap sec-inner reveal">
       <p class="eyebrow" data-i18n="index.rewards.eyebrow">Holder rewards</p>
@@ -3011,6 +2969,48 @@ document.addEventListener('DOMContentLoaded', ()=>{
           </div>
         </div>
         <a class="reward-source" href="https://indices.theindex.finance/coin/0xb2c088db84293a6e3dee0765596f1cfdc2b9334d" target="_blank" rel="noopener" data-i18n="index.rewards.source">Open the live rewards ledger ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="liquidity">
+    <div class="wrap sec-inner reveal">
+      <p class="eyebrow" data-i18n="index.liquidity.eyebrow">Liquidity</p>
+      <div class="liquidity-heading">
+        <h2 data-i18n="index.liquidity.title">Add liquidity on Up.</h2>
+        <img class="up-logo" src="assets/up-logo.jpg" alt="Up exchange logo" width="80" height="80" loading="lazy" decoding="async">
+      </div>
+      <p data-i18n="index.liquidity.body">Up is the native (3,3) exchange and liquidity layer of Robinhood Chain, bringing token swaps and liquidity pools together. Choose a $RWI pair below to review the pool and add liquidity.</p>
+      <div class="pool-links">
+        <a class="pool-link" href="https://up33.xyz/liquidity/pool/v2/0xbe506decf33b40c36bf643e6ce9aed5d36c5c861" target="_blank" rel="noopener noreferrer"><strong>$RWI/$UP</strong><span data-i18n="index.liquidity.action">Add liquidity ↗</span></a>
+        <a class="pool-link" href="https://up33.xyz/liquidity/pool/v2/0x476e171d3047bbf884d3def3d6e384ff8d8be3fe" target="_blank" rel="noopener noreferrer"><strong>$RWI/$WETH</strong><span data-i18n="index.liquidity.action">Add liquidity ↗</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="burn">
+    <div class="wrap sec-inner reveal">
+      <p class="eyebrow" data-i18n="index.burn.eyebrow">The burn</p>
+      <h2 data-i18n="index.burn.title">Supply only goes down.</h2>
+      <p data-i18n="index.burn.body">Any $RWI sent to the burn address is gone for good — no key, no owner, no way back. The figure below is read live from Robinhood Chain every time you load this page.</p>
+      <div class="burn-fig">
+        <div class="burn-num"><span id="burnAmt">—</span><span class="unit" data-i18n="index.burn.unit">$RWI burned</span></div>
+        <p class="pons-usd" id="burnUsd">&nbsp;</p>
+        <div class="burn-bar" role="img" id="burnBar" aria-label="Share of total supply burned"><i id="burnFill"></i></div>
+        <div class="burn-meta">
+          <span id="burnPct" data-i18n="index.burn.share">— of total supply</span>
+          <span id="burnStatus"></span>
+          <a href="https://robinhoodchain.blockscout.com/address/0x000000000000000000000000000000000000dEaD?tab=tokens" target="_blank" rel="noopener" data-i18n="index.burn.verify">Verify burn address ↗</a>
+        </div>
+        <div class="pons-burn">
+          <div class="pons-row">
+            <div class="pons-col">
+              <p class="pons-label"><span data-i18n="index.pons.burnedBy">$PONS burned by</span> <a href="https://robinhoodchain.blockscout.com/address/0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5?tab=token_transfers" target="_blank" rel="noopener">0x9CD7&hellip;A5e5</a></p>
+              <div class="pons-fig"><span id="ponsAmt">—</span><span class="unit">$PONS</span></div>
+              <p class="pons-usd" id="ponsUsd">&nbsp;</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
