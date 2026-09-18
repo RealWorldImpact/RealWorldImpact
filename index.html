@@ -2348,18 +2348,27 @@ document.addEventListener('DOMContentLoaded', ()=>{
     max-width:34ch;margin:8px auto 0;font-size:clamp(1.05rem,2.4vw,1.3rem);
   }
   .hero .cta-row{margin-top:16px;display:grid;grid-template-columns:repeat(2,minmax(0,220px));grid-auto-rows:1fr;gap:14px;justify-content:center}
-  @media (max-width:537px){.hero .cta-row{grid-template-columns:minmax(0,1fr);width:min(220px,100%);margin-left:auto;margin-right:auto}}
+  @media (max-width:537px){.hero .cta-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
   .btn{
     font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;
     text-decoration:none;padding:14px 26px;border:1.5px solid var(--ink);
     background:var(--ink);color:var(--lime);cursor:pointer;
     transition:background .15s,color .15s;
   }
-  .hero .cta-row .btn{display:inline-flex;align-items:center;justify-content:center;width:220px;max-width:100%;min-height:52px;padding:9px 12px;text-align:center}
+  .hero .cta-row .btn{display:inline-flex;align-items:center;justify-content:center;justify-self:center;gap:6px;width:100%;max-width:220px;min-height:52px;padding:9px 12px;text-align:center}
   .btn.ghost{background:transparent;color:var(--ink)}
-  .btn.fomo-btn{gap:6px}
-  .fomo-btn img{display:block;width:20px;height:20px;flex:none;border-radius:4px;object-fit:cover}
-  .fomo-btn span{min-width:0;overflow-wrap:anywhere}
+  .hero .cta-row .buy-logo{display:block;width:20px;height:20px;flex:none;border-radius:4px;object-fit:cover}
+  .hero .cta-row .pons-logo{display:grid;place-items:center;overflow:hidden;background:#fff}
+  .pons-logo img{display:block;width:20px;height:20px;max-width:none;transform:scale(2.2)}
+  .hero .cta-row [data-i18n]{min-width:0;overflow-wrap:anywhere}
+  @media (max-width:537px){
+    .hero .cta-row .btn{min-height:58px;padding:8px 6px;gap:4px;font-size:11px;line-height:1.25;letter-spacing:.03em}
+    .hero .cta-row .buy-logo{width:18px;height:18px}
+    .pons-logo img{width:18px;height:18px}
+  }
+  @media (max-width:320px){
+    .hero .cta-row{gap:6px}
+  }
   .btn:hover,.btn:focus-visible{background:transparent;color:var(--ink)}
   .btn.ghost:hover,.btn.ghost:focus-visible{background:var(--ink);color:var(--lime)}
   :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
@@ -2921,8 +2930,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     <h1><span data-i18n="index.hero.title.a">Onchain in.</span><br><em data-i18n="index.hero.title.b">Real world</em> <span data-i18n="index.hero.title.c">out.</span></h1>
     <p class="lede" data-i18n="index.hero.lede">Real World Impact is the first charity coin on Robinhood Chain. Trading funds verified donations, while The Index automatically allocates $INDEX and $PONS holder rewards for eligible $RWI holders.</p>
     <div class="cta-row">
-      <a class="btn" id="buy" href="https://ponsfamily.com/launchpad/0xDa2598c976E62E7E15DcCa75169B404712E48B04" target="_blank" rel="noopener" data-i18n="index.cta.buy">Buy $RWI on Pons</a>
-      <a class="btn ghost fomo-btn" href="https://fomo.family/tokens/robinhood/0xda2598c976e62e7e15dcca75169b404712e48b04" target="_blank" rel="noopener noreferrer"><img src="assets/fomo-logo.jpg" alt="" width="20" height="20" decoding="async"><span data-i18n="index.cta.fomo">Buy $RWI on fomo</span></a>
+      <a class="btn" id="buy" href="https://ponsfamily.com/launchpad/0xDa2598c976E62E7E15DcCa75169B404712E48B04" target="_blank" rel="noopener"><span class="buy-logo pons-logo" aria-hidden="true"><img src="assets/pons-logo.jpg" alt="" width="20" height="20" decoding="async"></span><span data-i18n="index.cta.buy">Buy $RWI on Pons</span></a>
+      <a class="btn ghost fomo-btn" href="https://fomo.family/tokens/robinhood/0xda2598c976e62e7e15dcca75169b404712e48b04" target="_blank" rel="noopener noreferrer"><img class="buy-logo" src="assets/fomo-logo.jpg" alt="" width="20" height="20" decoding="async"><span data-i18n="index.cta.fomo">Buy $RWI on fomo</span></a>
     </div>
     <div class="ca-wrap">
       <button class="ca" id="copyBtn" type="button" aria-label="Copy contract address">
