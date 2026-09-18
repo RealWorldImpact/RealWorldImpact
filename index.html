@@ -2338,16 +2338,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
     margin:22px auto 0;display:inline-flex;align-items:center;gap:0;
     max-width:100%;
     border:1px solid var(--rule-strong);border-radius:999px;overflow:hidden;
+    padding:0;background:transparent;color:var(--ink);cursor:pointer;
     font-family:var(--mono);font-size:12.5px;
   }
   .ca .label{padding:10px 14px;background:var(--ink);color:var(--lime);letter-spacing:.1em}
-  .ca code{padding:10px 14px;letter-spacing:.02em;white-space:nowrap}
-  .ca button{
-    border:0;border-left:1px solid var(--rule-strong);background:transparent;
-    font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
-    padding:10px 16px;cursor:pointer;color:var(--ink);
+  .ca code{padding:10px 14px;font-family:inherit;font-size:inherit;letter-spacing:.02em;white-space:nowrap}
+  .ca:hover code,.ca:focus-visible code,.ca[data-copy-state="success"] code{
+    background:var(--ink);color:var(--lime);
   }
-  .ca button:hover{background:var(--ink);color:var(--lime)}
+  .copy-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
   /* ---------- manifesto sections ---------- */
   section{border-top:1px solid var(--rule-strong)}
@@ -2672,7 +2671,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     .ledger{cursor:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABmJLR0QA/wD/AP+gvaeTAAACeklEQVRIidXUT0gUURwH8O+b2Z15b+bNOrOtSX9ICcqkoD8WFGRBUpf+QKQiRGAXwYrqIEQFkhBGkGAolB466EG6iET/TAgyxINW0KHISxB2KKzWlHVzZ96vQwQWbLKbQ/Q9fnnv93nwHg/4F7Ftc6+Uojp0SEreaUtBMsYvLfZs7fdi3WaCaeKC64luANHQoLWbCLdGVNQrRI0XF49d13VDgQBgxWqg80lgriqlbUxPj3LOi0OBACBeBHQ8UuaW3Sjmgj2zLKs8FAgAhA1cua2iB+rIjURp2LKsg6FAAKDpwNlWpZ9oUYauU7+U1slQoJ+paiDW3KO0SJTaYjHRnsvenCAA2HWI0D6gInaM6l1P9AMQoUAAULaV0DWkjMLl2OclxLCUcmkoEAAsKwG6nipzzUZaHzWD545jloYCAYDjEtruKmPnfirSdDbqOLziT+sjuQx/Nw70tmkqOYnM1CeomSnQTBLMzzCHMQwASABI5QV9+Qg4HhCJAl8/M9zvYRpj1E3ExolYUtMoCVCSMTWRDVkQGnnI0HRM8482Kr3uHLEN2wklZZR++wrvU6nZawsdcn6y3lHfTYaLtVrgz9Fg3w0252d+9LWniRucnQFg/BUUBAzXG7Wg47z2zffZkenp9OHUDEsP3WEAgMpqAhdk2TavyQX6JVLyzgJPkBsXk/M/UccRV8sr+OyYMmhMGdTQzCleKF7mDdm2aI0v4a+FECvn95zzYilF0PvCpDFl0IMJg5yYCIQQO/K1IsjyQLwEv1dVz/3BDwadajGVFxcZKa3L+UJZIyXfEysQfoEr/HiCv7FtfhyAuegQAGZZvMm2eWUYw/+/fAeiob/yhcZVjQAAAABJRU5ErkJggg==") 4 2,default}
     .ledger a,.ledger button{cursor:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACAklEQVR42u2UPYsTURSGn7mTBAayTNRG7AS/CLh+FFvYT7PabBMXBBt/gFhYCIKNQkpBLAVhG7dVAruJ/oCVFVcQNWhlo4IKugkDS849FpObzO5mdWEmwSIvHO7hwsx57nvPPbBD5XIwF1aCZlgJmuVyMMekFVaC5rot6botaVgJmuOuZ3ZtGKJR+cQAJq3/H+DAwUDH2ZD/BGh9Fx4+t5Ff4O44YPZ1BafOK8YQOZhiibU+yJGJ98DJcwrAg1Ub+QUeZ4UwYSVo7tdaa8FKkh+fVe43EogsAAVjiJ68FYCoVvV33b8qqMLqN8FKkgOIwLFZzTwrjLW0AA4dhhc/ZdvPVEFtEiLJagWefRZEQHo5NKH0uF2r+q0fX5ONxeuK6tDuwSoJhCvs9jIDdDrxSyss16p+QxUuzOvgpK649HNxIL1h5PIKNjfjR55H9f0rjxNndJvdrnC6qIv2hocq77IAeC6ZmQmuGZ+FlS9y0VoG16B2uA7A+nCLp/06wO9f8a3Mc8BalpwLe9mdDmvBGC5bYTmXQdTtxlvS496NS6axZ9FUI3584wHEnU68kdskdC60X3vDwmkXZNj9d66aurU8zXUUOxduLpj6Trsl/SIkH/sBCiPG7VKxwIfBM0w3orrcA/Cz2j8SoNuNt8Ji8OnKWf/o3z5Upc1UU0011VQ56A9N/2Ewn1lofAAAAABJRU5ErkJggg==") 5 0,pointer}
     /* buttons that invert to ink on hover need the lime hand */
-    .btn.ghost:hover,.btn.ghost:focus-visible,.ca button:hover{cursor:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACAklEQVR42u2UPYsTURSGn7mTBAayTNRG7AS/CLh+FFvYT7PabBMXBBt/gFhYCIKNQkpBLAVhG7dVAruJ/oCVFVcQNWhlo4IKugkDS849FpObzO5mdWEmwSIvHO7hwsx57nvPPbBD5XIwF1aCZlgJmuVyMMekFVaC5rot6botaVgJmuOuZ3ZtGKJR+cQAJq3/H+DAwUDH2ZD/BGh9Fx4+t5Ff4O44YPZ1BafOK8YQOZhiibU+yJGJ98DJcwrAg1Ub+QUeZ4UwYSVo7tdaa8FKkh+fVe43EogsAAVjiJ68FYCoVvV33b8qqMLqN8FKkgOIwLFZzTwrjLW0AA4dhhc/ZdvPVEFtEiLJagWefRZEQHo5NKH0uF2r+q0fX5ONxeuK6tDuwSoJhCvs9jIDdDrxSyss16p+QxUuzOvgpK649HNxIL1h5PIKNjfjR55H9f0rjxNndJvdrnC6qIv2hocq77IAeC6ZmQmuGZ+FlS9y0VoG16B2uA7A+nCLp/06wO9f8a3Mc8BalpwLe9mdDmvBGC5bYTmXQdTtxlvS496NS6axZ9FUI3584wHEnU68kdskdC60X3vDwmkXZNj9d66aurU8zXUUOxduLpj6Trsl/SIkH/sBCiPG7VKxwIfBM0w3orrcA/Cz2j8SoNuNt8Ji8OnKWf/o3z5Upc1UU0011VQ56A9N/2Ewn1lofAAAAABJRU5ErkJggg==") 5 0,pointer}
+    .btn.ghost:hover,.btn.ghost:focus-visible,.ca:hover{cursor:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACAklEQVR42u2UPYsTURSGn7mTBAayTNRG7AS/CLh+FFvYT7PabBMXBBt/gFhYCIKNQkpBLAVhG7dVAruJ/oCVFVcQNWhlo4IKugkDS849FpObzO5mdWEmwSIvHO7hwsx57nvPPbBD5XIwF1aCZlgJmuVyMMekFVaC5rot6botaVgJmuOuZ3ZtGKJR+cQAJq3/H+DAwUDH2ZD/BGh9Fx4+t5Ff4O44YPZ1BafOK8YQOZhiibU+yJGJ98DJcwrAg1Ub+QUeZ4UwYSVo7tdaa8FKkh+fVe43EogsAAVjiJ68FYCoVvV33b8qqMLqN8FKkgOIwLFZzTwrjLW0AA4dhhc/ZdvPVEFtEiLJagWefRZEQHo5NKH0uF2r+q0fX5ONxeuK6tDuwSoJhCvs9jIDdDrxSyss16p+QxUuzOvgpK649HNxIL1h5PIKNjfjR55H9f0rjxNndJvdrnC6qIv2hocq77IAeC6ZmQmuGZ+FlS9y0VoG16B2uA7A+nCLp/06wO9f8a3Mc8BalpwLe9mdDmvBGC5bYTmXQdTtxlvS496NS6axZ9FUI3584wHEnU68kdskdC60X3vDwmkXZNj9d66aurU8zXUUOxduLpj6Trsl/SIkH/sBCiPG7VKxwIfBM0w3orrcA/Cz2j8SoNuNt8Ji8OnKWf/o3z5Upc1UU0011VQ56A9N/2Ewn1lofAAAAABJRU5ErkJggg==") 5 0,pointer}
   }
 
   /* ---------- footer ---------- */
@@ -2716,15 +2715,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
       position:relative;left:50%;transform:translateX(-50%);margin:22px 0 0;
     }
     .ca .label{flex:none;padding:8px;font-size:10px}
-    .ca button{flex:none;padding:8px;font-size:10px}
     .ca code{
-      flex:1;min-width:0;padding:8px 4px;font-size:clamp(6px,2.5vw,10px);
+      flex:1;min-width:0;padding:8px 4px;font-size:clamp(8px,3.2vw,12px);
       letter-spacing:0;text-align:center;
     }
   }
   @media (max-width:300px){
     .ca .label{display:none}
-    .ca button{padding:8px 6px;font-size:9px}
   }
 </style>
 <style>
@@ -2860,11 +2857,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
       <a class="btn" id="buy" href="https://ponsfamily.com/launchpad/0xDa2598c976E62E7E15DcCa75169B404712E48B04" target="_blank" rel="noopener" data-i18n="index.cta.buy">Buy $RWI on Pons</a>
       <a class="btn ghost" href="#ledger" data-i18n="index.cta.donations">View Donations</a>
     </div>
-    <div class="ca">
+    <button class="ca" id="copyBtn" type="button" aria-label="Copy contract address">
       <span class="label" data-i18n="index.ca.label">CA</span>
       <code id="caText">0xDa2598c976E62E7E15DcCa75169B404712E48B04</code>
-      <button id="copyBtn" type="button" aria-label="Copy contract address" data-i18n="index.ca.copy">Copy</button>
-    </div>
+    </button>
+    <span class="copy-status" id="copyStatus" role="status" aria-live="polite"></span>
   </div>
 
   <section class="ledger" id="ledger">
@@ -3155,6 +3152,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   })();
   // copy contract address
   const btn=document.getElementById('copyBtn');
+  const copyStatus=document.getElementById('copyStatus');
+  let copyResetTimer;
   btn.addEventListener('click',async()=>{
     const txt=document.getElementById('caText').textContent.trim();
     let ok=false;
@@ -3168,8 +3167,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
       try{ok=document.execCommand('copy')}catch(_){}
       ta.remove();
     }
-    btn.textContent=ok?'Copied':'Error';
-    setTimeout(()=>btn.textContent='Copy',1600);
+    btn.dataset.copyState=ok?'success':'error';
+    copyStatus.textContent=ok?'Contract address copied':'Could not copy contract address';
+    clearTimeout(copyResetTimer);
+    copyResetTimer=setTimeout(()=>{delete btn.dataset.copyState;copyStatus.textContent='';},1600);
   });
   // live price ticker (Dexscreener public API, refreshes every 30s)
   // Multi-target: registered elements (site + shadow whitepaper) all update from the same poll.
