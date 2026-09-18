@@ -2344,13 +2344,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
   .ca .label{align-self:stretch;display:inline-flex;align-items:center;padding:10px 14px;background:var(--ink);color:var(--lime);letter-spacing:.1em}
   .ca code{position:relative;padding:10px 14px;font-family:inherit;font-size:inherit;letter-spacing:.02em;white-space:nowrap}
-  .ca[data-copy-state="success"] code{color:transparent}
+  .ca[data-copy-state="success"] code{background:var(--ink);color:transparent}
   .ca[data-copy-state="success"] code::after{
     content:"Copied!";position:absolute;inset:0;display:flex;
-    align-items:center;justify-content:center;color:var(--ink);
+    align-items:center;justify-content:center;color:var(--lime);
   }
-  .ca.is-flashing code{background:var(--ink)}
-  .ca.is-flashing code::after{color:var(--lime)}
   .copy-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
   /* ---------- manifesto sections ---------- */
@@ -3165,7 +3163,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const btn=document.getElementById('copyBtn');
   const copyStatus=document.getElementById('copyStatus');
   const contractAddress=document.getElementById('caText').textContent.trim();
-  let copyFlashTimer,copyResetTimer;
+  let copyResetTimer;
   btn.addEventListener('click',async()=>{
     const txt=contractAddress;
     let ok=false;
@@ -3179,21 +3177,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
       try{ok=document.execCommand('copy')}catch(_){}
       ta.remove();
     }
-    clearTimeout(copyFlashTimer);
     clearTimeout(copyResetTimer);
     if(ok){
       btn.dataset.copyState='success';
-      btn.classList.add('is-flashing');
       copyStatus.textContent='Contract address copied';
-      copyFlashTimer=setTimeout(()=>{btn.classList.remove('is-flashing');},350);
     }else{
       delete btn.dataset.copyState;
-      btn.classList.remove('is-flashing');
       copyStatus.textContent='Could not copy';
     }
     copyResetTimer=setTimeout(()=>{
       delete btn.dataset.copyState;
-      btn.classList.remove('is-flashing');
       copyStatus.textContent='';
     },1000);
   });
