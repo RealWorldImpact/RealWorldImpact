@@ -12,57 +12,12 @@
       "source": "/Impact",
       "destination": "/impact",
       "permanent": true
-    },
-    {
-      "source": "/PonsFamilyFued",
-      "destination": "/PonsFamilyFeud",
-      "permanent": true
-    },
-    {
-      "source": "/ponsfamilyfued",
-      "destination": "/PonsFamilyFeud",
-      "permanent": true
-    },
-    {
-      "source": "/ponsfamilyfeud",
-      "destination": "/PonsFamilyFeud",
-      "permanent": true
     }
   ],
   "headers": [
     {
       "source": "/impact",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/PonsFamilyFeud",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/html; charset=utf-8"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        },
-        {
-          "key": "X-Robots-Tag",
-          "value": "all"
-        }
-      ]
-    },
-    {
-      "source": "/assets/pons-family-feud-share-v3.jpg",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "image/jpeg"
-        },
         {
           "key": "Cache-Control",
           "value": "public, max-age=0, must-revalidate"

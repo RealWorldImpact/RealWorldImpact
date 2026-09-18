@@ -5,6 +5,7 @@
     <loc>https://www.rwihood.org/</loc>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.rwihood.org/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.rwihood.org/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.rwihood.org/?lang=ar"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://www.rwihood.org/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="zh" href="https://www.rwihood.org/?lang=zh"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://www.rwihood.org/?lang=ja"/>
@@ -22,6 +23,7 @@
     <loc>https://www.rwihood.org/docs</loc>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.rwihood.org/docs"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.rwihood.org/docs"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.rwihood.org/docs?lang=ar"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://www.rwihood.org/docs?lang=es"/>
     <xhtml:link rel="alternate" hreflang="zh" href="https://www.rwihood.org/docs?lang=zh"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://www.rwihood.org/docs?lang=ja"/>
@@ -35,8 +37,6 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://www.rwihood.org/docs?lang=de"/>
     <xhtml:link rel="alternate" hreflang="id" href="https://www.rwihood.org/docs?lang=id"/>
   </url>
-  <url><loc>https://www.rwihood.org/burn</loc></url>
   <url><loc>https://www.rwihood.org/impact</loc></url>
   <url><loc>https://www.rwihood.org/claims</loc></url>
-  <url><loc>https://www.rwihood.org/PonsFamilyFeud</loc></url>
 </urlset>

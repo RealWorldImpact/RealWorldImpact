@@ -1,0 +1,52 @@
+html[lang="ar"], :host([lang="ar"]) {
+  --mono: Tahoma, "Segoe UI", Arial, sans-serif;
+  --serif: Tahoma, "Segoe UI", Arial, sans-serif;
+}
+
+html[lang="ar"] [data-i18n],
+:host([lang="ar"]) [data-i18n] {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html[lang="ar"] .hero-donation {
+  flex-wrap: wrap;
+  gap: 2px 6px;
+  padding-inline: 12px;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+html[lang="ar"] .hero {
+  padding-inline: 12px;
+}
+
+html[lang="ar"] .hero-donation strong,
+html[lang="ar"] .ca,
+html[lang="ar"] .ca code,
+html[lang="ar"] .pair,
+html[lang="ar"] .mono,
+html[lang="ar"] .fact-grid .v:not([data-i18n]),
+html[lang="ar"] .doc-meta span:last-child,
+html[lang="ar"] .appendix .row .v,
+:host([lang="ar"]) .pair,
+:host([lang="ar"]) .mono,
+:host([lang="ar"]) .fact-grid .v:not([data-i18n]),
+:host([lang="ar"]) .doc-meta span:last-child,
+:host([lang="ar"]) .appendix .row .v {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+html[lang="ar"] .ca code::after {
+  direction: rtl;
+}
+
+@media (max-width: 600px) {
+  html[lang="ar"] .ca-wrap {
+    left: auto;
+    right: auto;
+    transform: none;
+    margin-inline: auto;
+  }
+}

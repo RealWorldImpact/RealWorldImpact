@@ -370,19 +370,18 @@
 </style>
 <script>document.documentElement.classList.add('js')</script>
 <script src="/assets/i18n-updates.js"></script>
+<script src="/assets/i18n-ar.js"></script>
 <script>
 /* ==========================================================================
-   i18n — Shared runtime multi-language support (index / whitepaper / dashboard).
-   NOTE FOR REVIEWERS: Spanish/Chinese below are competent-but-not-native
-   machine translations approximating the site's terse "ledger voice". A native
-   speaker should polish the phrasing before launch. Long-form prose (whitepaper
-   sections, receipt descriptions, founder bios) currently falls back to English
-   until a translator fills those keys. To add a language, drop another entry
-   into TRANSLATIONS and add a <button data-lang="xx"> to #langSel. No other
-   code changes required. Language choice persists across all three pages via
+   i18n — Shared runtime multi-language support (homepage and Docs).
+   NOTE FOR REVIEWERS: Older inline language entries are supplemented by shared
+   translations. Each visible translation key is checked against every language.
+   To add a language, provide its keys in the shared translation updates and add
+   a language button. Language choice persists across the homepage and Docs via
    the shared "rwi_lang" localStorage key.
    ========================================================================== */
 const TRANSLATIONS = {
+  ar: {},
   en: {
     // shared nav
     'nav.home.arrow':'← rwihood.org','nav.whitepaper':'Docs','nav.lp':'LP','nav.dexscreener':'Dexscreener',
@@ -1856,11 +1855,12 @@ for(const [lang, additions] of Object.entries(window.RWI_I18N_UPDATES || {})){
 let LANG = 'en';
 var META_TITLE_KEY='meta.title.wp'; var META_DESC_KEY='wp.cover.sub';
 
-var OG_LOCALE = {en:'en_US',es:'es_ES',zh:'zh_CN',ja:'ja_JP',ko:'ko_KR',pt:'pt_BR',fr:'fr_FR',ru:'ru_RU',tr:'tr_TR',vi:'vi_VN',hi:'hi_IN',de:'de_DE',id:'id_ID'};
-var HREF_LOCALE = {en:'en',es:'es',zh:'zh',ja:'ja',ko:'ko',pt:'pt',fr:'fr',ru:'ru',tr:'tr',vi:'vi',hi:'hi',de:'de',id:'id'};
+var OG_LOCALE = {ar:'ar_SA',en:'en_US',es:'es_ES',zh:'zh_CN',ja:'ja_JP',ko:'ko_KR',pt:'pt_BR',fr:'fr_FR',ru:'ru_RU',tr:'tr_TR',vi:'vi_VN',hi:'hi_IN',de:'de_DE',id:'id_ID'};
+var HREF_LOCALE = {ar:'ar',en:'en',es:'es',zh:'zh',ja:'ja',ko:'ko',pt:'pt',fr:'fr',ru:'ru',tr:'tr',vi:'vi',hi:'hi',de:'de',id:'id'};
 function syncHead(l){
   try{
     document.documentElement.setAttribute('lang', HREF_LOCALE[l] || l);
+    document.documentElement.setAttribute('dir', l === 'ar' ? 'rtl' : 'ltr');
     // Title
     if(typeof META_TITLE_KEY !== 'undefined'){ document.title = t(META_TITLE_KEY); }
     // Description (reuse an existing translated key per page)
@@ -1872,6 +1872,13 @@ function syncHead(l){
     }
     var ot = document.querySelector('meta[property="og:title"]');
     if(ot && typeof META_TITLE_KEY !== 'undefined') ot.setAttribute('content', t(META_TITLE_KEY));
+    var tt = document.querySelector('meta[name="twitter:title"]');
+    if(tt && typeof META_TITLE_KEY !== 'undefined') tt.setAttribute('content', t(META_TITLE_KEY));
+    var td = document.querySelector('meta[name="twitter:description"]');
+    if(td && typeof META_DESC_KEY !== 'undefined') td.setAttribute('content', t(META_DESC_KEY));
+    for(var imageAlt of document.querySelectorAll('meta[property="og:image:alt"], meta[name="twitter:image:alt"]')){
+      if(typeof META_TITLE_KEY !== 'undefined') imageAlt.setAttribute('content', t(META_TITLE_KEY));
+    }
     // og:locale
     var ol = document.querySelector('meta[property="og:locale"]');
     if(ol) ol.setAttribute('content', OG_LOCALE[l] || 'en_US');
@@ -1954,9 +1961,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   #langSel{position:fixed;bottom:64px;right:16px;z-index:9999;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);border:1px solid var(--lime, #CCFE06);border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.28);display:none;grid-template-columns:repeat(3, minmax(0, 1fr));gap:2px;min-width:200px;max-width:calc(100vw - 32px)}
   /* Keep the mobile utility pills anchored to the viewport, not the scrolling page. */
   @media (max-width:640px){
-    #langBtn,#chartBtn,#burnListPill,#langSel{position:fixed!important;-webkit-transform:translateZ(0);transform:translateZ(0)}
+    #langBtn,#chartBtn,#langSel{position:fixed!important;-webkit-transform:translateZ(0);transform:translateZ(0)}
     #langBtn{right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom))}
-    #burnListPill{right:max(16px,env(safe-area-inset-right));bottom:max(60px,calc(env(safe-area-inset-bottom) + 44px))}
     #langSel{right:max(16px,env(safe-area-inset-right));bottom:max(64px,calc(env(safe-area-inset-bottom) + 48px))}
   }
   #langSel.open{display:grid}
@@ -1964,18 +1970,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   #langSel button:hover,#langSel button:focus-visible{background:rgba(204,254,6,.12);outline:none}
   #langSel button.on{background:var(--lime, #CCFE06);color:var(--ink, #0B0B09)}
   @media (max-width: 480px){ #langSel{grid-template-columns:repeat(2, minmax(0, 1fr));min-width:170px} }
-  #burnListPill{position:fixed;bottom:60px;right:16px;z-index:9998;width:36px;height:32px;display:grid;place-items:center;padding:0;border:1px solid var(--lime, #CCFE06);border-radius:999px;background:var(--ink, #0B0B09);color:var(--lime, #CCFE06);font-size:15px;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18);transition:transform .15s ease,box-shadow .15s ease,opacity .12s ease}
-  #burnListPill:hover,#burnListPill:focus-visible{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.22);outline:none}
-  #burnListPill svg{width:16px;height:16px;stroke:currentColor}
-  #langSel.open~#burnListPill{opacity:0;pointer-events:none}
-  #burnListModal{position:fixed;inset:0;z-index:10020;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(11,11,9,.78)}
-  #burnListModal.open{display:flex}
-  .burn-list-panel{width:min(1180px,100%);height:min(92vh,900px);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--lime, #CCFE06);border-radius:16px;background:var(--ink, #0B0B09);box-shadow:0 24px 80px rgba(0,0,0,.5)}
-  .burn-list-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(204,254,6,.28);font-family:var(--mono, "IBM Plex Mono", ui-monospace, monospace);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime, #CCFE06)}
-  #burnListClose{width:28px;height:28px;padding:0;border:1px solid rgba(204,254,6,.45);border-radius:999px;background:transparent;color:inherit;font:inherit;font-size:16px;line-height:1;cursor:pointer}
-  #burnListClose:hover,#burnListClose:focus-visible{background:var(--lime, #CCFE06);color:var(--ink, #0B0B09);outline:none}
-  #burnListFrame{width:100%;flex:1;border:0;background:#11120f}
-  @media(max-width:640px){#burnListModal{padding:8px}.burn-list-panel{height:94vh;border-radius:12px}.burn-list-head{padding:9px 11px;font-size:9px}}
 </style>
 
 
@@ -1984,6 +1978,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 <link rel="describedby" type="application/json" href="/data/site.json">
 <link rel="alternate" hreflang="x-default" href="https://www.rwihood.org/docs">
 <link rel="alternate" hreflang="en" href="https://www.rwihood.org/docs">
+<link rel="alternate" hreflang="ar" href="https://www.rwihood.org/docs?lang=ar">
 <link rel="alternate" hreflang="es" href="https://www.rwihood.org/docs?lang=es">
 <link rel="alternate" hreflang="zh" href="https://www.rwihood.org/docs?lang=zh">
 <link rel="alternate" hreflang="ja" href="https://www.rwihood.org/docs?lang=ja">
@@ -2025,9 +2020,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   "isPartOf": { "@id": "https://www.rwihood.org/#website" },
   "publisher": { "@id": "https://www.rwihood.org/#organization" },
   "about": { "@id": "https://www.rwihood.org/#token" },
-  "inLanguage": ["en","es","zh","ja","ko","pt","fr","ru","tr","vi","hi","de","id"]
+  "inLanguage": ["ar","en","es","zh","ja","ko","pt","fr","ru","tr","vi","hi","de","id"]
 }
 </script>
+<link rel="stylesheet" href="/assets/i18n-ar.css">
 </head>
 <body>
 
@@ -2053,7 +2049,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   <div class="wrap">
     <div class="doc-meta">
       <span data-i18n="wp.cover.date">September 2026</span>
-      <span>Robinhood Chain · ID 4663</span>
+      <span>Robinhood Chain · 4663</span>
     </div>
     <h1><span data-i18n="wp.title.a">Real World</span><br><em data-i18n="wp.title.b">Impact.</em></h1>
     <p class="sub" data-i18n="wp.cover.sub">A charity coin on Robinhood Chain. Onchain in, real world out. Every donation published, every receipt verifiable.</p>
@@ -2255,7 +2251,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     <div class="row"><div class="k" data-i18n="wp.refs.ponsToken">$PONS reward token</div><div class="v"><a href="https://robinhoodchain.blockscout.com/address/0x39dbed3a2bd333467115de45665cc57f813c4571" target="_blank" rel="noopener">0x39dbed3a2bd333467115de45665cc57f813c4571</a></div></div>
     <div class="row"><div class="k" data-i18n="wp.refs.burnAddress">Burn address</div><div class="v"><a href="https://robinhoodchain.blockscout.com/address/0x000000000000000000000000000000000000dEaD" target="_blank" rel="noopener">0x000000000000000000000000000000000000dEaD</a></div></div>
     <div class="row"><div class="k" data-i18n="wp.refs.liveRewards">Live holder rewards</div><div class="v"><a href="https://www.rwihood.org/#rewards">rwihood.org/#rewards</a></div></div>
-    <div class="row"><div class="k" data-i18n="wp.refs.network">Network</div><div class="v">Robinhood Chain · Chain ID 4663</div></div>
+    <div class="row"><div class="k" data-i18n="wp.refs.network">Network</div><div class="v">Robinhood Chain · 4663</div></div>
     <div class="row"><div class="k" data-i18n="wp.refs.website">Website</div><div class="v"><a href="https://www.rwihood.org/">rwihood.org</a></div></div>
     <div class="row"><div class="k" data-i18n="wp.refs.liveLedger">Live ledger</div><div class="v"><a href="https://www.rwihood.org/#ledger">rwihood.org/#ledger</a></div></div>
     <div class="row"><div class="k" data-i18n="wp.refs.liveBurn">Live burn</div><div class="v"><a href="https://www.rwihood.org/#burn">rwihood.org/#burn</a></div></div>
@@ -2350,27 +2346,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 <button id="langBtn" aria-haspopup="true" aria-expanded="false" aria-controls="langPanel" aria-label="Change language" data-i18n-aria-label="common.changeLanguage" type="button"><span id="langBtnLabel">EN</span><span class="caret" aria-hidden="true">▾</span></button>
 <div id="langPanel" role="menu" aria-label="Language" data-i18n-aria-label="common.language">
-  <button data-lang="en" role="menuitemradio">EN</button><button data-lang="es" role="menuitemradio">ES</button><button data-lang="zh" role="menuitemradio">中文</button><button data-lang="ja" role="menuitemradio">日本語</button><button data-lang="ko" role="menuitemradio">한국어</button><button data-lang="pt" role="menuitemradio">PT</button><button data-lang="fr" role="menuitemradio">FR</button><button data-lang="ru" role="menuitemradio">RU</button><button data-lang="tr" role="menuitemradio">TR</button><button data-lang="vi" role="menuitemradio">VI</button><button data-lang="hi" role="menuitemradio">हिन्दी</button><button data-lang="de" role="menuitemradio">DE</button><button data-lang="id" role="menuitemradio">ID</button>
+  <button data-lang="en" role="menuitemradio">EN</button><button data-lang="ar" role="menuitemradio">العربية</button><button data-lang="es" role="menuitemradio">ES</button><button data-lang="zh" role="menuitemradio">中文</button><button data-lang="ja" role="menuitemradio">日本語</button><button data-lang="ko" role="menuitemradio">한국어</button><button data-lang="pt" role="menuitemradio">PT</button><button data-lang="fr" role="menuitemradio">FR</button><button data-lang="ru" role="menuitemradio">RU</button><button data-lang="tr" role="menuitemradio">TR</button><button data-lang="vi" role="menuitemradio">VI</button><button data-lang="hi" role="menuitemradio">हिन्दी</button><button data-lang="de" role="menuitemradio">DE</button><button data-lang="id" role="menuitemradio">ID</button>
 </div>
-<div id="burnListModal" role="dialog" aria-modal="true" aria-labelledby="burnListTitle">
-  <div class="burn-list-panel">
-    <div class="burn-list-head"><span id="burnListTitle" data-i18n="common.burnList">Pons Family Burn List</span><button id="burnListClose" type="button" aria-label="Close Burn List" data-i18n-aria-label="common.closeBurnList">&#10005;</button></div>
-    <iframe id="burnListFrame" data-src="https://www.rwihood.org/burn" title="Pons Family Burn List" data-i18n-title="common.burnList"></iframe>
-  </div>
-</div>
-<script>
-(function(){
-  const trigger=document.getElementById('burnListPill'), modal=document.getElementById('burnListModal'), close=document.getElementById('burnListClose'), frame=document.getElementById('burnListFrame');
-  if(!trigger||!modal||!close||!frame)return;
-  trigger.setAttribute('aria-expanded','false');
-  let previousFocus=null, previousOverflow='';
-  function open(){previousFocus=document.activeElement;previousOverflow=document.body.style.overflow;if(!frame.getAttribute('src'))frame.src=frame.dataset.src;modal.classList.add('open');trigger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';close.focus();}
-  function shut(){if(!modal.classList.contains('open'))return;modal.classList.remove('open');trigger.setAttribute('aria-expanded','false');document.body.style.overflow=previousOverflow;(previousFocus||trigger).focus();}
-  trigger.addEventListener('click',open);close.addEventListener('click',shut);
-  modal.addEventListener('click',event=>{if(event.target===modal)shut();});
-  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('open'))shut();});
-})();
-</script>
 <script>
 (function(){
   const btn = document.getElementById('langBtn'), panel = document.getElementById('langPanel');
@@ -2378,7 +2355,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // #langSel is what the shared runtime binds click handlers to. Alias the panel as langSel so
   // detectLang → applyI18n → button.click still flows through the same code path.
   panel.id = 'langSel'; btn.setAttribute('aria-controls','langSel');
-  const shortLabel = { en:'EN', es:'ES', zh:'中', ja:'日', ko:'한', pt:'PT', fr:'FR', ru:'RU', tr:'TR', vi:'VI', hi:'हि', de:'DE', id:'ID' };
+  const shortLabel = { ar:'ع', en:'EN', es:'ES', zh:'中', ja:'日', ko:'한', pt:'PT', fr:'FR', ru:'RU', tr:'TR', vi:'VI', hi:'हि', de:'DE', id:'ID' };
   const label = document.getElementById('langBtnLabel');
   function syncLabel(){
     const active = panel.querySelector('button.on');

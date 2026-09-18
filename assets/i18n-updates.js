@@ -584,22 +584,22 @@ for(const [lang, values] of Object.entries(RWI_I18N_SHORT_TEXT)){
 
 const RWI_I18N_STATUS_KEYS = [
   'index.copy.failed','index.burn.supplyShare','index.burn.supplyShareLabel',
-  'index.burn.liveOnchain','index.burn.unavailable','common.burnList',
+  'index.burn.liveOnchain','index.burn.unavailable',
 ];
 const RWI_I18N_STATUS_TEXT = {
-  en: ['Could not copy','{percent} of total supply','{percent} of total supply burned','Live · onchain','Unavailable right now','Pons Family Burn List'],
-  id: ['Gagal menyalin','{percent} dari total pasokan','{percent} dari total pasokan dibakar','Langsung · onchain','Saat ini tidak tersedia','Daftar Pembakaran Pons Family'],
-  de: ['Kopieren fehlgeschlagen','{percent} des Gesamtangebots','{percent} des Gesamtangebots verbrannt','Live · onchain','Derzeit nicht verfügbar','Pons Family Burn-Liste'],
-  es: ['No se pudo copiar','{percent} del suministro total','{percent} del suministro total quemado','En vivo · en cadena','No disponible por ahora','Lista de quema de Pons Family'],
-  zh: ['无法复制','占总供应量的 {percent}','已销毁总供应量的 {percent}','实时 · 链上','暂时不可用','Pons Family 销毁列表'],
-  ja: ['コピーできませんでした','総供給量の{percent}','総供給量の{percent}をバーン','ライブ · オンチェーン','現在利用できません','Pons Familyバーンリスト'],
-  ko: ['복사할 수 없음','총 공급량의 {percent}','총 공급량의 {percent} 소각','실시간 · 온체인','현재 이용할 수 없음','Pons Family 소각 목록'],
-  pt: ['Não foi possível copiar','{percent} da oferta total','{percent} da oferta total queimado','Ao vivo · na cadeia','Indisponível no momento','Lista de queimas da Pons Family'],
-  fr: ['Copie impossible','{percent} de l’offre totale','{percent} de l’offre totale détruite','En direct · sur la chaîne','Indisponible pour le moment','Liste des destructions Pons Family'],
-  ru: ['Не удалось скопировать','{percent} от общего предложения','Сожжено {percent} от общего предложения','В реальном времени · в блокчейне','Сейчас недоступно','Список сжиганий Pons Family'],
-  tr: ['Kopyalanamadı','Toplam arzın {percent}’i','Toplam arzın {percent}’i yakıldı','Canlı · zincir üzerinde','Şu anda kullanılamıyor','Pons Family Yakım Listesi'],
-  vi: ['Không thể sao chép','{percent} tổng nguồn cung','Đã đốt {percent} tổng nguồn cung','Trực tiếp · trên chuỗi','Hiện không khả dụng','Danh sách đốt Pons Family'],
-  hi: ['कॉपी नहीं हो सका','कुल आपूर्ति का {percent}','कुल आपूर्ति का {percent} बर्न हुआ','लाइव · ऑनचेन','अभी उपलब्ध नहीं','Pons Family बर्न सूची'],
+  en: ['Could not copy','{percent} of total supply','{percent} of total supply burned','Live · onchain','Unavailable right now'],
+  id: ['Gagal menyalin','{percent} dari total pasokan','{percent} dari total pasokan dibakar','Langsung · onchain','Saat ini tidak tersedia'],
+  de: ['Kopieren fehlgeschlagen','{percent} des Gesamtangebots','{percent} des Gesamtangebots verbrannt','Live · onchain','Derzeit nicht verfügbar'],
+  es: ['No se pudo copiar','{percent} del suministro total','{percent} del suministro total quemado','En vivo · en cadena','No disponible por ahora'],
+  zh: ['无法复制','占总供应量的 {percent}','已销毁总供应量的 {percent}','实时 · 链上','暂时不可用'],
+  ja: ['コピーできませんでした','総供給量の{percent}','総供給量の{percent}をバーン','ライブ · オンチェーン','現在利用できません'],
+  ko: ['복사할 수 없음','총 공급량의 {percent}','총 공급량의 {percent} 소각','실시간 · 온체인','현재 이용할 수 없음'],
+  pt: ['Não foi possível copiar','{percent} da oferta total','{percent} da oferta total queimado','Ao vivo · na cadeia','Indisponível no momento'],
+  fr: ['Copie impossible','{percent} de l’offre totale','{percent} de l’offre totale détruite','En direct · sur la chaîne','Indisponible pour le moment'],
+  ru: ['Не удалось скопировать','{percent} от общего предложения','Сожжено {percent} от общего предложения','В реальном времени · в блокчейне','Сейчас недоступно'],
+  tr: ['Kopyalanamadı','Toplam arzın {percent}’i','Toplam arzın {percent}’i yakıldı','Canlı · zincir üzerinde','Şu anda kullanılamıyor'],
+  vi: ['Không thể sao chép','{percent} tổng nguồn cung','Đã đốt {percent} tổng nguồn cung','Trực tiếp · trên chuỗi','Hiện không khả dụng'],
+  hi: ['कॉपी नहीं हो सका','कुल आपूर्ति का {percent}','कुल आपूर्ति का {percent} बर्न हुआ','लाइव · ऑनचेन','अभी उपलब्ध नहीं'],
 };
 for(const [lang, values] of Object.entries(RWI_I18N_STATUS_TEXT)){
   RWI_I18N_STATUS_KEYS.forEach((key, index)=>{window.RWI_I18N_UPDATES[lang][key] = values[index];});
@@ -607,25 +607,42 @@ for(const [lang, values] of Object.entries(RWI_I18N_STATUS_TEXT)){
 
 window.RWI_I18N_UPDATES.en['index.rewards.source'] = 'Open the live rewards ledger ↗';
 const RWI_I18N_ACCESS_KEYS = [
-  'common.backSite','common.changeLanguage','common.language','common.closeBurnList',
+  'common.backSite','common.changeLanguage','common.language',
   'common.copyContract','common.treasuryAllocation','common.burnShare',
   'common.founder','common.footer','common.priceChart','common.close',
 ];
 const RWI_I18N_ACCESS_TEXT = {
-  en: ['Back to site','Change language','Language','Close Burn List','Copy contract address','The Index treasury allocation','Share of total supply burned','Louis S., founder of RWI','Footer','GeckoTerminal price chart','Close'],
-  id: ['Kembali ke situs','Ganti bahasa','Bahasa','Tutup daftar pembakaran','Salin alamat kontrak','Alokasi kas The Index','Bagian dari total pasokan yang dibakar','Louis S., pendiri RWI','Bagian bawah halaman','Grafik harga GeckoTerminal','Tutup'],
-  de: ['Zurück zur Website','Sprache ändern','Sprache','Burn-Liste schließen','Vertragsadresse kopieren','Zuteilung der The Index-Kasse','Verbrannter Anteil des Gesamtangebots','Louis S., Gründer von RWI','Fußzeile','GeckoTerminal-Preischart','Schließen'],
-  es: ['Volver al sitio','Cambiar idioma','Idioma','Cerrar lista de quema','Copiar dirección del contrato','Asignación de la tesorería de The Index','Porcentaje quemado del suministro total','Louis S., fundador de RWI','Pie de página','Gráfico de precios de GeckoTerminal','Cerrar'],
-  zh: ['返回网站','更改语言','语言','关闭销毁列表','复制合约地址','The Index 资金库分配','总供应量的销毁比例','Louis S.，RWI 创始人','页脚','GeckoTerminal 价格图表','关闭'],
-  ja: ['サイトに戻る','言語を変更','言語','バーンリストを閉じる','コントラクトアドレスをコピー','The Indexの資金庫配分','総供給量に占めるバーン済み割合','RWI創設者Louis S.','フッター','GeckoTerminal価格チャート','閉じる'],
-  ko: ['사이트로 돌아가기','언어 변경','언어','소각 목록 닫기','계약 주소 복사','The Index 금고 배분','총 공급량 중 소각 비율','RWI 설립자 Louis S.','바닥글','GeckoTerminal 가격 차트','닫기'],
-  pt: ['Voltar ao site','Alterar idioma','Idioma','Fechar lista de queimas','Copiar endereço do contrato','Distribuição do tesouro The Index','Parcela queimada da oferta total','Louis S., fundador da RWI','Rodapé','Gráfico de preços GeckoTerminal','Fechar'],
-  fr: ['Retour au site','Changer de langue','Langue','Fermer la liste des destructions','Copier l’adresse du contrat','Répartition de la trésorerie The Index','Part détruite de l’offre totale','Louis S., fondateur de RWI','Pied de page','Graphique des prix GeckoTerminal','Fermer'],
-  ru: ['Вернуться на сайт','Сменить язык','Язык','Закрыть список сжиганий','Скопировать адрес контракта','Распределение казны The Index','Сожжённая доля общего предложения','Луис С., основатель RWI','Нижний колонтитул','График цены GeckoTerminal','Закрыть'],
-  tr: ['Siteye dön','Dili değiştir','Dil','Yakım listesini kapat','Sözleşme adresini kopyala','The Index hazinesinin dağılımı','Yakılan toplam arz payı','RWI kurucusu Louis S.','Alt bilgi','GeckoTerminal fiyat grafiği','Kapat'],
-  vi: ['Quay lại trang web','Đổi ngôn ngữ','Ngôn ngữ','Đóng danh sách đốt','Sao chép địa chỉ hợp đồng','Phân bổ quỹ The Index','Tỷ lệ tổng nguồn cung đã đốt','Louis S., người sáng lập RWI','Chân trang','Biểu đồ giá GeckoTerminal','Đóng'],
-  hi: ['साइट पर वापस जाएँ','भाषा बदलें','भाषा','बर्न सूची बंद करें','कॉन्ट्रैक्ट पता कॉपी करें','The Index कोष का आवंटन','कुल आपूर्ति में बर्न हुआ हिस्सा','Louis S., RWI के संस्थापक','पेज का निचला भाग','GeckoTerminal मूल्य चार्ट','बंद करें'],
+  en: ['Back to site','Change language','Language','Copy contract address','The Index treasury allocation','Share of total supply burned','Louis S., founder of RWI','Footer','GeckoTerminal price chart','Close'],
+  id: ['Kembali ke situs','Ganti bahasa','Bahasa','Salin alamat kontrak','Alokasi kas The Index','Bagian dari total pasokan yang dibakar','Louis S., pendiri RWI','Bagian bawah halaman','Grafik harga GeckoTerminal','Tutup'],
+  de: ['Zurück zur Website','Sprache ändern','Sprache','Vertragsadresse kopieren','Zuteilung der The Index-Kasse','Verbrannter Anteil des Gesamtangebots','Louis S., Gründer von RWI','Fußzeile','GeckoTerminal-Preischart','Schließen'],
+  es: ['Volver al sitio','Cambiar idioma','Idioma','Copiar dirección del contrato','Asignación de la tesorería de The Index','Porcentaje quemado del suministro total','Louis S., fundador de RWI','Pie de página','Gráfico de precios de GeckoTerminal','Cerrar'],
+  zh: ['返回网站','更改语言','语言','复制合约地址','The Index 资金库分配','总供应量的销毁比例','Louis S.，RWI 创始人','页脚','GeckoTerminal 价格图表','关闭'],
+  ja: ['サイトに戻る','言語を変更','言語','コントラクトアドレスをコピー','The Indexの資金庫配分','総供給量に占めるバーン済み割合','RWI創設者Louis S.','フッター','GeckoTerminal価格チャート','閉じる'],
+  ko: ['사이트로 돌아가기','언어 변경','언어','계약 주소 복사','The Index 금고 배분','총 공급량 중 소각 비율','RWI 설립자 Louis S.','바닥글','GeckoTerminal 가격 차트','닫기'],
+  pt: ['Voltar ao site','Alterar idioma','Idioma','Copiar endereço do contrato','Distribuição do tesouro The Index','Parcela queimada da oferta total','Louis S., fundador da RWI','Rodapé','Gráfico de preços GeckoTerminal','Fechar'],
+  fr: ['Retour au site','Changer de langue','Langue','Copier l’adresse du contrat','Répartition de la trésorerie The Index','Part détruite de l’offre totale','Louis S., fondateur de RWI','Pied de page','Graphique des prix GeckoTerminal','Fermer'],
+  ru: ['Вернуться на сайт','Сменить язык','Язык','Скопировать адрес контракта','Распределение казны The Index','Сожжённая доля общего предложения','Луис С., основатель RWI','Нижний колонтитул','График цены GeckoTerminal','Закрыть'],
+  tr: ['Siteye dön','Dili değiştir','Dil','Sözleşme adresini kopyala','The Index hazinesinin dağılımı','Yakılan toplam arz payı','RWI kurucusu Louis S.','Alt bilgi','GeckoTerminal fiyat grafiği','Kapat'],
+  vi: ['Quay lại trang web','Đổi ngôn ngữ','Ngôn ngữ','Sao chép địa chỉ hợp đồng','Phân bổ quỹ The Index','Tỷ lệ tổng nguồn cung đã đốt','Louis S., người sáng lập RWI','Chân trang','Biểu đồ giá GeckoTerminal','Đóng'],
+  hi: ['साइट पर वापस जाएँ','भाषा बदलें','भाषा','कॉन्ट्रैक्ट पता कॉपी करें','The Index कोष का आवंटन','कुल आपूर्ति में बर्न हुआ हिस्सा','Louis S., RWI के संस्थापक','पेज का निचला भाग','GeckoTerminal मूल्य चार्ट','बंद करें'],
 };
 for(const [lang, values] of Object.entries(RWI_I18N_ACCESS_TEXT)){
   RWI_I18N_ACCESS_KEYS.forEach((key, index)=>{window.RWI_I18N_UPDATES[lang][key] = values[index];});
 }
+
+const RWI_I18N_PRIMARY_NAV = {
+  en: 'Primary navigation',
+  id: 'Navigasi utama',
+  de: 'Hauptnavigation',
+  es: 'Navegación principal',
+  zh: '主导航',
+  ja: 'メインナビゲーション',
+  ko: '기본 탐색',
+  pt: 'Navegação principal',
+  fr: 'Navigation principale',
+  ru: 'Основная навигация',
+  tr: 'Ana gezinme',
+  vi: 'Điều hướng chính',
+  hi: 'मुख्य नेविगेशन',
+};
+for (const [lang, value] of Object.entries(RWI_I18N_PRIMARY_NAV)) window.RWI_I18N_UPDATES[lang]['common.primaryNav'] = value;
