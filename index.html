@@ -2348,7 +2348,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     max-width:34ch;margin:8px auto 0;font-size:clamp(1.05rem,2.4vw,1.3rem);
   }
   .hero .cta-row{margin-top:16px;display:grid;grid-template-columns:repeat(2,minmax(0,220px));grid-auto-rows:1fr;gap:14px;justify-content:center}
-  @media (max-width:537px){.hero .cta-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
+  @media (max-width:537px){.hero .cta-row{grid-template-columns:minmax(0,1fr);width:min(220px,100%);margin-left:auto;margin-right:auto}}
   .btn{
     font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;
     text-decoration:none;padding:14px 26px;border:1.5px solid var(--ink);
@@ -2361,14 +2361,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   .hero .cta-row .pons-logo{display:grid;place-items:center;overflow:hidden;background:#fff}
   .pons-logo img{display:block;width:20px;height:20px;max-width:none;transform:scale(2.2)}
   .hero .cta-row [data-i18n]{min-width:0;overflow-wrap:anywhere}
-  @media (max-width:537px){
-    .hero .cta-row .btn{min-height:58px;padding:8px 6px;gap:4px;font-size:11px;line-height:1.25;letter-spacing:.03em}
-    .hero .cta-row .buy-logo{width:18px;height:18px}
-    .pons-logo img{width:18px;height:18px}
-  }
-  @media (max-width:320px){
-    .hero .cta-row{gap:6px}
-  }
   .btn:hover,.btn:focus-visible{background:transparent;color:var(--ink)}
   .btn.ghost:hover,.btn.ghost:focus-visible{background:var(--ink);color:var(--lime)}
   :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
