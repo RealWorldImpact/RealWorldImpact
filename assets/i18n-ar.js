@@ -47,15 +47,6 @@ window.RWI_I18N_UPDATES.ar = {
   'index.rewards.autoBurned': 'حرق $RWI تلقائياً',
   'index.rewards.liquidityLocked': 'أُقفلت في السيولة',
   'index.rewards.source': 'افتح سجل المكافآت المباشر ↗',
-  'index.liquidity.eyebrow': 'السيولة',
-  'index.liquidity.title': 'أضف السيولة عبر Up.',
-  'index.liquidity.body': 'Up هي منصة التداول الأصلية بنموذج (3,3) وطبقة السيولة في Robinhood Chain، وتجمع بين مبادلات العملات ومجمعات السيولة. اختر أحد زوجَي $RWI أدناه لمراجعة المجمع وإضافة السيولة.',
-  'index.liquidity.total': 'إجمالي السيولة',
-  'index.liquidity.volume24h': 'حجم التداول خلال 24 ساعة',
-  'index.liquidity.loading': 'جارٍ تحميل الإجماليات المباشرة…',
-  'index.liquidity.live': 'بيانات مباشرة من Up',
-  'index.liquidity.unavailable': 'الإجماليات المباشرة غير متاحة',
-  'index.liquidity.action': 'أضف السيولة ↗',
   'index.burn.eyebrow': 'الحرق',
   'index.burn.title': 'المعروض ينخفض فقط.',
   'index.burn.body': 'أي $RWI تُرسَل إلى عنوان الحرق تختفي نهائياً، بلا مفتاح أو مالك أو سبيل لاستعادتها. يُقرأ الرقم أدناه مباشرة من Robinhood Chain كلما حمّلت هذه الصفحة.',
@@ -168,7 +159,7 @@ Object.assign(window.RWI_I18N_UPDATES.ar, {
   'wp.founder.eyebrow': 'المؤسس',
   'wp.founder.title': 'الشخص وراء المشروع.',
   'wp.founder.body1': 'وُلد لويس س. ونشأ في شمال غرب فلوريدا. يعمل في خدمة العملاء منذ عام 2012 وفي الشؤون المالية منذ عام 2020؛ أمضى أكثر من عقد في مساعدة الناس وسنوات في فهم حركة الأموال الفعلية. يجمع RWI هذين المسارين: المساعدة ليست مجرد تسويق، بل هي الآلية نفسها، ويُسوّى كل جزء منها في سجل علني باسمه.',
-  'wp.founder.body2': 'يعمل المؤسس علناً بحسابَي @Burgers_Louis و@BurgersOnBase على X، وباسم burgersonbase.base.eth على السلسلة. ليس RWI أول مشروع له على السلسلة؛ فالنهج المتّبع في مشاريعه الأخرى، والمتمثل في أعمال صغيرة ومستقلة وقابلة للتحقق ولا تحتاج إلى نظام خلفي، مستمر هنا أيضاً.',
+  'wp.founder.body2': 'يعمل المؤسس علناً بحسابَي @RWI_Louis و@BurgersOnBase على X، وباسم burgersonbase.base.eth على السلسلة. ليس RWI أول مشروع له على السلسلة؛ فالنهج المتّبع في مشاريعه الأخرى، والمتمثل في أعمال صغيرة ومستقلة وقابلة للتحقق ولا تحتاج إلى نظام خلفي، مستمر هنا أيضاً.',
   'wp.risks.eyebrow': 'المخاطر وإخلاء المسؤولية',
   'wp.risks.title': 'اقرأ هذا الجزء بعناية.',
   'wp.risks.body1': '$RWI عملة ميم. وهي أصل رقمي شديد التقلب بلا حد أدنى لقيمة جوهرية، وقد ينخفض سعرها إلى الصفر. مكافآت الحائزين عبر The Index متغيرة، وقد تصبح قيمتها صفراً أو تتوقف؛ وليست أرباحاً أو تدفقات نقدية مضمونة. ينبغي ألا يشتري الحائزون $RWI بأموال لا يستطيعون تحمّل خسارتها بالكامل.',
@@ -198,5 +189,5 @@ window.RWI_I18N_UPDATES.ar['common.primaryNav'] = 'التنقل الرئيسي';
 
 // Keep ticker symbols in their written order inside right-to-left sentences.
 for (const [key, value] of Object.entries(window.RWI_I18N_UPDATES.ar)) {
-  window.RWI_I18N_UPDATES.ar[key] = value.replace(/\$(?:RWI|UP|WETH|PONS|INDEX)\b/g, token => `\u2066${token}\u2069`);
+  window.RWI_I18N_UPDATES.ar[key] = value.replace(/\$(?:RWI|WETH|PONS|INDEX)\b/g, token => `\u2066${token}\u2069`);
 }
