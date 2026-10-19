@@ -15,7 +15,7 @@
 <meta property="og:locale" content="en_US">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <script>document.documentElement.classList.add('js')</script>
 <script>
 const TRANSLATIONS = {
@@ -111,22 +111,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'Write in',
     'vote.st.writeInTitle':'Write in an organisation',
     'vote.st.writeInLede':'Three of the six ballot slots are reserved for organisations nominated by holders. Pick any organisation from The Giving Block.',
-    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — ${dev} to the dev wallet, ${burn} burned.',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Search organisations',
     'vote.st.writeInNone':'No match in the verified directory.',
     'vote.st.writeInDup':'That organisation is already a standing candidate.',
     'vote.st.writeInSubmit':'Submit write-in',
     'vote.st.writeInBy':'Written in by a holder',
     'vote.st.wiStep1':'Nominate onchain',
-    'vote.st.wiStep2':'Pay the dev share',
-    'vote.st.wiStep3':'Burn the rest',
-    'vote.st.wiSigning':'Confirm transaction {n} of 3 in your wallet…',
-    'vote.st.writeInDone':'Write-in submitted. It appears once all three transactions are indexed.',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'Cancelled. Any completed steps still stand.',
     'vote.st.writeInFail':'Something failed. Completed steps stand; re-open to finish the rest.',
     'vote.st.writeInConnect':'Connect a wallet first.',
     'vote.st.writeInNoPrice':'Cannot read the $RWI price right now, so the fee cannot be quoted.',
-    'vote.st.writeInNote':'Three separate transactions: a token transfer carries no message, so the nomination and each payment are signed individually. The directory is a verified subset of The Giving Block, not its full listing.'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'Open slot',
     'vote.st.openSlotHint':'Reserved for a holder write-in',
@@ -236,22 +235,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'Proponer',
     'vote.st.writeInTitle':'Proponer una organizacion',
     'vote.st.writeInLede':'Tres de los seis lugares estan reservados para organizaciones propuestas por los holders. Elige cualquiera de The Giving Block.',
-    'vote.st.writeInCost':'Cuesta ${usd} en $RWI (~{rwi}): ${dev} a la billetera dev, ${burn} quemados.',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Buscar organizaciones',
     'vote.st.writeInNone':'Sin coincidencias en el directorio verificado.',
     'vote.st.writeInDup':'Esa organizacion ya es candidata fija.',
     'vote.st.writeInSubmit':'Enviar propuesta',
     'vote.st.writeInBy':'Propuesta por un holder',
     'vote.st.wiStep1':'Proponer onchain',
-    'vote.st.wiStep2':'Pagar la parte dev',
-    'vote.st.wiStep3':'Quemar el resto',
-    'vote.st.wiSigning':'Confirma la transaccion {n} de 3 en tu billetera…',
-    'vote.st.writeInDone':'Propuesta enviada. Aparecera cuando las tres transacciones esten indexadas.',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'Cancelado. Los pasos completados siguen validos.',
     'vote.st.writeInFail':'Algo fallo. Los pasos completados siguen; vuelve a abrir para terminar.',
     'vote.st.writeInConnect':'Conecta una billetera primero.',
     'vote.st.writeInNoPrice':'No se puede leer el precio de $RWI ahora, asi que no se puede cotizar la tarifa.',
-    'vote.st.writeInNote':'Tres transacciones separadas: una transferencia de tokens no lleva mensaje, asi que la propuesta y cada pago se firman por separado. El directorio es un subconjunto verificado de The Giving Block, no su listado completo.'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'Lugar libre',
     'vote.st.openSlotHint':'Reservado para una propuesta de holder',
@@ -361,22 +359,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'写入提名',
     'vote.st.writeInTitle':'提名一个组织',
     'vote.st.writeInLede':'六个投票席位中有三个保留给持有者提名的组织。可从 The Giving Block 中任选。',
-    'vote.st.writeInCost':'费用为 {usd} 美元的 $RWI(约 {rwi})— {dev} 美元给开发钱包,{burn} 美元销毁。',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'搜索组织',
     'vote.st.writeInNone':'已验证目录中无匹配项。',
     'vote.st.writeInDup':'该组织已是常设候选。',
     'vote.st.writeInSubmit':'提交提名',
     'vote.st.writeInBy':'由持有者提名',
     'vote.st.wiStep1':'链上提名',
-    'vote.st.wiStep2':'支付开发份额',
-    'vote.st.wiStep3':'销毁其余部分',
-    'vote.st.wiSigning':'请在钱包中确认第 {n}/3 笔交易…',
-    'vote.st.writeInDone':'提名已提交。三笔交易均被索引后即会显示。',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'已取消。已完成的步骤仍然有效。',
     'vote.st.writeInFail':'出现失败。已完成步骤仍有效;重新打开以完成其余部分。',
     'vote.st.writeInConnect':'请先连接钱包。',
     'vote.st.writeInNoPrice':'当前无法读取 $RWI 价格,无法报价。',
-    'vote.st.writeInNote':'三笔独立交易:代币转账无法携带信息,因此提名与每笔付款需分别签名。该目录是 The Giving Block 的已验证子集,并非完整名录。'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'空缺席位',
     'vote.st.openSlotHint':'保留给持有者提名',
@@ -486,22 +483,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'書き込み推薦',
     'vote.st.writeInTitle':'団体を推薦する',
     'vote.st.writeInLede':'6 つの投票枠のうち 3 つは保有者の推薦に充てられます。The Giving Block からどの団体でも選べます。',
-    'vote.st.writeInCost':'費用は $RWI で {usd} ドル相当(約 {rwi})— {dev} ドルを開発ウォレットへ、{burn} ドルをバーン。',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'団体を検索',
     'vote.st.writeInNone':'検証済みディレクトリに一致はありません。',
     'vote.st.writeInDup':'その団体はすでに常設候補です。',
     'vote.st.writeInSubmit':'推薦を送信',
     'vote.st.writeInBy':'保有者による推薦',
     'vote.st.wiStep1':'オンチェーンで推薦',
-    'vote.st.wiStep2':'開発分を支払う',
-    'vote.st.wiStep3':'残りをバーン',
-    'vote.st.wiSigning':'ウォレットで 3 件中 {n} 件目を承認してください…',
-    'vote.st.writeInDone':'推薦を送信しました。3 件すべてが索引された時点で表示されます。',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'キャンセルしました。完了済みの手順は有効なままです。',
     'vote.st.writeInFail':'失敗しました。完了済みの手順は有効です。再度開いて残りを完了してください。',
     'vote.st.writeInConnect':'先にウォレットを接続してください。',
     'vote.st.writeInNoPrice':'現在 $RWI の価格を取得できないため、費用を提示できません。',
-    'vote.st.writeInNote':'3 件の個別トランザクション:トークン送金にメッセージは載せられないため、推薦と各支払いを個別に署名します。ディレクトリは The Giving Block の検証済み一部であり、全掲載ではありません。'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'空き枠',
     'vote.st.openSlotHint':'保有者の推薦用に確保',
@@ -611,22 +607,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'직접 추천',
     'vote.st.writeInTitle':'단체 추천하기',
     'vote.st.writeInLede':'6개 투표 자리 중 3개는 보유자 추천 몫입니다. The Giving Block에서 원하는 단체를 고르세요.',
-    'vote.st.writeInCost':'비용은 $RWI로 {usd}달러 (~{rwi}) — {dev}달러는 개발 지갑으로, {burn}달러는 소각.',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'단체 검색',
     'vote.st.writeInNone':'검증된 디렉터리에 일치 항목이 없습니다.',
     'vote.st.writeInDup':'해당 단체는 이미 상시 후보입니다.',
     'vote.st.writeInSubmit':'추천 제출',
     'vote.st.writeInBy':'보유자 추천',
     'vote.st.wiStep1':'온체인 추천',
-    'vote.st.wiStep2':'개발 몫 지불',
-    'vote.st.wiStep3':'나머지 소각',
-    'vote.st.wiSigning':'지갑에서 3건 중 {n}번째 거래를 확인하세요…',
-    'vote.st.writeInDone':'추천이 제출되었습니다. 세 거래가 모두 색인되면 표시됩니다.',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'취소되었습니다. 완료된 단계는 그대로 유지됩니다.',
     'vote.st.writeInFail':'실패했습니다. 완료된 단계는 유지되며, 다시 열어 나머지를 마치세요.',
     'vote.st.writeInConnect':'먼저 지갑을 연결하세요.',
     'vote.st.writeInNoPrice':'지금 $RWI 가격을 읽을 수 없어 수수료를 산정할 수 없습니다.',
-    'vote.st.writeInNote':'세 건의 개별 거래: 토큰 전송에는 메시지를 담을 수 없어 추천과 각 결제를 따로 서명합니다. 디렉터리는 The Giving Block의 검증된 일부이며 전체 목록이 아닙니다.'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'빈 자리',
     'vote.st.openSlotHint':'보유자 추천용으로 예약됨',
@@ -736,22 +731,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'Indicar',
     'vote.st.writeInTitle':'Indicar uma organizacao',
     'vote.st.writeInLede':'Tres das seis vagas sao reservadas a organizacoes indicadas por holders. Escolha qualquer uma da The Giving Block.',
-    'vote.st.writeInCost':'Custa ${usd} em $RWI (~{rwi}): ${dev} para a carteira dev, ${burn} queimados.',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Buscar organizacoes',
     'vote.st.writeInNone':'Nenhuma correspondencia no diretorio verificado.',
     'vote.st.writeInDup':'Essa organizacao ja e candidata permanente.',
     'vote.st.writeInSubmit':'Enviar indicacao',
     'vote.st.writeInBy':'Indicada por um holder',
     'vote.st.wiStep1':'Indicar onchain',
-    'vote.st.wiStep2':'Pagar a parte dev',
-    'vote.st.wiStep3':'Queimar o restante',
-    'vote.st.wiSigning':'Confirme a transacao {n} de 3 na sua carteira…',
-    'vote.st.writeInDone':'Indicacao enviada. Aparecera quando as tres transacoes forem indexadas.',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'Cancelado. As etapas concluidas permanecem validas.',
     'vote.st.writeInFail':'Algo falhou. As etapas concluidas permanecem; reabra para terminar.',
     'vote.st.writeInConnect':'Conecte uma carteira primeiro.',
     'vote.st.writeInNoPrice':'Nao e possivel ler o preco do $RWI agora, entao a taxa nao pode ser cotada.',
-    'vote.st.writeInNote':'Tres transacoes separadas: uma transferencia de tokens nao carrega mensagem, entao a indicacao e cada pagamento sao assinados individualmente. O diretorio e um subconjunto verificado da The Giving Block, nao a listagem completa.'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'Vaga aberta',
     'vote.st.openSlotHint':'Reservado para indicacao de holder',
@@ -861,22 +855,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'Proposer',
     'vote.st.writeInTitle':'Proposer une organisation',
     'vote.st.writeInLede':'Trois des six places du scrutin sont reservees aux organisations proposees par les detenteurs. Choisissez-en une sur The Giving Block.',
-    'vote.st.writeInCost':'Coute {usd} $ en $RWI (~{rwi}) : {dev} $ au portefeuille dev, {burn} $ brules.',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Rechercher une organisation',
     'vote.st.writeInNone':'Aucun resultat dans l annuaire verifie.',
     'vote.st.writeInDup':'Cette organisation est deja candidate permanente.',
     'vote.st.writeInSubmit':'Envoyer la proposition',
     'vote.st.writeInBy':'Proposee par un detenteur',
     'vote.st.wiStep1':'Proposer onchain',
-    'vote.st.wiStep2':'Payer la part dev',
-    'vote.st.wiStep3':'Bruler le reste',
-    'vote.st.wiSigning':'Confirmez la transaction {n} sur 3 dans votre portefeuille…',
-    'vote.st.writeInDone':'Proposition envoyee. Elle apparaitra une fois les trois transactions indexees.',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'Annule. Les etapes deja effectuees restent valides.',
     'vote.st.writeInFail':'Echec. Les etapes effectuees restent ; rouvrez pour terminer.',
     'vote.st.writeInConnect':'Connectez d abord un portefeuille.',
     'vote.st.writeInNoPrice':'Impossible de lire le prix du $RWI, le montant ne peut pas etre calcule.',
-    'vote.st.writeInNote':'Trois transactions distinctes : un transfert de jetons ne porte aucun message, la proposition et chaque paiement sont donc signes separement. L annuaire est un sous-ensemble verifie de The Giving Block, pas sa liste complete.'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'Place libre',
     'vote.st.openSlotHint':'Reservee a une proposition de detenteur',
@@ -986,22 +979,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'Вписать',
     'vote.st.writeInTitle':'Вписать организацию',
     'vote.st.writeInLede':'Три из шести мест в бюллетене отведены организациям, предложенным держателями. Выберите любую из The Giving Block.',
-    'vote.st.writeInCost':'Стоит {usd}$ в $RWI (~{rwi}) — {dev}$ в девелоперский кошелёк, {burn}$ сжигается.',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Поиск организаций',
     'vote.st.writeInNone':'Совпадений в проверенном каталоге нет.',
     'vote.st.writeInDup':'Эта организация уже постоянный кандидат.',
     'vote.st.writeInSubmit':'Отправить заявку',
     'vote.st.writeInBy':'Предложено держателем',
     'vote.st.wiStep1':'Заявка в блокчейн',
-    'vote.st.wiStep2':'Оплатить долю разработки',
-    'vote.st.wiStep3':'Сжечь остаток',
-    'vote.st.wiSigning':'Подтвердите транзакцию {n} из 3 в кошельке…',
-    'vote.st.writeInDone':'Заявка отправлена. Появится, когда все три транзакции будут проиндексированы.',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'Отменено. Уже выполненные шаги остаются в силе.',
     'vote.st.writeInFail':'Что-то не получилось. Выполненные шаги остаются; откройте снова, чтобы закончить.',
     'vote.st.writeInConnect':'Сначала подключите кошелёк.',
     'vote.st.writeInNoPrice':'Сейчас не удаётся прочитать цену $RWI, поэтому комиссию не рассчитать.',
-    'vote.st.writeInNote':'Три отдельные транзакции: перевод токенов не несёт сообщения, поэтому заявка и каждый платёж подписываются по отдельности. Каталог — проверенное подмножество The Giving Block, а не полный список.'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'Свободное место',
     'vote.st.openSlotHint':'Зарезервировано под заявку держателя',
@@ -1111,22 +1103,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'Aday goster',
     'vote.st.writeInTitle':'Bir kurulus aday goster',
     'vote.st.writeInLede':'Alti oy yerinden ucu, sahiplerin aday gosterdigi kuruluslara ayrilmistir. The Giving Block\'tan dilediginizi secin.',
-    'vote.st.writeInCost':'$RWI olarak {usd}$ tutar (~{rwi}) — {dev}$ gelistirici cuzdanina, {burn}$ yakilir.',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Kurulus ara',
     'vote.st.writeInNone':'Dogrulanmis dizinde eslesme yok.',
     'vote.st.writeInDup':'Bu kurulus zaten sabit aday.',
     'vote.st.writeInSubmit':'Adaylig gonder',
     'vote.st.writeInBy':'Bir sahip tarafindan onerildi',
     'vote.st.wiStep1':'Zincir uzerinde aday goster',
-    'vote.st.wiStep2':'Gelistirici payini ode',
-    'vote.st.wiStep3':'Kalani yak',
-    'vote.st.wiSigning':'Cuzdaninizda 3 islemden {n}. olanini onaylayin…',
-    'vote.st.writeInDone':'Adaylik gonderildi. Uc islem de dizine girdiginde gorunur.',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'Iptal edildi. Tamamlanan adimlar gecerli kalir.',
     'vote.st.writeInFail':'Bir sey basarisiz oldu. Tamamlananlar gecerli; kalani bitirmek icin tekrar acin.',
     'vote.st.writeInConnect':'Once bir cuzdan baglayin.',
     'vote.st.writeInNoPrice':'Su anda $RWI fiyati okunamiyor, bu yuzden ucret hesaplanamiyor.',
-    'vote.st.writeInNote':'Uc ayri islem: token transferi mesaj tasimaz, bu yuzden adaylik ve her odeme ayri imzalanir. Dizin, The Giving Block\'un dogrulanmis bir alt kumesidir, tam listesi degil.'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'Bos yer',
     'vote.st.openSlotHint':'Sahiplerin adayligi icin ayrildi',
@@ -1236,22 +1227,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'Đề cử',
     'vote.st.writeInTitle':'Đề cử một tổ chức',
     'vote.st.writeInLede':'Ba trong sáu vị trí lá phiếu dành cho tổ chức do người nắm giữ đề cử. Chọn bất kỳ tổ chức nào từ The Giving Block.',
-    'vote.st.writeInCost':'Chi phí {usd}$ bằng $RWI (~{rwi}) — {dev}$ cho ví dev, {burn}$ bị đốt.',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Tìm tổ chức',
     'vote.st.writeInNone':'Không có kết quả trong danh mục đã xác minh.',
     'vote.st.writeInDup':'Tổ chức đó đã là ứng viên thường trực.',
     'vote.st.writeInSubmit':'Gửi đề cử',
     'vote.st.writeInBy':'Do người nắm giữ đề cử',
     'vote.st.wiStep1':'Đề cử onchain',
-    'vote.st.wiStep2':'Trả phần dev',
-    'vote.st.wiStep3':'Đốt phần còn lại',
-    'vote.st.wiSigning':'Xác nhận giao dịch {n}/3 trong ví…',
-    'vote.st.writeInDone':'Đã gửi đề cử. Nó xuất hiện khi cả ba giao dịch được lập chỉ mục.',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'Đã hủy. Các bước đã hoàn tất vẫn có hiệu lực.',
     'vote.st.writeInFail':'Có lỗi. Các bước đã xong vẫn giữ; mở lại để hoàn tất phần còn lại.',
     'vote.st.writeInConnect':'Kết nối ví trước đã.',
     'vote.st.writeInNoPrice':'Hiện không đọc được giá $RWI nên không thể báo phí.',
-    'vote.st.writeInNote':'Ba giao dịch riêng: chuyển token không mang thông điệp, nên đề cử và mỗi khoản thanh toán được ký riêng. Danh mục là tập con đã xác minh của The Giving Block, không phải toàn bộ danh sách.'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'Chỗ trống',
     'vote.st.openSlotHint':'Dành cho đề cử của người nắm giữ',
@@ -1361,22 +1351,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'नामांकित करें',
     'vote.st.writeInTitle':'एक संगठन नामांकित करें',
     'vote.st.writeInLede':'छह मतपत्र स्थानों में से तीन धारकों द्वारा नामांकित संगठनों के लिए आरक्षित हैं। The Giving Block से कोई भी चुनें।',
-    'vote.st.writeInCost':'लागत $RWI में {usd} डॉलर (~{rwi}) — {dev} डॉलर डेव वॉलेट को, {burn} डॉलर बर्न।',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'संगठन खोजें',
     'vote.st.writeInNone':'सत्यापित निर्देशिका में कोई मेल नहीं।',
     'vote.st.writeInDup':'वह संगठन पहले से स्थायी उम्मीदवार है।',
     'vote.st.writeInSubmit':'नामांकन भेजें',
     'vote.st.writeInBy':'एक धारक द्वारा नामांकित',
     'vote.st.wiStep1':'ऑनचेन नामांकन',
-    'vote.st.wiStep2':'डेव हिस्सा भुगतान',
-    'vote.st.wiStep3':'बाकी बर्न करें',
-    'vote.st.wiSigning':'अपने वॉलेट में 3 में से {n} लेनदेन की पुष्टि करें…',
-    'vote.st.writeInDone':'नामांकन भेजा गया। तीनों लेनदेन इंडेक्स होने पर दिखेगा।',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'रद्द। पूर्ण किए गए चरण मान्य रहते हैं।',
     'vote.st.writeInFail':'कुछ विफल हुआ। पूर्ण चरण बने रहते हैं; बाकी पूरा करने के लिए फिर खोलें।',
     'vote.st.writeInConnect':'पहले वॉलेट कनेक्ट करें।',
     'vote.st.writeInNoPrice':'अभी $RWI मूल्य नहीं पढ़ा जा सकता, इसलिए शुल्क नहीं बताया जा सकता।',
-    'vote.st.writeInNote':'तीन अलग लेनदेन: टोकन ट्रांसफर में संदेश नहीं जाता, इसलिए नामांकन और हर भुगतान अलग-अलग हस्ताक्षरित होते हैं। निर्देशिका The Giving Block का सत्यापित उपसमुच्चय है, पूरी सूची नहीं।'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'खाली स्थान',
     'vote.st.openSlotHint':'धारक नामांकन हेतु आरक्षित',
@@ -1486,22 +1475,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'Vorschlagen',
     'vote.st.writeInTitle':'Eine Organisation vorschlagen',
     'vote.st.writeInLede':'Drei der sechs Plaetze sind fuer von Inhabern vorgeschlagene Organisationen reserviert. Waehle eine beliebige von The Giving Block.',
-    'vote.st.writeInCost':'Kostet {usd}$ in $RWI (~{rwi}) — {dev}$ an die Dev-Wallet, {burn}$ verbrannt.',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Organisationen suchen',
     'vote.st.writeInNone':'Kein Treffer im geprueften Verzeichnis.',
     'vote.st.writeInDup':'Diese Organisation ist bereits staendige Kandidatin.',
     'vote.st.writeInSubmit':'Vorschlag senden',
     'vote.st.writeInBy':'Von einem Inhaber vorgeschlagen',
     'vote.st.wiStep1':'Onchain vorschlagen',
-    'vote.st.wiStep2':'Dev-Anteil zahlen',
-    'vote.st.wiStep3':'Rest verbrennen',
-    'vote.st.wiSigning':'Bestaetige Transaktion {n} von 3 in deiner Wallet…',
-    'vote.st.writeInDone':'Vorschlag gesendet. Er erscheint, sobald alle drei Transaktionen indexiert sind.',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'Abgebrochen. Bereits erledigte Schritte bleiben bestehen.',
     'vote.st.writeInFail':'Etwas ist fehlgeschlagen. Erledigte Schritte bleiben; erneut oeffnen zum Abschliessen.',
     'vote.st.writeInConnect':'Verbinde zuerst eine Wallet.',
     'vote.st.writeInNoPrice':'Der $RWI-Preis ist gerade nicht lesbar, daher laesst sich die Gebuehr nicht beziffern.',
-    'vote.st.writeInNote':'Drei getrennte Transaktionen: Ein Token-Transfer traegt keine Nachricht, daher werden Vorschlag und jede Zahlung einzeln signiert. Das Verzeichnis ist eine gepruefte Teilmenge von The Giving Block, nicht die vollstaendige Liste.'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'Freier Platz',
     'vote.st.openSlotHint':'Reserviert fuer einen Inhaber-Vorschlag',
@@ -1611,22 +1599,21 @@ const TRANSLATIONS = {
     'vote.st.writeInBtn':'Usulkan',
     'vote.st.writeInTitle':'Usulkan sebuah organisasi',
     'vote.st.writeInLede':'Tiga dari enam slot surat suara disediakan untuk organisasi usulan pemegang. Pilih salah satu dari The Giving Block.',
-    'vote.st.writeInCost':'Biaya {usd}$ dalam $RWI (~{rwi}) — {dev}$ ke dompet dev, {burn}$ dibakar.',
+    'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Cari organisasi',
     'vote.st.writeInNone':'Tidak ada kecocokan di direktori terverifikasi.',
     'vote.st.writeInDup':'Organisasi itu sudah menjadi kandidat tetap.',
     'vote.st.writeInSubmit':'Kirim usulan',
     'vote.st.writeInBy':'Diusulkan oleh pemegang',
     'vote.st.wiStep1':'Usulkan onchain',
-    'vote.st.wiStep2':'Bayar bagian dev',
-    'vote.st.wiStep3':'Bakar sisanya',
-    'vote.st.wiSigning':'Konfirmasi transaksi {n} dari 3 di dompet Anda…',
-    'vote.st.writeInDone':'Usulan terkirim. Akan muncul setelah ketiga transaksi terindeks.',
+    'vote.st.wiStep2':'Burn the full $5 in $RWI',
+    'vote.st.wiSigning':'Confirm transaction {n} of 2 in your wallet…',
+    'vote.st.writeInDone':'Write-in submitted. It appears once both transactions are indexed.',
     'vote.st.writeInCancel':'Dibatalkan. Langkah yang selesai tetap berlaku.',
     'vote.st.writeInFail':'Ada yang gagal. Langkah selesai tetap; buka lagi untuk menyelesaikan sisanya.',
     'vote.st.writeInConnect':'Hubungkan dompet dulu.',
     'vote.st.writeInNoPrice':'Tidak dapat membaca harga $RWI sekarang, jadi biaya tidak bisa dihitung.',
-    'vote.st.writeInNote':'Tiga transaksi terpisah: transfer token tidak membawa pesan, jadi usulan dan tiap pembayaran ditandatangani sendiri. Direktori adalah subset terverifikasi The Giving Block, bukan daftar lengkapnya.'
+    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
   ,
     'vote.st.openSlot':'Slot kosong',
     'vote.st.openSlotHint':'Disediakan untuk usulan pemegang',
@@ -2259,7 +2246,7 @@ const RWI_DECIMALS = 18;
 
    This MUST be an address with no contract code. Calldata sent to a contract
    runs its fallback; with no matching function the transaction reverts, which
-   is exactly what happened when this pointed at the project's dev wallet —
+   is exactly what happened when this pointed at a contract wallet —
    every vote failed and voters paid gas for nothing.
 
    0x5257490000000000000000000000000000000000 is a dedicated null inbox:
@@ -2600,8 +2587,7 @@ function rankAcuteByCrises(counts){
    WRITE-INS
 
    Three of the six ballot slots are reserved for organisations nominated by
-   holders. A nomination costs $5 of $RWI, split as the founder specified:
-   $2 to the dev wallet, $3 burned to the dead address.
+   holders. A nomination costs $5 of $RWI, fully burned to the dead address.
 
    Three things about this are worth stating plainly rather than burying:
 
@@ -2623,9 +2609,7 @@ function rankAcuteByCrises(counts){
    ------------------------------------------------------------------------- */
 const WRITEIN_TAG      = 'RWIWRITEIN:';                                    // RWIWRITEIN:<round>:<slug>
 const WRITEIN_USD      = 5;
-const WRITEIN_DEV_USD  = 2;
-const WRITEIN_BURN_USD = 3;
-const WRITEIN_DEV      = '0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5';     // founder's dev wallet
+const WRITEIN_BURN_USD = WRITEIN_USD;
 const WRITEIN_BURN     = '0x000000000000000000000000000000000000dEaD';     // dead address
 const WRITEIN_SLOTS    = 3;
 const WRITEIN_TOLERANCE = 0.80;   // accept a payment worth >=80% of quote; price moves between steps
@@ -2880,7 +2864,7 @@ const TGB_CDN = 'https://static.tgbwidget.com/';
 let rwiUsdPrice = null;
 async function fetchRwiPrice(){
   try{
-    const res = await fetch(RWI_PAIR);
+    const res = await fetchWithTimeout(RWI_PAIR);
     if(!res.ok) throw new Error('price ' + res.status);
     const j = await res.json();
     const pairs = (j.pairs || []).filter(p => p.chainId === 'robinhood' && p.baseToken && p.baseToken.address.toLowerCase() === RWI.toLowerCase() && Number(p.priceUsd) > 0);
@@ -3014,6 +2998,16 @@ function fmtToken(bi){
 }
 
 /* ------------------------------------------------------------ rpc transport */
+async function fetchWithTimeout(url, options){
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
+  try{
+    const response = await fetch(url, {...options, signal:controller.signal});
+    // Read the body within the timeout, not just the response headers.
+    const body = await response.text();
+    return {ok:response.ok, status:response.status, json:async () => JSON.parse(body)};
+  }finally{ clearTimeout(timer); }
+}
 let rpcI = 0;
 async function rpc(method, params){
   // Prefer the connected wallet's node (never CORS-blocked); fall back to public RPCs.
@@ -3026,7 +3020,7 @@ async function rpc(method, params){
   for(let k=0;k<RPCS.length;k++){
     const url = RPCS[(rpcI+k)%RPCS.length];
     try{
-      const r = await fetch(url,{
+      const r = await fetchWithTimeout(url,{
         method:'POST',headers:{'content-type':'application/json'},
         body:JSON.stringify({jsonrpc:'2.0',id:Date.now(),method,params})
       });
@@ -3363,7 +3357,7 @@ function renderBallot(){
   });
 }
 function updateVoteButton(){
-  const ok = !!(account && walletOnChain && selected && myPower > 0n);
+  const ok = !!(ballotResolved && account && walletOnChain && selected && myPower > 0n);
   $('voteBtn').disabled = !ok;
   if(account && myPower === 0n) voteStatus(t('vote.st.noRwi'));
   else if(account && !walletOnChain) voteStatus(t('vote.st.switchChain'));
@@ -3604,6 +3598,9 @@ async function loadRound(txs){
       slateRecovered = true;
     }
   } else { ROUND = 1; SLATE = autoSlate(1); }
+  // Show the confirmed base slate before slower write-in verification finishes.
+  ballotResolved = true;
+  renderBallot();
   // Holder write-ins fill the remaining slots on top of the auto-composed half.
   try{
     const wi = await loadWriteIns(rows, ROUND);
@@ -3718,7 +3715,7 @@ async function refreshAll(opts){
   // sequence guard a slower earlier call can finish last and repaint stale data
   // over fresher data.
   const seq = ++refreshSeq;
-  const txs = await fetchVoteTxs(opts.force).catch(function(){ return []; });
+  const txs = await fetchVoteTxs(opts.force);
   if(seq !== refreshSeq) return;                 // superseded
   voteTxCache = txs;
   await loadRound(voteTxCache);
@@ -3737,7 +3734,7 @@ async function refreshAll(opts){
 
 /* --------------------------------------------------------------- write-ins
    A nomination only counts if it was PAID FOR. We read the token transfers
-   into both destinations and require the nominating wallet to appear in both,
+   into the burn address and require the nominating wallet to appear there,
    for at least the quoted amount. An unpaid RWIWRITEIN transaction is free to
    broadcast, so without this check the fee would be decorative. */
 let writeInCache = [];
@@ -3745,7 +3742,7 @@ async function fetchTokenTransfersTo(addr){
   const out = [];
   let url = SCAN + '/api/v2/addresses/' + addr + '/token-transfers?type=ERC-20&filter=to';
   for(let page = 0; page < 6; page++){
-    const res = await fetch(url, {headers:{accept:'application/json'}});
+    const res = await fetchWithTimeout(url, {headers:{accept:'application/json'}});
     if(!res.ok) break;
     const j = await res.json();
     (j.items || []).forEach(function(t){ out.push(t); });
@@ -3757,8 +3754,7 @@ async function fetchTokenTransfersTo(addr){
 }
 /* Sum of $RWI each wallet has sent to `addr`. */
 /* Sum $RWI sent to `addr`, counting only transfers at or after `sinceBlock`.
-   Both destinations receive unrelated traffic — the dev wallet takes project
-   fees, the dead address takes ordinary burns — so summing a wallet's entire
+   The dead address receives unrelated ordinary burns — so summing a wallet's entire
    history let any past burn retroactively pay for a nomination. A payment has
    to follow the nomination it is paying for. */
 function sumRwiBySender(transfers, sinceByWallet){
@@ -3799,7 +3795,7 @@ async function loadWriteIns(txs, round){
   });
   if(!nominations.length) return [];
 
-  let devPaid, burnPaid;
+  let burnPaid;
   try{
     // earliest nomination block per wallet — payments before it do not count
     const since = new Map();
@@ -3807,18 +3803,16 @@ async function loadWriteIns(txs, round){
       const cur = since.get(n.from);
       if(cur === undefined || n.block < cur) since.set(n.from, n.block);
     });
-    const both = await Promise.all([fetchTokenTransfersTo(WRITEIN_DEV), fetchTokenTransfersTo(WRITEIN_BURN)]);
-    devPaid = sumRwiBySender(both[0], since);
-    burnPaid = sumRwiBySender(both[1], since);
+    const transfers = await fetchTokenTransfersTo(WRITEIN_BURN);
+    burnPaid = sumRwiBySender(transfers, since);
   }catch(e){ return []; }                                        // cannot verify -> count nothing
 
   const price = rwiUsdPrice || await fetchRwiPrice();
   if(!price) return [];
-  const needDev  = usdToRwiUnits(WRITEIN_DEV_USD  * WRITEIN_TOLERANCE, price);
   const needBurn = usdToRwiUnits(WRITEIN_BURN_USD * WRITEIN_TOLERANCE, price);
 
   const paid = nominations.filter(function(n){
-    return (devPaid.get(n.from) || 0n) >= needDev && (burnPaid.get(n.from) || 0n) >= needBurn;
+    return (burnPaid.get(n.from) || 0n) >= needBurn;
   });
   // newest first; one slot per wallet so a single payer cannot take the whole board
   paid.sort(function(a,b){ return b.block !== a.block ? b.block - a.block : b.index - a.index; });
@@ -3864,11 +3858,23 @@ async function fetchVoteTxsUncached(){
   const MAX_PAGES = 20;
   let url = SCAN + '/api/v2/addresses/' + BALLOT_BOX + '/transactions?filter=to';
   for(let page=0; page<MAX_PAGES; page++){
-    const r = await fetch(url, {headers:{accept:'application/json'}});
-    if(!r.ok) break;
+    const r = await fetchWithTimeout(url, {headers:{accept:'application/json'}});
+    if(!r.ok) throw new Error('Vote history unavailable');
     const j = await r.json();
-    (j.items || []).forEach(t => out.push(t));
-    if(!j.next_page_params) break;
+    const items = j.items || [];
+    items.forEach(t => out.push(t));
+    // The newest controller declaration starts the current round. Older pages
+    // contain superseded ballots and cannot contribute votes to this round.
+    const hasRound = items.some(tx => {
+      const from = ((tx.from && tx.from.hash) || tx.from || '').toLowerCase();
+      if(from !== OWNER_LC) return false;
+      const text = fromHexUtf8(tx.raw_input || tx.input || '');
+      if(!text.startsWith(ROUND_TAG)) return false;
+      const body = text.slice(ROUND_TAG.length), sep = body.indexOf(':');
+      return sep > 0 && /^[1-9][0-9]*$/.test(body.slice(0,sep))
+        && body.slice(sep+1).split(',').some(slug => ORG_POOL[slug.trim().toLowerCase()]);
+    });
+    if(hasRound || !j.next_page_params) break;
     if(page === MAX_PAGES - 1){ votePagesTruncated = true; break; }
     const q = new URLSearchParams(j.next_page_params).toString();
     url = SCAN + '/api/v2/addresses/' + BALLOT_BOX + '/transactions?filter=to&' + q;
@@ -4173,7 +4179,7 @@ function repaintDynamic(){
       const total = usdToRwiUnits(WRITEIN_USD, p);
       el.textContent = t('vote.st.writeInCost', {
         usd: WRITEIN_USD, rwi: fmtToken(total),
-        dev: WRITEIN_DEV_USD, burn: WRITEIN_BURN_USD
+        burn: WRITEIN_BURN_USD
       });
     }
     updateSubmitState();
@@ -4254,17 +4260,11 @@ function repaintDynamic(){
       if(r1 && !txSucceeded(r1)) throw new Error('nomination reverted');
       markStep(1,'done');
 
-      // 2 — the dev share
+      // 2 — burn the entire nomination fee
       markStep(2,'doing');
       wiStatus(t('vote.st.wiSigning', {n:2}));
-      await sendRwi(WRITEIN_DEV, usdToRwiUnits(WRITEIN_DEV_USD, price), account);
+      await sendRwi(WRITEIN_BURN, usdToRwiUnits(WRITEIN_USD, price), account);
       markStep(2,'done');
-
-      // 3 — the burn
-      markStep(3,'doing');
-      wiStatus(t('vote.st.wiSigning', {n:3}));
-      await sendRwi(WRITEIN_BURN, usdToRwiUnits(WRITEIN_BURN_USD, price), account);
-      markStep(3,'done');
 
       // Clear the selection so the very next click cannot pay the fee twice for
       // the same organisation. Nominating a second one is deliberate: search again.
@@ -4336,9 +4336,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(sec && sec.scrollIntoView) sec.scrollIntoView({behavior:'smooth', block:'start'});
     }
   });
-  refreshAll().catch(function(){ ballotResolved = true; renderBallot(); });
-  // Never leave a skeleton up indefinitely if the network is unreachable.
-  setTimeout(function(){ if(!ballotResolved){ ballotResolved = true; renderBallot(); } }, 12000);
+  refreshAll().catch(function(){ $('tallyTotals').textContent = t('vote.st.tallyErr'); });
   // Surface a mis-configured ballot box before anyone spends gas on it.
   Promise.all([checkBallotBox(), checkOwner()]).then(function(r){
     const w = $('slateWarn'); if(!w) return;
@@ -4418,15 +4416,14 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="wi-chosen" id="wiChosen" hidden></div>
       <ol class="wi-steps" id="wiSteps" hidden>
         <li id="wiStep1"><span class="n">1</span><span class="s" data-i18n="vote.st.wiStep1">Nominate onchain</span></li>
-        <li id="wiStep2"><span class="n">2</span><span class="s" data-i18n="vote.st.wiStep2">Pay $2 to the dev wallet</span></li>
-        <li id="wiStep3"><span class="n">3</span><span class="s" data-i18n="vote.st.wiStep3">Burn $3 to the dead address</span></li>
+        <li id="wiStep2"><span class="n">2</span><span class="s" data-i18n="vote.st.wiStep2">Burn the full $5 in $RWI</span></li>
       </ol>
       <div class="wi-actions">
         <button type="button" class="btn" id="wiSubmit" disabled>Submit write-in</button>
         <span class="wi-block" id="wiBlock"></span>
       </div>
       <p class="wi-status" id="wiStatus"></p>
-      <p class="wi-note" data-i18n="vote.st.writeInNote">Three separate transactions: a token transfer carries no message, so the nomination and each payment are signed individually. The directory below is a verified subset of The Giving Block, not the full listing.</p>
+      <p class="wi-note" data-i18n="vote.st.writeInNote">Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.</p>
     </div>
   </div>
 </div>
