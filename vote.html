@@ -83,12 +83,12 @@ const TRANSLATIONS = {
     'vote.st.cancelled':'Cancelled.',
     'vote.st.roundFail':'Could not open the round.',
     'vote.st.reliefweb':'Reading ReliefWeb…',
-    'vote.st.slateLive':'{n} organisations · acute picks ranked against {c} live crisis signals',
-    'vote.st.slateRot':'{n} organisations · live feed unavailable, using rotation',
+    'vote.st.slateLive':'{n} organizationz · acute picks ranked against {c} live crisis signals',
+    'vote.st.slateRot':'{n} organizationz · live feed unavailable, using rotation',
     'vote.st.liveSignal':'{c} live crisis signals · {t}'
   ,
-    'vote.st.slateRecovered':'The onchain slate named organisations this build no longer lists — showing a freshly composed slate instead.',
-    'vote.st.slateStale':'{n} organisation(s) in this round are no longer listed and were skipped.',
+    'vote.st.slateRecovered':'The onchain slate named organizationz this build no longer lists — showing a freshly composed slate instead.',
+    'vote.st.slateStale':'{n} organization(s) in this round are no longer listed and were skipped.',
     'vote.ballotOpen':'Current ballot'
   ,
     'vote.st.pickWallet':'Choose a wallet',
@@ -109,12 +109,12 @@ const TRANSLATIONS = {
     'vote.st.yoursPending':'Your vote · confirming'
   ,
     'vote.st.writeInBtn':'Write in',
-    'vote.st.writeInTitle':'Write in an organisation',
+    'vote.st.writeInTitle':'Write in an organization',
     'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
-    'vote.st.writeInSearch':'Search organisations',
+    'vote.st.writeInSearch':'Search organizationz',
     'vote.st.writeInNone':'No match in the verified directory.',
-    'vote.st.writeInDup':'That organisation is already a standing candidate.',
+    'vote.st.writeInDup':'That organization is already a standing candidate.',
     'vote.st.writeInSubmit':'Submit write-in',
     'vote.st.writeInBy':'Written in by a holder',
     'vote.st.wiStep1':'Nominate onchain',
@@ -133,15 +133,15 @@ const TRANSLATIONS = {
   ,
     'vote.st.boxDelegated':'The ballot box address is a smart-account wallet (EIP-7702). Calldata sent to it runs the delegated contract and reverts, so votes cannot be logged there. It needs a plain address with no code.'
   ,
-    'vote.st.writeInAll':'All {n} organisations · type to filter',
+    'vote.st.writeInAll':'All {n} organizationz · type to filter',
     'vote.st.writeInMatches':'{n} matching'
   
   ,
-    'vote.st.slateTrimmed':'This round was opened in an older format with extra organisations; {n} are not shown so the write-in seats stay available.',
+    'vote.st.slateTrimmed':'This round was opened in an older format with extra organizationz; {n} are not shown so the write-in seats stay available.',
     'vote.st.wiOpen':'Open on The Giving Block'
   ,
     'vote.st.writeInFunds':'This wallet does not hold enough $RWI to cover the $5 fee.',
-    'vote.st.writeInPick':'Choose an organisation first.'
+    'vote.st.writeInPick':'Choose an organization first.'
   },
   es: {
     'nav.home.arrow':'← rwihood.org',
@@ -2316,21 +2316,21 @@ const ROUND_TAG = 'RWIROUND:';   // RWIROUND:<round>:<slug>,<slug>,...   (owner 
 const votePrefix = () => VOTE_TAG + ROUND + ':';
 
 /* ---------------------------------------------------------------------------
-   ORG POOL — every organisation a ballot can draw from.
+   ORG POOL — every organization a ballot can draw from.
 
    VERIFIED. Every `tgb` slug below was read directly off The Giving Block's own
    public directory, so the links resolve. Do not add an entry without checking
    its slug there first — a dead link on a page about verifiability is expensive.
 
    TIERS drive automatic slate composition (see autoSlate):
-     returning — organisations RWI has already funded, evidenced by the ledger.
+     returning — organizationz RWI has already funded, evidenced by the ledger.
      lane      — same cause areas as the ledger: hunger, homelessness, kids, environment.
      acute     — responding to whatever is worst right now.
 
    ON "CURRENT EVENTS" — READ THIS BEFORE TRUSTING IT:
    This page is static and has no backend. It cannot read the news. What it does
    is compose each round automatically from this pool so nobody has to pick, and
-   it rotates so organisations cycle across rounds instead of the same names
+   it rotates so organizationz cycle across rounds instead of the same names
    recurring. Keeping the ACUTE tier genuinely current is editorial work: someone
    has to revisit this list when the world changes. `crisis` and `checked` below
    record what each acute entry was chosen for and when, so staleness is visible
@@ -2407,8 +2407,8 @@ const ORG_POOL = {
 
   /* --- RETIRED -----------------------------------------------------------
      Slugs written into an onchain round declaration are PERMANENT. Deleting an
-     organisation from this pool orphans every past round that referenced it and
-     silently shrinks that ballot. So organisations are retired, never removed:
+     organization from this pool orphans every past round that referenced it and
+     silently shrinks that ballot. So organizationz are retired, never removed:
      they still resolve for historical rounds but are excluded from new slates.
      No `tgb` link here — these slugs were not verified against the directory. */
   nokidhungry:    { name:'No Kid Hungry', cause:'Childhood hunger · US', tier:'lane', retired:true },
@@ -2456,7 +2456,7 @@ const TGB_BASE = 'https://thegivingblock.com/donate/';
 
    So: query all of them, merge whatever answers, and only fall back to rotation
    if every one fails. Each source is normalised into the same theme buckets the
-   organisations are tagged against, so matching works regardless of which feed
+   organizationz are tagged against, so matching works regardless of which feed
    is alive.
 
      USGS      Access-Control-Allow-Origin: * (documented). Earthquakes.
@@ -2564,8 +2564,8 @@ async function fetchLiveCrises(useCache){
   return out;
 }
 
-/* Rank acute organisations by how much of the CURRENT crisis load they cover.
-   The judgement of "this organisation responds to floods" is encoded once in
+/* Rank acute organizationz by how much of the CURRENT crisis load they cover.
+   The judgement of "this organization responds to floods" is encoded once in
    ORG_POOL; which crises are live right now comes from ReliefWeb. */
 function normType(s){
   return String(s).toLowerCase().replace(/[^a-z]/g, '');   // "Wild Fire" -> "wildfire"
@@ -2588,7 +2588,7 @@ function canonType(s){
   const n = normType(s);
   return TYPE_ALIASES[n] || n;
 }
-/* Rank acute organisations by how much of the CURRENT crisis load they cover.
+/* Rank acute organizationz by how much of the CURRENT crisis load they cover.
    Returns null when NOTHING matches — that means the taxonomy drifted, and the
    caller must fall back rather than silently serve an alphabetical ordering
    dressed up as a live ranking. */
@@ -2616,7 +2616,7 @@ function rankAcuteByCrises(counts){
 /* ---------------------------------------------------------------------------
    WRITE-INS
 
-   Three of the six ballot slots are reserved for organisations nominated by
+   Three of the six ballot slots are reserved for organizationz nominated by
    holders. A nomination costs $5 of $RWI, fully burned to the dead address.
 
    Three things about this are worth stating plainly rather than burying:
@@ -2951,13 +2951,13 @@ function canNominate(key){
 }
 
 
-/* What an organisation DOES is not something this page can state. The Giving
+/* What an organization DOES is not something this page can state. The Giving
    Block publishes no API and their pages are not fetchable cross-origin, so
    there are no descriptions to show — and inventing one for 230 charities would
    be fabrication on a site whose whole argument is that claims are checkable.
    What IS real: their own logo, served from their CDN (an <img> load is not
    subject to CORS). An earlier build also showed a cause area guessed from the
-   organisation's name — that was removed, because a guess presented next to
+   organization's name — that was removed, because a guess presented next to
    real data reads as though it were sourced. The link is the source of truth. */
 
 let rwiUsdPrice = null;
@@ -2995,7 +2995,7 @@ function rotate(t, n, round){
   for(let i = 0; i < n; i++) out.push(pool[((round - 1) * n + i) % pool.length]);
   return out;
 }
-/* Pick `n` from a tier, walking the rotation but SKIPPING any organisation whose
+/* Pick `n` from a tier, walking the rotation but SKIPPING any organization whose
    theme is already represented. Without this the pool's cause ordering meant
    adjacent picks collided — two food banks, or two homelessness charities, in
    the same ballot. */
@@ -4213,7 +4213,7 @@ function repaintDynamic(){
   /* With no query, hand back the whole directory so the list can simply be
      browsed. TGB_DIRECTORY is already sorted by display name. No result cap:
      230 buttons is nothing to render, and truncating a browse list silently
-     hides organisations the user came here to find. */
+     hides organizationz the user came here to find. */
   function providerRows(){
     return directoryRows().filter(row => provider === 'donategg' ? !!DONATE_GG_BY_KEY[row[0]] : provider === 'givingblock' ? !DONATE_GG_BY_KEY[row[0]] : false);
   }
@@ -4255,7 +4255,7 @@ function repaintDynamic(){
         + '</div>';
     }).join('');
     // One tap or click selects, on every device. The external link sits outside
-    // the button, so opening an organisation's page can never be mistaken for
+    // the button, so opening an organization's page can never be mistaken for
     // choosing it.
     box.querySelectorAll('.wi-opt').forEach(function(b){
       b.addEventListener('click', function(){ pick(b.dataset.slug); });
@@ -4263,7 +4263,7 @@ function repaintDynamic(){
   }
 
   /* No hover card. It overlaid the very rows it described, so a click landed on
-     the card instead of the option — the reason a chosen organisation could not
+     the card instead of the option — the reason a chosen organization could not
      be submitted. And its "cause area" line was inferred from the name rather
      than sourced, which is not information. The logo is real, so it moves into
      the row; anything further is one click away on The Giving Block. */
@@ -4294,7 +4294,7 @@ function repaintDynamic(){
   }
 
   /* What blocks a submission should be visible from the moment the modal opens,
-     not discovered after choosing an organisation. The button says what it will
+     not discovered after choosing an organization. The button says what it will
      actually do, and does that thing. */
   function submitBlocker(){
     if(!wallet || !account) return 'connect';
@@ -4379,7 +4379,7 @@ function repaintDynamic(){
       markStep(2,'done');
 
       // Clear the selection so the very next click cannot pay the fee twice for
-      // the same organisation. Nominating a second one is deliberate: search again.
+      // the same organization. Nominating a second one is deliberate: search again.
       chosen = null;
       $w('wiChosen').hidden = true;
       $w('wiSearch').value = '';
@@ -4548,7 +4548,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <div id="writeInModal" role="dialog" aria-modal="true" aria-labelledby="wiTitle">
   <div class="wi-panel">
     <div class="wi-head">
-      <span id="wiTitle" data-i18n="vote.st.writeInTitle">Write in an organisation</span>
+      <span id="wiTitle" data-i18n="vote.st.writeInTitle">Write in an organization</span>
       <button type="button" id="wiClose" aria-label="Close">&#10005;</button>
     </div>
     <div class="wi-body">
@@ -4566,7 +4566,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div id="wiDirectory" hidden>
         <div class="wi-provider-nav"><button type="button" class="btn ghost" id="wiProviderBack">← Change provider</button><strong id="wiProviderName"></strong></div>
       <p class="wi-cost" id="wiCost"></p>
-      <label class="wi-label" for="wiSearch" data-i18n="vote.st.writeInSearch">Search organisations</label>
+      <label class="wi-label" for="wiSearch" data-i18n="vote.st.writeInSearch">Search organizationz</label>
       <input id="wiSearch" type="text" autocomplete="off" spellcheck="false" placeholder="food bank, wildlife, veterans…" role="combobox" aria-expanded="false" aria-controls="wiResults">
       <p class="wi-count" id="wiCount"></p>
       <p class="wi-note" id="donateGgStatus" role="status">Checking claimed Donate.gg charities…</p>
