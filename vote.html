@@ -1714,6 +1714,46 @@ document.addEventListener('DOMContentLoaded', function(){
     text-transform:uppercase;opacity:.72;margin:0 0 10px;
   }
 
+
+  /* Current-round participants: the same verified vote data as the ballot. */
+  .voters-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px}
+  .voters-head h2{font-size:clamp(1.6rem,3.5vw,2.2rem);line-height:1.1;margin:0}
+  .voters-count{font-family:var(--mono);font-size:10px;letter-spacing:.08em;border:1px solid var(--rule-strong);border-radius:999px;padding:7px 11px;white-space:nowrap}
+  .voters-intro{font-size:14px;opacity:.65;margin:10px 0 0;max-width:56ch;line-height:1.5}
+  .voters-notice{font-family:var(--mono);font-size:11px;line-height:1.6;opacity:.65;margin:14px 0 0}
+  .voters-scroll{max-height:420px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--ink) rgba(11,11,9,.08)}
+  .voters-scroll::-webkit-scrollbar{width:6px;height:6px}
+  .voters-scroll::-webkit-scrollbar-track{background:rgba(11,11,9,.08);border-radius:99px}
+  .voters-scroll::-webkit-scrollbar-thumb{background:rgba(11,11,9,.45);border-radius:99px}
+  .voters-table{width:100%;border-collapse:collapse;text-align:left;table-layout:fixed}
+  .voters-table th{position:sticky;top:0;background:var(--lime);z-index:1;font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;opacity:1;padding:0 14px 12px;border-bottom:1px solid var(--rule-strong)}
+  .voters-table th:first-child,.voters-table td:first-child{padding-left:0;width:34%}
+  .voters-table th:last-child,.voters-table td:last-child{text-align:right;padding-right:8px;width:25%}
+  .voters-table td{padding:18px 14px;vertical-align:middle;border-bottom:1px solid var(--rule);overflow-wrap:anywhere}
+  .voters-table tbody tr:last-child td{border-bottom:0}
+  .voters-table tbody tr:hover{background:rgba(11,11,9,.025)}
+  .voter-wallet{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .voter-address{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;text-decoration:none;white-space:nowrap}
+  .voter-address:hover{text-decoration:underline;text-underline-offset:4px}
+  .voter-dot{width:7px;height:7px;border:1px solid var(--ink);border-radius:50%;background:var(--ink);flex:none}
+  .voter-you,.voter-indexing{font-family:var(--mono);font-size:8px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--rule-strong);border-radius:99px;padding:3px 6px;white-space:nowrap}
+  .voter-choice{display:block;font-size:15px;line-height:1.4}
+  .voter-indexing{display:inline-block;margin-top:5px;opacity:.6}
+  .voter-weight{font-family:var(--mono);font-size:12px;font-weight:400;white-space:nowrap}
+  .voter-sub{display:block;font-family:var(--mono);font-size:9px;line-height:1.5;opacity:.55;margin-top:4px}
+  .voters-empty{padding:30px 0;border-top:1px solid var(--rule-strong);border-bottom:1px solid var(--rule);font-size:16px;line-height:1.5}
+  .voters-empty span{display:block;font-size:13px;opacity:.6;margin-top:5px}
+  @media(max-width:560px){
+    .voters-head{align-items:flex-start;gap:10px}.voters-count{font-size:9px;padding:6px 8px}
+    .voters-table,.voters-table tbody{display:block}
+    .voters-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+    .voters-table tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 14px;padding:17px 0;border-top:1px solid var(--rule)}
+    .voters-table td,.voters-table td:first-child,.voters-table td:last-child{display:block;width:auto;border:0;padding:0;text-align:left}
+    .voters-table td:nth-child(2){grid-column:1 / -1;grid-row:2}
+    .voters-table td:last-child{grid-column:2;grid-row:1;text-align:right}
+    .voter-choice{font-size:14px}.voter-address,.voter-weight{font-size:11px}
+  }
+
   /* ---------- header strip ---------- */
   header{
     border-bottom:1px solid var(--rule-strong);
@@ -2183,6 +2223,27 @@ document.addEventListener('DOMContentLoaded', function(){
       <p class="status" id="voteStatus"></p>
 
       <p class="note" data-i18n="vote.note.calldata">Every vote is a zero-value transaction carrying your choice in its calldata.</p>
+    </div>
+  </section>
+
+  <section id="participants" aria-labelledby="votersTitle">
+    <div class="wrap">
+      <div class="voters-head">
+        <div>
+          <p class="eyebrow">In this round</p>
+          <h2 id="votersTitle">The voters.</h2>
+          <p class="voters-intro">Every participating wallet, its latest choice, and its current voting weight.</p>
+        </div>
+        <span class="voters-count" id="voterCount">Reading wallets…</span>
+      </div>
+      <div class="voters-scroll" id="voterTableWrap" hidden tabindex="0" role="region" aria-label="Current round voters">
+        <table class="voters-table" aria-label="Participating wallets in the current round">
+          <thead><tr><th scope="col">Wallet</th><th scope="col">Current choice</th><th scope="col">Voting weight</th></tr></thead>
+          <tbody id="voterRows"></tbody>
+        </table>
+      </div>
+      <div class="voters-empty" id="voterEmpty" hidden>No voters yet.<span>Participating wallets will appear here after their first vote.</span></div>
+      <p class="voters-notice" id="voterNotice" role="status">Reading this round's voters from the chain…</p>
     </div>
   </section>
 
@@ -3708,6 +3769,7 @@ async function loadRound(txs, expectedSeq){
   // Show the confirmed base slate before slower write-in verification finishes.
   ballotResolved = true;
   renderBallot();
+  if(lastTally && lastTally.round !== ROUND) renderVoters();
   // Holder write-ins fill the remaining slots on top of the auto-composed half.
   try{
     const resolvedRound = ROUND, baseSlate = SLATE.slice();
@@ -3834,7 +3896,12 @@ async function refreshAll(opts){
   const requestedSeq = refreshSeq + 1;
   try{ await refreshAllUnchecked(opts); return true; }
   catch(e){
-    if(requestedSeq === refreshSeq){ $('tallyTotals').textContent = t('vote.st.tallyErr'); updateVoteButton(); }
+    if(requestedSeq === refreshSeq){
+      $('tallyTotals').textContent = t('vote.st.tallyErr');
+      const notice = $('voterNotice');
+      if(notice){ notice.hidden = false; notice.textContent = lastTally ? 'Showing the last verified voter list. Refresh the tally to retry.' : 'The voter list is unavailable. Refresh the tally to retry.'; }
+      updateVoteButton();
+    }
     return false;
   }
 }
@@ -4068,7 +4135,7 @@ function paintFrom(weights, latest, sig){
     byslug.set(v.slug, (byslug.get(v.slug) || 0n) + w);
     total += w; counted++;
   }
-  lastTally = { byslug:byslug, total:total, counted:counted, wallets:latest.size,
+  lastTally = { round:ROUND, byslug:byslug, total:total, counted:counted, wallets:latest.size,
                 unreadable:(lastTally && lastTally.unreadable) || 0,
                 truncated:votePagesTruncated, latestMap:latest, weights:weights, sig:sig, weightsAt:(lastTally && lastTally.weightsAt) || 0 };
   paintTally();
@@ -4170,10 +4237,68 @@ async function loadTally(cached){
     // Keep the resolved votes around: which one is "yours" depends on the wallet
   // connected at PAINT time, not at read time. Freezing it here meant a vote
   // cast in an earlier session never got marked when you reconnected.
-  lastTally = {byslug, total, counted, wallets:latest.size, unreadable:unreadable,
+  lastTally = {round:ROUND, byslug, total, counted, wallets:latest.size, unreadable:unreadable,
                truncated:votePagesTruncated, latestMap:latest, weights:weights, sig:sig, weightsAt:Date.now()};
   paintTally();
 }
+function participatingVoters(tally, round, slate){
+  if(!tally || tally.round !== round || !tally.latestMap) return [];
+  const valid = new Set(slate);
+  return [...tally.latestMap.entries()].filter(([address, vote]) =>
+    /^0x[a-f0-9]{40}$/i.test(address) && valid.has(vote.slug)
+  ).map(([address, vote]) => ({address, vote, weight:tally.weights.has(address) ? tally.weights.get(address) : null}))
+    .sort((a,b) => {
+      if(a.weight === null && b.weight !== null) return 1;
+      if(b.weight === null && a.weight !== null) return -1;
+      if(a.weight !== b.weight) return a.weight > b.weight ? -1 : 1;
+      return a.address.localeCompare(b.address);
+    });
+}
+function exactRwiAmount(units){
+  const divisor = 10n ** BigInt(RWI_DECIMALS);
+  const fraction = (units % divisor).toString().padStart(RWI_DECIMALS, '0').replace(/0+$/, '');
+  return (units / divisor).toString() + (fraction ? '.' + fraction : '');
+}
+function renderVoters(){
+  const rowsHost = $('voterRows'), table = $('voterTableWrap'), empty = $('voterEmpty');
+  const count = $('voterCount'), notice = $('voterNotice');
+  if(!rowsHost || !table || !empty || !count || !notice) return;
+  if(!lastTally || lastTally.round !== ROUND){
+    rowsHost.innerHTML = ''; table.hidden = true; empty.hidden = true;
+    count.textContent = 'Reading wallets…';
+    notice.hidden = false;
+    notice.textContent = 'Reading this round’s voters from the chain…';
+    return;
+  }
+  const voters = participatingVoters(lastTally, ROUND, SLATE);
+  count.textContent = 'Round ' + ROUND + ' · ' + voters.length + (voters.length === 1 ? ' wallet' : ' wallets');
+  empty.hidden = voters.length !== 0; table.hidden = voters.length === 0;
+  rowsHost.innerHTML = voters.map(({address, vote, weight}) => {
+    const organization = orgRecord(vote.slug);
+    const mine = account && address.toLowerCase() === account.toLowerCase();
+    const indexing = pendingVote && pendingVote.round === ROUND && pendingVote.addr === address && pendingVote.slug === vote.slug;
+    const amount = weight === null ? '—' : weight > 0n && weight < 10n ** 18n ? '<1 $RWI' : fmtToken(weight) + ' $RWI';
+    let detail = weight === null ? 'Balance unavailable' : weight === 0n ? 'No current voting weight' : '';
+    if(weight !== null && weight > 0n && lastTally.total > 0n){
+      const tenths = weight * 1000n / lastTally.total;
+      detail = (tenths === 0n ? '<0.1' : (Number(tenths) / 10).toFixed(1)) + '% of voting weight';
+    }
+    return '<tr><td><div class="voter-wallet"><a class="voter-address" href="' + SCAN + '/address/' + address
+      + '" target="_blank" rel="noopener" title="' + address + '" aria-label="View wallet ' + address + ' on the explorer">'
+      + '<span class="voter-dot" aria-hidden="true"></span>' + address.slice(0,6) + '…' + address.slice(-4) + ' ↗</a>'
+      + (mine ? '<span class="voter-you">You</span>' : '') + '</div></td>'
+      + '<td><span class="voter-choice">' + esc(organization ? organization.name : vote.slug) + '</span>'
+      + (indexing ? '<span class="voter-indexing">Indexing</span>' : '') + '</td>'
+      + '<td><strong class="voter-weight"' + (weight === null ? '' : ' title="' + exactRwiAmount(weight) + ' $RWI"') + '>' + esc(amount)
+      + '</strong><span class="voter-sub">' + esc(detail) + '</span></td></tr>';
+  }).join('');
+  const notes = [];
+  if(lastTally.unreadable) notes.push('Some wallet balances are unavailable; their voting weight is not counted.');
+  if(lastTally.truncated) notes.push('The available history is incomplete; additional voters may be missing.');
+  notice.textContent = notes.join(' ');
+  notice.hidden = !notes.length;
+}
+
 /* The connected wallet's current choice, so the ballot can show it back. */
 function myCurrentChoice(){
   if(pendingVote && account && pendingVote.addr === account.toLowerCase()) return pendingVote.slug;
@@ -4225,6 +4350,7 @@ function paintTally(){
   $('tallyTotals').textContent = counted
     ? t(counted===1 ? 'vote.st.wallet1' : 'vote.st.wallets', {n:counted, w:fmtToken(total)})
     : t('vote.st.noVotes');
+  renderVoters();
 }
 function showMyVote(){
   if(!account || !lastTally) { $('myVote').textContent=''; return; }

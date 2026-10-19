@@ -34,3 +34,7 @@ Run `node scripts/test_vote_safety.mjs` for pending/reverted receipts, wallet/ne
 The write-in fee is quoted once in USD and burned in RWI. `/api/write-in-quote` uses a completed historical USD candle from the active RWI/WETH pool, with a two-minute indexing buffer. New nominations record `RWIWRITEIN:<round>:<charity-key>:<quoteAt>`. The quote must be within 15 minutes before the mined nomination; both payment and verification use the same exact token units. A quote that expires before confirmation is stopped before any burn. No later token price participates in eligibility. Legacy nominations without a quote timestamp use a historical quote anchored to their onchain timestamp, retaining the old 20% tolerance only for those older records. The historical price provider must be reachable for an uncached verification; there is no fallback to current prices.
 
 Run `node scripts/test_write_in_quote.mjs` to verify exact token arithmetic, completed-candle selection, and rejection of later market prices.
+
+## Current-round participants
+
+The voter list beneath the ballot uses the tally's latest successful vote per wallet and its live-balance weights; it makes no extra chain requests. Rows include the explorer-linked wallet, current charity choice, voting weight, and share of the counted total. Zero balances and unavailable balances remain distinct. Refreshing the tally updates the list; a round change clears old participants. Run `node scripts/test_vote_participants.mjs` for participant filtering, sorting, escaping, and empty/loading states.

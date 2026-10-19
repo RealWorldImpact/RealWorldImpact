@@ -110,7 +110,7 @@ vm.runInContext('installDonateGg([], true)', context);
 burns[0].total.value = '500';
 assert.equal((await vm.runInContext('loadWriteIns(nomination, 1)', context)).length, 0, 'unclaimed or removed profiles cannot enter as write-ins');
 Object.assign(context, {
-  OWNER_LC:'0xowner', ROUND_TAG:'RWIROUND:', AUTO_SLOTS:3, TOTAL_SLOTS:6,
+  OWNER_LC:'0xowner', ROUND_TAG:'RWIROUND:', AUTO_SLOTS:3, TOTAL_SLOTS:6, lastTally:null,
   readPendingRound:()=>null, renderBallot(){}, $:()=>({textContent:''}),
   autoSlate:()=>['incumbent','givingblock','acute'],
   existingRound:[{ from:'0xowner', input:'RWIROUND:7:incumbent,givingblock,acute', block_number:20 }],

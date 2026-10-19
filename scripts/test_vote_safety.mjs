@@ -83,7 +83,7 @@ assert(!voteMessages.includes('vote.st.voteOk'));
 let clock = 100000, reads = 0, balance = 100n;
 const elements = new Map();
 const tally = run(section('function paintFrom(', '/* The connected wallet'), {
-  lastTally:null, tallySeq:0, votePagesTruncated:false, pendingVote:null,
+  lastTally:null, ROUND:1, tallySeq:0, votePagesTruncated:false, pendingVote:null,
   Date:{now:()=>clock}, SLATE:['charity'], RWI:'0xtoken',
   $:id=>{ if(!elements.has(id)) elements.set(id, {textContent:''}); return elements.get(id); },
   t:x=>x, votePrefix:()=> 'RWIVOTE:1:', fromHexUtf8:x=>x,
