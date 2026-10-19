@@ -2004,6 +2004,24 @@ document.addEventListener('DOMContentLoaded', function(){
     background:transparent;color:var(--lime);font-family:var(--mono);font-size:13px;box-sizing:border-box}
   #wiSearch:focus{border-color:var(--lime);outline:none}
   .wi-results{max-height:300px;overflow:auto;border-radius:10px;overscroll-behavior:contain}
+
+  /* Match the homepage ledger's scrollbars on the dark voting modals. */
+  .wi-panel,.wi-results{
+    scrollbar-width:thin;
+    scrollbar-color:rgba(204,254,6,.45) rgba(204,254,6,.08);
+  }
+  .wi-panel::-webkit-scrollbar,.wi-results::-webkit-scrollbar{width:6px;height:6px}
+  .wi-panel::-webkit-scrollbar-track,.wi-results::-webkit-scrollbar-track{
+    background:rgba(204,254,6,.08);border-radius:99px;
+  }
+  .wi-panel::-webkit-scrollbar-thumb,.wi-results::-webkit-scrollbar-thumb{
+    background:rgba(204,254,6,.4);border-radius:99px;
+  }
+  .wi-panel::-webkit-scrollbar-thumb:hover,.wi-results::-webkit-scrollbar-thumb:hover{
+    background:rgba(204,254,6,.7);
+  }
+  .wi-panel::-webkit-scrollbar-corner,.wi-results::-webkit-scrollbar-corner{background:var(--ink)}
+
   .wi-results:not(:empty){border:1px solid rgba(204,254,6,.28)}
   .wi-opt{display:block;width:100%;text-align:left;background:transparent;color:inherit;border:0;
     border-bottom:1px solid rgba(204,254,6,.16);padding:10px 12px;cursor:pointer;font-size:14px;line-height:1.3}
