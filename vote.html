@@ -83,11 +83,11 @@ const TRANSLATIONS = {
     'vote.st.cancelled':'Cancelled.',
     'vote.st.roundFail':'Could not open the round.',
     'vote.st.reliefweb':'Reading ReliefWeb…',
-    'vote.st.slateLive':'{n} organizationz · acute picks ranked against {c} live crisis signals',
-    'vote.st.slateRot':'{n} organizationz · live feed unavailable, using rotation',
+    'vote.st.slateLive':'{n} organizations · acute picks ranked against {c} live crisis signals',
+    'vote.st.slateRot':'{n} organizations · live feed unavailable, using rotation',
     'vote.st.liveSignal':'{c} live crisis signals · {t}'
   ,
-    'vote.st.slateRecovered':'The onchain slate named organizationz this build no longer lists — showing a freshly composed slate instead.',
+    'vote.st.slateRecovered':'The onchain slate named organizations this build no longer lists — showing a freshly composed slate instead.',
     'vote.st.slateStale':'{n} organization(s) in this round are no longer listed and were skipped.',
     'vote.ballotOpen':'Current ballot'
   ,
@@ -112,7 +112,7 @@ const TRANSLATIONS = {
     'vote.st.writeInTitle':'Write in an organization',
     'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
-    'vote.st.writeInSearch':'Search organizationz',
+    'vote.st.writeInSearch':'Search organizations',
     'vote.st.writeInNone':'No match in the verified directory.',
     'vote.st.writeInDup':'That organization is already a standing candidate.',
     'vote.st.writeInSubmit':'Submit write-in',
@@ -133,11 +133,11 @@ const TRANSLATIONS = {
   ,
     'vote.st.boxDelegated':'The ballot box address is a smart-account wallet (EIP-7702). Calldata sent to it runs the delegated contract and reverts, so votes cannot be logged there. It needs a plain address with no code.'
   ,
-    'vote.st.writeInAll':'All {n} organizationz · type to filter',
+    'vote.st.writeInAll':'All {n} organizations · type to filter',
     'vote.st.writeInMatches':'{n} matching'
   
   ,
-    'vote.st.slateTrimmed':'This round was opened in an older format with extra organizationz; {n} are not shown so the write-in seats stay available.',
+    'vote.st.slateTrimmed':'This round was opened in an older format with extra organizations; {n} are not shown so the write-in seats stay available.',
     'vote.st.wiOpen':'Open on The Giving Block'
   ,
     'vote.st.writeInFunds':'This wallet does not hold enough $RWI to cover the $5 fee.',
@@ -2323,14 +2323,14 @@ const votePrefix = () => VOTE_TAG + ROUND + ':';
    its slug there first — a dead link on a page about verifiability is expensive.
 
    TIERS drive automatic slate composition (see autoSlate):
-     returning — organizationz RWI has already funded, evidenced by the ledger.
+     returning — organizations RWI has already funded, evidenced by the ledger.
      lane      — same cause areas as the ledger: hunger, homelessness, kids, environment.
      acute     — responding to whatever is worst right now.
 
    ON "CURRENT EVENTS" — READ THIS BEFORE TRUSTING IT:
    This page is static and has no backend. It cannot read the news. What it does
    is compose each round automatically from this pool so nobody has to pick, and
-   it rotates so organizationz cycle across rounds instead of the same names
+   it rotates so organizations cycle across rounds instead of the same names
    recurring. Keeping the ACUTE tier genuinely current is editorial work: someone
    has to revisit this list when the world changes. `crisis` and `checked` below
    record what each acute entry was chosen for and when, so staleness is visible
@@ -2408,7 +2408,7 @@ const ORG_POOL = {
   /* --- RETIRED -----------------------------------------------------------
      Slugs written into an onchain round declaration are PERMANENT. Deleting an
      organization from this pool orphans every past round that referenced it and
-     silently shrinks that ballot. So organizationz are retired, never removed:
+     silently shrinks that ballot. So organizations are retired, never removed:
      they still resolve for historical rounds but are excluded from new slates.
      No `tgb` link here — these slugs were not verified against the directory. */
   nokidhungry:    { name:'No Kid Hungry', cause:'Childhood hunger · US', tier:'lane', retired:true },
@@ -2456,7 +2456,7 @@ const TGB_BASE = 'https://thegivingblock.com/donate/';
 
    So: query all of them, merge whatever answers, and only fall back to rotation
    if every one fails. Each source is normalised into the same theme buckets the
-   organizationz are tagged against, so matching works regardless of which feed
+   organizations are tagged against, so matching works regardless of which feed
    is alive.
 
      USGS      Access-Control-Allow-Origin: * (documented). Earthquakes.
@@ -2564,7 +2564,7 @@ async function fetchLiveCrises(useCache){
   return out;
 }
 
-/* Rank acute organizationz by how much of the CURRENT crisis load they cover.
+/* Rank acute organizations by how much of the CURRENT crisis load they cover.
    The judgement of "this organization responds to floods" is encoded once in
    ORG_POOL; which crises are live right now comes from ReliefWeb. */
 function normType(s){
@@ -2588,7 +2588,7 @@ function canonType(s){
   const n = normType(s);
   return TYPE_ALIASES[n] || n;
 }
-/* Rank acute organizationz by how much of the CURRENT crisis load they cover.
+/* Rank acute organizations by how much of the CURRENT crisis load they cover.
    Returns null when NOTHING matches — that means the taxonomy drifted, and the
    caller must fall back rather than silently serve an alphabetical ordering
    dressed up as a live ranking. */
@@ -2616,7 +2616,7 @@ function rankAcuteByCrises(counts){
 /* ---------------------------------------------------------------------------
    WRITE-INS
 
-   Three of the six ballot slots are reserved for organizationz nominated by
+   Three of the six ballot slots are reserved for organizations nominated by
    holders. A nomination costs $5 of $RWI, fully burned to the dead address.
 
    Three things about this are worth stating plainly rather than burying:
@@ -4213,7 +4213,7 @@ function repaintDynamic(){
   /* With no query, hand back the whole directory so the list can simply be
      browsed. TGB_DIRECTORY is already sorted by display name. No result cap:
      230 buttons is nothing to render, and truncating a browse list silently
-     hides organizationz the user came here to find. */
+     hides organizations the user came here to find. */
   function providerRows(){
     return directoryRows().filter(row => provider === 'donategg' ? !!DONATE_GG_BY_KEY[row[0]] : provider === 'givingblock' ? !DONATE_GG_BY_KEY[row[0]] : false);
   }
@@ -4566,7 +4566,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div id="wiDirectory" hidden>
         <div class="wi-provider-nav"><button type="button" class="btn ghost" id="wiProviderBack">← Change provider</button><strong id="wiProviderName"></strong></div>
       <p class="wi-cost" id="wiCost"></p>
-      <label class="wi-label" for="wiSearch" data-i18n="vote.st.writeInSearch">Search organizationz</label>
+      <label class="wi-label" for="wiSearch" data-i18n="vote.st.writeInSearch">Search organizations</label>
       <input id="wiSearch" type="text" autocomplete="off" spellcheck="false" placeholder="food bank, wildlife, veterans…" role="combobox" aria-expanded="false" aria-controls="wiResults">
       <p class="wi-count" id="wiCount"></p>
       <p class="wi-note" id="donateGgStatus" role="status">Checking claimed Donate.gg charities…</p>
