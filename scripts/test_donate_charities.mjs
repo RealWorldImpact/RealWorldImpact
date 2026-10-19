@@ -41,8 +41,7 @@ globalThis.fetch = originalFetch;
 
 const html = readFileSync(new URL('../vote.html', import.meta.url), 'utf8');
 for (const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)) new vm.Script(match[1]);
-const registryCode = html.slice(html.indexOf('const DONATE_GG_SEED ='), html.indexOf('/* Verified against the directory', html.indexOf('const DONATE_GG_SEED =')) > 0
-  ? html.indexOf('/* Verified against the directory', html.indexOf('const DONATE_GG_SEED =')) : html.indexOf('let rwiUsdPrice ='));
+const registryCode = html.slice(html.indexOf('const DONATE_GG_SEED ='), html.indexOf('// A fee quote is anchored'));
 const context = {
   ORG_POOL:{ incumbent:{name:'Incumbent Charity'}, givingblock:{name:'Giving Block Charity'} },
   TGB_DIRECTORY:[['givingblock','Giving Block Charity']], TGB_BY_SLUG:{givingblock:'Giving Block Charity'},
@@ -72,18 +71,32 @@ Object.assign(context, {
   WRITEIN_TAG:'RWIWRITEIN:', RWI:'0xtoken', WRITEIN_BURN:'0xdead', WRITEIN_BURN_USD:5,
   WRITEIN_TOLERANCE:0.8, WRITEIN_SLOTS:3, rwiUsdPrice:1,
   fromHexUtf8:value=>value, usdToRwiUnits:usd=>BigInt(Math.round(usd * 100)),
+  fetchWriteInQuote:async at=>({quoteAt:at, units:"500"}),
 });
 let burns = [];
 context.fetchTokenTransfersTo = async addr => { assert.equal(addr, '0xdead'); return burns; };
 vm.runInContext('refreshDonateGg = async () => true', context);
 vm.runInContext(html.slice(html.indexOf('function sumRwiBySender('), html.indexOf('/* ------------------------------------------------------------------- tally */')), context);
-context.nomination = [{ from:'0xvoter', input:'RWIWRITEIN:1:gg-abc-123', block_number:10 }];
+context.nomination = [{ from:'0xvoter', input:'RWIWRITEIN:1:gg-abc-123', timestamp:'2026-10-19T19:00:00Z', block_number:10 }];
 burns = [{ token:{address:'0xtoken'}, from:'0xvoter', block_number:11, total:{value:'500'} }];
 assert.equal((await vm.runInContext('loadWriteIns(nomination, 1)', context))[0], 'gg-abc-123');
+// The timestamp is onchain; a valid fixed quote must be before it and no older than 15 minutes.
+context.nomination[0].input = 'RWIWRITEIN:1:gg-abc-123:' + (Math.floor(Date.parse(context.nomination[0].timestamp) / 60000) * 60 - 120);
+context.rwiUsdPrice = 1000000;
+assert.equal((await vm.runInContext('loadWriteIns(nomination, 1)', context))[0], 'gg-abc-123');
+context.rwiUsdPrice = 0.000000001;
+assert.equal((await vm.runInContext('loadWriteIns(nomination, 1)', context))[0], 'gg-abc-123');
+burns[0].total.value = '499';
+assert.equal((await vm.runInContext('loadWriteIns(nomination, 1)', context)).length, 0, 'new write-ins require the entire fixed quote');
+burns[0].total.value = '500';
+const fixedInput = context.nomination[0].input;
+context.nomination[0].input = 'RWIWRITEIN:1:gg-abc-123:1';
+assert.equal((await vm.runInContext('loadWriteIns(nomination, 1)', context)).length, 0, 'arbitrary old quote times cannot underpay');
+context.nomination[0].input = fixedInput;
 burns[0].total.value = '300';
 assert.equal((await vm.runInContext('loadWriteIns(nomination, 1)', context)).length, 0);
 burns[0].total.value = '500';
-context.nomination.push({from:'0xvoter',input:'RWIWRITEIN:1:gg-second',block_number:12});
+context.nomination.push({from:'0xvoter',input:'RWIWRITEIN:1:gg-second',timestamp:'2026-10-19T19:00:02Z',block_number:12});
 const paidChoices = await vm.runInContext('loadWriteIns(nomination, 1)', context);
 assert.equal(paidChoices.includes('gg-second'), false, 'an earlier burn cannot fund a later nomination');
 assert.equal(paidChoices.includes('gg-abc-123'), true);
@@ -108,5 +121,5 @@ await vm.runInContext('loadRound(existingRound)', context);
 assert.equal(context.ROUND, 7);
 assert.equal(context.SLATE.join(','), 'incumbent,givingblock,acute', 'declared ballots remain unchanged');
 assert(!/WRITEIN_DEV|\{dev\}|wiStep3/.test(html));
-assert(html.includes('sendRwi(WRITEIN_BURN, usdToRwiUnits(WRITEIN_USD, price), payer, signer)'));
+assert(html.includes('sendRwi(WRITEIN_BURN, feeUnits, payer, signer)'));
 console.log('PASS: claimed-only filtering, pagination, cache, failure handling, mixed-source nominations, automatic selection, historical IDs, and full-burn fee.');
