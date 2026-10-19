@@ -1986,6 +1986,18 @@ document.addEventListener('DOMContentLoaded', function(){
   #wiClose:hover,#wiClose:focus-visible{background:rgba(204,254,6,.12);outline:none}
   .wi-body{padding:18px 16px 20px}
   .wi-lede{font-size:15px;line-height:1.5;margin:0 0 10px}
+  .wi-body [hidden]{display:none!important}
+  .wi-providers{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+  .wi-provider{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+    min-height:166px;padding:18px 12px;border:1px solid #d8d8d1;border-radius:12px;
+    background:#fff;color:#0b0b09;cursor:pointer;font-family:var(--mono);font-size:11px;line-height:1.5;text-align:center}
+  .wi-provider:hover,.wi-provider:focus-visible{border-color:var(--lime);outline:2px solid var(--lime);outline-offset:3px}
+  .wi-provider img{width:100%;max-width:180px;height:62px;object-fit:contain}
+  .wi-provider img.donate-gg-mark{width:62px}
+  .wi-provider span{font-size:10px;opacity:.65}
+  .wi-provider-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:14px 0 18px}
+  .wi-provider-nav strong{font-family:var(--mono);font-size:11px}
+  @media(max-width:400px){.wi-providers{grid-template-columns:1fr}.wi-provider{min-height:130px}}
   .wi-cost{font-family:var(--mono);font-size:12px;margin:0 0 16px;opacity:.85}
   .wi-label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.65;margin:0 0 7px}
   #wiSearch{width:100%;padding:11px 13px;border-radius:10px;border:1px solid rgba(204,254,6,.4);
@@ -4167,7 +4179,7 @@ function repaintDynamic(){
 
 /* ------------------------------------------------------- write-in interface */
 (function(){
-  let chosen = null, busy = false;
+  let chosen = null, busy = false, provider = null;
   function $w(id){ return document.getElementById(id); }
   function wiStatus(msg, isErr){
     const el = $w('wiStatus'); if(!el) return;
@@ -4184,11 +4196,14 @@ function repaintDynamic(){
      browsed. TGB_DIRECTORY is already sorted by display name. No result cap:
      230 buttons is nothing to render, and truncating a browse list silently
      hides organisations the user came here to find. */
+  function providerRows(){
+    return directoryRows().filter(row => provider === 'donategg' ? !!DONATE_GG_BY_KEY[row[0]] : provider === 'givingblock' ? !DONATE_GG_BY_KEY[row[0]] : false);
+  }
   function search(q){
     const s = q.trim().toLowerCase();
-    if(!s) return directoryRows();
+    if(!s) return providerRows();
     const scored = [];
-    for(const row of directoryRows()){
+    for(const row of providerRows()){
       const name = row[1].toLowerCase();
       let score = -1;
       if(name.startsWith(s)) score = 0;
@@ -4206,7 +4221,7 @@ function repaintDynamic(){
     const rows = search(q);
     if(count) count.textContent = q.trim()
       ? t('vote.st.writeInMatches', {n: rows.length})
-      : t('vote.st.writeInAll', {n: directoryRows().length});
+      : t('vote.st.writeInAll', {n: providerRows().length});
     if(!rows.length){ box.innerHTML = '<div class="wi-empty">' + esc(t('vote.st.writeInNone')) + '</div>'; return; }
     box.innerHTML = rows.map(function(r){
       const gg = DONATE_GG_BY_KEY[r[0]];
@@ -4363,18 +4378,47 @@ function repaintDynamic(){
     const btn = $w('writeInBtn'), modal = $w('writeInModal'),
           panel = modal && modal.querySelector('.wi-panel');
     if(!btn || !modal) return;
-    document.addEventListener('donate-directory-updated', function(){ if(modal.classList.contains('open')) renderResults($w('wiSearch').value); });
+    document.addEventListener('donate-directory-updated', function(){ if(modal.classList.contains('open') && provider === 'donategg') renderResults($w('wiSearch').value); });
     const retry = $w('donateGgRetry'); if(retry) retry.addEventListener('click', () => refreshDonateGg(true));
     let lastFocus = null;
-    function open(){
-      lastFocus = document.activeElement;
-      modal.classList.add('open'); document.body.style.overflow = 'hidden';
-      refreshCost();
-      refreshDonateGg();
+    function resetSelection(){
+      clearTimeout(deb);
       $w('wiSearch').value = ''; chosen = null;
       $w('wiChosen').hidden = true; $w('wiSteps').hidden = true; $w('wiSubmit').disabled = true;
-      renderResults('');                       // full list, ready to browse
+      wiStatus('');
+    }
+    function showProviders(){
+      if(busy) return;
+      provider = null;
+      resetSelection();
+      $w('wiProviders').hidden = false;
+      $w('wiDirectory').hidden = true;
+      $w('wiResults').innerHTML = '';
+      $w('wiGivingBlock').focus();
+    }
+    function chooseProvider(source){
+      if(busy) return;
+      provider = source;
+      resetSelection();
+      $w('wiProviders').hidden = true;
+      $w('wiDirectory').hidden = false;
+      $w('wiProviderName').textContent = source === 'donategg' ? 'Donate.gg charities' : 'The Giving Block charities';
+      $w('donateGgStatus').hidden = source !== 'donategg';
+      $w('donateGgRetry').hidden = source !== 'donategg';
+      renderResults('');
+      refreshCost();
+      if(source === 'donategg') refreshDonateGg();
       $w('wiSearch').focus();
+    }
+    $w('wiProviders').querySelectorAll('[data-provider]').forEach(button => {
+      button.addEventListener('click', () => chooseProvider(button.dataset.provider));
+    });
+    $w('wiProviderBack').addEventListener('click', showProviders);
+    function open(){
+      if(busy) return;
+      lastFocus = document.activeElement;
+      modal.classList.add('open'); document.body.style.overflow = 'hidden';
+      showProviders();
     }
     function close(){
       modal.classList.remove('open'); document.body.style.overflow = '';
@@ -4491,6 +4535,18 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
     <div class="wi-body">
       <p class="wi-lede" data-i18n="vote.st.writeInLede">Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.</p>
+      <div class="wi-providers" id="wiProviders" aria-label="Choose a charity provider">
+        <button class="wi-provider" type="button" id="wiGivingBlock" data-provider="givingblock" aria-label="Choose a charity from The Giving Block">
+          <img src="/assets/the-giving-block-logo.svg" alt="The Giving Block" width="180" height="62">
+          <div>Select a charity<br><span>The Giving Block</span></div>
+        </button>
+        <button class="wi-provider" type="button" id="wiDonateGg" data-provider="donategg" aria-label="Choose a charity from Donate.gg">
+          <img class="donate-gg-mark" src="/assets/donate-gg-logo.svg" alt="Donate.gg" width="62" height="62">
+          <div>Select a charity<br><span>Donate.gg · claimed profiles</span></div>
+        </button>
+      </div>
+      <div id="wiDirectory" hidden>
+        <div class="wi-provider-nav"><button type="button" class="btn ghost" id="wiProviderBack">← Change provider</button><strong id="wiProviderName"></strong></div>
       <p class="wi-cost" id="wiCost"></p>
       <label class="wi-label" for="wiSearch" data-i18n="vote.st.writeInSearch">Search organisations</label>
       <input id="wiSearch" type="text" autocomplete="off" spellcheck="false" placeholder="food bank, wildlife, veterans…" role="combobox" aria-expanded="false" aria-controls="wiResults">
@@ -4509,6 +4565,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
       <p class="wi-status" id="wiStatus"></p>
       <p class="wi-note" data-i18n="vote.st.writeInNote">Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory.</p>
+      </div>
     </div>
   </div>
 </div>
