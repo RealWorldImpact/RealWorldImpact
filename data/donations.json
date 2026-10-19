@@ -1,10 +1,17 @@
 {
   "name": "Real World Impact donation ledger",
   "currency": "USD",
-  "updatedThrough": "2026-09-09",
+  "updatedThrough": "2026-10-15",
   "source": "https://www.rwihood.org/#ledger",
   "note": "Published donation records. Amounts are reported USD values; follow each transaction and announcement link to verify. This is a published ledger, not a live chain index.",
   "donations": [
+    {
+      "recipient": "World Central Kitchen",
+      "amountUsd": 100.0,
+      "date": "2026-10-15",
+      "transactionUrl": "https://basescan.org/tx/0x3985611413b4f600b28f3672c9177bd6ecbabfe3c5cf08714849d316e8d7f654",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2110868007316541735"
+    },
     {
       "recipient": "NepalRelief.org",
       "amountUsd": 190.0,
