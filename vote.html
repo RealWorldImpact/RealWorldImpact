@@ -2001,7 +2001,7 @@ document.addEventListener('DOMContentLoaded', function(){
   .wi-cost{font-family:var(--mono);font-size:12px;margin:0 0 16px;opacity:.85}
   .wi-label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.65;margin:0 0 7px}
   #wiSearch{width:100%;padding:11px 13px;border-radius:10px;border:1px solid rgba(204,254,6,.4);
-    background:transparent;color:var(--lime);font-family:var(--mono);font-size:13px;box-sizing:border-box}
+    background:transparent;color:var(--lime);font-family:var(--mono);font-size:16px;box-sizing:border-box}
   #wiSearch:focus{border-color:var(--lime);outline:none}
   .wi-results{max-height:300px;overflow:auto;border-radius:10px;overscroll-behavior:contain}
 
@@ -4426,7 +4426,10 @@ function repaintDynamic(){
       renderResults('');
       refreshCost();
       if(source === 'donategg') refreshDonateGg();
-      $w('wiSearch').focus();
+      // Touch users can browse without a keyboard or focus-induced viewport zoom.
+      const focusTarget = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+        ? $w('wiSearch') : $w('wiProviderName');
+      focusTarget.focus({preventScroll:true});
     }
     $w('wiProviders').querySelectorAll('[data-provider]').forEach(button => {
       button.addEventListener('click', () => chooseProvider(button.dataset.provider));
@@ -4564,7 +4567,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </button>
       </div>
       <div id="wiDirectory" hidden>
-        <div class="wi-provider-nav"><button type="button" class="btn ghost" id="wiProviderBack">← Change provider</button><strong id="wiProviderName"></strong></div>
+        <div class="wi-provider-nav"><button type="button" class="btn ghost" id="wiProviderBack">← Change provider</button><strong id="wiProviderName" tabindex="-1"></strong></div>
       <p class="wi-cost" id="wiCost"></p>
       <label class="wi-label" for="wiSearch" data-i18n="vote.st.writeInSearch">Search organizations</label>
       <input id="wiSearch" type="text" autocomplete="off" spellcheck="false" placeholder="food bank, wildlife, veterans…" role="combobox" aria-expanded="false" aria-controls="wiResults">
