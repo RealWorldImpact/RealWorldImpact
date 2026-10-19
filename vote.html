@@ -59,6 +59,7 @@ const TRANSLATIONS = {
     'vote.addr.note':'Rounds are opened by a transaction from the round controller above. Declarations sent from any other address are ignored when this page reads the chain — so you can confirm for yourself who can and cannot move the ballot, without taking our word for it.',
     'vote.footer.brand':'Real World Impact · Community signal',
     'vote.footer.fine':"$RWI is a memecoin with a charitable mission, not an investment product or governance token. This poll is advisory. Voting costs gas and grants no rights or claim on funds. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile. A winning vote is a recommendation; the project retains final say.",
+    'vote.st.txPending':'Transaction submitted but not confirmed yet. Check its status in your wallet before trying again.',
     'vote.st.tallyReading':'Reading votes from chain…',
     'vote.st.tallyErr':'Could not read the tally right now.',
     'vote.st.noVotes':'No votes cast yet — be the first.',
@@ -3114,7 +3115,7 @@ async function rpc(method, params){
   if(wallet && walletOnChain){
     try{
       const res = await wallet.request({method, params});
-      if(res !== undefined && res !== null) return res;
+      if(res !== undefined) return res;
     }catch(e){/* fall through */}
   }
   for(let k=0;k<RPCS.length;k++){
@@ -3125,7 +3126,7 @@ async function rpc(method, params){
         body:JSON.stringify({jsonrpc:'2.0',id:Date.now(),method,params})
       });
       const j = await r.json();
-      if(j && j.result !== undefined && j.result !== null){ rpcI = (rpcI+k)%RPCS.length; return j.result; }
+      if(j && Object.prototype.hasOwnProperty.call(j, 'result')){ rpcI = (rpcI+k)%RPCS.length; return j.result; }
     }catch(e){/* next */}
   }
   throw new Error('rpc failed: ' + method);
@@ -3329,7 +3330,7 @@ async function setAccount(a){
   $('disconnectBtn').hidden = false;
   const wp=$('walletPicker'); if(wp){ wp.hidden = true; wp.innerHTML=''; }
   walletStatus('');
-  if(!same) selected = null;          // a different wallet should not inherit a selection
+  if(!same){ selected = null; myPower = 0n; }          // a different wallet should not inherit a selection
   await refreshPower();
   updateVoteButton();
   showMyVote();
@@ -3372,11 +3373,15 @@ async function ensureChain(){
 let myPower = 0n;
 async function refreshPower(){
   if(!account){ myPower = 0n; return; }
+  const powerAccount = account;
   try{
-    myPower = await erc20BalanceOf(RWI, account);
+    const power = await erc20BalanceOf(RWI, powerAccount);
+    if(!account || account.toLowerCase() !== powerAccount.toLowerCase()) return;
+    myPower = power;
     $('powerChip').textContent = fmtToken(myPower) + ' $RWI';
     $('powerChip').hidden = false;
   }catch(e){
+    if(!account || account.toLowerCase() !== powerAccount.toLowerCase()) return;
     myPower = 0n;
     $('powerChip').hidden = true;
   }
@@ -3457,7 +3462,7 @@ function renderBallot(){
   });
 }
 function updateVoteButton(){
-  const ok = !!(ballotResolved && account && walletOnChain && selected && myPower > 0n);
+  const ok = !!(!voteBusy && ballotResolved && account && walletOnChain && selected && myPower > 0n);
   $('voteBtn').disabled = !ok;
   if(account && myPower === 0n) voteStatus(t('vote.st.noRwi'));
   else if(account && !walletOnChain) voteStatus(t('vote.st.switchChain'));
@@ -3478,9 +3483,9 @@ function intrinsicGasFor(dataHex){
 }
 /* Ask the node what the transaction would cost. A throw here means it would
    REVERT — so we stop rather than let someone pay gas for a guaranteed failure. */
-async function preflightGas(txParams){
+async function preflightGas(txParams, signer = wallet){
   try{
-    const est = await wallet.request({ method:'eth_estimateGas', params:[txParams] });
+    const est = await signer.request({ method:'eth_estimateGas', params:[txParams] });
     const n = BigInt(est);
     return '0x' + ((n * 13n) / 10n).toString(16);      // +30% headroom
   }catch(e){
@@ -3538,12 +3543,23 @@ async function checkOwner(){
   return ownerIsContract;
 }
 
+async function assertWalletContext(signer, sender){
+  if(!signer || signer !== wallet || !account || account.toLowerCase() !== sender.toLowerCase()) throw new Error('Wallet changed');
+  const [accounts, chainId] = await Promise.all([
+    signer.request({method:'eth_accounts'}), signer.request({method:'eth_chainId'})
+  ]);
+  if(!accounts || !accounts[0] || accounts[0].toLowerCase() !== sender.toLowerCase()
+      || BigInt(chainId) !== BigInt(CHAIN.idHex)) throw new Error('Wallet or network changed');
+}
+let voteBusy = false;
 async function castVote(){
-  if(!account || !selected) return;
+  if(voteBusy || !ballotResolved || !walletOnChain || !account || !selected || myPower <= 0n) return;
+  voteBusy = true;
+  const signer = wallet, sender = account, voteRound = ROUND;
   clearVoteStatus();
   const chosen = selected;                 // refreshAll clears `selected`
   const payload = votePrefix() + chosen;
-  const tx = { from:account, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) };
+  const tx = { from:sender, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) };
   try{
     $('voteBtn').disabled = true;
 
@@ -3553,7 +3569,7 @@ async function castVote(){
     voteStatus(t('vote.st.checking'));
     const boxHasCode = ballotBoxIsContract === null ? await checkBallotBox() : ballotBoxIsContract;
     if(boxHasCode){ voteStatus(t(ballotBoxKind === 'delegated' ? 'vote.st.boxDelegated' : 'vote.st.boxContract'), true); return; }
-    const gas = await preflightGas(tx);
+    const gas = await preflightGas(tx, signer);
     if(gas === null){
       const isContract = ballotBoxIsContract === null ? await checkBallotBox() : ballotBoxIsContract;
       voteStatus(t(isContract ? 'vote.st.boxContract' : 'vote.st.wouldRevert'), true);
@@ -3562,40 +3578,47 @@ async function castVote(){
     tx.gas = gas;
 
     voteStatus(t('vote.st.confirmVote'));
-    const txHash = await wallet.request({ method:'eth_sendTransaction', params:[tx] });
+    await assertWalletContext(signer, sender);
+    if(ROUND !== voteRound) throw new Error('Ballot changed');
+    const txHash = await signer.request({ method:'eth_sendTransaction', params:[tx] });
     voteStatus(t('vote.st.voteSent'));
     const receipt = await waitForTx(txHash);
     if(receipt && !txSucceeded(receipt)){ voteStatus(t('vote.st.voteReverted'), true); return; }
 
     // Show it straight away. The vote is confirmed onchain; the indexer simply
     // has not caught up, so waiting on it would leave the page looking dead.
-    pendingVote = { addr: account.toLowerCase(), slug: chosen, round: ROUND, at: Date.now() };
+    pendingVote = { addr: sender.toLowerCase(), slug: chosen, round: voteRound, at: Date.now() };
     voteStatus(t('vote.st.voteOk'), false, {hold:true});
     await refreshAll({keepChoice: chosen});
     schedulePendingReconcile();
   }catch(e){
-    voteStatus(t(e && e.code === 4001 ? 'vote.st.voteCancel' : 'vote.st.voteFail'), true);
+    voteStatus(t(e && e.code === 'TX_PENDING' ? 'vote.st.txPending' : e && e.code === 4001 ? 'vote.st.voteCancel' : 'vote.st.voteFail'), true);
   }finally{
+    voteBusy = false;
     updateVoteButton();
   }
 }
 async function waitForTx(hash, tries){
   tries = tries || 24;
-  for(let i=0;i<tries;i++){
+  const deadline = Date.now() + 60000;
+  for(let i=0;i<tries && Date.now() < deadline;i++){
     try{
       const r = await rpc('eth_getTransactionReceipt',[hash]);
       if(r && r.blockNumber) return r;
     }catch(e){}
     await new Promise(function(r){ setTimeout(r, 1500); });
   }
-  return null;
+  const pending = new Error('Transaction confirmation is still pending');
+  pending.code = 'TX_PENDING';
+  pending.hash = hash;
+  throw pending;
 }
 /* A mined transaction is not a successful one. status 0x0 means it reverted —
    reporting that as "recorded" is how a page ends up claiming votes it never got. */
 function txSucceeded(receipt){
   if(!receipt) return false;
   const s = receipt.status;
-  if(s === undefined || s === null) return true;      // pre-Byzantium shape
+  if(s === undefined || s === null) return false;     // require explicit success on this chain
   return s === '0x1' || s === 1 || s === true;
 }
 
@@ -3644,12 +3667,13 @@ let votePagesTruncated = false;
 let staleSlugs = [];
 let slateRecovered = false;
 let slateTrimmed = 0;
-async function loadRound(txs){
+async function loadRound(txs, expectedSeq){
   slateRecovered = false;
   slateTrimmed = 0;
   const rows = txs || await fetchVoteTxs();
   // Resolve newly listed Donate.gg IDs before interpreting an onchain slate.
   if(rows.some(tx => fromHexUtf8(tx.raw_input || tx.input || '').includes('gg-'))) await refreshDonateGg();
+  if(expectedSeq !== undefined && expectedSeq !== refreshSeq) return;
   let best = null;
   for(const t of rows){
     const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
@@ -3705,13 +3729,16 @@ async function loadRound(txs){
   renderBallot();
   // Holder write-ins fill the remaining slots on top of the auto-composed half.
   try{
-    const wi = await loadWriteIns(rows, ROUND);
+    const resolvedRound = ROUND, baseSlate = SLATE.slice();
+    const wi = await loadWriteIns(rows, resolvedRound);
+    if(expectedSeq !== undefined && expectedSeq !== refreshSeq) return;
+    if(resolvedRound !== ROUND) return;
     if(wi.length){
       // Everything the round declared onchain stays on the ballot. Truncating
       // it to make room for write-ins dropped candidates people may already
       // have voted for, and loadTally validates against SLATE — so those votes
       // vanished without a word. Write-ins take whatever seats are left.
-      const declared = SLATE.slice();
+      const declared = baseSlate;
       const room = Math.max(0, TOTAL_SLOTS - declared.length);
       SLATE = [...new Set([...declared, ...wi.slice(0, room)])];
     }
@@ -3752,7 +3779,16 @@ function renderOwnerPanel(){
   });
 }
 
+let roundBusy = false;
 async function openNewRound(){
+  if(roundBusy || !wallet || !account || !walletOnChain) return;
+  roundBusy = true;
+  try{ await openNewRoundUnchecked(); }
+  catch(e){ $('ownerStatus').textContent = t(e && e.code === 'TX_PENDING' ? 'vote.st.txPending' : 'vote.st.roundFail'); }
+  finally{ roundBusy = false; }
+}
+async function openNewRoundUnchecked(){
+  const roundSigner = wallet;
   // The slate is composed automatically from ORG_POOL — nothing to choose.
   const n = ROUND + 1;
   $('ownerStatus').textContent = t('vote.st.readingCrises');
@@ -3760,7 +3796,7 @@ async function openNewRound(){
   const slate = composed.slate;
   if(!slate.length) return;
   let live = account;
-  try{ const a = await wallet.request({method:'eth_accounts'}); if(a && a[0]) live = a[0]; }catch(e){}
+  try{ const a = await roundSigner.request({method:'eth_accounts'}); if(a && a[0]) live = a[0]; }catch(e){}
   if(!live || live.toLowerCase() !== OWNER_LC){
     // If OWNER holds code it can never be a transaction sender, so no wallet
     // will ever match it. Say that, rather than implying the user is not you.
@@ -3775,14 +3811,16 @@ async function openNewRound(){
     const rboxCode = ballotBoxIsContract === null ? await checkBallotBox() : ballotBoxIsContract;
     if(rboxCode){ $('ownerStatus').textContent = t('vote.st.boxContract'); return; }
     const rtx = { from:live, to:BALLOT_BOX, value:'0x0', data:toHexUtf8(payload) };
-    const rgas = await preflightGas(rtx);
+    const rgas = await preflightGas(rtx, roundSigner);
     if(rgas === null){
       const isC = ballotBoxIsContract === null ? await checkBallotBox() : ballotBoxIsContract;
       $('ownerStatus').textContent = t(isC ? 'vote.st.boxContract' : 'vote.st.wouldRevert');
       return;
     }
     rtx.gas = rgas;
-    const hash = await wallet.request({ method:'eth_sendTransaction', params:[rtx] });
+    await assertWalletContext(roundSigner, live);
+    if(ROUND + 1 !== n) throw new Error('Ballot changed');
+    const hash = await roundSigner.request({ method:'eth_sendTransaction', params:[rtx] });
     const rrec = await waitForTx(hash);
     if(rrec && !txSucceeded(rrec)){ $('ownerStatus').textContent = t('vote.st.voteReverted'); return; }
     ownerPanelOpen = false;
@@ -3791,7 +3829,7 @@ async function openNewRound(){
       + (composed.reason ? ' (' + composed.reason + ')' : '');
     await refreshAll();
   }catch(e){
-    $('ownerStatus').textContent = t((e && e.code === 4001) ? 'vote.st.cancelled' : 'vote.st.roundFail');
+    $('ownerStatus').textContent = t(e && e.code === 'TX_PENDING' ? 'vote.st.txPending' : (e && e.code === 4001) ? 'vote.st.cancelled' : 'vote.st.roundFail');
   }finally{
     const b=$('nextRoundBtn'); if(b) b.disabled = false;
     renderOwnerPanel();
@@ -3812,6 +3850,14 @@ function schedulePendingReconcile(){
 
 let refreshSeq = 0;
 async function refreshAll(opts){
+  const requestedSeq = refreshSeq + 1;
+  try{ await refreshAllUnchecked(opts); return true; }
+  catch(e){
+    if(requestedSeq === refreshSeq){ $('tallyTotals').textContent = t('vote.st.tallyErr'); updateVoteButton(); }
+    return false;
+  }
+}
+async function refreshAllUnchecked(opts){
   opts = opts || {};
   // Polling, manual refresh and post-vote reloads can overlap. Without a
   // sequence guard a slower earlier call can finish last and repaint stale data
@@ -3820,7 +3866,7 @@ async function refreshAll(opts){
   const txs = await fetchVoteTxs(opts.force);
   if(seq !== refreshSeq) return;                 // superseded
   voteTxCache = txs;
-  await loadRound(voteTxCache);
+  await loadRound(voteTxCache, seq);
   if(seq !== refreshSeq) return;
   ballotResolved = true;                         // the chain has spoken
   updateSlateNotice();                           // runs whether or not votes exist
@@ -3829,6 +3875,7 @@ async function refreshAll(opts){
   selected = opts.keepChoice && SLATE.indexOf(opts.keepChoice) !== -1 ? opts.keepChoice : null;
   renderBallot();
   renderOwnerPanel();
+  if(opts.force && lastTally) lastTally.weightsAt = 0;
   await loadTally(voteTxCache);
   if(seq !== refreshSeq) return;
   updateVoteButton();
@@ -3842,14 +3889,15 @@ async function refreshAll(opts){
 let writeInCache = [];
 async function fetchTokenTransfersTo(addr){
   const out = [];
-  let url = SCAN + '/api/v2/addresses/' + addr + '/token-transfers?type=ERC-20&filter=to';
+  let url = SCAN + '/api/v2/addresses/' + addr + '/token-transfers?type=ERC-20&filter=to&token=' + RWI;
   for(let page = 0; page < 6; page++){
     const res = await fetchWithTimeout(url, {headers:{accept:'application/json'}});
-    if(!res.ok) break;
+    if(!res.ok) throw new Error('Burn history unavailable');
     const j = await res.json();
     (j.items || []).forEach(function(t){ out.push(t); });
     if(!j.next_page_params) break;
-    url = SCAN + '/api/v2/addresses/' + addr + '/token-transfers?type=ERC-20&filter=to&'
+    if(page === 5) throw new Error('Burn history incomplete');
+    url = SCAN + '/api/v2/addresses/' + addr + '/token-transfers?type=ERC-20&filter=to&token=' + RWI + '&'
         + new URLSearchParams(j.next_page_params).toString();
   }
   return out;
@@ -3865,10 +3913,16 @@ function sumRwiBySender(transfers, sinceByWallet){
     const tok = (t.token && (t.token.address || t.token.address_hash) || '').toLowerCase();
     if(tok !== RWI.toLowerCase()) return;
     const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
-    const since = sinceByWallet ? sinceByWallet.get(from) : undefined;
-    if(since === undefined) return;                       // never nominated
+    const nomination = sinceByWallet ? sinceByWallet.get(from) : undefined;
+    if(nomination === undefined) return;
+    const since = typeof nomination === 'object' ? nomination.block : nomination;
+    const nominationIndex = typeof nomination === 'object' ? nomination.index : undefined;                       // never nominated
     const bn = Number(t.block_number || t.block || 0);
-    if(bn && since && bn < since) return;                 // predates the nomination
+    if(!bn || !since || bn < since) return;
+    if(bn === since){
+      const ix = t.transaction_index;
+      if(ix === undefined || nominationIndex === undefined || Number(ix) <= nominationIndex) return;
+    }
     const raw = (t.total && (t.total.value || t.total)) || t.value || '0';
     let v; try{ v = BigInt(raw); }catch(e){ return; }
     by.set(from, (by.get(from) || 0n) + v);
@@ -3899,23 +3953,28 @@ async function loadWriteIns(txs, round){
   });
   if(!nominations.length) return [];
 
-  let burnPaid;
+  let transfers;
   try{
-    // earliest nomination block per wallet — payments before it do not count
-    const since = new Map();
-    nominations.forEach(function(n){
-      const cur = since.get(n.from);
-      if(cur === undefined || n.block < cur) since.set(n.from, n.block);
-    });
-    const transfers = await fetchTokenTransfersTo(WRITEIN_BURN);
-    burnPaid = sumRwiBySender(transfers, since);
-  }catch(e){ return []; }                                        // cannot verify -> count nothing
+    transfers = await fetchTokenTransfersTo(WRITEIN_BURN);
+    // Same-block payments need transaction order, not just a block number.
+    const receipts = new Map();
+    await Promise.all(transfers.map(async transfer => {
+      const from = ((transfer.from && transfer.from.hash) || transfer.from || '').toLowerCase();
+      if(!nominations.some(n => n.from === from && n.block === Number(transfer.block_number || transfer.block || 0))) return;
+      if(transfer.transaction_index !== undefined || !transfer.transaction_hash) return;
+      try{
+        if(!receipts.has(transfer.transaction_hash)) receipts.set(transfer.transaction_hash, rpc('eth_getTransactionReceipt', [transfer.transaction_hash]));
+        const receipt = await receipts.get(transfer.transaction_hash);
+        if(txSucceeded(receipt) && receipt.transactionIndex !== undefined) transfer.transaction_index = Number(BigInt(receipt.transactionIndex));
+      }catch(e){ /* Unverifiable same-block payments do not count. */ }
+    }));
+  }catch(e){ return []; }
 
   const price = rwiUsdPrice || await fetchRwiPrice();
   if(!price) return [];
   const needBurn = usdToRwiUnits(WRITEIN_BURN_USD * WRITEIN_TOLERANCE, price);
-
   const paid = nominations.filter(function(n){
+    const burnPaid = sumRwiBySender(transfers, new Map([[n.from, n]]));
     return (burnPaid.get(n.from) || 0n) >= needBurn;
   });
   // newest first; one slot per wallet so a single payer cannot take the whole board
@@ -3932,6 +3991,7 @@ async function loadWriteIns(txs, round){
 
 /* ------------------------------------------------------------------- tally */
 let lastTally = null;
+let tallySeq = 0;
 /* The page can call this several times in quick succession — a manual refresh,
    the post-vote poll and a language repaint can overlap. Each call walked up to
    twenty pages of history. A short TTL collapses that burst into one read while
@@ -3951,6 +4011,11 @@ async function fetchVoteTxs(force){
   })();
   return _txCache.inflight;
 }
+function indexedTxSucceeded(tx){
+  return Number(tx.block_number || tx.block || 0) > 0
+    && (tx.status === 'ok' || tx.status === '0x1' || tx.status === 1 || tx.status === true)
+    && tx.result !== 'error' && !tx.error;
+}
 async function fetchVoteTxsUncached(){
   // Blockscout v2, cursor-paginated. Only transactions *to* the ballot box matter.
   // The ballot box shares an address with an active wallet, so vote transactions
@@ -3965,7 +4030,7 @@ async function fetchVoteTxsUncached(){
     const r = await fetchWithTimeout(url, {headers:{accept:'application/json'}});
     if(!r.ok) throw new Error('Vote history unavailable');
     const j = await r.json();
-    const items = j.items || [];
+    const items = (j.items || []).filter(indexedTxSucceeded);
     items.forEach(t => out.push(t));
     // The newest controller declaration starts the current round. Older pages
     // contain superseded ballots and cannot contribute votes to this round.
@@ -4014,12 +4079,13 @@ function paintFrom(weights, latest, sig){
   }
   lastTally = { byslug:byslug, total:total, counted:counted, wallets:latest.size,
                 unreadable:(lastTally && lastTally.unreadable) || 0,
-                truncated:votePagesTruncated, latestMap:latest, weights:weights, sig:sig };
+                truncated:votePagesTruncated, latestMap:latest, weights:weights, sig:sig, weightsAt:(lastTally && lastTally.weightsAt) || 0 };
   paintTally();
   showMyVote();
 }
 
 async function loadTally(cached){
+  const thisTally = ++tallySeq;
   const totalsEl = $('tallyTotals');
   totalsEl.textContent = t('vote.st.tallyReading');
   let txs = cached;
@@ -4027,6 +4093,7 @@ async function loadTally(cached){
     try{ txs = await fetchVoteTxs(); }
     catch(e){ totalsEl.textContent = t('vote.st.tallyErr'); return; }
   }
+  if(thisTally !== tallySeq) return;
   const pfx = votePrefix();
   // only the slate for the CURRENT round counts; older rounds fall away
   const valid = new Set(SLATE);
@@ -4079,7 +4146,7 @@ async function loadTally(cached){
   // If neither the voters nor their choices changed since the last pass, the
   // previous weights are still valid and there is nothing to re-read.
   const sig = voters.map(function(a){ return a + ':' + latest.get(a).slug; }).sort().join('|');
-  if(lastTally && lastTally.sig === sig && lastTally.weights){
+  if(lastTally && lastTally.sig === sig && lastTally.weights && !lastTally.unreadable && Date.now() - (lastTally.weightsAt || 0) < 30000){
     paintFrom(lastTally.weights, latest, sig);
     return;
   }
@@ -4096,6 +4163,7 @@ async function loadTally(cached){
   for(let i=0;i<voters.length;i+=CONCURRENCY){
     const slice = voters.slice(i,i+CONCURRENCY);
     const bals = await Promise.all(slice.map(balanceWithRetry));
+    if(thisTally !== tallySeq) return;
     slice.forEach((a,k) => { if(bals[k] !== null) weights.set(a, bals[k]); });
   }
 
@@ -4112,7 +4180,7 @@ async function loadTally(cached){
   // connected at PAINT time, not at read time. Freezing it here meant a vote
   // cast in an earlier session never got marked when you reconnected.
   lastTally = {byslug, total, counted, wallets:latest.size, unreadable:unreadable,
-               truncated:votePagesTruncated, latestMap:latest, weights:weights, sig:sig};
+               truncated:votePagesTruncated, latestMap:latest, weights:weights, sig:sig, weightsAt:Date.now()};
   paintTally();
 }
 /* The connected wallet's current choice, so the ballot can show it back. */
@@ -4318,21 +4386,28 @@ function repaintDynamic(){
     if(note) note.textContent = (b === 'funds' || b === 'price') ? t(label) : '';
   }
   /* transfer(address,uint256) */
-  async function sendRwi(to, units, from){
+  async function sendRwi(to, units, from, signer = wallet){
     const data = '0xa9059cbb'
       + to.toLowerCase().replace(/^0x/,'').padStart(64,'0')
       + units.toString(16).padStart(64,'0');
     const tx = { from: from, to: RWI, data: data };
-    const gas = await preflightGas(tx);
+    const gas = await preflightGas(tx, signer);
     if(gas === null) throw new Error('would revert');
     tx.gas = gas;
-    const hash = await wallet.request({ method:'eth_sendTransaction', params:[tx] });
+    await assertWalletContext(signer, from);
+    const hash = await signer.request({ method:'eth_sendTransaction', params:[tx] });
     const rec = await waitForTx(hash);
     if(rec && !txSucceeded(rec)) throw new Error('reverted');
     return hash;
   }
   async function submit(){
     if(busy) return;
+    busy = true; updateSubmitState();
+    try{ await submitWriteIn(); }
+    catch(e){ wiStatus(t(e && e.code === 'TX_PENDING' ? 'vote.st.txPending' : 'vote.st.writeInFail'), true); }
+    finally{ busy = false; updateSubmitState(); }
+  }
+  async function submitWriteIn(){
     // Resolve what is missing rather than bouncing the click back at the user.
     if(!wallet || !account){
       wiStatus(t('vote.st.writeInConnect'));
@@ -4347,6 +4422,7 @@ function repaintDynamic(){
       return;
     }
     if(!chosen){ wiStatus(t('vote.st.writeInPick'), true); return; }
+    const payer = account, signer = wallet, nomination = chosen, writeInRound = ROUND;
     if(DONATE_GG_BY_KEY[chosen]){
       await refreshDonateGg(true);
       if(!canNominate(chosen)){ wiStatus('This Donate.gg charity is unavailable or no longer eligible.', true); return; }
@@ -4357,17 +4433,18 @@ function repaintDynamic(){
     if(myPower < usdToRwiUnits(WRITEIN_USD, price)){
       wiStatus(t('vote.st.writeInFunds'), true); updateSubmitState(); return;
     }
-    busy = true; updateSubmitState();
     try{
       // 1 — the nomination itself
       markStep(1,'doing');
       wiStatus(t('vote.st.wiSigning', {n:1}));
-      const nomTx = { from: account, to: BALLOT_BOX, value:'0x0',
-                      data: toHexUtf8(WRITEIN_TAG + ROUND + ':' + chosen) };
-      const nomGas = await preflightGas(nomTx);
+      const nomTx = { from: payer, to: BALLOT_BOX, value:'0x0',
+                      data: toHexUtf8(WRITEIN_TAG + writeInRound + ':' + nomination) };
+      const nomGas = await preflightGas(nomTx, signer);
       if(nomGas === null) throw new Error('nomination would revert');
       nomTx.gas = nomGas;
-      const h1 = await wallet.request({ method:'eth_sendTransaction', params:[nomTx] });
+      await assertWalletContext(signer, payer);
+      if(ROUND !== writeInRound) throw new Error('Ballot changed');
+      const h1 = await signer.request({ method:'eth_sendTransaction', params:[nomTx] });
       const r1 = await waitForTx(h1);
       if(r1 && !txSucceeded(r1)) throw new Error('nomination reverted');
       markStep(1,'done');
@@ -4375,7 +4452,8 @@ function repaintDynamic(){
       // 2 — burn the entire nomination fee
       markStep(2,'doing');
       wiStatus(t('vote.st.wiSigning', {n:2}));
-      await sendRwi(WRITEIN_BURN, usdToRwiUnits(WRITEIN_USD, price), account);
+      if(ROUND !== writeInRound) throw new Error('Ballot changed');
+      await sendRwi(WRITEIN_BURN, usdToRwiUnits(WRITEIN_USD, price), payer, signer);
       markStep(2,'done');
 
       // Clear the selection so the very next click cannot pay the fee twice for
@@ -4387,9 +4465,7 @@ function repaintDynamic(){
       setTimeout(function(){ refreshAll(); }, 1500);
     }catch(e){
       const cancelled = e && e.code === 4001;
-      wiStatus(t(cancelled ? 'vote.st.writeInCancel' : 'vote.st.writeInFail'), true);
-    }finally{
-      busy = false; updateSubmitState();
+      wiStatus(t(e && e.code === 'TX_PENDING' ? 'vote.st.txPending' : cancelled ? 'vote.st.writeInCancel' : 'vote.st.writeInFail'), true);
     }
   }
   function init(){

@@ -26,3 +26,9 @@ This keeps the human-readable ledger and JSON feed synchronized. Wallet transact
 Donate.gg onchain choices use `gg-<charity-id>` rather than profile slugs, so renames and cross-platform slug collisions do not change ballot identities. The bundled `data/donate-gg-charities.json` snapshot (also embedded in the voting page) resolves known ballot records immediately. Live verification is required before a new Donate.gg write-in or automatic selection. A failed refresh leaves Giving Block choices available. New automatic slates rotate one eligible Donate.gg charity into an automatic slot; already declared slates are not rewritten. The full $5 write-in fee remains a burn.
 
 Run `node scripts/test_donate_charities.mjs` to check claimed-only filtering, pagination, failure handling, mixed-source choices, and automatic rotation.
+
+## Voting reliability checks
+
+Run `node scripts/test_vote_safety.mjs` for pending/reverted receipts, wallet/network changes, duplicate submission prevention, live-balance cache expiry, manual refresh, and visible refresh failures. These checks use mocked wallets and do not submit transactions. Indexed votes require a confirmed successful status. Write-in verification queries only RWI burns and matches burns after each nomination, including transaction order for same-block payments. Balance weights cache for at most 30 seconds; manual refresh bypasses that cache.
+
+The write-in fee remains quoted in USD and paid in RWI. Its existing verification uses the live token price with the existing 20% price-movement tolerance; it is not a historical USD-price oracle.
