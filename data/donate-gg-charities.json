@@ -1,0 +1,653 @@
+{
+  "checkedAt": "2026-10-19T18:19:06.599655+00:00",
+  "charities": [
+    {
+      "id": "048059e8-e914-4e77-98e2-06e121d4e44b",
+      "slug": "paws-atlanta-incorporated",
+      "name": "PAWS Atlanta Incorporated",
+      "logo": "https://www.guidestar.org/ViewEdoc.aspx?eDocId=11025174&approved=True",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "0921a16f-411b-5574-b6b2-44183f7011c7",
+      "slug": "the-nonhuman-rights-project-inc",
+      "name": "The Nonhuman Rights Project Inc.",
+      "logo": "https://docs.candid.org/edoc/10066814",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "09bc5446-f23d-59a7-95c4-90e9a9aff021",
+      "slug": "wait-hope-foundation",
+      "name": "Wait & Hope Foundation",
+      "logo": "https://docs.candid.org/efiles/16344417/09e0039f-28ee-4ca7-91f8-4d863ffdbe45.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "09fd6d76-5f18-59f5-b405-d288374322c4",
+      "slug": "lucky-cat-adoptions-inc",
+      "name": "Lucky Cat Adoptions Inc",
+      "logo": "https://www.luckycatadoptions.com/images/luckycat-text-trans.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "0b27f01b-fbc2-5d17-8e81-25f28800a15d",
+      "slug": "rustys-angels-sanctuary",
+      "name": "Rusty's Angels Sanctuary",
+      "logo": "https://docs.candid.org/edoc/10994167",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "0b6fa1d2-3299-5ae5-aa80-db806d62f587",
+      "slug": "hope-for-ukraine-inc",
+      "name": "Hope for Ukraine Inc",
+      "logo": "https://docs.candid.org/edoc/10532118",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "0bada9c9-061b-54be-8c40-38ff7a260f2c",
+      "slug": "lung-cancer-foundation-of-america",
+      "name": "Lung Cancer Foundation of America",
+      "logo": "https://docs.candid.org/efiles/8576354/f4013d31-1045-4337-b3dc-ad30ab4b8de5.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "0c8c28cf-b63d-5989-83b3-a8ad8844d97e",
+      "slug": "mars-society-inc",
+      "name": "Mars Society Inc",
+      "logo": "https://docs.candid.org/efiles/7378133/bf5735f8-2bf1-457e-9b74-1181279596e3.jpg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "0d536bd2-9d4b-527d-a4fd-57f3b549bc5d",
+      "slug": "2wish",
+      "name": "2Wish for Henry Nowak",
+      "logo": "https://donategg-images.s3.us-east-1.amazonaws.com/2wish-logo.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "0ec39c36-ba76-5e6d-a0ee-f9831921c727",
+      "slug": "autism-society-of-texas",
+      "name": "Autism Society of Texas",
+      "logo": "https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/0ec39c36-ba76-5e6d-a0ee-f9831921c727/charity-profile-content/v1/320c13522b4f6240c87ebe792a53cba6a1ff5e402caf262c6574ff62dab7c23e.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "14da26aa-195f-5ed3-bf70-bb3466926ccf",
+      "slug": "felidae-conservation-fund",
+      "name": "Felidae Conservation Fund",
+      "logo": "https://docs.candid.org/efiles/7041082/b8834589-534d-4ecf-a342-dbd116b3ac18.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "1ada1cd1-03fa-58a7-9e26-804dd32749ca",
+      "slug": "save-the-bees-usa",
+      "name": "Save the Bees USA",
+      "logo": "https://docs.candid.org/efiles/15239938/d0c3f73e-d51a-4610-b8ef-c10369f12460.jpg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "1c9826fe-cbf1-5911-9b4f-f532589c5ffa",
+      "slug": "gooners-v-cancer-inc",
+      "name": "Gooners V Cancer Inc",
+      "logo": "https://docs.candid.org/efiles/15146455/7f72e59e-6130-45d3-96fc-cb7654850474.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "1e1c3957-76dc-5f89-a8e3-e589365966fa",
+      "slug": "orange-county-society-for-the-prevention-of-cruelty-to-animals-d",
+      "name": "Orange County Society for the Prevention of Cruelty to Animals, dba Orange County Animal Allies",
+      "logo": "https://docs.candid.org/edoc/11217444",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "1ef54c13-7432-59f5-ba69-70bc15cd6918",
+      "slug": "seti-institute",
+      "name": "SETI Institute",
+      "logo": "https://widgets.guidestar.org/prod/v1/pdp/transparency-seal//8432122/svg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "2c91693f-6615-43ff-8128-d5ada892a806",
+      "slug": "ovarian-cancer-research-alliance",
+      "name": "Ovarian Cancer Research Alliance",
+      "logo": "https://docs.candid.org/efiles/6926392/de736968-e9ef-4164-9091-b759501c52f7.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "30c4e2f6-d0ee-5138-8f1d-cfef4fe58a52",
+      "slug": "dementia-society-of-america",
+      "name": "Dementia Society of America",
+      "logo": "https://docs.candid.org/edoc/10960847",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "30f9f7df-ca92-5582-aa92-6e2d57a0782a",
+      "slug": "primate-rescue-center",
+      "name": "Primate Rescue Center",
+      "logo": "https://docs.candid.org/edoc/10698296",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "314b5d45-64ba-480c-9bf5-f64edfee157e",
+      "slug": "mental-health-america-of-greenville-county",
+      "name": "Mental Health America of Greenville County",
+      "logo": "https://docs.candid.org/edoc/10978702",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "3869ffab-48c8-51ee-8fdd-eb319b97fa52",
+      "slug": "pawsitive-beginnings",
+      "name": "Pawsitive Beginnings",
+      "logo": "https://docs.candid.org/edoc/11249642",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "3b77aed9-a49c-5225-88d0-efe408f74c79",
+      "slug": "autism-health-inc",
+      "name": "Autism Health Inc",
+      "logo": "https://docs.candid.org/edoc/11225287",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "3eb36d37-ab53-4706-ba6e-3e7881cc82cc",
+      "slug": "rape-recovery-center",
+      "name": "Rape Recovery Center",
+      "logo": "https://docs.candid.org/efiles/8293585/a098062b-37d0-45a7-b04f-6d6a75fb9f4d.jpg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "3edea6b7-42d7-4ad7-81ce-dc4809f3f077",
+      "slug": "handicap-international",
+      "name": "Handicap International",
+      "logo": "https://docs.candid.org/edoc/10556261",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "3fa12f12-3127-5461-82e1-ea2c5dea7b83",
+      "slug": "orangutan-outreach",
+      "name": "Orangutan Outreach",
+      "logo": "https://redapes.org/wp-content/uploads/2025/12/OO-Logo.svg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "41c75ad9-d663-530b-8266-0ccb5bc126d4",
+      "slug": "gaza-palestinian-american-associati",
+      "name": "Gaza Palestinian-American Associati",
+      "logo": "https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/41c75ad9-d663-530b-8266-0ccb5bc126d4/charity-profile-content/v1/89e00e91a0236cacf917f06c118e36bbb1ef4b1feb765cd4cea4847bfe068acb.jpg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "46f28d96-471a-5e80-a8ba-484a8f4911e0",
+      "slug": "dont-forget-us-pet-us-a-non-profit-corporation",
+      "name": "Dont Forget US Pet US a Non Profit Corporation",
+      "logo": "https://docs.candid.org/edoc/8537918",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "50c8fc7f-3f69-5dad-a07c-2e9c4a4dd484",
+      "slug": "zero-prostate-cancer",
+      "name": "Zero Prostate Cancer",
+      "logo": "https://docs.candid.org/edoc/10038495",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "510352f4-b8e1-5808-9219-263e4c9449da",
+      "slug": "wildfire-prevention-inc",
+      "name": "Wildfire Prevention Inc",
+      "logo": "https://docs.candid.org/edoc/10538914",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "53d830d3-c8f8-5827-9d46-1740840a0ee6",
+      "slug": "la-senda-verde-animal-refuge-inc",
+      "name": "La Senda Verde Animal Refuge Inc",
+      "logo": "https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/53d830d3-c8f8-5827-9d46-1740840a0ee6/charity-profile-content/v1/66a3fb4861c7e768f945fdb40cf840d64116574ba0c52f88bc7e2fa1275c51ef.jpg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "5473b96b-8fd8-5f99-818d-997ca9639abe",
+      "slug": "las-lomitas-education-foundation",
+      "name": "Las Lomitas Education Foundation",
+      "logo": "https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/5473b96b-8fd8-5f99-818d-997ca9639abe/charity-profile-content/v1/282035350af9ca1414f32f8c899e6ea005cb74156eda248707783e64d7ec3d72.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "5705b8b8-0e91-557c-8d51-f82015482d33",
+      "slug": "colon-cancer-coalition",
+      "name": "Colon Cancer Coalition",
+      "logo": "https://docs.candid.org/edoc/10695470",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "5c9e600f-7d1a-5427-b0fb-86aa1e7b8b16",
+      "slug": "engage-nepal",
+      "name": "Engage Nepal",
+      "logo": "https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/5c9e600f-7d1a-5427-b0fb-86aa1e7b8b16/charity-profile-content/v1/4721d052e63f7e6defc6926481d15c1d6c580dc2981db320196e309c72a64eb6.jpg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "5cf612f6-a632-4bac-8ac9-37d0dac2a7fb",
+      "slug": "water-org",
+      "name": "Water.org",
+      "logo": "https://docs.candid.org/edoc/10508270",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "5ea85217-4807-57e5-aab9-bcc8d9384da6",
+      "slug": "the-keep-a-breast-foundation",
+      "name": "THE KEEP A BREAST FOUNDATION",
+      "logo": "https://docs.candid.org/efiles/6936797/1048a6a0-5c3b-484e-85b3-5713cc2cf9ac.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "6677e92c-6f08-5239-860a-bc5e6ca1cff2",
+      "slug": "ukraine-matters",
+      "name": "Ukraine Matters",
+      "logo": "https://docs.candid.org/edoc/10344025",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "67b686ce-f267-4a2f-88f3-46b161347dfc",
+      "slug": "straydog-inc",
+      "name": "Straydog Inc",
+      "logo": "https://docs.candid.org/edoc/9764418",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "6b50f488-783b-574c-a0ea-03beb18138ac",
+      "slug": "longevity-science-foundation",
+      "name": "Longevity Science Foundation",
+      "logo": "https://docs.candid.org/edoc/11129166",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "70ef8976-8f06-568b-8d0b-e116a8b7b219",
+      "slug": "send-it",
+      "name": "Send It",
+      "logo": "https://docs.candid.org/efiles/9303432/25cc54fa-db87-48df-8c64-24b89781a800.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "722b4ee1-91ac-5e61-a6ab-9bc19db6599a",
+      "slug": "pork-butt-pastures-inc",
+      "name": "Pork Butt Pastures Inc",
+      "logo": "https://img1.wsimg.com/isteam/ip/cea8ac9b-0427-4e90-9562-8879bcf4cc4d/IMG_7534.JPEG/:/cr=t:31.25%25,l:0%25,w:100%25,h:37.5%25/rs=w:1200,h:600,cg:true",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "728465a2-adff-4e1d-bd1e-c0aaee20b143",
+      "slug": "lgbtq-collaborative",
+      "name": "LGBTQ+ Collaborative",
+      "logo": "https://docs.candid.org/edoc/10617874",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "72c99f8d-a00d-5d45-9e18-a8751b880184",
+      "slug": "small-primate-animal-rescue-tn",
+      "name": "Small Primate Animal Rescue TN",
+      "logo": "https://docs.candid.org/efiles/10954733/c26e94ed-b54f-4467-bd44-096bdebec5fe.jpg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "73268c75-88fb-498d-8e66-0be770548be4",
+      "slug": "mental-health-america",
+      "name": "Mental Health America",
+      "logo": "https://www.guidestar.org/ViewEdoc.aspx?eDocId=10815841&approved=True",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "76094486-53a8-5dda-b586-7080f047e7b8",
+      "slug": "livs-stargrace-foundation",
+      "name": "Liv's Stargrace Foundation",
+      "logo": "https://static.tgbwidget.com/organization_logo/ef253df2-b08d-4730-af0f-ab538015e00f.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "775fef41-2be4-5b2f-b0f9-2a4b26cf9a57",
+      "slug": "fulminare-global-usa",
+      "name": "Fulminare Global USA",
+      "logo": "https://fulminareglobal.org/images/fulminare-logo-mark.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "789c446d-b6e2-5055-8722-7d60c08c0f84",
+      "slug": "pussy-control",
+      "name": "Pussy Control",
+      "logo": "https://docs.candid.org/edoc/11268325",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "7a7a621a-c106-48e4-b720-7ab497a399cf",
+      "slug": "machine-intelligence-research-institute-inc",
+      "name": "Machine Intelligence Research Institute Inc",
+      "logo": "https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/7a7a621a-c106-48e4-b720-7ab497a399cf/charity-profile-content/v1/eeb5a3675144a6d2eb1eb25b65ddeaac9441fe82424e47fbd256bdb838a7fe1d.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "8d292d97-f2d4-5b5a-86d2-39d8116c57f0",
+      "slug": "alzheimers-research-foundation-inc",
+      "name": "Alzheimer's Research Foundation Inc.",
+      "logo": "https://docs.candid.org/efiles/9268760/4c07d01a-c808-4107-923e-7a90498de4ab.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "9107ce42-47d8-5068-b4c8-ef2ebd019ad2",
+      "slug": "center-for-carbon-removal",
+      "name": "Center for Carbon Removal",
+      "logo": "https://docs.candid.org/edoc/10271745",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "98bf80bb-fb48-41cd-88c5-26775e9a6878",
+      "slug": "sights-for-hope",
+      "name": "Sights for Hope",
+      "logo": "https://docs.candid.org/edoc/10900640",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "9b4dae4e-d8c1-4322-a594-35a4858296b2",
+      "slug": "make-a-wish-america",
+      "name": "Make-A-Wish America",
+      "logo": "https://docs.candid.org/edoc/11142134",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "a3a1f64b-6cd4-5ba1-8764-23eb47cda98f",
+      "slug": "troll-house-animal-sanctuary",
+      "name": "Troll House Animal Sanctuary",
+      "logo": "https://docs.candid.org/efiles/14327938/6e92c063-ecdb-432d-8a61-ce54bb085b6c.jpeg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "a774823d-3a19-56b1-8efb-1cf3892744e6",
+      "slug": "talboy-foundation-inc",
+      "name": "Talboy Foundation Inc",
+      "logo": "https://docs.candid.org/edoc/9035637",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "a8dc4bdf-3857-5426-a70e-401f19417835",
+      "slug": "forever-wild-exotic-animal-sanctuary",
+      "name": "Forever Wild Exotic Animal Sanctuary",
+      "logo": "https://img1.wsimg.com/isteam/ip/e841a68f-887c-4c47-80ed-b609f4b4dd7f/FOREVER%20WILD%20horizontal.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "a9946430-df48-511f-ae48-9562835c6d20",
+      "slug": "the-22q-family-foundation",
+      "name": "The 22q Family Foundation",
+      "logo": "https://docs.candid.org/efiles/9505170/793d71f0-a4b1-41dc-bf75-bfdaee27b0d7.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "aee68bad-9286-5827-abd5-6cdf5590223e",
+      "slug": "period-inc",
+      "name": "Period. Inc",
+      "logo": "https://period.org/uploads/_max/Period-Logo-1.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "b77471ef-4167-5409-91fc-b87309a15617",
+      "slug": "alaska-wildlife-conservation-center-inc",
+      "name": "Alaska Wildlife Conservation Center, Inc.",
+      "logo": "https://docs.candid.org/edoc/10606699",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "b92bfa20-bdce-54fd-8907-c535f4028ac5",
+      "slug": "my-autism-connection-inc",
+      "name": "My Autism Connection Inc",
+      "logo": "https://docs.candid.org/edoc/9236774",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "bdf8e77f-1368-5499-9853-4bd219b6977d",
+      "slug": "harbin-shs-animal-rescue",
+      "name": "Harbin Shs Animal Rescue",
+      "logo": "https://docs.candid.org/edoc/7365699",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "c054efc5-64d9-57e3-b5db-6983216c1bb0",
+      "slug": "free-mobility-inc",
+      "name": "Free Mobility Inc",
+      "logo": "https://www.freemobility.org/free-mobility.svg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "c30f73b8-bd68-4ce6-862d-ea6cd4dfce26",
+      "slug": "national-domestic-violence-hotline",
+      "name": "National Domestic Violence Hotline",
+      "logo": "https://docs.candid.org/edoc/9801122",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "c46eff0a-6494-5498-94db-0f180a4fb620",
+      "slug": "chattanooga-outreach",
+      "name": "Chattanooga Outreach",
+      "logo": "https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/request-c46eff0a-6494-5498-94db-0f180a4fb620/charity-profile-content/v1/67c375ca817bcbf32da8a80927cd70e2f5796cce458e484bef01f0aec668ca0f.webp",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "c5b3397e-783e-4555-bca3-bf90fe94f0ea",
+      "slug": "brevard-zoo",
+      "name": "Brevard Zoo",
+      "logo": "https://docs.candid.org/edoc/10496169",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "d0ad259f-36de-588b-a62d-5ba275702828",
+      "slug": "dog-aide",
+      "name": "Dog Aide",
+      "logo": "https://docs.candid.org/edoc/11246829",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "d42b7e00-7ac9-4de4-ac67-12ba0d25aee1",
+      "slug": "league-for-animal-welfare",
+      "name": "League for Animal Welfare",
+      "logo": "https://docs.candid.org/edoc/10587573",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "d4325890-d7da-5ffb-bbab-181acf3bf8df",
+      "slug": "red-leash-rescue-inc",
+      "name": "Red Leash Rescue Inc",
+      "logo": "https://docs.candid.org/edoc/9474833",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "d7850287-4d2c-48cf-87c5-9a096fa4f445",
+      "slug": "go2-for-lung-cancer",
+      "name": "GO2 for Lung Cancer",
+      "logo": "https://izbnuglu1gzeabqo.public.blob.vercel-storage.com/charity/go2_for_lung_cancer",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "dba2b205-4484-45a5-8822-c7672ff4e81b",
+      "slug": "georgia-mountain-food-bank-inc",
+      "name": "Georgia Mountain Food Bank Inc",
+      "logo": "https://docs.candid.org/edoc/10906800",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "dce7c278-7128-5401-af29-b757f902b42b",
+      "slug": "shiba-inu-rescue-association",
+      "name": "Shiba Inu Rescue Association",
+      "logo": "https://docs.candid.org/efiles/9700539/7ed53388-81f2-4cc4-b21d-311e11be8867.jpg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "e08387e4-3307-5b86-b316-d26b0d67a3db",
+      "slug": "save-the-frogs",
+      "name": "SAVE THE FROGS!",
+      "logo": "https://docs.candid.org/edoc/9949939",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "e2df8522-8406-5799-a83c-fabc4e522b8e",
+      "slug": "slice-out-hunger",
+      "name": "Slice Out Hunger",
+      "logo": "https://docs.candid.org/edoc/10897760",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "e72bdd76-a359-5971-bfb2-b47f0d7e373a",
+      "slug": "pauseai-us",
+      "name": "Pauseai US",
+      "logo": "https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/request-e72bdd76-a359-5971-bfb2-b47f0d7e373a/charity-profile-content/v1/028d37e618d57e51e38fb5200c15c6aa317eb873df650ca21878123a56a0ca67.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "e81d1484-3d2c-52f6-9c09-f3cee3184d2b",
+      "slug": "testicular-cancer-foundation",
+      "name": "Testicular Cancer Foundation",
+      "logo": "https://docs.candid.org/edoc/10464524",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "e851c472-14a3-5e21-9b25-20ec30745ac4",
+      "slug": "animal-victory-disaster-abuse-fund",
+      "name": "Animal Victory Disaster & Abuse Fund",
+      "logo": "https://docs.candid.org/efiles/14539866/7f3db74d-aa92-44b1-9500-e14094d32397.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "eb901716-a16d-57a1-8c50-b0dedeaef350",
+      "slug": "cincinnati-animal-care-humane-society",
+      "name": "Cincinnati Animal Care Humane Society",
+      "logo": "https://cincinnatianimalcare.org/wp-content/uploads/2026/03/cropped-CincyAnimalCARE-Logo-Short-01-scaled-1-300x120.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "ed157df3-9314-43fe-89c5-0143d205cc04",
+      "slug": "rape-abuse-incest-national-network",
+      "name": "Rape, Abuse & Incest National Network",
+      "logo": "https://docs.candid.org/edoc/11015652",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "f0642334-f8ed-5b3a-85b4-835962416c97",
+      "slug": "paws-of-china",
+      "name": "Paws of China",
+      "logo": "https://pawsofchina.org/wp-content/uploads/2023/08/Pawslogopng.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "f0e026ae-6c9b-464f-b293-20ce5b1cbc2d",
+      "slug": "paws-with-a-cause",
+      "name": "Paws With A Cause",
+      "logo": "https://docs.candid.org/efiles/7552838/635a4a7a-fa88-466b-a16a-920f576cba18.png",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "f5525cfe-8b9e-5054-81ca-06e03e2ae89b",
+      "slug": "rainforest-foundation-inc",
+      "name": "Rainforest Foundation Inc",
+      "logo": "https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/f5525cfe-8b9e-5054-81ca-06e03e2ae89b/charity-profile/14fc8b81-08a4-4d09-86ed-1d78e90aed07.jpg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "f89ce9c2-6884-4473-9bb7-7af0778b8659",
+      "slug": "share-cancer-support",
+      "name": "SHARE Cancer Support",
+      "logo": "https://docs.candid.org/efiles/6912891/e2dfea66-ad16-49a4-9595-d7e09547ca4b.jpg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "fcbf4235-0822-52e8-86e9-ed4f57278b54",
+      "slug": "alzheimers-research-and-prevention-foundation",
+      "name": "Alzheimers Research and Prevention Foundation",
+      "logo": "https://docs.candid.org/edoc/9330358",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    },
+    {
+      "id": "fe5279fe-5c2b-40e6-b0db-7ba1ace38382",
+      "slug": "sealife-response-rehabilitation-and-research-sr3",
+      "name": "SeaLife Response, Rehabilitation and Research (SR3)",
+      "logo": "https://docs.candid.org/efiles/9230169/03fa85a7-3d9e-4753-a25f-310dda04c6c8.jpg",
+      "status": "ACTIVE_ONBOARDED",
+      "isEnabled": true
+    }
+  ]
+}

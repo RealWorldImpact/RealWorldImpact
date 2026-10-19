@@ -18,3 +18,11 @@ The homepage and docs include the donation records directly in HTML, so basic cr
 3. Run `python scripts/sync_donations.py --check` before publishing.
 
 This keeps the human-readable ledger and JSON feed synchronized. Wallet transactions are made through the wallet owner’s own signing flow, outside this website’s HTTP interface.
+
+## Voting charity sources
+
+`/vote` supports the existing Giving Block directory and active, onboarded Donate.gg charities. `/api/donate-charities` reads Donate.gg's public API with `publicOnly=true` and `directDonationOnly=true`, follows pagination, and additionally requires `status=ACTIVE_ONBOARDED` and `isEnabled=true`. Results are cached for five minutes; no API key is required. Unclaimed, disabled, and reviewing-terms records are excluded.
+
+Donate.gg onchain choices use `gg-<charity-id>` rather than profile slugs, so renames and cross-platform slug collisions do not change ballot identities. The bundled `data/donate-gg-charities.json` snapshot (also embedded in the voting page) resolves known ballot records immediately. Live verification is required before a new Donate.gg write-in or automatic selection. A failed refresh leaves Giving Block choices available. New automatic slates rotate one eligible Donate.gg charity into an automatic slot; already declared slates are not rewritten. The full $5 write-in fee remains a burn.
+
+Run `node scripts/test_donate_charities.mjs` to check claimed-only filtering, pagination, failure handling, mixed-source choices, and automatic rotation.

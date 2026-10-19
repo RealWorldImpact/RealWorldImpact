@@ -29,7 +29,7 @@ const TRANSLATIONS = {
     'vote.title.c':'who\'s next.',
     'vote.lede':'$RWI holders signal which vetted charity should receive the next donation. Your vote is a transaction on Robinhood Chain, weighted by the $RWI you hold. Anyone can tally it — including you.',
     'vote.disclaimer.title':'Read this first',
-    'vote.disclaimer.body':'This is an advisory signal, not binding governance. $RWI grants no governance rights and no claim on revenue. The project reads the result and weighs it, but retains final say over every donation — recipients must clear The Giving Block\'s vetting regardless of how the vote lands. Voting is weighted by token balance, which means larger holders carry more weight. Balances are read live at tally time, so a vote is not locked to a snapshot.',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — Your wallet',
     'vote.connect':'Connect wallet',
     'vote.disconnect':'Disconnect',
@@ -45,7 +45,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'Founder controls',
     'vote.founder.open':'Open a new ballot',
     'vote.founder.confirm':'Confirm & open',
-    'vote.founder.note':'The slate below is composed automatically — one returning organisation, two from the project’s established cause areas, and three responding to current need, ranked against live ReliefWeb crisis data. Opening a new round is a transaction from your wallet: it supersedes the current round, and votes cast in earlier rounds stop counting immediately. Only this address can do it; declarations from anyone else are ignored when the page reads the chain.',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — How the tally works',
     'vote.s3.title':'Countable by anyone.',
     'vote.how1a':'Your wallet sends a 0-value transaction to the ballot box address with',
@@ -110,7 +110,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'Write in',
     'vote.st.writeInTitle':'Write in an organisation',
-    'vote.st.writeInLede':'Three of the six ballot slots are reserved for organisations nominated by holders. Pick any organisation from The Giving Block.',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Search organisations',
     'vote.st.writeInNone':'No match in the verified directory.',
@@ -125,7 +125,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'Something failed. Completed steps stand; re-open to finish the rest.',
     'vote.st.writeInConnect':'Connect a wallet first.',
     'vote.st.writeInNoPrice':'Cannot read the $RWI price right now, so the fee cannot be quoted.',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'Open slot',
     'vote.st.openSlotHint':'Reserved for a holder write-in',
@@ -153,7 +153,7 @@ const TRANSLATIONS = {
     'vote.title.c':'quién sigue.',
     'vote.lede':'Los poseedores de $RWI señalan qué organización benéfica verificada debe recibir la próxima donación. Tu voto es una transacción en Robinhood Chain, ponderada por el $RWI que posees. Cualquiera puede contarlo — incluido tú.',
     'vote.disclaimer.title':'Lee esto primero',
-    'vote.disclaimer.body':'Esto es una señal consultiva, no gobernanza vinculante. $RWI no otorga derechos de gobernanza ni derecho sobre los ingresos. El proyecto lee el resultado y lo pondera, pero conserva la última palabra sobre cada donación — los destinatarios deben pasar la verificación de The Giving Block sea cual sea el resultado. El voto se pondera por saldo de tokens, por lo que los grandes tenedores pesan más. Los saldos se leen en vivo al momento del recuento, así que un voto no queda fijado a una instantánea.',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — Tu billetera',
     'vote.connect':'Conectar billetera',
     'vote.disconnect':'Desconectar',
@@ -169,7 +169,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'Controles del fundador',
     'vote.founder.open':'Abrir una nueva votacion',
     'vote.founder.confirm':'Confirmar y abrir',
-    'vote.founder.note':'La lista siguiente se compone automáticamente — una organización recurrente, dos de las áreas de causa establecidas del proyecto y tres que responden a la necesidad actual, clasificadas según datos de crisis en vivo de ReliefWeb. Abrir una nueva ronda es una transacción desde tu billetera: reemplaza la ronda actual y los votos de rondas anteriores dejan de contar de inmediato. Solo esta dirección puede hacerlo; las declaraciones de cualquier otra se ignoran cuando la página lee la cadena.',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Cómo funciona el recuento',
     'vote.s3.title':'Contable por cualquiera.',
     'vote.how1a':'Tu billetera envía una transacción de valor 0 a la dirección de la urna con',
@@ -234,7 +234,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'Proponer',
     'vote.st.writeInTitle':'Proponer una organizacion',
-    'vote.st.writeInLede':'Tres de los seis lugares estan reservados para organizaciones propuestas por los holders. Elige cualquiera de The Giving Block.',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Buscar organizaciones',
     'vote.st.writeInNone':'Sin coincidencias en el directorio verificado.',
@@ -249,7 +249,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'Algo fallo. Los pasos completados siguen; vuelve a abrir para terminar.',
     'vote.st.writeInConnect':'Conecta una billetera primero.',
     'vote.st.writeInNoPrice':'No se puede leer el precio de $RWI ahora, asi que no se puede cotizar la tarifa.',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'Lugar libre',
     'vote.st.openSlotHint':'Reservado para una propuesta de holder',
@@ -277,7 +277,7 @@ const TRANSLATIONS = {
     'vote.title.c':'下一个是谁。',
     'vote.lede':'$RWI 持有者投票决定下一笔捐赠应当流向哪个经审查的慈善机构。你的投票是 Robinhood 链上的一笔交易,按你持有的 $RWI 加权。任何人都可以统计 — 包括你。',
     'vote.disclaimer.title':'请先阅读',
-    'vote.disclaimer.body':'这是咨询性信号,而非有约束力的治理。$RWI 不授予治理权,也不构成对收入的索取权。项目会参考结果并加以权衡,但对每笔捐赠保留最终决定权 — 无论投票结果如何,接收方都必须通过 The Giving Block 的审查。投票按代币余额加权,这意味着大持有者权重更高。余额在统计时实时读取,因此投票并不锁定于某个快照。',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — 你的钱包',
     'vote.connect':'连接钱包',
     'vote.disconnect':'断开',
@@ -293,7 +293,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'创始人控制',
     'vote.founder.open':'开启新的投票',
     'vote.founder.confirm':'确认并开启',
-    'vote.founder.note':'下方名单为自动组成 — 一个回访组织、两个来自项目既有关注领域的组织,以及三个应对当前需求的组织,依据 ReliefWeb 实时危机数据排序。开启新一轮是来自你钱包的一笔交易:它会取代当前轮次,先前轮次的投票立即失效。只有此地址可以执行;页面读取链上数据时会忽略任何其他地址的声明。',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — 统计如何运作',
     'vote.s3.title':'任何人都能统计。',
     'vote.how1a':'你的钱包向投票箱地址发送一笔 0 值交易,附带',
@@ -358,7 +358,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'写入提名',
     'vote.st.writeInTitle':'提名一个组织',
-    'vote.st.writeInLede':'六个投票席位中有三个保留给持有者提名的组织。可从 The Giving Block 中任选。',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'搜索组织',
     'vote.st.writeInNone':'已验证目录中无匹配项。',
@@ -373,7 +373,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'出现失败。已完成步骤仍有效;重新打开以完成其余部分。',
     'vote.st.writeInConnect':'请先连接钱包。',
     'vote.st.writeInNoPrice':'当前无法读取 $RWI 价格,无法报价。',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'空缺席位',
     'vote.st.openSlotHint':'保留给持有者提名',
@@ -401,7 +401,7 @@ const TRANSLATIONS = {
     'vote.title.c':'次は誰かを。',
     'vote.lede':'$RWI 保有者が、次の寄付をどの審査済み慈善団体が受け取るべきかを示します。投票は Robinhood Chain 上のトランザクションで、保有する $RWI で重み付けされます。誰でも集計できます — あなたも含めて。',
     'vote.disclaimer.title':'まずお読みください',
-    'vote.disclaimer.body':'これは助言的なシグナルであり、拘束力のあるガバナンスではありません。$RWI はガバナンス権も収益への請求権も付与しません。プロジェクトは結果を読み取り考慮しますが、すべての寄付について最終決定権を保持します — 投票結果にかかわらず、受取人は The Giving Block の審査を通過する必要があります。投票はトークン残高で重み付けされるため、大口保有者ほど影響が大きくなります。残高は集計時にライブで読み取られるため、投票はスナップショットに固定されません。',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — あなたのウォレット',
     'vote.connect':'ウォレットを接続',
     'vote.disconnect':'切断',
@@ -417,7 +417,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'創設者コントロール',
     'vote.founder.open':'新しい投票を開く',
     'vote.founder.confirm':'確認して開く',
-    'vote.founder.note':'以下の候補は自動的に構成されます — 再登場の団体 1、プロジェクトの既存の関心領域から 2、そして ReliefWeb のライブ危機データに照らして順位付けされた、現在の必要に応える団体 3。新しいラウンドを開くのはあなたのウォレットからのトランザクションです:現在のラウンドを置き換え、以前のラウンドの投票は即座に無効になります。これを実行できるのはこのアドレスのみで、他の誰かの宣言はページがチェーンを読む際に無視されます。',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — 集計の仕組み',
     'vote.s3.title':'誰でも数えられる。',
     'vote.how1a':'ウォレットが投票箱アドレスに 0 価値のトランザクションを送信し、',
@@ -482,7 +482,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'書き込み推薦',
     'vote.st.writeInTitle':'団体を推薦する',
-    'vote.st.writeInLede':'6 つの投票枠のうち 3 つは保有者の推薦に充てられます。The Giving Block からどの団体でも選べます。',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'団体を検索',
     'vote.st.writeInNone':'検証済みディレクトリに一致はありません。',
@@ -497,7 +497,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'失敗しました。完了済みの手順は有効です。再度開いて残りを完了してください。',
     'vote.st.writeInConnect':'先にウォレットを接続してください。',
     'vote.st.writeInNoPrice':'現在 $RWI の価格を取得できないため、費用を提示できません。',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'空き枠',
     'vote.st.openSlotHint':'保有者の推薦用に確保',
@@ -525,7 +525,7 @@ const TRANSLATIONS = {
     'vote.title.c':'다음은 누구인지.',
     'vote.lede':'$RWI 보유자가 다음 기부를 어느 검증된 자선단체가 받아야 할지 신호합니다. 투표는 Robinhood Chain의 거래이며, 보유한 $RWI로 가중됩니다. 누구나 집계할 수 있습니다 — 당신도 포함해서.',
     'vote.disclaimer.title':'먼저 읽어주세요',
-    'vote.disclaimer.body':'이것은 자문 신호이며 구속력 있는 거버넌스가 아닙니다. $RWI는 거버넌스 권리도, 수익에 대한 청구권도 부여하지 않습니다. 프로젝트는 결과를 읽고 참고하지만 모든 기부에 대한 최종 결정권을 유지합니다 — 투표 결과와 무관하게 수혜자는 The Giving Block의 검증을 통과해야 합니다. 투표는 토큰 잔액으로 가중되므로 대규모 보유자의 영향이 큽니다. 잔액은 집계 시점에 실시간으로 읽히므로 투표는 스냅샷에 고정되지 않습니다.',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — 내 지갑',
     'vote.connect':'지갑 연결',
     'vote.disconnect':'연결 해제',
@@ -541,7 +541,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'창립자 제어',
     'vote.founder.open':'새 투표 열기',
     'vote.founder.confirm':'확인하고 열기',
-    'vote.founder.note':'아래 명단은 자동으로 구성됩니다 — 재등장 단체 1곳, 프로젝트의 기존 관심 분야에서 2곳, 그리고 ReliefWeb 실시간 위기 데이터에 따라 순위가 매겨진 현재 필요에 대응하는 3곳. 새 라운드를 여는 것은 당신 지갑에서 보내는 거래입니다: 현재 라운드를 대체하며, 이전 라운드의 투표는 즉시 무효가 됩니다. 오직 이 주소만 실행할 수 있으며, 다른 누군가의 선언은 페이지가 체인을 읽을 때 무시됩니다.',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — 집계 방식',
     'vote.s3.title':'누구나 셀 수 있습니다.',
     'vote.how1a':'지갑이 투표함 주소로 0원 거래를 보내며',
@@ -606,7 +606,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'직접 추천',
     'vote.st.writeInTitle':'단체 추천하기',
-    'vote.st.writeInLede':'6개 투표 자리 중 3개는 보유자 추천 몫입니다. The Giving Block에서 원하는 단체를 고르세요.',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'단체 검색',
     'vote.st.writeInNone':'검증된 디렉터리에 일치 항목이 없습니다.',
@@ -621,7 +621,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'실패했습니다. 완료된 단계는 유지되며, 다시 열어 나머지를 마치세요.',
     'vote.st.writeInConnect':'먼저 지갑을 연결하세요.',
     'vote.st.writeInNoPrice':'지금 $RWI 가격을 읽을 수 없어 수수료를 산정할 수 없습니다.',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'빈 자리',
     'vote.st.openSlotHint':'보유자 추천용으로 예약됨',
@@ -649,7 +649,7 @@ const TRANSLATIONS = {
     'vote.title.c':'quem é o próximo.',
     'vote.lede':'Detentores de $RWI sinalizam qual instituição verificada deve receber a próxima doação. Seu voto é uma transação na Robinhood Chain, ponderada pelo $RWI que você detém. Qualquer um pode contabilizar — inclusive você.',
     'vote.disclaimer.title':'Leia isto primeiro',
-    'vote.disclaimer.body':'Isto é um sinal consultivo, não governança vinculante. $RWI não concede direitos de governança nem direito sobre receitas. O projeto lê o resultado e o pondera, mas mantém a palavra final sobre cada doação — os destinatários devem passar pela verificação da The Giving Block independentemente do resultado. O voto é ponderado pelo saldo de tokens, o que significa que grandes detentores pesam mais. Os saldos são lidos ao vivo no momento da contagem, então um voto não fica preso a um instantâneo.',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — Sua carteira',
     'vote.connect':'Conectar carteira',
     'vote.disconnect':'Desconectar',
@@ -665,7 +665,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'Controles do fundador',
     'vote.founder.open':'Abrir uma nova votacao',
     'vote.founder.confirm':'Confirmar e abrir',
-    'vote.founder.note':'A lista abaixo é composta automaticamente — uma organização recorrente, duas das áreas de causa já estabelecidas do projeto e três respondendo à necessidade atual, classificadas conforme dados de crise ao vivo da ReliefWeb. Abrir uma nova rodada é uma transação da sua carteira: substitui a rodada atual, e votos de rodadas anteriores param de contar imediatamente. Só este endereço pode fazê-lo; declarações de qualquer outro são ignoradas quando a página lê a cadeia.',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Como a contagem funciona',
     'vote.s3.title':'Contável por qualquer um.',
     'vote.how1a':'Sua carteira envia uma transação de valor 0 para o endereço da urna com',
@@ -730,7 +730,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'Indicar',
     'vote.st.writeInTitle':'Indicar uma organizacao',
-    'vote.st.writeInLede':'Tres das seis vagas sao reservadas a organizacoes indicadas por holders. Escolha qualquer uma da The Giving Block.',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Buscar organizacoes',
     'vote.st.writeInNone':'Nenhuma correspondencia no diretorio verificado.',
@@ -745,7 +745,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'Algo falhou. As etapas concluidas permanecem; reabra para terminar.',
     'vote.st.writeInConnect':'Conecte uma carteira primeiro.',
     'vote.st.writeInNoPrice':'Nao e possivel ler o preco do $RWI agora, entao a taxa nao pode ser cotada.',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'Vaga aberta',
     'vote.st.openSlotHint':'Reservado para indicacao de holder',
@@ -773,7 +773,7 @@ const TRANSLATIONS = {
     'vote.title.c':'qui est le prochain.',
     'vote.lede':'Les détenteurs de $RWI indiquent quelle œuvre vérifiée doit recevoir le prochain don. Votre vote est une transaction sur Robinhood Chain, pondérée par le $RWI que vous détenez. N\'importe qui peut le compter — vous compris.',
     'vote.disclaimer.title':'Lisez ceci d\'abord',
-    'vote.disclaimer.body':'Ceci est un signal consultatif, pas une gouvernance contraignante. $RWI ne confère aucun droit de gouvernance ni créance sur les revenus. Le projet lit le résultat et en tient compte, mais conserve le dernier mot sur chaque don — les bénéficiaires doivent passer la vérification de The Giving Block quel que soit le vote. Le vote est pondéré par le solde de tokens, les gros détenteurs pèsent donc davantage. Les soldes sont lus en direct au moment du décompte, un vote n\'est donc pas figé sur un instantané.',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — Votre portefeuille',
     'vote.connect':'Connecter le portefeuille',
     'vote.disconnect':'Déconnecter',
@@ -789,7 +789,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'Contrôles du fondateur',
     'vote.founder.open':'Ouvrir un nouveau scrutin',
     'vote.founder.confirm':'Confirmer et ouvrir',
-    'vote.founder.note':'La liste ci-dessous est composée automatiquement — une organisation récurrente, deux issues des domaines déjà soutenus par le projet, et trois répondant au besoin actuel, classées selon les données de crise en direct de ReliefWeb. Ouvrir un nouveau tour est une transaction depuis votre portefeuille : elle remplace le tour actuel, et les votes des tours précédents cessent immédiatement de compter. Seule cette adresse peut le faire ; les déclarations de toute autre sont ignorées lorsque la page lit la chaîne.',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Comment le décompte fonctionne',
     'vote.s3.title':'Comptable par quiconque.',
     'vote.how1a':'Votre portefeuille envoie une transaction de valeur 0 à l\'adresse de l\'urne avec',
@@ -854,7 +854,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'Proposer',
     'vote.st.writeInTitle':'Proposer une organisation',
-    'vote.st.writeInLede':'Trois des six places du scrutin sont reservees aux organisations proposees par les detenteurs. Choisissez-en une sur The Giving Block.',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Rechercher une organisation',
     'vote.st.writeInNone':'Aucun resultat dans l annuaire verifie.',
@@ -869,7 +869,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'Echec. Les etapes effectuees restent ; rouvrez pour terminer.',
     'vote.st.writeInConnect':'Connectez d abord un portefeuille.',
     'vote.st.writeInNoPrice':'Impossible de lire le prix du $RWI, le montant ne peut pas etre calcule.',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'Place libre',
     'vote.st.openSlotHint':'Reservee a une proposition de detenteur',
@@ -897,7 +897,7 @@ const TRANSLATIONS = {
     'vote.title.c':'кто следующий.',
     'vote.lede':'Держатели $RWI указывают, какая проверенная благотворительная организация должна получить следующее пожертвование. Ваш голос — транзакция в Robinhood Chain, взвешенная по количеству $RWI. Подсчитать может любой — включая вас.',
     'vote.disclaimer.title':'Сначала прочтите это',
-    'vote.disclaimer.body':'Это консультативный сигнал, а не обязывающее управление. $RWI не даёт ни прав управления, ни притязаний на доход. Проект читает результат и учитывает его, но сохраняет за собой последнее слово по каждому пожертвованию — получатели обязаны пройти проверку The Giving Block независимо от исхода голосования. Голос взвешивается по балансу токенов, поэтому крупные держатели весят больше. Балансы читаются в момент подсчёта, поэтому голос не привязан к снимку.',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — Ваш кошелёк',
     'vote.connect':'Подключить кошелёк',
     'vote.disconnect':'Отключить',
@@ -913,7 +913,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'Управление основателя',
     'vote.founder.open':'Открыть новое голосование',
     'vote.founder.confirm':'Подтвердить и открыть',
-    'vote.founder.note':'Список ниже составляется автоматически — одна возвращающаяся организация, две из уже поддержанных проектом направлений и три, отвечающие текущей нужде, ранжированные по живым данным о кризисах ReliefWeb. Открытие нового раунда — транзакция из вашего кошелька: она заменяет текущий раунд, и голоса прошлых раундов немедленно перестают считаться. Сделать это может только этот адрес; заявления от любого другого игнорируются при чтении цепочки.',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Как работает подсчёт',
     'vote.s3.title':'Подсчитать может любой.',
     'vote.how1a':'Ваш кошелёк отправляет транзакцию нулевой стоимости на адрес урны с',
@@ -978,7 +978,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'Вписать',
     'vote.st.writeInTitle':'Вписать организацию',
-    'vote.st.writeInLede':'Три из шести мест в бюллетене отведены организациям, предложенным держателями. Выберите любую из The Giving Block.',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Поиск организаций',
     'vote.st.writeInNone':'Совпадений в проверенном каталоге нет.',
@@ -993,7 +993,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'Что-то не получилось. Выполненные шаги остаются; откройте снова, чтобы закончить.',
     'vote.st.writeInConnect':'Сначала подключите кошелёк.',
     'vote.st.writeInNoPrice':'Сейчас не удаётся прочитать цену $RWI, поэтому комиссию не рассчитать.',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'Свободное место',
     'vote.st.openSlotHint':'Зарезервировано под заявку держателя',
@@ -1021,7 +1021,7 @@ const TRANSLATIONS = {
     'vote.title.c':'sıradakini.',
     'vote.lede':'$RWI sahipleri, bir sonraki bağışı hangi doğrulanmış hayır kurumunun alması gerektiğini işaret eder. Oyunuz Robinhood Chain üzerinde bir işlemdir ve elinizdeki $RWI ile ağırlıklandırılır. Herkes sayabilir — siz dahil.',
     'vote.disclaimer.title':'Önce bunu okuyun',
-    'vote.disclaimer.body':'Bu bağlayıcı bir yönetişim değil, danışma niteliğinde bir sinyaldir. $RWI ne yönetişim hakkı ne de gelir üzerinde hak verir. Proje sonucu okur ve dikkate alır, ancak her bağış üzerinde son sözü saklı tutar — alıcılar, oy nasıl sonuçlanırsa sonuçlansın The Giving Block doğrulamasından geçmelidir. Oylama token bakiyesiyle ağırlıklandırılır, bu da büyük sahiplerin daha fazla ağırlık taşıdığı anlamına gelir. Bakiyeler sayım anında canlı okunur, bu yüzden oy bir anlık görüntüye sabitlenmez.',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — Cüzdanınız',
     'vote.connect':'Cüzdan bağla',
     'vote.disconnect':'Bağlantıyı kes',
@@ -1037,7 +1037,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'Kurucu kontrolleri',
     'vote.founder.open':'Yeni bir oylama ac',
     'vote.founder.confirm':'Onayla ve ac',
-    'vote.founder.note':'Aşağıdaki liste otomatik oluşturulur — bir tekrar eden kuruluş, projenin yerleşik ilgi alanlarından iki tane ve ReliefWeb canlı kriz verilerine göre sıralanmış, güncel ihtiyaca yanıt veren üç tane. Yeni bir tur açmak cüzdanınızdan bir işlemdir: mevcut turun yerini alır ve önceki turlardaki oylar anında sayılmaz olur. Bunu yalnızca bu adres yapabilir; başka herhangi birinin bildirimleri sayfa zinciri okurken yok sayılır.',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Sayım nasıl çalışır',
     'vote.s3.title':'Herkes sayabilir.',
     'vote.how1a':'Cüzdanınız oy sandığı adresine 0 değerli bir işlem gönderir,',
@@ -1102,7 +1102,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'Aday goster',
     'vote.st.writeInTitle':'Bir kurulus aday goster',
-    'vote.st.writeInLede':'Alti oy yerinden ucu, sahiplerin aday gosterdigi kuruluslara ayrilmistir. The Giving Block\'tan dilediginizi secin.',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Kurulus ara',
     'vote.st.writeInNone':'Dogrulanmis dizinde eslesme yok.',
@@ -1117,7 +1117,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'Bir sey basarisiz oldu. Tamamlananlar gecerli; kalani bitirmek icin tekrar acin.',
     'vote.st.writeInConnect':'Once bir cuzdan baglayin.',
     'vote.st.writeInNoPrice':'Su anda $RWI fiyati okunamiyor, bu yuzden ucret hesaplanamiyor.',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'Bos yer',
     'vote.st.openSlotHint':'Sahiplerin adayligi icin ayrildi',
@@ -1145,7 +1145,7 @@ const TRANSLATIONS = {
     'vote.title.c':'ai là người tiếp theo.',
     'vote.lede':'Người nắm giữ $RWI báo hiệu tổ chức từ thiện đã kiểm định nào nên nhận khoản quyên góp tiếp theo. Phiếu của bạn là một giao dịch trên Robinhood Chain, được tính trọng số theo lượng $RWI bạn nắm giữ. Bất kỳ ai cũng có thể kiểm đếm — kể cả bạn.',
     'vote.disclaimer.title':'Đọc điều này trước',
-    'vote.disclaimer.body':'Đây là tín hiệu tư vấn, không phải quản trị ràng buộc. $RWI không trao quyền quản trị và không có quyền đòi doanh thu. Dự án đọc kết quả và cân nhắc, nhưng giữ quyền quyết định cuối cùng với mọi khoản quyên góp — người nhận phải qua kiểm định của The Giving Block bất kể kết quả bỏ phiếu. Bỏ phiếu được tính trọng số theo số dư token, nghĩa là người nắm giữ lớn có trọng lượng lớn hơn. Số dư được đọc trực tiếp lúc kiểm đếm, nên phiếu không bị khóa vào một ảnh chụp.',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — Ví của bạn',
     'vote.connect':'Kết nối ví',
     'vote.disconnect':'Ngắt kết nối',
@@ -1161,7 +1161,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'Điều khiển người sáng lập',
     'vote.founder.open':'Mở lá phiếu mới',
     'vote.founder.confirm':'Xác nhận & mở',
-    'vote.founder.note':'Danh sách bên dưới được soạn tự động — một tổ chức quay lại, hai từ các lĩnh vực dự án đã hỗ trợ, và ba đáp ứng nhu cầu hiện tại, xếp hạng theo dữ liệu khủng hoảng trực tiếp của ReliefWeb. Mở vòng mới là một giao dịch từ ví của bạn: nó thay thế vòng hiện tại, và phiếu ở các vòng trước lập tức không còn được tính. Chỉ địa chỉ này mới làm được; tuyên bố từ bất kỳ ai khác đều bị bỏ qua khi trang đọc chuỗi.',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Cách kiểm đếm hoạt động',
     'vote.s3.title':'Ai cũng đếm được.',
     'vote.how1a':'Ví của bạn gửi một giao dịch giá trị 0 đến địa chỉ hòm phiếu với',
@@ -1226,7 +1226,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'Đề cử',
     'vote.st.writeInTitle':'Đề cử một tổ chức',
-    'vote.st.writeInLede':'Ba trong sáu vị trí lá phiếu dành cho tổ chức do người nắm giữ đề cử. Chọn bất kỳ tổ chức nào từ The Giving Block.',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Tìm tổ chức',
     'vote.st.writeInNone':'Không có kết quả trong danh mục đã xác minh.',
@@ -1241,7 +1241,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'Có lỗi. Các bước đã xong vẫn giữ; mở lại để hoàn tất phần còn lại.',
     'vote.st.writeInConnect':'Kết nối ví trước đã.',
     'vote.st.writeInNoPrice':'Hiện không đọc được giá $RWI nên không thể báo phí.',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'Chỗ trống',
     'vote.st.openSlotHint':'Dành cho đề cử của người nắm giữ',
@@ -1269,7 +1269,7 @@ const TRANSLATIONS = {
     'vote.title.c':'अगला कौन है।',
     'vote.lede':'$RWI धारक संकेत देते हैं कि अगला दान किस सत्यापित धर्मार्थ संगठन को मिलना चाहिए। आपका वोट Robinhood Chain पर एक लेनदेन है, जो आपके पास मौजूद $RWI के अनुसार भारित होता है। कोई भी इसकी गिनती कर सकता है — आप भी।',
     'vote.disclaimer.title':'पहले यह पढ़ें',
-    'vote.disclaimer.body':'यह एक सलाहकारी संकेत है, बाध्यकारी शासन नहीं। $RWI कोई शासन अधिकार या राजस्व पर दावा नहीं देता। परियोजना परिणाम पढ़ती है और उस पर विचार करती है, लेकिन हर दान पर अंतिम निर्णय अपने पास रखती है — वोट चाहे जैसा भी हो, प्राप्तकर्ताओं को The Giving Block की जाँच पास करनी होगी। मतदान टोकन शेष के अनुसार भारित होता है, यानी बड़े धारकों का वजन अधिक होता है। शेष गिनती के समय लाइव पढ़े जाते हैं, इसलिए वोट किसी स्नैपशॉट से बंधा नहीं है।',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — आपका वॉलेट',
     'vote.connect':'वॉलेट कनेक्ट करें',
     'vote.disconnect':'डिस्कनेक्ट',
@@ -1285,7 +1285,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'संस्थापक नियंत्रण',
     'vote.founder.open':'नया मतपत्र खोलें',
     'vote.founder.confirm':'पुष्टि करें और खोलें',
-    'vote.founder.note':'नीचे की सूची स्वचालित रूप से बनती है — एक लौटने वाला संगठन, परियोजना के स्थापित कारण क्षेत्रों से दो, और वर्तमान आवश्यकता का उत्तर देने वाले तीन, जो ReliefWeb के लाइव संकट डेटा के आधार पर क्रमित हैं। नया दौर खोलना आपके वॉलेट से एक लेनदेन है: यह वर्तमान दौर की जगह लेता है, और पिछले दौरों के वोट तुरंत गिनना बंद कर देते हैं। केवल यही पता ऐसा कर सकता है; किसी और की घोषणाएँ तब अनदेखी की जाती हैं जब पृष्ठ चेन पढ़ता है।',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — गणना कैसे काम करती है',
     'vote.s3.title':'कोई भी गिन सकता है।',
     'vote.how1a':'आपका वॉलेट मतपेटी पते पर 0-मूल्य लेनदेन भेजता है, जिसमें',
@@ -1350,7 +1350,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'नामांकित करें',
     'vote.st.writeInTitle':'एक संगठन नामांकित करें',
-    'vote.st.writeInLede':'छह मतपत्र स्थानों में से तीन धारकों द्वारा नामांकित संगठनों के लिए आरक्षित हैं। The Giving Block से कोई भी चुनें।',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'संगठन खोजें',
     'vote.st.writeInNone':'सत्यापित निर्देशिका में कोई मेल नहीं।',
@@ -1365,7 +1365,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'कुछ विफल हुआ। पूर्ण चरण बने रहते हैं; बाकी पूरा करने के लिए फिर खोलें।',
     'vote.st.writeInConnect':'पहले वॉलेट कनेक्ट करें।',
     'vote.st.writeInNoPrice':'अभी $RWI मूल्य नहीं पढ़ा जा सकता, इसलिए शुल्क नहीं बताया जा सकता।',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'खाली स्थान',
     'vote.st.openSlotHint':'धारक नामांकन हेतु आरक्षित',
@@ -1393,7 +1393,7 @@ const TRANSLATIONS = {
     'vote.title.c':'wer als Nächstes.',
     'vote.lede':'$RWI-Inhaber signalisieren, welche geprüfte Organisation die nächste Spende erhalten soll. Deine Stimme ist eine Transaktion auf der Robinhood Chain, gewichtet nach dem $RWI, das du hältst. Jeder kann sie auszählen — auch du.',
     'vote.disclaimer.title':'Lies das zuerst',
-    'vote.disclaimer.body':'Dies ist ein beratendes Signal, keine bindende Governance. $RWI gewährt weder Governance-Rechte noch Ansprüche auf Erlöse. Das Projekt liest das Ergebnis und gewichtet es, behält aber bei jeder Spende das letzte Wort — Empfänger müssen die Prüfung von The Giving Block bestehen, unabhängig vom Abstimmungsergebnis. Die Abstimmung wird nach Token-Guthaben gewichtet, große Inhaber wiegen also schwerer. Guthaben werden zum Auszählungszeitpunkt live gelesen, eine Stimme ist also nicht auf einen Snapshot festgelegt.',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — Deine Wallet',
     'vote.connect':'Wallet verbinden',
     'vote.disconnect':'Trennen',
@@ -1409,7 +1409,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'Gründer-Steuerung',
     'vote.founder.open':'Neue Abstimmung oeffnen',
     'vote.founder.confirm':'Bestaetigen & oeffnen',
-    'vote.founder.note':'Die Liste unten wird automatisch zusammengestellt — eine wiederkehrende Organisation, zwei aus den etablierten Themenfeldern des Projekts und drei, die auf den aktuellen Bedarf reagieren, gewichtet nach Live-Krisendaten von ReliefWeb. Eine neue Runde zu öffnen ist eine Transaktion aus deiner Wallet: Sie löst die aktuelle Runde ab, und Stimmen früherer Runden zählen sofort nicht mehr. Nur diese Adresse kann das; Deklarationen von anderen werden ignoriert, wenn die Seite die Chain liest.',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Wie die Auszählung funktioniert',
     'vote.s3.title':'Von jedem zählbar.',
     'vote.how1a':'Deine Wallet sendet eine Transaktion mit Wert 0 an die Wahlurnen-Adresse mit',
@@ -1474,7 +1474,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'Vorschlagen',
     'vote.st.writeInTitle':'Eine Organisation vorschlagen',
-    'vote.st.writeInLede':'Drei der sechs Plaetze sind fuer von Inhabern vorgeschlagene Organisationen reserviert. Waehle eine beliebige von The Giving Block.',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Organisationen suchen',
     'vote.st.writeInNone':'Kein Treffer im geprueften Verzeichnis.',
@@ -1489,7 +1489,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'Etwas ist fehlgeschlagen. Erledigte Schritte bleiben; erneut oeffnen zum Abschliessen.',
     'vote.st.writeInConnect':'Verbinde zuerst eine Wallet.',
     'vote.st.writeInNoPrice':'Der $RWI-Preis ist gerade nicht lesbar, daher laesst sich die Gebuehr nicht beziffern.',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'Freier Platz',
     'vote.st.openSlotHint':'Reserviert fuer einen Inhaber-Vorschlag',
@@ -1517,7 +1517,7 @@ const TRANSLATIONS = {
     'vote.title.c':'siapa berikutnya.',
     'vote.lede':'Pemegang $RWI memberi sinyal lembaga amal terverifikasi mana yang harus menerima donasi berikutnya. Suara Anda adalah transaksi di Robinhood Chain, dibobot oleh $RWI yang Anda pegang. Siapa pun bisa menghitungnya — termasuk Anda.',
     'vote.disclaimer.title':'Baca ini dulu',
-    'vote.disclaimer.body':'Ini adalah sinyal penasihat, bukan tata kelola yang mengikat. $RWI tidak memberikan hak tata kelola maupun klaim atas pendapatan. Proyek membaca hasilnya dan mempertimbangkannya, tetapi memegang keputusan akhir atas setiap donasi — penerima harus lolos verifikasi The Giving Block terlepas dari hasil pemungutan suara. Pemungutan suara dibobot berdasarkan saldo token, artinya pemegang besar membawa bobot lebih. Saldo dibaca langsung saat penghitungan, jadi suara tidak terkunci pada snapshot.',
+    'vote.disclaimer.body':"This is an advisory signal, not binding governance. Votes are weighted by live $RWI balance. The project retains final say over donations. Recipients must be vetted through The Giving Block or have an active, claimed Donate.gg profile.",
     'vote.s1.eyebrow':'01 — Dompet Anda',
     'vote.connect':'Hubungkan dompet',
     'vote.disconnect':'Putuskan',
@@ -1533,7 +1533,7 @@ const TRANSLATIONS = {
     'vote.founder.eyebrow':'Kontrol pendiri',
     'vote.founder.open':'Buka surat suara baru',
     'vote.founder.confirm':'Konfirmasi & buka',
-    'vote.founder.note':'Daftar di bawah disusun otomatis — satu organisasi yang kembali, dua dari bidang yang sudah didukung proyek, dan tiga yang merespons kebutuhan saat ini, diperingkat menurut data krisis langsung ReliefWeb. Membuka putaran baru adalah transaksi dari dompet Anda: ia menggantikan putaran saat ini, dan suara di putaran sebelumnya langsung berhenti dihitung. Hanya alamat ini yang bisa melakukannya; deklarasi dari siapa pun lainnya diabaikan saat halaman membaca rantai.',
+    'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Cara penghitungan bekerja',
     'vote.s3.title':'Dapat dihitung siapa saja.',
     'vote.how1a':'Dompet Anda mengirim transaksi bernilai 0 ke alamat kotak suara dengan',
@@ -1598,7 +1598,7 @@ const TRANSLATIONS = {
   ,
     'vote.st.writeInBtn':'Usulkan',
     'vote.st.writeInTitle':'Usulkan sebuah organisasi',
-    'vote.st.writeInLede':'Tiga dari enam slot surat suara disediakan untuk organisasi usulan pemegang. Pilih salah satu dari The Giving Block.',
+    'vote.st.writeInLede':"Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.",
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Cari organisasi',
     'vote.st.writeInNone':'Tidak ada kecocokan di direktori terverifikasi.',
@@ -1613,7 +1613,7 @@ const TRANSLATIONS = {
     'vote.st.writeInFail':'Ada yang gagal. Langkah selesai tetap; buka lagi untuk menyelesaikan sisanya.',
     'vote.st.writeInConnect':'Hubungkan dompet dulu.',
     'vote.st.writeInNoPrice':'Tidak dapat membaca harga $RWI sekarang, jadi biaya tidak bisa dihitung.',
-    'vote.st.writeInNote':'Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.'
+    'vote.st.writeInNote':"Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory."
   ,
     'vote.st.openSlot':'Slot kosong',
     'vote.st.openSlotHint':'Disediakan untuk usulan pemegang',
@@ -2213,7 +2213,7 @@ document.addEventListener('DOMContentLoaded', function(){
      ROUND        — no longer edited here. Rounds are opened onchain by OWNER
                     via the founder panel; older rounds' votes stop counting.
      ORG_POOL     — the roster a ballot can draw from. Every entry must already
-                    be a vetted Giving Block nonprofit; a vote never bypasses vetting.
+                    be vetted through The Giving Block or have an active, claimed Donate.gg profile; a vote never bypasses eligibility checks.
      OWNER        — the only address whose round declarations are honoured.
      BALLOT_BOX   — the address votes are sent to. Use a dedicated address you
                     control. It only ever receives 0-value transactions.
@@ -2852,6 +2852,75 @@ const TGB_BY_SLUG = (function(){ const m = {}; TGB_DIRECTORY.forEach(function(r)
 const TGB_LOGO = (function(){ const m = {}; TGB_DIRECTORY.forEach(function(r){ if(r[2]) m[r[0]] = r[2]; }); return m; })();
 const TGB_CDN = 'https://static.tgbwidget.com/';
 
+// Donate.gg IDs are namespaced so they cannot collide with Giving Block slugs.
+const DONATE_GG_SEED = [{"id":"048059e8-e914-4e77-98e2-06e121d4e44b","slug":"paws-atlanta-incorporated","name":"PAWS Atlanta Incorporated","logo":"https://www.guidestar.org/ViewEdoc.aspx?eDocId=11025174&approved=True","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"0921a16f-411b-5574-b6b2-44183f7011c7","slug":"the-nonhuman-rights-project-inc","name":"The Nonhuman Rights Project Inc.","logo":"https://docs.candid.org/edoc/10066814","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"09bc5446-f23d-59a7-95c4-90e9a9aff021","slug":"wait-hope-foundation","name":"Wait & Hope Foundation","logo":"https://docs.candid.org/efiles/16344417/09e0039f-28ee-4ca7-91f8-4d863ffdbe45.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"09fd6d76-5f18-59f5-b405-d288374322c4","slug":"lucky-cat-adoptions-inc","name":"Lucky Cat Adoptions Inc","logo":"https://www.luckycatadoptions.com/images/luckycat-text-trans.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"0b27f01b-fbc2-5d17-8e81-25f28800a15d","slug":"rustys-angels-sanctuary","name":"Rusty's Angels Sanctuary","logo":"https://docs.candid.org/edoc/10994167","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"0b6fa1d2-3299-5ae5-aa80-db806d62f587","slug":"hope-for-ukraine-inc","name":"Hope for Ukraine Inc","logo":"https://docs.candid.org/edoc/10532118","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"0bada9c9-061b-54be-8c40-38ff7a260f2c","slug":"lung-cancer-foundation-of-america","name":"Lung Cancer Foundation of America","logo":"https://docs.candid.org/efiles/8576354/f4013d31-1045-4337-b3dc-ad30ab4b8de5.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"0c8c28cf-b63d-5989-83b3-a8ad8844d97e","slug":"mars-society-inc","name":"Mars Society Inc","logo":"https://docs.candid.org/efiles/7378133/bf5735f8-2bf1-457e-9b74-1181279596e3.jpg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"0d536bd2-9d4b-527d-a4fd-57f3b549bc5d","slug":"2wish","name":"2Wish for Henry Nowak","logo":"https://donategg-images.s3.us-east-1.amazonaws.com/2wish-logo.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"0ec39c36-ba76-5e6d-a0ee-f9831921c727","slug":"autism-society-of-texas","name":"Autism Society of Texas","logo":"https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/0ec39c36-ba76-5e6d-a0ee-f9831921c727/charity-profile-content/v1/320c13522b4f6240c87ebe792a53cba6a1ff5e402caf262c6574ff62dab7c23e.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"14da26aa-195f-5ed3-bf70-bb3466926ccf","slug":"felidae-conservation-fund","name":"Felidae Conservation Fund","logo":"https://docs.candid.org/efiles/7041082/b8834589-534d-4ecf-a342-dbd116b3ac18.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"1ada1cd1-03fa-58a7-9e26-804dd32749ca","slug":"save-the-bees-usa","name":"Save the Bees USA","logo":"https://docs.candid.org/efiles/15239938/d0c3f73e-d51a-4610-b8ef-c10369f12460.jpg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"1c9826fe-cbf1-5911-9b4f-f532589c5ffa","slug":"gooners-v-cancer-inc","name":"Gooners V Cancer Inc","logo":"https://docs.candid.org/efiles/15146455/7f72e59e-6130-45d3-96fc-cb7654850474.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"1e1c3957-76dc-5f89-a8e3-e589365966fa","slug":"orange-county-society-for-the-prevention-of-cruelty-to-animals-d","name":"Orange County Society for the Prevention of Cruelty to Animals, dba Orange County Animal Allies","logo":"https://docs.candid.org/edoc/11217444","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"1ef54c13-7432-59f5-ba69-70bc15cd6918","slug":"seti-institute","name":"SETI Institute","logo":"https://widgets.guidestar.org/prod/v1/pdp/transparency-seal//8432122/svg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"2c91693f-6615-43ff-8128-d5ada892a806","slug":"ovarian-cancer-research-alliance","name":"Ovarian Cancer Research Alliance","logo":"https://docs.candid.org/efiles/6926392/de736968-e9ef-4164-9091-b759501c52f7.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"30c4e2f6-d0ee-5138-8f1d-cfef4fe58a52","slug":"dementia-society-of-america","name":"Dementia Society of America","logo":"https://docs.candid.org/edoc/10960847","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"30f9f7df-ca92-5582-aa92-6e2d57a0782a","slug":"primate-rescue-center","name":"Primate Rescue Center","logo":"https://docs.candid.org/edoc/10698296","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"314b5d45-64ba-480c-9bf5-f64edfee157e","slug":"mental-health-america-of-greenville-county","name":"Mental Health America of Greenville County","logo":"https://docs.candid.org/edoc/10978702","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"3869ffab-48c8-51ee-8fdd-eb319b97fa52","slug":"pawsitive-beginnings","name":"Pawsitive Beginnings","logo":"https://docs.candid.org/edoc/11249642","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"3b77aed9-a49c-5225-88d0-efe408f74c79","slug":"autism-health-inc","name":"Autism Health Inc","logo":"https://docs.candid.org/edoc/11225287","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"3eb36d37-ab53-4706-ba6e-3e7881cc82cc","slug":"rape-recovery-center","name":"Rape Recovery Center","logo":"https://docs.candid.org/efiles/8293585/a098062b-37d0-45a7-b04f-6d6a75fb9f4d.jpg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"3edea6b7-42d7-4ad7-81ce-dc4809f3f077","slug":"handicap-international","name":"Handicap International","logo":"https://docs.candid.org/edoc/10556261","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"3fa12f12-3127-5461-82e1-ea2c5dea7b83","slug":"orangutan-outreach","name":"Orangutan Outreach","logo":"https://redapes.org/wp-content/uploads/2025/12/OO-Logo.svg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"41c75ad9-d663-530b-8266-0ccb5bc126d4","slug":"gaza-palestinian-american-associati","name":"Gaza Palestinian-American Associati","logo":"https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/41c75ad9-d663-530b-8266-0ccb5bc126d4/charity-profile-content/v1/89e00e91a0236cacf917f06c118e36bbb1ef4b1feb765cd4cea4847bfe068acb.jpg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"46f28d96-471a-5e80-a8ba-484a8f4911e0","slug":"dont-forget-us-pet-us-a-non-profit-corporation","name":"Dont Forget US Pet US a Non Profit Corporation","logo":"https://docs.candid.org/edoc/8537918","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"50c8fc7f-3f69-5dad-a07c-2e9c4a4dd484","slug":"zero-prostate-cancer","name":"Zero Prostate Cancer","logo":"https://docs.candid.org/edoc/10038495","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"510352f4-b8e1-5808-9219-263e4c9449da","slug":"wildfire-prevention-inc","name":"Wildfire Prevention Inc","logo":"https://docs.candid.org/edoc/10538914","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"53d830d3-c8f8-5827-9d46-1740840a0ee6","slug":"la-senda-verde-animal-refuge-inc","name":"La Senda Verde Animal Refuge Inc","logo":"https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/53d830d3-c8f8-5827-9d46-1740840a0ee6/charity-profile-content/v1/66a3fb4861c7e768f945fdb40cf840d64116574ba0c52f88bc7e2fa1275c51ef.jpg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"5473b96b-8fd8-5f99-818d-997ca9639abe","slug":"las-lomitas-education-foundation","name":"Las Lomitas Education Foundation","logo":"https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/5473b96b-8fd8-5f99-818d-997ca9639abe/charity-profile-content/v1/282035350af9ca1414f32f8c899e6ea005cb74156eda248707783e64d7ec3d72.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"5705b8b8-0e91-557c-8d51-f82015482d33","slug":"colon-cancer-coalition","name":"Colon Cancer Coalition","logo":"https://docs.candid.org/edoc/10695470","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"5c9e600f-7d1a-5427-b0fb-86aa1e7b8b16","slug":"engage-nepal","name":"Engage Nepal","logo":"https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/5c9e600f-7d1a-5427-b0fb-86aa1e7b8b16/charity-profile-content/v1/4721d052e63f7e6defc6926481d15c1d6c580dc2981db320196e309c72a64eb6.jpg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"5cf612f6-a632-4bac-8ac9-37d0dac2a7fb","slug":"water-org","name":"Water.org","logo":"https://docs.candid.org/edoc/10508270","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"5ea85217-4807-57e5-aab9-bcc8d9384da6","slug":"the-keep-a-breast-foundation","name":"THE KEEP A BREAST FOUNDATION","logo":"https://docs.candid.org/efiles/6936797/1048a6a0-5c3b-484e-85b3-5713cc2cf9ac.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"6677e92c-6f08-5239-860a-bc5e6ca1cff2","slug":"ukraine-matters","name":"Ukraine Matters","logo":"https://docs.candid.org/edoc/10344025","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"67b686ce-f267-4a2f-88f3-46b161347dfc","slug":"straydog-inc","name":"Straydog Inc","logo":"https://docs.candid.org/edoc/9764418","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"6b50f488-783b-574c-a0ea-03beb18138ac","slug":"longevity-science-foundation","name":"Longevity Science Foundation","logo":"https://docs.candid.org/edoc/11129166","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"70ef8976-8f06-568b-8d0b-e116a8b7b219","slug":"send-it","name":"Send It","logo":"https://docs.candid.org/efiles/9303432/25cc54fa-db87-48df-8c64-24b89781a800.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"722b4ee1-91ac-5e61-a6ab-9bc19db6599a","slug":"pork-butt-pastures-inc","name":"Pork Butt Pastures Inc","logo":"https://img1.wsimg.com/isteam/ip/cea8ac9b-0427-4e90-9562-8879bcf4cc4d/IMG_7534.JPEG/:/cr=t:31.25%25,l:0%25,w:100%25,h:37.5%25/rs=w:1200,h:600,cg:true","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"728465a2-adff-4e1d-bd1e-c0aaee20b143","slug":"lgbtq-collaborative","name":"LGBTQ+ Collaborative","logo":"https://docs.candid.org/edoc/10617874","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"72c99f8d-a00d-5d45-9e18-a8751b880184","slug":"small-primate-animal-rescue-tn","name":"Small Primate Animal Rescue TN","logo":"https://docs.candid.org/efiles/10954733/c26e94ed-b54f-4467-bd44-096bdebec5fe.jpg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"73268c75-88fb-498d-8e66-0be770548be4","slug":"mental-health-america","name":"Mental Health America","logo":"https://www.guidestar.org/ViewEdoc.aspx?eDocId=10815841&approved=True","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"76094486-53a8-5dda-b586-7080f047e7b8","slug":"livs-stargrace-foundation","name":"Liv's Stargrace Foundation","logo":"https://static.tgbwidget.com/organization_logo/ef253df2-b08d-4730-af0f-ab538015e00f.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"775fef41-2be4-5b2f-b0f9-2a4b26cf9a57","slug":"fulminare-global-usa","name":"Fulminare Global USA","logo":"https://fulminareglobal.org/images/fulminare-logo-mark.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"789c446d-b6e2-5055-8722-7d60c08c0f84","slug":"pussy-control","name":"Pussy Control","logo":"https://docs.candid.org/edoc/11268325","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"7a7a621a-c106-48e4-b720-7ab497a399cf","slug":"machine-intelligence-research-institute-inc","name":"Machine Intelligence Research Institute Inc","logo":"https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/7a7a621a-c106-48e4-b720-7ab497a399cf/charity-profile-content/v1/eeb5a3675144a6d2eb1eb25b65ddeaac9441fe82424e47fbd256bdb838a7fe1d.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"8d292d97-f2d4-5b5a-86d2-39d8116c57f0","slug":"alzheimers-research-foundation-inc","name":"Alzheimer's Research Foundation Inc.","logo":"https://docs.candid.org/efiles/9268760/4c07d01a-c808-4107-923e-7a90498de4ab.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"9107ce42-47d8-5068-b4c8-ef2ebd019ad2","slug":"center-for-carbon-removal","name":"Center for Carbon Removal","logo":"https://docs.candid.org/edoc/10271745","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"98bf80bb-fb48-41cd-88c5-26775e9a6878","slug":"sights-for-hope","name":"Sights for Hope","logo":"https://docs.candid.org/edoc/10900640","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"9b4dae4e-d8c1-4322-a594-35a4858296b2","slug":"make-a-wish-america","name":"Make-A-Wish America","logo":"https://docs.candid.org/edoc/11142134","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"a3a1f64b-6cd4-5ba1-8764-23eb47cda98f","slug":"troll-house-animal-sanctuary","name":"Troll House Animal Sanctuary","logo":"https://docs.candid.org/efiles/14327938/6e92c063-ecdb-432d-8a61-ce54bb085b6c.jpeg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"a774823d-3a19-56b1-8efb-1cf3892744e6","slug":"talboy-foundation-inc","name":"Talboy Foundation Inc","logo":"https://docs.candid.org/edoc/9035637","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"a8dc4bdf-3857-5426-a70e-401f19417835","slug":"forever-wild-exotic-animal-sanctuary","name":"Forever Wild Exotic Animal Sanctuary","logo":"https://img1.wsimg.com/isteam/ip/e841a68f-887c-4c47-80ed-b609f4b4dd7f/FOREVER%20WILD%20horizontal.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"a9946430-df48-511f-ae48-9562835c6d20","slug":"the-22q-family-foundation","name":"The 22q Family Foundation","logo":"https://docs.candid.org/efiles/9505170/793d71f0-a4b1-41dc-bf75-bfdaee27b0d7.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"aee68bad-9286-5827-abd5-6cdf5590223e","slug":"period-inc","name":"Period. Inc","logo":"https://period.org/uploads/_max/Period-Logo-1.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"b77471ef-4167-5409-91fc-b87309a15617","slug":"alaska-wildlife-conservation-center-inc","name":"Alaska Wildlife Conservation Center, Inc.","logo":"https://docs.candid.org/edoc/10606699","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"b92bfa20-bdce-54fd-8907-c535f4028ac5","slug":"my-autism-connection-inc","name":"My Autism Connection Inc","logo":"https://docs.candid.org/edoc/9236774","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"bdf8e77f-1368-5499-9853-4bd219b6977d","slug":"harbin-shs-animal-rescue","name":"Harbin Shs Animal Rescue","logo":"https://docs.candid.org/edoc/7365699","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"c054efc5-64d9-57e3-b5db-6983216c1bb0","slug":"free-mobility-inc","name":"Free Mobility Inc","logo":"https://www.freemobility.org/free-mobility.svg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"c30f73b8-bd68-4ce6-862d-ea6cd4dfce26","slug":"national-domestic-violence-hotline","name":"National Domestic Violence Hotline","logo":"https://docs.candid.org/edoc/9801122","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"c46eff0a-6494-5498-94db-0f180a4fb620","slug":"chattanooga-outreach","name":"Chattanooga Outreach","logo":"https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/request-c46eff0a-6494-5498-94db-0f180a4fb620/charity-profile-content/v1/67c375ca817bcbf32da8a80927cd70e2f5796cce458e484bef01f0aec668ca0f.webp","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"c5b3397e-783e-4555-bca3-bf90fe94f0ea","slug":"brevard-zoo","name":"Brevard Zoo","logo":"https://docs.candid.org/edoc/10496169","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"d0ad259f-36de-588b-a62d-5ba275702828","slug":"dog-aide","name":"Dog Aide","logo":"https://docs.candid.org/edoc/11246829","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"d42b7e00-7ac9-4de4-ac67-12ba0d25aee1","slug":"league-for-animal-welfare","name":"League for Animal Welfare","logo":"https://docs.candid.org/edoc/10587573","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"d4325890-d7da-5ffb-bbab-181acf3bf8df","slug":"red-leash-rescue-inc","name":"Red Leash Rescue Inc","logo":"https://docs.candid.org/edoc/9474833","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"d7850287-4d2c-48cf-87c5-9a096fa4f445","slug":"go2-for-lung-cancer","name":"GO2 for Lung Cancer","logo":"https://izbnuglu1gzeabqo.public.blob.vercel-storage.com/charity/go2_for_lung_cancer","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"dba2b205-4484-45a5-8822-c7672ff4e81b","slug":"georgia-mountain-food-bank-inc","name":"Georgia Mountain Food Bank Inc","logo":"https://docs.candid.org/edoc/10906800","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"dce7c278-7128-5401-af29-b757f902b42b","slug":"shiba-inu-rescue-association","name":"Shiba Inu Rescue Association","logo":"https://docs.candid.org/efiles/9700539/7ed53388-81f2-4cc4-b21d-311e11be8867.jpg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"e08387e4-3307-5b86-b316-d26b0d67a3db","slug":"save-the-frogs","name":"SAVE THE FROGS!","logo":"https://docs.candid.org/edoc/9949939","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"e2df8522-8406-5799-a83c-fabc4e522b8e","slug":"slice-out-hunger","name":"Slice Out Hunger","logo":"https://docs.candid.org/edoc/10897760","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"e72bdd76-a359-5971-bfb2-b47f0d7e373a","slug":"pauseai-us","name":"Pauseai US","logo":"https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/request-e72bdd76-a359-5971-bfb2-b47f0d7e373a/charity-profile-content/v1/028d37e618d57e51e38fb5200c15c6aa317eb873df650ca21878123a56a0ca67.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"e81d1484-3d2c-52f6-9c09-f3cee3184d2b","slug":"testicular-cancer-foundation","name":"Testicular Cancer Foundation","logo":"https://docs.candid.org/edoc/10464524","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"e851c472-14a3-5e21-9b25-20ec30745ac4","slug":"animal-victory-disaster-abuse-fund","name":"Animal Victory Disaster & Abuse Fund","logo":"https://docs.candid.org/efiles/14539866/7f3db74d-aa92-44b1-9500-e14094d32397.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"eb901716-a16d-57a1-8c50-b0dedeaef350","slug":"cincinnati-animal-care-humane-society","name":"Cincinnati Animal Care Humane Society","logo":"https://cincinnatianimalcare.org/wp-content/uploads/2026/03/cropped-CincyAnimalCARE-Logo-Short-01-scaled-1-300x120.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"ed157df3-9314-43fe-89c5-0143d205cc04","slug":"rape-abuse-incest-national-network","name":"Rape, Abuse & Incest National Network","logo":"https://docs.candid.org/edoc/11015652","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"f0642334-f8ed-5b3a-85b4-835962416c97","slug":"paws-of-china","name":"Paws of China","logo":"https://pawsofchina.org/wp-content/uploads/2023/08/Pawslogopng.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"f0e026ae-6c9b-464f-b293-20ce5b1cbc2d","slug":"paws-with-a-cause","name":"Paws With A Cause","logo":"https://docs.candid.org/efiles/7552838/635a4a7a-fa88-466b-a16a-920f576cba18.png","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"f5525cfe-8b9e-5054-81ca-06e03e2ae89b","slug":"rainforest-foundation-inc","name":"Rainforest Foundation Inc","logo":"https://donategg-user-assets-prod.s3.us-east-1.amazonaws.com/image/f5525cfe-8b9e-5054-81ca-06e03e2ae89b/charity-profile/14fc8b81-08a4-4d09-86ed-1d78e90aed07.jpg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"f89ce9c2-6884-4473-9bb7-7af0778b8659","slug":"share-cancer-support","name":"SHARE Cancer Support","logo":"https://docs.candid.org/efiles/6912891/e2dfea66-ad16-49a4-9595-d7e09547ca4b.jpg","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"fcbf4235-0822-52e8-86e9-ed4f57278b54","slug":"alzheimers-research-and-prevention-foundation","name":"Alzheimers Research and Prevention Foundation","logo":"https://docs.candid.org/edoc/9330358","status":"ACTIVE_ONBOARDED","isEnabled":true},{"id":"fe5279fe-5c2b-40e6-b0db-7ba1ace38382","slug":"sealife-response-rehabilitation-and-research-sr3","name":"SeaLife Response, Rehabilitation and Research (SR3)","logo":"https://docs.candid.org/efiles/9230169/03fa85a7-3d9e-4753-a25f-310dda04c6c8.jpg","status":"ACTIVE_ONBOARDED","isEnabled":true}];
+const DONATE_GG_BY_KEY = Object.create(null);
+let donateGgVerified = false;
+let donateGgRequest = null;
+let donateGgCheckedAt = 0;
+function installDonateGg(rows, verified){
+  for(const record of Object.values(DONATE_GG_BY_KEY)) record.eligible = false;
+  for(const row of rows){
+    if(row.status !== 'ACTIVE_ONBOARDED' || row.isEnabled !== true) continue;
+    if(!/^[a-zA-Z0-9-]+$/.test(row.id || '') || !/^[a-z0-9-]+$/.test(row.slug || '') || !row.name) continue;
+    const key = 'gg-' + row.id.toLowerCase();
+    const record = {slug:key, id:row.id, name:row.name, donateGg:row.slug,
+      url:'https://www.donate.gg/charities/' + row.slug,
+      logo:/^https:\/\//.test(row.logo || '') ? row.logo : '',
+      source:'Donate.gg', theme:'donategg-' + row.id, tier:'donategg',
+      cause:'Donate.gg · claimed profile', eligible:true};
+    DONATE_GG_BY_KEY[key] = record;
+    ORG_POOL[key] = record;
+  }
+  donateGgVerified = verified;
+}
+installDonateGg(DONATE_GG_SEED, false);
+function donateGgChoices(){
+  return Object.values(DONATE_GG_BY_KEY).filter(r => r.eligible).sort((a,b) => a.slug.localeCompare(b.slug));
+}
+async function refreshDonateGg(force){
+  if(!force && donateGgVerified && Date.now() - donateGgCheckedAt < 300000) return true;
+  if(donateGgRequest) return donateGgRequest;
+  donateGgRequest = (async function(){
+    try{
+      const res = await fetchWithTimeout('/api/donate-charities');
+      if(!res.ok) throw new Error('Directory unavailable');
+      const data = await res.json();
+      if(!Array.isArray(data.charities)) throw new Error('Invalid directory');
+      installDonateGg(data.charities, true);
+      donateGgCheckedAt = Date.now();
+      return true;
+    }catch(e){ donateGgVerified = false; return false; }
+    finally{
+      donateGgRequest = null;
+      const status = document.getElementById('donateGgStatus');
+      if(status) status.textContent = donateGgVerified
+        ? 'Donate.gg: ' + donateGgChoices().length + ' claimed charities available.'
+        : 'Donate.gg is unavailable. Retry to load claimed charities; Giving Block choices remain available.';
+      document.dispatchEvent(new Event('donate-directory-updated'));
+    }
+  })();
+  return donateGgRequest;
+}
+function withDonateGg(slate, round){
+  const names = new Set(slate.map(key => ORG_POOL[key].name.toLowerCase().replace(/[^a-z0-9]/g,'')));
+  const pool = (donateGgVerified ? donateGgChoices() : []).filter(r => !names.has(r.name.toLowerCase().replace(/[^a-z0-9]/g,'')));
+  if(!pool.length) return slate;
+  const out = slate.slice();
+  out[Math.min(1, out.length)] = pool[(round - 1) % pool.length].slug;
+  return out;
+}
+function directoryRows(){
+  return [...TGB_DIRECTORY, ...donateGgChoices().map(r => [r.slug, r.name])].sort((a,b) => a[1].localeCompare(b[1]));
+}
+function charityName(key){ return DONATE_GG_BY_KEY[key]?.name || TGB_BY_SLUG[key]; }
+function charityUrl(key){ return DONATE_GG_BY_KEY[key]?.url || TGB_BASE + key + '/'; }
+function canNominate(key){
+  if(DONATE_GG_BY_KEY[key]) return donateGgVerified && DONATE_GG_BY_KEY[key].eligible && !SLATE.includes(key);
+  return !!TGB_BY_SLUG[key] && !ORG_POOL[key];
+}
+
+
 /* What an organisation DOES is not something this page can state. The Giving
    Block publishes no API and their pages are not fetchable cross-origin, so
    there are no descriptions to show — and inventing one for 230 charities would
@@ -2922,13 +2991,14 @@ const TOTAL_SLOTS = 6;
 const AUTO_SLOTS  = TOTAL_SLOTS - WRITEIN_SLOTS;
 function autoSlate(round){
   const used = new Set();
-  return [...new Set([
+  return withDonateGg([...new Set([
     ...pickDiverse('returning',1,round,used),
     ...pickDiverse('lane',1,round,used),
     ...pickDiverse('acute',1,round,used)
-  ])].slice(0, AUTO_SLOTS);
+  ])].slice(0, AUTO_SLOTS), round);
 }
 async function composeSlate(round){
+  await refreshDonateGg();
   // Must yield exactly AUTO_SLOTS, the same as autoSlate. It previously
   // returned 1 returning + 2 lane + 3 acute = six, which filled the whole
   // ballot and left no write-in seats — so a round opened with the live feed
@@ -2952,7 +3022,7 @@ async function composeSlate(round){
     }
     for(const s of rankedAll){ if(ranked.length >= need) break; if(ranked.indexOf(s)===-1) ranked.push(s); }
     if(ranked.length < need) throw new Error('thin ranking');
-    return { slate:[...new Set([...base, ...ranked])].slice(0, AUTO_SLOTS), live:live, source:'reliefweb' };
+    return { slate:withDonateGg([...new Set([...base, ...ranked])].slice(0, AUTO_SLOTS), round), live:live, source:'reliefweb' };
   }catch(e){
     return { slate: autoSlate(round), live:null, source:'rotation', reason:(e && e.rwReason) || (e && e.message) || '' };
   }
@@ -3331,7 +3401,7 @@ function renderBallot(){
     <button class="cand${c.writein ? ' writein' : ''}" type="button" role="radio" aria-pressed="false" data-slug="${esc(c.slug)}">
       <span class="radio" aria-hidden="true"></span>
       <span class="who">
-        <span class="name">${esc(c.name)}${c.tgb ? `<a class="tgb-link" href="${TGB_BASE}${esc(c.tgb)}/" target="_blank" rel="noopener" title="View on The Giving Block">Giving Block &#8599;</a>` : ''}</span>
+        <span class="name">${esc(c.name)}${c.donateGg ? `<a class="tgb-link" href="${esc(c.url)}" target="_blank" rel="noopener" title="View claimed profile on Donate.gg">Donate.gg &#8599;</a>` : c.tgb ? `<a class="tgb-link" href="${TGB_BASE}${esc(c.tgb)}/" target="_blank" rel="noopener" title="View on The Giving Block">Giving Block &#8599;</a>` : ''}</span>
         <span class="cause">${esc(c.cause)}</span>
       </span>
       <span class="tally"><span class="pct" data-pct>&mdash;</span><br><span class="muted" data-wt></span><span class="yours" data-yours hidden></span></span>
@@ -3548,6 +3618,8 @@ async function loadRound(txs){
   slateRecovered = false;
   slateTrimmed = 0;
   const rows = txs || await fetchVoteTxs();
+  // Resolve newly listed Donate.gg IDs before interpreting an onchain slate.
+  if(rows.some(tx => fromHexUtf8(tx.raw_input || tx.input || '').includes('gg-'))) await refreshDonateGg();
   let best = null;
   for(const t of rows){
     const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
@@ -3775,6 +3847,7 @@ function sumRwiBySender(transfers, sinceByWallet){
 }
 async function loadWriteIns(txs, round){
   const rows = txs || [];
+  if(rows.some(tx => fromHexUtf8(tx.raw_input || tx.input || '').startsWith(WRITEIN_TAG + round + ':gg-'))) await refreshDonateGg();
   const nominations = [];
   rows.forEach(function(t){
     const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
@@ -3785,8 +3858,9 @@ async function loadWriteIns(txs, round){
     if(sep < 0) return;
     if(parseInt(body.slice(0, sep), 10) !== round) return;      // scoped to this ballot
     const slug = body.slice(sep + 1).trim().toLowerCase();
-    if(!TGB_BY_SLUG[slug]) return;                              // must be a directory entry
-    if(ORG_POOL[slug]) return;                                  // already a standing candidate
+    if(!charityName(slug)) return;                            // recognized directory entry
+    if(SLATE.includes(slug) || (ORG_POOL[slug] && !DONATE_GG_BY_KEY[slug])) return;
+    if(DONATE_GG_BY_KEY[slug] && (!donateGgVerified || !DONATE_GG_BY_KEY[slug].eligible)) return;
     nominations.push({
       slug: slug, from: from,
       block: Number(t.block_number || t.block || 0),
@@ -4112,9 +4186,9 @@ function repaintDynamic(){
      hides organisations the user came here to find. */
   function search(q){
     const s = q.trim().toLowerCase();
-    if(!s) return TGB_DIRECTORY.slice();
+    if(!s) return directoryRows();
     const scored = [];
-    for(const row of TGB_DIRECTORY){
+    for(const row of directoryRows()){
       const name = row[1].toLowerCase();
       let score = -1;
       if(name.startsWith(s)) score = 0;
@@ -4132,18 +4206,19 @@ function repaintDynamic(){
     const rows = search(q);
     if(count) count.textContent = q.trim()
       ? t('vote.st.writeInMatches', {n: rows.length})
-      : t('vote.st.writeInAll', {n: TGB_DIRECTORY.length});
+      : t('vote.st.writeInAll', {n: directoryRows().length});
     if(!rows.length){ box.innerHTML = '<div class="wi-empty">' + esc(t('vote.st.writeInNone')) + '</div>'; return; }
     box.innerHTML = rows.map(function(r){
-      const logo = TGB_LOGO[r[0]];
+      const gg = DONATE_GG_BY_KEY[r[0]];
+      const logo = gg ? gg.logo : (TGB_LOGO[r[0]] ? TGB_CDN + TGB_LOGO[r[0]] : '');
       return '<div class="wi-row">'
         + '<button type="button" class="wi-opt" role="option" data-slug="' + esc(r[0]) + '">'
-        + (logo ? '<img class="wi-logo" src="' + TGB_CDN + logo + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+        + (logo ? '<img class="wi-logo" src="' + esc(logo) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
                 : '<span class="wi-logo wi-logo-none" aria-hidden="true"></span>')
-        + '<span class="wi-txt">' + esc(r[1]) + '<span class="sl">' + esc(r[0]) + '</span></span>'
+        + '<span class="wi-txt">' + esc(r[1]) + '<span class="sl">' + esc(gg ? 'Donate.gg · claimed profile' : 'The Giving Block') + '</span></span>'
         + '</button>'
-        + '<a class="wi-go" href="' + TGB_BASE + esc(r[0]) + '/" target="_blank" rel="noopener" '
-        + 'title="' + esc(t('vote.st.wiOpen')) + '" aria-label="' + esc(t('vote.st.wiOpen')) + '">&#8599;</a>'
+        + '<a class="wi-go" href="' + esc(charityUrl(r[0])) + '" target="_blank" rel="noopener" '
+        + 'title="' + esc(gg ? 'Open claimed Donate.gg profile' : t('vote.st.wiOpen')) + '" aria-label="' + esc(gg ? 'Open claimed Donate.gg profile' : t('vote.st.wiOpen')) + '">&#8599;</a>'
         + '</div>';
     }).join('');
     // One tap or click selects, on every device. The external link sits outside
@@ -4160,13 +4235,13 @@ function repaintDynamic(){
      than sourced, which is not information. The logo is real, so it moves into
      the row; anything further is one click away on The Giving Block. */
   function pick(slug){
-    if(ORG_POOL[slug]){ wiStatus(t('vote.st.writeInDup'), true); return; }
+    if(!canNominate(slug)){ wiStatus(DONATE_GG_BY_KEY[slug] && !donateGgVerified ? 'Verify Donate.gg availability before selecting this charity.' : t('vote.st.writeInDup'), true); return; }
     chosen = slug;
     const box = $w('wiChosen');
     box.hidden = false;
-    box.innerHTML = esc(TGB_BY_SLUG[slug]) + '<span class="sl">thegivingblock.com/donate/' + esc(slug) + '/</span>';
+    box.innerHTML = esc(charityName(slug)) + '<span class="sl">' + esc(charityUrl(slug)) + '</span>';
     $w('wiResults').innerHTML = '';
-    $w('wiSearch').value = TGB_BY_SLUG[slug];
+    $w('wiSearch').value = charityName(slug);
     $w('wiSteps').hidden = false;
     updateSubmitState();
     wiStatus('');
@@ -4239,6 +4314,10 @@ function repaintDynamic(){
       return;
     }
     if(!chosen){ wiStatus(t('vote.st.writeInPick'), true); return; }
+    if(DONATE_GG_BY_KEY[chosen]){
+      await refreshDonateGg(true);
+      if(!canNominate(chosen)){ wiStatus('This Donate.gg charity is unavailable or no longer eligible.', true); return; }
+    }
     const price = await fetchRwiPrice();
     if(!price){ wiStatus(t('vote.st.writeInNoPrice'), true); return; }
     await refreshPower();
@@ -4284,11 +4363,14 @@ function repaintDynamic(){
     const btn = $w('writeInBtn'), modal = $w('writeInModal'),
           panel = modal && modal.querySelector('.wi-panel');
     if(!btn || !modal) return;
+    document.addEventListener('donate-directory-updated', function(){ if(modal.classList.contains('open')) renderResults($w('wiSearch').value); });
+    const retry = $w('donateGgRetry'); if(retry) retry.addEventListener('click', () => refreshDonateGg(true));
     let lastFocus = null;
     function open(){
       lastFocus = document.activeElement;
       modal.classList.add('open'); document.body.style.overflow = 'hidden';
       refreshCost();
+      refreshDonateGg();
       $w('wiSearch').value = ''; chosen = null;
       $w('wiChosen').hidden = true; $w('wiSteps').hidden = true; $w('wiSubmit').disabled = true;
       renderResults('');                       // full list, ready to browse
@@ -4317,6 +4399,7 @@ function repaintDynamic(){
 
 /* --------------------------------------------------------------------- boot */
 document.addEventListener('DOMContentLoaded', () => {
+  refreshDonateGg();
   $('boxAddr').textContent = BALLOT_BOX;
   $('ownerAddr').textContent = OWNER;
   $('prefixEg').textContent = 'RWIVOTE:\u2039n\u203a:\u2039slug\u203a';
@@ -4407,11 +4490,13 @@ document.addEventListener('DOMContentLoaded', () => {
       <button type="button" id="wiClose" aria-label="Close">&#10005;</button>
     </div>
     <div class="wi-body">
-      <p class="wi-lede" data-i18n="vote.st.writeInLede">Nominate any organisation from The Giving Block for one of three holder slots on the ballot.</p>
+      <p class="wi-lede" data-i18n="vote.st.writeInLede">Choose an organization from The Giving Block or any active, claimed Donate.gg profile for a holder slot.</p>
       <p class="wi-cost" id="wiCost"></p>
       <label class="wi-label" for="wiSearch" data-i18n="vote.st.writeInSearch">Search organisations</label>
       <input id="wiSearch" type="text" autocomplete="off" spellcheck="false" placeholder="food bank, wildlife, veterans…" role="combobox" aria-expanded="false" aria-controls="wiResults">
       <p class="wi-count" id="wiCount"></p>
+      <p class="wi-note" id="donateGgStatus" role="status">Checking claimed Donate.gg charities…</p>
+      <button type="button" class="btn ghost" id="donateGgRetry">Refresh Donate.gg charities</button>
       <div class="wi-scroll"><div class="wi-results" id="wiResults" role="listbox"></div></div>
       <div class="wi-chosen" id="wiChosen" hidden></div>
       <ol class="wi-steps" id="wiSteps" hidden>
@@ -4423,7 +4508,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="wi-block" id="wiBlock"></span>
       </div>
       <p class="wi-status" id="wiStatus"></p>
-      <p class="wi-note" data-i18n="vote.st.writeInNote">Two separate transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. The directory is a verified subset of The Giving Block.</p>
+      <p class="wi-note" data-i18n="vote.st.writeInNote">Two transactions: nominate the organization, then burn the full $5 fee in $RWI. Gas is paid separately. Giving Block choices are a verified subset; Donate.gg choices refresh from its active, onboarded charity directory.</p>
     </div>
   </div>
 </div>
