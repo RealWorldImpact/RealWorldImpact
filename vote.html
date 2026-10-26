@@ -1716,11 +1716,12 @@ document.addEventListener('DOMContentLoaded', function(){
   .voters-table th{position:sticky;top:0;background:var(--lime);z-index:1;font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;opacity:1;padding:0 14px 12px;border-bottom:1px solid var(--rule-strong)}
   .voters-table th:first-child,.voters-table td:first-child{padding-left:0;width:34%}
   .voters-table th:last-child,.voters-table td:last-child{text-align:right;padding-right:8px;width:25%}
-  .voters-table td{padding:18px 14px;vertical-align:middle;border-bottom:1px solid var(--rule);overflow-wrap:anywhere}
+  .voters-table td{padding:9px 14px;vertical-align:middle;border-bottom:1px solid var(--rule);overflow-wrap:anywhere}
   .voters-table tbody tr:last-child td{border-bottom:0}
   .voters-table tbody tr:hover{background:rgba(11,11,9,.025)}
   .voter-wallet{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .voter-address{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;text-decoration:none;white-space:nowrap}
+  .voter-address{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;text-decoration:none;white-space:nowrap;background:none;border:0;color:inherit;padding:8px 0;cursor:pointer}
+  .voter-address:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .voter-address:hover{text-decoration:underline;text-underline-offset:4px}
   .voter-dot{width:7px;height:7px;border:1px solid var(--ink);border-radius:50%;background:var(--ink);flex:none}
   .voter-you,.voter-indexing{font-family:var(--mono);font-size:8px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--rule-strong);border-radius:99px;padding:3px 6px;white-space:nowrap}
@@ -1737,13 +1738,12 @@ document.addEventListener('DOMContentLoaded', function(){
     .voters-head h2{grid-column:1;grid-row:2}
     .voters-head .voters-intro{grid-column:1 / -1;grid-row:3;margin-top:3px}
     .voters-count{grid-column:2;grid-row:1 / span 2;align-self:start;font-size:9px;padding:6px 8px}
-    .voters-table,.voters-table tbody{display:block}
-    .voters-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
-    .voters-table tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 14px;padding:17px 0;border-top:1px solid var(--rule)}
-    .voters-table td,.voters-table td:first-child,.voters-table td:last-child{display:block;width:auto;border:0;padding:0;text-align:left}
-    .voters-table td:nth-child(2){grid-column:1 / -1;grid-row:2}
-    .voters-table td:last-child{grid-column:2;grid-row:1;text-align:right}
-    .voter-choice{font-size:14px}.voter-address,.voter-weight{font-size:11px}
+    .voters-table th,.voters-table td{padding:8px 6px}
+    .voters-table th:first-child,.voters-table td:first-child{width:37%}
+    .voters-table th:last-child,.voters-table td:last-child{width:27%;padding-right:0}
+    .voter-choice{font-size:12px}.voter-address,.voter-weight{font-size:10px}
+    .voter-dot{display:none}.voter-wallet{gap:3px}
+    .voter-sub{font-size:8px}.voter-weight{white-space:normal}
   }
 
   /* ---------- header strip ---------- */
@@ -2227,7 +2227,7 @@ document.addEventListener('DOMContentLoaded', function(){
         <div>
           <p class="eyebrow">In this round</p>
           <h2 id="votersTitle">The voters.</h2>
-          <p class="voters-intro">Every participating wallet, its latest choice, and its current voting weight.</p>
+          <p class="voters-intro">Every participating wallet, its latest choice, and its current voting weight. Click a wallet address to copy it.</p>
         </div>
         <span class="voters-count" id="voterCount">Reading wallets…</span>
       </div>
@@ -2239,6 +2239,7 @@ document.addEventListener('DOMContentLoaded', function(){
       </div>
       <div class="voters-empty" id="voterEmpty" hidden>No voters yet.<span>Participating wallets will appear here after their first vote.</span></div>
       <p class="voters-notice" id="voterNotice" role="status">Reading this round's voters from the chain…</p>
+      <p class="voters-notice" id="voterCopyStatus" role="status" aria-live="polite"></p>
     </div>
   </section>
 
@@ -4281,9 +4282,9 @@ function renderVoters(){
       const tenths = weight * 1000n / lastTally.total;
       detail = (tenths === 0n ? '<0.1' : (Number(tenths) / 10).toFixed(1)) + '% of voting weight';
     }
-    return '<tr><td><div class="voter-wallet"><a class="voter-address" href="' + SCAN + '/address/' + address
-      + '" target="_blank" rel="noopener" title="' + address + '" aria-label="View wallet ' + address + ' on the explorer">'
-      + '<span class="voter-dot" aria-hidden="true"></span>' + address.slice(0,6) + '…' + address.slice(-4) + ' ↗</a>'
+    return '<tr><td><div class="voter-wallet"><button type="button" class="voter-address" data-address="' + address
+      + '" title="Copy ' + address + '" aria-label="Copy wallet address ' + address + '">'
+      + '<span class="voter-dot" aria-hidden="true"></span>' + address.slice(0,6) + '…' + address.slice(-4) + '</button>'
       + (mine ? '<span class="voter-you">You</span>' : '') + '</div></td>'
       + '<td><span class="voter-choice">' + esc(organization ? organization.name : vote.slug) + '</span>'
       + (indexing ? '<span class="voter-indexing">Indexing</span>' : '') + '</td>'
@@ -4298,6 +4299,20 @@ function renderVoters(){
 }
 
 /* The connected wallet's current choice, so the ballot can show it back. */
+async function copyVoterAddress(event){
+  const button = event.target.closest('button[data-address]');
+  if(!button) return;
+  const address = button.dataset.address;
+  const status = $('voterCopyStatus');
+  try{
+    await navigator.clipboard.writeText(address);
+    status.textContent = 'Copied ' + address;
+  }catch(error){
+    status.textContent = 'Could not copy automatically. Select and copy this address: ' + address;
+  }
+}
+$('voterRows').addEventListener('click', copyVoterAddress);
+
 function myCurrentChoice(){
   if(pendingVote && account && pendingVote.addr === account.toLowerCase()) return pendingVote.slug;
   if(!account || !lastTally || !lastTally.latestMap) return null;

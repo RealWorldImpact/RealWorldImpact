@@ -37,4 +37,5 @@ Run `node scripts/test_write_in_quote.mjs` to verify exact token arithmetic, com
 
 ## Current-round participants
 
-The voter list beneath the ballot uses the tally's latest successful vote per wallet and its live-balance weights; it makes no extra chain requests. Rows include the explorer-linked wallet, current charity choice, voting weight, and share of the counted total. Zero balances and unavailable balances remain distinct. Refreshing the tally updates the list; a round change clears old participants. Run `node scripts/test_vote_participants.mjs` for participant filtering, sorting, escaping, and empty/loading states.
+The voter list beneath the ballot uses the tally's latest successful vote per wallet and its live-balance weights; it makes no extra chain requests. Rows include the click-to-copy wallet address, current charity choice, voting weight, and share of the counted total. Zero balances and unavailable balances remain distinct. Refreshing the tally updates the list; a round change clears old participants. Run `node scripts/test_vote_participants.mjs` for participant filtering, sorting, clipboard success/failure, escaping, and empty/loading states.
+
