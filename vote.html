@@ -4270,7 +4270,7 @@ function renderVoters(){
     return;
   }
   const voters = participatingVoters(lastTally, ROUND, SLATE);
-  count.textContent = 'Round ' + ROUND + ' · ' + voters.length + (voters.length === 1 ? ' wallet' : ' wallets');
+  count.textContent = voters.length + (voters.length === 1 ? ' wallet' : ' wallets');
   empty.hidden = voters.length !== 0; table.hidden = voters.length === 0;
   rowsHost.innerHTML = voters.map(({address, vote, weight}) => {
     const organization = orgRecord(vote.slug);
