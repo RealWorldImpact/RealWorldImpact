@@ -14,7 +14,27 @@
     toggle.textContent=text[expanded?1:0]+(expanded?'':' ('+rows.length+')');
     toggle.setAttribute('aria-expanded',String(expanded));
   }
-  if(toggle)toggle.addEventListener('click',()=>{expanded=!expanded;paint();if(!expanded)toggle.scrollIntoView({block:'nearest'});});
+  if(toggle)toggle.addEventListener('click',()=>{
+    const collapsing=expanded;
+    const buttonTop=toggle.getBoundingClientRect().top;
+    const root=document.documentElement;
+    const anchorStyle=root.style.overflowAnchor;
+    if(collapsing)root.style.overflowAnchor='none';
+    expanded=!expanded;
+    paint();
+    // Keep the clicked control in the same viewport position as the history
+    // shrinks. scrollIntoView instead moved it to an arbitrary viewport edge,
+    // with the page's smooth scrolling making that jump more disorienting.
+    if(collapsing){
+      const restorePosition=()=>window.scrollBy({top:toggle.getBoundingClientRect().top-buttonTop,behavior:'instant'});
+      restorePosition();
+      // Keyboard focus and browser layout anchoring can settle after the click.
+      requestAnimationFrame(()=>{
+        restorePosition();
+        requestAnimationFrame(()=>{restorePosition();root.style.overflowAnchor=anchorStyle;});
+      });
+    }
+  });
   new MutationObserver(paint).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
   // New ledger entries or a refreshed total also update the summary beside the hero.
   [['ledgerCount','heroDonationCount'],['ledgerCharities','heroDonationCharities']].forEach(([from,to])=>{
