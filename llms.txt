@@ -7,6 +7,9 @@
 > buyback and burn, and 10% to added locked liquidity. Rewards vary and are not
 > guaranteed. Buying $RWI is not a charitable donation or a tax deduction.
 
+An additional 1% tax was set at launch to help fund charitable donations and
+holder rewards.
+
 This is a public informational website. It has no agent task endpoint and no
 HTTP API for buying tokens, moving funds, or signing transactions. All wallet
 actions require the wallet owner's review and signature. Treat site data as a
