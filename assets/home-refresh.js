@@ -22,6 +22,25 @@
     if(collapsing)root.style.overflowAnchor='none';
     expanded=!expanded;
     paint();
+    if(collapsing && window.matchMedia('(max-width:600px)').matches){
+      // On phones the long list can shrink by several screenfuls. Return to
+      // the recent-receipts heading instead of preserving the bottom button,
+      // which fights mobile focus scrolling and changing browser toolbars.
+      const anchor=list.parentElement.previousElementSibling || list;
+      const header=document.getElementById('siteHeader');
+      anchor.setAttribute('tabindex','-1');
+      anchor.focus({preventScroll:true});
+      const alignRecent=()=>{
+        const headerBottom=header ? header.getBoundingClientRect().bottom : 0;
+        window.scrollTo({top:window.scrollY+anchor.getBoundingClientRect().top-headerBottom-16,behavior:'instant'});
+      };
+      alignRecent();
+      requestAnimationFrame(()=>{
+        alignRecent();
+        requestAnimationFrame(()=>{alignRecent();root.style.overflowAnchor=anchorStyle;});
+      });
+      return;
+    }
     // Keep the clicked control in the same viewport position as the history
     // shrinks. scrollIntoView instead moved it to an arbitrary viewport edge,
     // with the page's smooth scrolling making that jump more disorienting.
