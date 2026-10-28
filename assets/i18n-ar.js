@@ -181,7 +181,6 @@ Object.assign(window.RWI_I18N_UPDATES.ar, {
   'wp.refs.platform': 'منصة التبرعات',
   'wp.refs.founder': 'المؤسس',
   'wp.refs.projectX': 'حساب المشروع على X',
-  'wp.refs.projectIG': 'حساب المشروع على Instagram',
   'wp.footer.brand': 'ريال وورلد إمباكت · المستندات · سبتمبر 2026',
 });
 
