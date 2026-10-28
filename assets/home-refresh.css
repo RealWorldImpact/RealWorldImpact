@@ -32,6 +32,10 @@ header .links>a,header summary{padding-block:9px;min-height:40px;display:inline-
 .impact-stat strong{font-family:var(--serif);font-weight:500;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.1;font-variant-numeric:tabular-nums}
 .impact-stat span{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
 html.js .ledger{opacity:1;transition:none}
+/* Backgrounds stay solid; only section content reveals after scrolling. */
+html.js .reveal{transition:none}
+html.js.scrolled .reveal{transition:opacity .6s ease,transform .6s ease}
+@media(prefers-reduced-motion:reduce){html.js.scrolled .reveal{transition:none}}
 .ledger{color:var(--paper)}
 .ledger h2,.ledger .eyebrow,.ledger .val{color:var(--lime)}
 .ledger-rows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:28px;padding-block:24px;border-bottom:1px solid #ccfe0640}
@@ -70,9 +74,9 @@ html.js .ledger{opacity:1;transition:none}
 @media(min-width:900px){.receipt{grid-template-columns:minmax(180px,1fr) 100px 100px auto;grid-template-areas:'name date amt links'}}
 @media(max-width:899px){header .strip{flex-wrap:wrap}.wp-left{justify-content:space-between;width:100%}header .strip .links{width:100%;justify-content:space-between;gap:12px}.receipt{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'name amt' 'date links'}}
 @media(max-width:600px){
-  /* Show real section content on first paint, rather than fading pale canvas
-     or empty bands into view below the hero on tall phone screens. */
-  html.js .reveal,html.js .reveal.in,html.js .ledger{opacity:1;transform:none;transition:none}
+  /* Keep the untouched splash a solid full screen. No next-section band or
+     partially revealed content should peek below it before the first scroll. */
+  .hero{min-height:calc(100svh - var(--home-header-height,102px))}
   section[id]{scroll-margin-top:104px}
   .wrap{padding-inline:24px}.hero{padding:22px 24px 30px}.sec-inner{padding-block:48px}
   header .strip{padding-block:8px;font-size:11px}header .wp-brand{display:block}header .wp-left{gap:8px}#ticker{font-size:10px;margin-left:4px}

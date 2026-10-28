@@ -3086,38 +3086,25 @@ document.addEventListener('DOMContentLoaded', ()=>{
     vm.name='viewport';vm.content='width=device-width, initial-scale=1';
     document.head.appendChild(vm);
   }
-  // gentle reveals (progressive enhancement — content is visible without JS)
-  // Both the reveals and the dark ledger band are gated on the first scroll, so a user who
-  // lands and doesn't scroll sees a calm, static, all-lime page — nothing animating below.
-  function startReveals(){
-    if('IntersectionObserver' in window){
-      const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
-      document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-    }else{
-      document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
-    }
-  }
+  // Reveal section content only after scrolling begins. Keep section backgrounds
+  // opaque and retain completed reveals when returning to the splash screen.
   (function(){
     const de=document.documentElement;
-    let revealsStarted=false;
-    function onScroll(){
-      const y=window.scrollY||0;
-      if(y>4){
-        de.classList.remove('no-fade');
-        de.classList.add('scrolled');
-        if(!revealsStarted){revealsStarted=true;startReveals()}
-      }else{
-        // back at the very top — fade the ink band back out so the page reads all-lime again
-        de.classList.remove('scrolled');
-      }
+    let started=false;
+    function start(){
+      if(started || (window.scrollY||0)<=4)return;
+      started=true;
+      de.classList.add('scrolled');
+      const sections=document.querySelectorAll('.reveal');
+      if('IntersectionObserver' in window){
+        const io=new IntersectionObserver(entries=>entries.forEach(entry=>{
+          if(entry.isIntersecting){entry.target.classList.add('in');io.unobserve(entry.target);}
+        }),{threshold:.1});
+        sections.forEach(section=>io.observe(section));
+      }else sections.forEach(section=>section.classList.add('in'));
     }
-    if((window.scrollY||0)>4){
-      // page loaded mid-scroll (refresh, anchor) — show everything instantly, no fade flash
-      de.classList.add('no-fade','scrolled');
-      revealsStarted=true;
-      startReveals();
-    }
-    window.addEventListener('scroll',onScroll,{passive:true});
+    start();
+    window.addEventListener('scroll',start,{passive:true});
   })();
   // copy contract address
   const btn=document.getElementById('copyBtn');
