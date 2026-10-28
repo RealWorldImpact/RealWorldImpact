@@ -2791,8 +2791,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
 }
 </script>
 <link rel="stylesheet" href="/assets/i18n-ar.css">
-<link rel="stylesheet" href="/assets/home-refresh.css">
+<link rel="stylesheet" href="/assets/home-refresh.css?v=20261028-mobile-solid">
 <script src="/assets/home-refresh.js" defer></script>
+<style>
+/* Critical mobile paint rules also apply before external assets are ready. */
+@media(max-width:600px){
+  html,body{background:#0B0B09}
+  .hero{background:#CCFE06}
+  html.js .ledger,html.js.scrolled .ledger,html.js .reveal,html.js.scrolled .reveal{opacity:1;transform:none;transition:none}
+}
+</style>
 </head>
 <body>
 

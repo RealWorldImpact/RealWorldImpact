@@ -75,6 +75,9 @@ html.js.scrolled .reveal{transition:opacity .6s ease,transform .6s ease}
 @media(min-width:900px){.receipt{grid-template-columns:minmax(180px,1fr) 100px 100px auto;grid-template-areas:'name date amt links'}}
 @media(max-width:899px){header .strip{flex-wrap:wrap}.wp-left{justify-content:space-between;width:100%}header .strip .links{width:100%;justify-content:space-between;gap:12px}.receipt{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'name amt' 'date links'}}
 @media(max-width:600px){
+  /* Keep the browser's bottom/overscroll canvas dark, not lime. The hero
+     supplies its own solid lime surface independently of the page canvas. */
+  html,body{background:var(--ink)}
   /* Natural splash height, with no mobile fades or translucent section bands. */
   html.js .reveal,html.js.scrolled .reveal,html.js .ledger,html.js.scrolled .ledger{opacity:1;transform:none;transition:none}
   section[id]{scroll-margin-top:104px}
