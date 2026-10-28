@@ -75,9 +75,8 @@ html.js.scrolled .reveal{transition:opacity .6s ease,transform .6s ease}
 @media(min-width:900px){.receipt{grid-template-columns:minmax(180px,1fr) 100px 100px auto;grid-template-areas:'name date amt links'}}
 @media(max-width:899px){header .strip{flex-wrap:wrap}.wp-left{justify-content:space-between;width:100%}header .strip .links{width:100%;justify-content:space-between;gap:12px}.receipt{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'name amt' 'date links'}}
 @media(max-width:600px){
-  /* Keep the untouched splash a solid full screen. No next-section band or
-     partially revealed content should peek below it before the first scroll. */
-  .hero{min-height:calc(100svh - var(--home-header-height,102px))}
+  /* Natural splash height, with no mobile fades or translucent section bands. */
+  html.js .reveal,html.js.scrolled .reveal,html.js .ledger,html.js.scrolled .ledger{opacity:1;transform:none;transition:none}
   section[id]{scroll-margin-top:104px}
   .wrap{padding-inline:24px}.hero{padding:22px 24px 30px}.sec-inner{padding-block:48px}
   header .strip{padding-block:8px;font-size:11px}header .wp-brand{display:block}header .wp-left{gap:8px}#ticker{font-size:10px;margin-left:4px}

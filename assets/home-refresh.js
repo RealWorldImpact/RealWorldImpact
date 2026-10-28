@@ -1,12 +1,5 @@
 /* Progressive enhancement: the complete donation history remains in the HTML. */
 (function(){
-  const header=document.querySelector('header');
-  if(header){
-    const sizeHeader=()=>document.documentElement.style.setProperty('--home-header-height',header.getBoundingClientRect().height+'px');
-    sizeHeader();
-    if(typeof ResizeObserver!=='undefined')new ResizeObserver(sizeHeader).observe(header);
-    else window.addEventListener('resize',sizeHeader);
-  }
   const list=document.getElementById('receiptList');
   const toggle=document.getElementById('receiptsToggle');
   let expanded=false;
