@@ -1,5 +1,5 @@
 /* Shared site navigation. Scope everything so each page keeps its own content design. */
-#siteHeader{position:sticky;top:0;z-index:100;background:#CCFE06;color:#0B0B09;border-bottom:1px solid #0B0B09;line-height:1.55;-webkit-font-smoothing:antialiased}
+#siteHeader{position:sticky;top:0;z-index:100;background:#0B0B09;color:#CCFE06;border-bottom:1px solid #CCFE0640;line-height:1.55;-webkit-font-smoothing:antialiased}
 #siteHeader *{box-sizing:border-box}
 #siteHeader .site-strip{max-width:1120px;margin:0 auto;padding:6px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px 16px;font:400 12px/1.55 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase}
 #siteHeader .wp-left{display:flex;align-items:center;gap:20px;min-width:0;flex-wrap:wrap}
@@ -13,7 +13,7 @@
 #siteHeader summary::-webkit-details-marker{display:none}
 #siteHeader summary::after{content:'+';font-size:16px}
 #siteHeader .nav-more[open] summary::after{content:'−'}
-#siteHeader .nav-external{position:absolute;inset-inline-end:0;top:calc(100% + 12px);width:220px;display:grid;background:#0B0B09;color:#f5f3eb;padding:12px;border:1px solid #0B0B09;box-shadow:0 12px 30px #0002}
+#siteHeader .nav-external{position:absolute;inset-inline-end:0;top:calc(100% + 12px);width:220px;display:grid;background:#0B0B09;color:#CCFE06;padding:12px;border:1px solid #CCFE0640;box-shadow:0 12px 30px #0002}
 #siteHeader .nav-external a{display:block;padding:10px 12px;font-size:12px;letter-spacing:.06em;min-height:44px}
 #siteHeader .nav-external a:hover,#siteHeader .nav-external a:focus-visible{background:#CCFE06;color:#0B0B09}
 #siteHeader :focus-visible{outline:2px solid currentColor;outline-offset:3px}
