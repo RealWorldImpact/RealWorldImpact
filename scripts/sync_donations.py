@@ -98,6 +98,8 @@ def synced(name: str, rows: list[dict]) -> tuple[Path, str, str]:
     if name == "index.html":
         for item_id, text in [
             ("heroDonationTotal", total),
+            ("heroDonationCount", str(len(rows))),
+            ("heroDonationCharities", str(len({row["recipient"] for row in rows}))),
             ("ledgerTotal", total),
             ("ledgerCount", str(len(rows))),
             ("ledgerCharities", str(len({row["recipient"] for row in rows}))),
