@@ -2801,21 +2801,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
   html.js .ledger,html.js.scrolled .ledger,html.js .reveal,html.js.scrolled .reveal{opacity:1;transform:none;transition:none}
 }
 </style>
+<link rel="stylesheet" href="/assets/site-header.css?v=20261028">
+<script src="/assets/site-header.js?v=20261028" defer></script>
 </head>
 <body>
 
-<header>
-  <div class="wrap strip">
+<header id="siteHeader">
+  <div class="site-strip">
     <div class="wp-left">
-      <a class="wp-brand" href="#" onclick="event.preventDefault();window.scrollTo({top:0,behavior:'smooth'})">Real World Impact</a>
+      <a class="wp-brand" href="/">Real World Impact</a>
       <span>$RWI&nbsp;<span id="ticker" aria-live="polite"></span></span>
     </div>
     <nav class="links" aria-label="Primary navigation" data-i18n-aria-label="common.primaryNav">
-      <a href="#ledger" data-refresh-label="2">Impact</a>
-      <a href="#rewards" data-refresh-label="3">Rewards</a>
-      <a href="/docs" data-i18n="nav.whitepaper">Docs</a>
-      <a href="/vote">Vote</a>
-      <details class="nav-more"><summary data-refresh-label="4">More</summary><div class="nav-external">
+      <a href="/#ledger" data-site-label="0">Impact</a>
+      <a href="/#rewards" data-site-label="1">Rewards</a>
+      <a href="/docs" data-site-label="2">Docs</a>
+      <a href="/vote" data-site-label="3">Vote</a>
+      <details class="nav-more"><summary data-site-label="4">More</summary><div class="nav-external">
       <a href="https://dexscreener.com/robinhood/0xDa2598c976E62E7E15DcCa75169B404712E48B04" target="_blank" rel="noopener" aria-label="Dexscreener" title="Dexscreener">Dexscreener ↗</a>
       <a href="https://www.coingecko.com/en/coins/real-world-impact" target="_blank" rel="noopener" aria-label="CoinGecko" title="CoinGecko">CoinGecko ↗</a>
       <a href="https://t.me/RWIonRobinhood" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram">Telegram ↗</a>

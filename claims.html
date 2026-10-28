@@ -103,15 +103,37 @@
   footer{padding:34px 0 60px;color:var(--muted);font-size:12px}
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<link rel="stylesheet" href="/assets/site-header.css?v=20261028">
+<script src="/assets/site-header.js?v=20261028" defer></script>
 </head>
-<body>
+<body class="site-claims">
 
-<header>
+<header id="siteHeader">
+  <div class="site-strip">
+    <div class="wp-left">
+      <a class="wp-brand" href="/">Real World Impact</a>
+      <span>$RWI&nbsp;<span id="ticker" aria-live="polite"></span></span>
+    </div>
+    <nav class="links" aria-label="Primary navigation" data-i18n-aria-label="common.primaryNav">
+      <a href="/#ledger" data-site-label="0">Impact</a>
+      <a href="/#rewards" data-site-label="1">Rewards</a>
+      <a href="/docs" data-site-label="2">Docs</a>
+      <a href="/vote" data-site-label="3">Vote</a>
+      <details class="nav-more"><summary data-site-label="4">More</summary><div class="nav-external">
+      <a href="https://dexscreener.com/robinhood/0xDa2598c976E62E7E15DcCa75169B404712E48B04" target="_blank" rel="noopener" aria-label="Dexscreener" title="Dexscreener">Dexscreener ↗</a>
+      <a href="https://www.coingecko.com/en/coins/real-world-impact" target="_blank" rel="noopener" aria-label="CoinGecko" title="CoinGecko">CoinGecko ↗</a>
+      <a href="https://t.me/RWIonRobinhood" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram">Telegram ↗</a>
+      <a href="https://x.com/RWIrobinhood" target="_blank" rel="noopener" aria-label="X" title="X">X ↗</a>
+      </div></details>
+    </nav>
+  </div>
+</header>
+<div class="claims-context">
   <div class="wrap head">
     <div class="mark"><b>$RWI</b> v1 loss ledger</div>
     <div class="chain">Robinhood Chain · 4663 · contract <a id="tokenLink" href="#" target="_blank" rel="noopener">0x2286…9C6A</a></div>
   </div>
-</header>
+</div>
 
 <div class="wrap">
 

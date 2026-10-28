@@ -51,8 +51,30 @@
     mix-blend-mode:multiply;opacity:.55}
   @media (prefers-reduced-motion:reduce){ #veil{opacity:.25} }
 </style>
+<link rel="stylesheet" href="/assets/site-header.css?v=20261028">
+<script src="/assets/site-header.js?v=20261028" defer></script>
 </head>
-<body>
+<body class="site-game">
+<header id="siteHeader">
+  <div class="site-strip">
+    <div class="wp-left">
+      <a class="wp-brand" href="/">Real World Impact</a>
+      <span>$RWI&nbsp;<span id="ticker" aria-live="polite"></span></span>
+    </div>
+    <nav class="links" aria-label="Primary navigation" data-i18n-aria-label="common.primaryNav">
+      <a href="/#ledger" data-site-label="0">Impact</a>
+      <a href="/#rewards" data-site-label="1">Rewards</a>
+      <a href="/docs" data-site-label="2">Docs</a>
+      <a href="/vote" data-site-label="3">Vote</a>
+      <details class="nav-more"><summary data-site-label="4">More</summary><div class="nav-external">
+      <a href="https://dexscreener.com/robinhood/0xDa2598c976E62E7E15DcCa75169B404712E48B04" target="_blank" rel="noopener" aria-label="Dexscreener" title="Dexscreener">Dexscreener ↗</a>
+      <a href="https://www.coingecko.com/en/coins/real-world-impact" target="_blank" rel="noopener" aria-label="CoinGecko" title="CoinGecko">CoinGecko ↗</a>
+      <a href="https://t.me/RWIonRobinhood" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram">Telegram ↗</a>
+      <a href="https://x.com/RWIrobinhood" target="_blank" rel="noopener" aria-label="X" title="X">X ↗</a>
+      </div></details>
+    </nav>
+  </div>
+</header>
 <div id="wrap">
   <div id="stage">
     <canvas id="c" width="960" height="540"></canvas>
@@ -479,6 +501,7 @@ window.addEventListener('pointerdown', ensureAudio, {capture:true,passive:true})
 window.addEventListener('touchend', ensureAudio, {capture:true,passive:true});
 
 window.addEventListener('keydown', function(e){
+  if(e.target.closest && e.target.closest('#siteHeader'))return;
   ensureAudio();
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].indexOf(e.key) >= 0) e.preventDefault();
   keys[e.key.toLowerCase()] = true;
