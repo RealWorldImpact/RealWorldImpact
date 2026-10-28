@@ -2,7 +2,8 @@
 :root{--paper:#f5f3eb;--sans:Arial,Helvetica,system-ui,sans-serif}
 html{scroll-padding-top:0}
 section[id]{scroll-margin-top:76px}
-body{font-family:var(--sans);font-size:17px;line-height:1.65;background:var(--paper)}
+body{font-family:var(--sans);font-size:17px;line-height:1.65;background:var(--lime)}
+footer{background:var(--paper)}
 h1,h2,.burn-num,.footer-wordmark{font-family:var(--serif)}
 .wrap{max-width:1120px;padding-inline:40px}
 .sec-inner{padding-block:76px}
@@ -69,19 +70,33 @@ html.js .ledger{opacity:1;transition:none}
 @media(min-width:900px){.receipt{grid-template-columns:minmax(180px,1fr) 100px 100px auto;grid-template-areas:'name date amt links'}}
 @media(max-width:899px){header .strip{flex-wrap:wrap}.wp-left{justify-content:space-between;width:100%}header .strip .links{width:100%;justify-content:space-between;gap:12px}.receipt{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'name amt' 'date links'}}
 @media(max-width:600px){
+  /* Show real section content on first paint, rather than fading pale canvas
+     or empty bands into view below the hero on tall phone screens. */
+  html.js .reveal,html.js .reveal.in,html.js .ledger{opacity:1;transform:none;transition:none}
   section[id]{scroll-margin-top:104px}
   .wrap{padding-inline:24px}.hero{padding:22px 24px 30px}.sec-inner{padding-block:48px}
   header .strip{padding-block:8px;font-size:11px}header .wp-brand{display:block}header .wp-left{gap:8px}#ticker{font-size:10px;margin-left:4px}
-  header .links>a,header summary{min-height:40px}.nav-external{top:100%}
+  header .links>a,header summary{min-height:44px}.nav-external{top:100%}
   .hero>img{width:120px;height:65px;margin-bottom:14px}.hero h1{font-size:clamp(2.6rem,10.5vw,3.6rem)}
   .hero p.lede{font-size:16px;line-height:1.6;margin-top:16px}.hero .cta-row{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:10px;margin-top:20px}
   .hero .cta-row .btn{font-size:10px;letter-spacing:.03em;padding:10px 6px}.hero .cta-row .buy-logo{width:18px;height:18px}
   .impact-strip{gap:12px;padding-top:20px;margin-top:24px}.impact-stat strong{font-size:clamp(1.4rem,6vw,2rem)}.impact-stat span{font-size:9px;letter-spacing:0;line-height:1.5}
   .ledger-rows{gap:14px}.ledger .row .val{font-size:clamp(1.35rem,5.8vw,1.9rem)}.ledger-rows .row{font-size:12px}
-  .r-links{gap:12px;font-size:10px}.r-name{font-size:14px}.r-amt{transform:none;font-size:13px}.receipt{gap:4px 12px;padding-block:14px}
+  .ca{min-height:44px}.ca .label{align-items:center}.ca code{padding-block:12px}
+  .receipt{grid-template-areas:'name amt' 'date date' 'links links';gap:5px 12px;padding-block:14px}
+  .r-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;font-size:11px}
+  .r-links a{display:flex;align-items:center;min-height:44px;white-space:normal;line-height:1.5}
+  .r-name{font-size:14px}.r-amt{transform:none;font-size:13px}
   .rewards-flow{padding:22px;gap:16px;grid-template-columns:1fr}.rewards-flow .flow-arrow{transform:rotate(90deg);width:30px}
   .reward-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.reward-card{padding:20px 14px}.reward-card b{font-size:12px}
   .reward-live{padding:18px}.reward-live-head{flex-wrap:wrap;font-size:10px;gap:7px}.reward-status{margin-left:0;width:100%;text-align:start}.reward-live-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.reward-stat{padding:12px}.reward-stat strong{font-size:20px}
   .step{grid-template-columns:1fr;gap:8px}.founder{gap:24px}.burn-num{overflow-wrap:anywhere}
+  #langBtn{min-height:44px;min-width:64px;bottom:calc(12px + env(safe-area-inset-bottom,0px));right:16px}
+  #langSel{bottom:calc(68px + env(safe-area-inset-bottom,0px));max-height:65dvh;overflow-y:auto}
+  footer .fine{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 }
-@media(max-width:360px){header .wp-left{flex-wrap:wrap}.wp-brand{font-size:10px}.hero .cta-row{grid-template-columns:1fr}.impact-strip{gap:8px}.r-links{gap:8px;font-size:9px}.reward-live-stats{grid-template-columns:1fr}}
+@media(max-width:400px){
+  .ledger-rows{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+  .ledger-rows .row:first-child{grid-column:1 / -1;flex-direction:row;justify-content:space-between;align-items:baseline;padding-bottom:18px;border-bottom:1px solid #ccfe0640}
+}
+@media(max-width:360px){header .wp-left{flex-wrap:wrap}.wp-brand{font-size:10px}.hero .cta-row{grid-template-columns:1fr}.impact-strip{gap:8px}.impact-stat strong{font-size:21px}.r-links{gap:8px}.reward-live-stats{grid-template-columns:1fr}}
