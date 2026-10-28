@@ -26,6 +26,7 @@ header .links>a,header summary{padding-block:9px;min-height:40px;display:inline-
 .hero p.lede{max-width:59ch;font-family:var(--sans);font-size:18px;line-height:1.65;margin-top:20px}
 .hero .cta-row{margin-top:24px}
 .hero .cta-row .btn{min-height:48px;font-size:12px}
+.hero .cta-row .buy-logo{margin:0}
 .ca-wrap{margin-top:18px}
 .impact-strip{max-width:960px;margin:32px auto 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--ink);padding-top:24px;gap:20px}
 .impact-stat{display:flex;flex-direction:column;gap:4px;align-items:center}
