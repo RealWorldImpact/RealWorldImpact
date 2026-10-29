@@ -1,5 +1,8 @@
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),assert=require('node:assert/strict'),{AbiCoder}=require('ethers'),esbuild=require('esbuild');
-const out=path.join(os.tmpdir(),'rwi-lp-logos-'+process.pid+'.cjs');esbuild.buildSync({entryPoints:[path.join(__dirname,'token-logos.js')],outfile:out,bundle:true,platform:'node',format:'cjs'});const {ipfsPath,logoUrls,tokenLogoCandidates,decodeAbiString,registryLogo}=require(out);fs.unlinkSync(out);
+const out=path.join(os.tmpdir(),'rwi-lp-logos-'+process.pid+'.cjs');esbuild.buildSync({entryPoints:[path.join(__dirname,'token-logos.js')],outfile:out,bundle:true,platform:'node',format:'cjs'});const {ipfsPath,logoUrls,tokenLogoCandidates,decodeAbiString,registryLogo,sharperLogo}=require(out);fs.unlinkSync(out);
+assert.equal(sharperLogo('https://dd.dexscreener.com/ds-data/tokens/robinhood/0x123.png'),'https://dd.dexscreener.com/ds-data/tokens/robinhood/0x123.png?size=xl');
+assert.equal(sharperLogo('https://coin-images.coingecko.com/coins/images/1/small/token.png'),'https://coin-images.coingecko.com/coins/images/1/large/token.png');
+assert.deepEqual(tokenLogoCandidates({address:'0xda2598c976e62e7e15dcca75169b404712e48b04'}),['/assets/rwi-logo.webp']);
 const address='0x46d885131efeb8f6ab5736f17f2b3a2f44588ba3',other='0x1111111111111111111111111111111111111111',cid='bafkreif3lzpecrrpxsc37mmdefmqvxp5nfdowtwyjnuaj336n4psb27e3a',abi=AbiCoder.defaultAbiCoder();
 assert.equal(ipfsPath('ipfs://'+cid),cid);assert.equal(ipfsPath('https://ipfs.io/ipfs/'+cid+'/image.png'),cid+'/image.png');assert.equal(ipfsPath('ipfs://'+cid+'/../admin'),'');assert.equal(ipfsPath('ipfs://../localhost'),'');
 assert.equal(logoUrls('ipfs://'+cid)[0],'https://gateway.pinata.cloud/ipfs/'+cid);assert.deepEqual(logoUrls('javascript:alert(1)'),[]);

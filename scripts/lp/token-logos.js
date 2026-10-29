@@ -12,11 +12,23 @@ export function logoUrls(value){
   if(cid)return ['https://gateway.pinata.cloud/ipfs/','https://ipfs.io/ipfs/'].map(base=>base+cid);
   const url=safeTokenLogo(value);return url?[url]:[];
 }
+export function sharperLogo(value){
+  const safe=safeTokenLogo(value);if(!safe)return '';
+  const url=new URL(safe);
+  if(url.hostname==='dd.dexscreener.com'&&url.pathname.startsWith('/ds-data/tokens/'))url.searchParams.set('size','xl');
+  if(['coin-images.coingecko.com','assets.coingecko.com'].includes(url.hostname))url.pathname=url.pathname.replace(/\/(?:thumb|small)\//,'/large/');
+  if(url.hostname==='cdn.dexscreener.com'&&url.pathname.startsWith('/cms/images/')){
+    for(const dimension of ['width','height'])url.searchParams.set(dimension,String(Math.max(256,Number(url.searchParams.get(dimension))||0)));
+    url.searchParams.set('quality','100');
+  }
+  return url.href;
+}
 export function tokenLogoCandidates(token){
   const address=String(token.address||'').toLowerCase();
+  if(address==='0xda2598c976e62e7e15dcca75169b404712e48b04')return ['/assets/rwi-logo.webp'];
   const urls=[...(token.logos||[]).flatMap(logoUrls),...logoUrls(token.logo)];
   if(/^0x[0-9a-f]{40}$/.test(address))urls.push('https://dd.dexscreener.com/ds-data/tokens/robinhood/'+address+'.png','https://cdn.robinhood.com/ncw_assets/logos/'+address+'.png');
-  return [...new Set(urls)];
+  return [...new Set(urls.flatMap(url=>[sharperLogo(url),url]).filter(Boolean))];
 }
 export function decodeAbiString(data,word=0){
   if(typeof data!=='string'||!/^0x(?:[0-9a-fA-F]{2})+$/.test(data)||data.length>262146)return '';

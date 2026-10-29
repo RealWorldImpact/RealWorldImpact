@@ -54,7 +54,7 @@ async function loadPool(){
     $('poolStatus').textContent=data.exists?'Initialized pool':'New pool';$('poolId').textContent=data.id;$('poolLink').href='https://app.uniswap.org/explore/pools/robinhood/'+data.id;$('poolLink').hidden=!data.exists;
     $('poolPrice').textContent=data.exists?data.pool.priceOf(other).toSignificant(8)+' RWI / '+other.symbol:'Set by your two initial deposits';
     $('poolBlock').textContent='Read at block '+data.block.toLocaleString();
-    if(currentView==='add')notice(data.exists?'Pool loaded. Deposits use the live pool price.':'No pool exists for this token, fee tier, and tick spacing. Your first deposit will initialize it.');
+    if(currentView==='add')notice(data.exists?'Pool loaded. Deposits use the live pool price.':'No pool exists for this token and fee tier. Your first deposit will initialize it.');
     if(account)await balances(data);
   }catch(e){if(seq===loadSeq)notice(failure(e),true);}
 }
