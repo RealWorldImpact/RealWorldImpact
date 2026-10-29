@@ -1,6 +1,8 @@
 (function(){
   const header=document.getElementById('siteHeader');
   if(!header)return;
+  const menu=header.querySelector('.nav-external');
+  if(menu&&!menu.querySelector('a[href="/LP"]')){const lp=document.createElement('a');lp.href='/LP';lp.textContent='LP';menu.prepend(lp);}
   const names={en:['Impact','Rewards','Docs','Vote','More'],es:['Impacto','Recompensas','Documentos','Votar','Más'],fr:['Impact','Récompenses','Docs','Voter','Plus'],de:['Wirkung','Prämien','Docs','Abstimmen','Mehr'],pt:['Impacto','Recompensas','Docs','Votar','Mais'],id:['Dampak','Imbalan','Dokumen','Pilih','Lainnya'],tr:['Etki','Ödüller','Belgeler','Oy ver','Diğer'],vi:['Tác động','Phần thưởng','Tài liệu','Bỏ phiếu','Thêm'],ru:['Влияние','Награды','Документы','Голосовать','Ещё'],zh:['影响','奖励','文档','投票','更多'],ja:['活動実績','報酬','ドキュメント','投票','その他'],ko:['성과','보상','문서','투표','더 보기'],hi:['प्रभाव','पुरस्कार','दस्तावेज़','मतदान','अधिक'],ar:['الأثر','المكافآت','المستندات','التصويت','المزيد']};
   function translate(){
     const labels=names[document.documentElement.lang]||names.en;

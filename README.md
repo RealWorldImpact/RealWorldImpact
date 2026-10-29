@@ -1,6 +1,6 @@
 # Real World Impact website
 
-This repository publishes [rwihood.org](https://www.rwihood.org/), a public informational site for $RWI. It uses static HTML with a few read-only data proxies. The site does not accept agent tasks or HTTP transaction requests.
+This repository publishes [rwihood.org](https://www.rwihood.org/), a public informational site for $RWI. It uses static HTML with a few read-only data proxies and a wallet-controlled Uniswap v4 liquidity interface at `/LP`. The site does not accept agent tasks or HTTP transaction requests.
 
 ## Public machine-readable files
 
@@ -39,3 +39,7 @@ Run `node scripts/test_write_in_quote.mjs` to verify exact token arithmetic, com
 
 The voter list beneath the ballot uses the tally's latest successful vote per wallet and its live-balance weights; it makes no extra chain requests. Rows include the click-to-copy wallet address, current charity choice, voting weight, and share of the counted total. Zero balances and unavailable balances remain distinct. Refreshing the tally updates the list; a round change clears old participants. Run `node scripts/test_vote_participants.mjs` for participant filtering, sorting, clipboard success/failure, escaping, and empty/loading states.
 
+
+## LP
+
+`/LP` creates and manages independent, full-range Uniswap v4 pools paired with RWI on Robinhood Chain. The browser uses the official Uniswap SDK; users sign real transactions with their own wallets. No signing or transactions are performed through the HTTP API. See [LP build and verification](scripts/lp/README.md) for supported operations, checks, contract sources, and limitations.
