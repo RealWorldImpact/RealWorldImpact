@@ -45,3 +45,5 @@ Logo loading starts as soon as a token address is selected, independently of con
 The bundled WETH icon is the sharp asset from [Uniswap's WETH asset entry](https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png). The Robinhood-specific market-data thumbnail was visibly blurry at its source; requesting a larger derivative did not recover its detail.
 
 `test-logo-loader.cjs` verifies parallel sources, cached results, sharp-image preference, cancellation and failed sources. The wallet harness verifies that the initial logo starts while pool/metadata promises are still pending.
+
+The token picker uses the same thin lime scrollbar styling as the homepage receipts and dark Vote dialogs. List rows use the shared high-resolution logo loader and cache. IntersectionObserver starts images only for visible/nearby rows; missing initial sources can use the shared address-matched metadata resolver. Closing, searching, refreshing or changing wallets cancels detached row updates. The list flexes to fit the dialog before an outer scrollbar is needed.

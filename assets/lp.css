@@ -18,3 +18,8 @@
 .brand-logo{display:block;width:44px;height:44px;object-fit:contain;border-radius:8px;flex:none}.rwi-token-icon{display:block;width:32px;height:32px;object-fit:contain;border-radius:50%;flex:none}.selected-token-logo{image-rendering:auto}@media(max-width:950px){.brand-logo{width:38px;height:38px}}
 
 .pair-banner .rwi-token-icon{width:38px;height:38px}
+
+/* Match the homepage receipt list and the dark Vote dialogs. */
+#tokenDialog,.wallet-token-list{scrollbar-width:thin;scrollbar-color:rgba(204,254,6,.45) rgba(204,254,6,.08);scrollbar-gutter:stable;overscroll-behavior:contain}#tokenDialog::-webkit-scrollbar,.wallet-token-list::-webkit-scrollbar{width:6px;height:6px}#tokenDialog::-webkit-scrollbar-track,.wallet-token-list::-webkit-scrollbar-track{background:rgba(204,254,6,.08);border-radius:99px}#tokenDialog::-webkit-scrollbar-thumb,.wallet-token-list::-webkit-scrollbar-thumb{background:rgba(204,254,6,.4);border-radius:99px}#tokenDialog::-webkit-scrollbar-thumb:hover,.wallet-token-list::-webkit-scrollbar-thumb:hover{background:rgba(204,254,6,.7)}#tokenDialog::-webkit-scrollbar-corner,.wallet-token-list::-webkit-scrollbar-corner{background:var(--bg)}.wallet-token-list{padding-inline-end:8px}.wallet-token-option>.token-list-avatar{position:relative;display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;border-radius:50%;overflow:hidden;background:#ccfe0615;color:var(--lime)}.list-token-monogram{font:10px var(--mono)}.wallet-token-logo{position:absolute;inset:0;width:32px;height:32px;border-radius:50%;object-fit:contain}
+
+#tokenDialog[open]{display:flex;flex-direction:column}#tokenDialog>:not(.wallet-token-list){flex-shrink:0}#tokenDialog .wallet-token-list{flex:0 1 auto;min-height:100px}

@@ -16,6 +16,8 @@ let currentView='add';
 const logoLoader=createLogoLoader();
 const tokenIdentityCache=new Map([[P.WETH,{address:P.WETH,symbol:'WETH',name:'Wrapped Ether'}]]);
 const logoMetadataCache=new Map();
+const logoMetadataInFlight=new Map();
+let stopTokenRowLogos=()=>{};
 let cancelSelectedLogo=null;
 let walletTokens=[],tokenRequest=0,tokenAbort=null,tokenListMessage='';
 let pending=readStore('rwi-lp-transactions',[]);
@@ -95,25 +97,65 @@ function showSelectedToken(token){
     image.onload=display;image.src=result.src;if(image.complete)display();
   });
 }
+async function tokenLogoMetadata(token){
+  const address=token.address.toLowerCase();if(address===P.WETH||address===P.RWI)return null;
+  if(logoMetadataCache.has(address))return logoMetadataCache.get(address);
+  if(!logoMetadataInFlight.has(address)){
+    const request=(async()=>{try{
+      const response=await fetch('/api/lp-token-logo?address='+address,{signal:AbortSignal.timeout(10000)});if(!response.ok)return null;
+      const body=await response.json();if(body.address!==address||!Array.isArray(body.logos))return null;
+      if(body.logos.length)logoMetadataCache.set(address,body);return body;
+    }catch{return null;}finally{logoMetadataInFlight.delete(address);}})();
+    logoMetadataInFlight.set(address,request);
+  }
+  return logoMetadataInFlight.get(address);
+}
 async function loadTokenLogo(token,seq,epoch){
-  const address=token.address.toLowerCase();if(address===P.WETH||address===P.RWI)return;
-  try{
-    let body=logoMetadataCache.get(address);
-    if(!body){const response=await fetch('/api/lp-token-logo?address='+address,{signal:AbortSignal.timeout(10000)});if(!response.ok)return;body=await response.json();if(body.address===address&&Array.isArray(body.logos)&&body.logos.length)logoMetadataCache.set(address,body);}
-    if(seq!==loadSeq||epoch!==session||$('tokenAddress').value.toLowerCase()!==address||body.address!==address)return;
-    const current=tokenIdentityCache.get(address)||walletTokens.find(t=>t.address===address)||token;
-    if(Array.isArray(body.logos)&&body.logos.length)showSelectedToken({address,symbol:current.symbol,name:current.name,logo:walletTokens.find(t=>t.address===address)?.logo,logos:body.logos});
-  }catch{}
+  const address=token.address.toLowerCase(),body=await tokenLogoMetadata(token);
+  if(!body||seq!==loadSeq||epoch!==session||$('tokenAddress').value.toLowerCase()!==address)return;
+  const current=tokenIdentityCache.get(address)||walletTokens.find(t=>t.address===address)||token;
+  if(body.logos.length)showSelectedToken({address,symbol:current.symbol,name:current.name,logo:walletTokens.find(t=>t.address===address)?.logo,logos:body.logos});
+}
+function observeTokenRowLogos(rows){
+  const root=$('walletTokenList'),tokens=new Map(rows.map(t=>[t.address,t])),started=new Set(),cancellations=[];
+  let stopped=false,observer=null;
+  const start=button=>{
+    if(stopped||started.has(button))return;started.add(button);
+    const token=tokens.get(button.dataset.walletToken),image=button.querySelector('.wallet-token-logo'),monogram=button.querySelector('.list-token-monogram');
+    if(!token||!image)return;
+    let cancel=()=>{};
+    const current=()=>!stopped&&root.contains(button);
+    const display=result=>{
+      if(!current())return;
+      const show=()=>{if(current()&&image.naturalWidth){image.hidden=false;monogram.hidden=true;}};
+      image.onload=show;image.src=result.src;if(image.complete)show();
+    };
+    cancel=logoLoader.load({...token,logos:logoMetadataCache.get(token.address)?.logos},display,async()=>{
+      const body=await tokenLogoMetadata(token);
+      if(current()&&body?.logos.length)cancel=logoLoader.load({...token,logos:body.logos},display);
+    });
+    cancellations.push(()=>{cancel();image.onload=null;});
+  };
+  const buttons=[...root.querySelectorAll('[data-wallet-token]')];
+  const checkVisible=()=>{if(stopped||!$('tokenDialog').open)return;const r=root.getBoundingClientRect();for(const button of buttons){const b=button.getBoundingClientRect();if(b.bottom>=r.top-50&&b.top<=r.bottom+50)start(button);}};
+  if(typeof IntersectionObserver==='function'){
+    observer=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting){start(entry.target);observer.unobserve(entry.target);}},{root,rootMargin:'50px'});
+    buttons.forEach(button=>observer.observe(button));
+  }else{root.addEventListener('scroll',checkVisible,{passive:true});requestAnimationFrame(checkVisible);}
+  return()=>{stopped=true;observer?.disconnect();root.removeEventListener('scroll',checkVisible);cancellations.forEach(cancel=>cancel());};
 }
 function resetTokens(){
+  stopTokenRowLogos();
   tokenRequest++;tokenAbort?.abort();tokenAbort=null;walletTokens=[];tokenListMessage='';
   $('walletTokenStatus').textContent='Connect your wallet to see holdings, highest USD value first.';$('walletTokenList').innerHTML='';$('tokenListNote').textContent='';$('tokenDialog').close();
 }
 function renderWalletTokens(){
+  stopTokenRowLogos();
   const query=$('tokenSearch').value.trim().toLowerCase();
   const rows=walletTokens.filter(t=>[t.name,t.symbol,t.address].some(v=>v.toLowerCase().includes(query)));
-  $('walletTokenList').innerHTML=rows.length?rows.map(t=>'<button type="button" class="wallet-token-option" data-wallet-token="'+t.address+'"><span class="token-left"><strong>'+esc(t.symbol)+'</strong><small>'+esc(t.name)+'</small><small>'+short(t.address)+'</small></span><span class="token-value">'+usdLabel(t.valueUsd)+'<small>'+esc(fmt(t.balance,t.decimals))+' '+esc(t.symbol)+'</small></span></button>').join(''):'<p class="help">'+esc(query?'No matching tokens.':tokenListMessage||'No supported ERC-20 holdings found. You can still enter a token contract.')+'</p>';
+  $('walletTokenList').innerHTML=rows.length?rows.map(t=>'<button type="button" class="wallet-token-option" data-wallet-token="'+t.address+'"><span class="token-list-avatar"><span class="list-token-monogram">'+esc(t.symbol.slice(0,2))+'</span><img class="wallet-token-logo" alt="" width="32" height="32" referrerpolicy="no-referrer" hidden></span><span class="token-left"><strong>'+esc(t.symbol)+'</strong><small>'+esc(t.name)+'</small><small>'+short(t.address)+'</small></span><span class="token-value">'+usdLabel(t.valueUsd)+'<small>'+esc(fmt(t.balance,t.decimals))+' '+esc(t.symbol)+'</small></span></button>').join(''):'<p class="help">'+esc(query?'No matching tokens.':tokenListMessage||'No supported ERC-20 holdings found. You can still enter a token contract.')+'</p>';
   $('tokenListNote').textContent=tokenListMessage;
+  if(rows.length)stopTokenRowLogos=observeTokenRowLogos(rows);
 }
 async function loadWalletTokens(){
   const who=account,epoch=session,request=++tokenRequest;if(!who)return;
@@ -340,6 +382,6 @@ $('refreshPositions').onclick=refreshPositions;$('importPosition').onclick=impor
 $('positionList').onclick=e=>{const b=e.target.closest('[data-action]');if(b&&!busy)reviewPosition(b.dataset.id,b.dataset.action);};
 $('copyRwi').onclick=async()=>{try{await navigator.clipboard.writeText(getAddress(P.RWI));notice('RWI contract copied.');}catch{notice('Copy this contract: '+getAddress(P.RWI));}};
 $('openTokens').onclick=()=>{if(!account){chooseWallet().catch(e=>notice(failure(e),true));return;}$('tokenSearch').value='';renderWalletTokens();$('tokenDialog').showModal();};
-$('closeTokens').onclick=()=>$('tokenDialog').close();$('refreshTokens').onclick=()=>loadWalletTokens();$('tokenSearch').oninput=renderWalletTokens;
+$('closeTokens').onclick=()=>$('tokenDialog').close();$('tokenDialog').addEventListener('close',()=>stopTokenRowLogos());$('refreshTokens').onclick=()=>loadWalletTokens();$('tokenSearch').oninput=renderWalletTokens;
 $('walletTokenList').onclick=e=>{const button=e.target.closest('[data-wallet-token]');if(!button||busy)return;const row=walletTokens.find(t=>t.address===button.dataset.walletToken);if(!row)return;invalidate();$('tokenAddress').value=row.address;$('tokenAmount').value='';$('tokenAmountLabel').textContent=row.symbol+' budget';showSelectedToken(row);$('tokenDialog').close();loadPool();};
 renderActivity();loadPool();

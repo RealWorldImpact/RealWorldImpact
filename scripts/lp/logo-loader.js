@@ -3,7 +3,7 @@ import { tokenLogoCandidates, sharperLogo } from './token-logos.js';
 export function createLogoLoader({ImageClass=globalThis.Image,timeoutMs=2500,maxParallel=4}={}){
   const cache=new Map();
   return {
-    load(token,onReady){
+    load(token,onReady,onMissing=()=>{}){
       const key=String(token.address||'').toLowerCase(),cached=cache.get(key);
       let stopped=false;
       if(cached){queueMicrotask(()=>{if(!stopped)onReady(cached);});return()=>{stopped=true;};}
@@ -13,7 +13,7 @@ export function createLogoLoader({ImageClass=globalThis.Image,timeoutMs=2500,max
       const clean=()=>{for(const p of probes){clearTimeout(p.timer);p.image.onload=p.image.onerror=null;p.image.src='';}probes.clear();};
       const finish=result=>{
         if(stopped)return;stopped=true;clean();
-        if(result){if(result.width>=128){if(cache.size>=100)cache.delete(cache.keys().next().value);cache.set(key,result);}onReady(result);}
+        if(result){if(result.width>=128){if(cache.size>=100)cache.delete(cache.keys().next().value);cache.set(key,result);}onReady(result);}else onMissing();
       };
       const pump=()=>{
         if(stopped)return;
