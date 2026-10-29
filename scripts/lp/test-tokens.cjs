@@ -1,0 +1,27 @@
+const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),assert=require('node:assert/strict');
+const esbuild=require('esbuild');const temp=path.join(os.tmpdir(),'rwi-lp-tokens-'+process.pid+'.cjs');
+esbuild.buildSync({entryPoints:[path.join(__dirname,'wallet-tokens.js')],outfile:temp,bundle:true,platform:'node',format:'cjs'});
+const {normalizePortfolio,holdingValue,sortHoldings,usdLabel}=require(temp);fs.unlinkSync(temp);
+const a='0x'+'1'.repeat(40),b='0x'+'2'.repeat(40),c='0x'+'3'.repeat(40);
+const rows=[{address:a,symbol:'HIGH PRICE',decimals:18,balance:'1000000000000000000',priceUsd:'1000'},{address:b,symbol:'LARGE HOLDING',decimals:6,balance:'1000000000',priceUsd:'2'},{address:c,symbol:'UNKNOWN',decimals:18,balance:'99000000000000000000000',priceUsd:null}];
+const sorted=sortHoldings(rows);assert.equal(sorted[0].address,b);assert.equal(sorted[1].address,a);assert.equal(sorted[2].address,c);assert.equal(usdLabel(sorted[0].valueUsd),'$2,000.00');
+assert.equal(holdingValue('1000000',6,'2'),holdingValue('1000000000000000000',18,'2'));
+assert(holdingValue('9007199254740993',0,'1')>holdingValue('9007199254740992',0,'1'));
+assert.equal(usdLabel(holdingValue('1',18,'0.23538850556465982')),'<$0.01');assert.equal(usdLabel(null),'USD unavailable');assert.equal(usdLabel(0n),'$0.00');
+assert.equal(sortHoldings([{...rows[0],balance:'0'}]).length,0);
+const body={positions:[{token:a,symbol:'A',decimals:18,prices:{now:{usd:'2',age_days:0}}},{token:a,symbol:'LATEST',decimals:18,prices:{now:{usd:'3'}}},{token:b,decimals:6,prices:{now:{usd:'NaN'}}},{token:c,decimals:18,prices:{now:{usd:'8',age_days:5}}},{token:'0xda2598c976e62e7e15dcca75169b404712e48b04',decimals:18},{token:'0x'+'0'.repeat(40),decimals:18},{token:'bad',decimals:18},{token:a,decimals:99}],truncated:true};
+const normalized=normalizePortfolio(body);assert.equal(normalized.tokens.length,3);assert.equal(normalized.tokens[0].symbol,'LATEST');assert.equal(normalized.tokens[1].priceUsd,null);assert.equal(normalized.tokens[2].priceUsd,null);assert.equal(normalized.partial,true);
+assert.throws(()=>normalizePortfolio({}));
+const apiTemp=path.join(os.tmpdir(),'rwi-lp-api-'+process.pid+'.cjs');esbuild.buildSync({entryPoints:[path.join(__dirname,'../../api/lp-wallet-tokens.js')],outfile:apiTemp,bundle:true,platform:'node',format:'cjs'});const handler=require(apiTemp).default;fs.unlinkSync(apiTemp);
+function res(){return {code:0,body:null,headers:{},setHeader(k,v){this.headers[k]=v;},status(c){this.code=c;return this;},json(j){this.body=j;return this;}};}
+(async()=>{
+const original=global.fetch;let fetches=0;
+global.fetch=async url=>{fetches++;assert(url.startsWith('https://balancesapi.ponsfamily.com/v1/portfolio/'));return{ok:true,json:async()=>({...body,wallet:a})}};
+let r=res();await handler({method:'POST',query:{address:a}},r);assert.equal(r.code,405);assert.equal(fetches,0);
+r=res();await handler({method:'GET',query:{address:'http://evil'}},r);assert.equal(r.code,400);assert.equal(fetches,0);
+r=res();await handler({method:'GET',query:{address:a}},r);assert.equal(r.code,200);assert.equal(r.headers['Cache-Control'],'private, no-store');assert.equal(r.body.tokens.length,3);
+global.fetch=async()=>({ok:true,json:async()=>({...body,wallet:b})});r=res();await handler({method:'GET',query:{address:a}},r);assert.equal(r.code,502);
+global.fetch=async()=>({ok:false,status:429});r=res();await handler({method:'GET',query:{address:a}},r);assert.equal(r.code,429);
+global.fetch=async()=>{throw Error('offline')};r=res();await handler({method:'GET',query:{address:a}},r);assert.equal(r.code,502);global.fetch=original;
+console.log('PASS: holding-value sort (not unit price), decimals, precision, dust, unpriced/zero tokens, duplicates, stale prices, API validation, wallet mismatch, rate limits and failures.');
+})().catch(e=>{console.error(e);process.exitCode=1});
