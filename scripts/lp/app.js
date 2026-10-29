@@ -1,6 +1,6 @@
 import { JsonRpcProvider, BrowserProvider, Contract, getAddress, formatUnits, Interface } from 'ethers';
 import * as P from './protocol.js';
-import { sortHoldings, usdLabel } from './wallet-tokens.js';
+import { sortHoldings, usdLabel, safeTokenLogo } from './wallet-tokens.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -33,9 +33,9 @@ async function verifyContracts(){
 async function metadata(address){
   address=getAddress(address.trim());if(address===P.ZERO)throw Error('Use an ERC-20 contract address. To pair ETH, use WETH.');
   const c=new Contract(address,P.ERC20,rpc);
-  const [symbol,decimals]=await Promise.all([c.symbol(),c.decimals()]);
+  const [symbol,decimals,name]=await Promise.all([c.symbol(),c.decimals(),c.name().catch(()=>null)]);
   if(Number(decimals)>36)throw Error('This token has unsupported decimals.');
-  return P.token(address,Number(decimals),String(symbol).slice(0,24));
+  return P.token(address,Number(decimals),String(symbol).slice(0,24),String(name||symbol).slice(0,80));
 }
 async function snapshot(k,tokens,initial){
   const block=await rpc.getBlockNumber(),id=P.poolId(k);
@@ -49,7 +49,7 @@ async function loadPool(){
     const rwi=P.token(P.RWI,18,'RWI'),tokens=key.currency0.toLowerCase()===P.RWI?[rwi,other]:[other,rwi];
     const data=await snapshot(key,tokens);
     if(seq!==loadSeq||epoch!==session)return;
-    loaded=data;$('tokenAmountLabel').textContent=other.symbol+' budget';$('pairName').textContent=other.symbol+' / RWI';
+    loaded=data;showSelectedToken(walletTokens.find(t=>t.address===other.address.toLowerCase())||other);if(!walletTokens.find(t=>t.address===other.address.toLowerCase())?.logo)loadTokenLogo(other,seq,epoch);$('tokenAmountLabel').textContent=other.symbol+' budget';$('pairName').textContent=other.symbol+' / RWI';
     $('poolStatus').textContent=data.exists?'Initialized pool':'New pool';$('poolId').textContent=data.id;$('poolLink').href='https://app.uniswap.org/explore/pools/robinhood/'+data.id;$('poolLink').hidden=!data.exists;
     $('poolPrice').textContent=data.exists?data.pool.priceOf(other).toSignificant(8)+' RWI / '+other.symbol:'Set by your two initial deposits';
     $('poolBlock').textContent='Read at block '+data.block.toLocaleString();
@@ -64,9 +64,23 @@ async function balances(data){
   $('walletStatus').textContent=values.map((n,i)=>fmt(n,data.tokens[i].decimals)+' '+data.tokens[i].symbol).join(' · ');
 }
 
+function showSelectedToken(token){
+  const label=$('walletTokenLabel');if(!token){label.textContent='Choose a wallet token';return;}
+  const logo=safeTokenLogo(token.logo),name=token.name||token.symbol;
+  label.innerHTML='<span class="selected-token-avatar"><span class="token-monogram">'+esc(token.symbol.slice(0,2))+'</span>'+(logo?'<img class="selected-token-logo" alt="" referrerpolicy="no-referrer" src="'+esc(logo)+'" hidden>':'')+'</span><span class="selected-token-copy"><strong>'+esc(token.symbol)+'</strong><span class="selected-token-name">'+esc(name)+'</span></span>';
+  const image=label.querySelector('img');if(image){image.onload=()=>{if(!label.contains(image))return;image.hidden=false;label.querySelector('.token-monogram').hidden=true;};image.onerror=()=>{if(!label.contains(image))return;image.hidden=true;label.querySelector('.token-monogram').hidden=false;};}
+}
+async function loadTokenLogo(token,seq,epoch){
+  try{
+    const response=await fetch('/api/gecko?kind=token&address='+token.address.toLowerCase(),{signal:AbortSignal.timeout(8000)});if(!response.ok)return;
+    const body=await response.json(),info=body.data?.attributes;
+    if(seq!==loadSeq||epoch!==session||$('tokenAddress').value.toLowerCase()!==token.address.toLowerCase())return;
+    const logo=safeTokenLogo(info?.image_url);if(logo)showSelectedToken({symbol:token.symbol,name:token.name,logo});
+  }catch{}
+}
 function resetTokens(){
   tokenRequest++;tokenAbort?.abort();tokenAbort=null;walletTokens=[];tokenListMessage='';
-  $('walletTokenLabel').textContent='Choose a wallet token';$('walletTokenStatus').textContent='Connect your wallet to see holdings, highest USD value first.';$('walletTokenList').innerHTML='';$('tokenListNote').textContent='';$('tokenDialog').close();
+  $('walletTokenStatus').textContent='Connect your wallet to see holdings, highest USD value first.';$('walletTokenList').innerHTML='';$('tokenListNote').textContent='';$('tokenDialog').close();
 }
 function renderWalletTokens(){
   const query=$('tokenSearch').value.trim().toLowerCase();
@@ -293,12 +307,12 @@ $('walletButton').onclick=()=>chooseWallet().catch(e=>notice(failure(e),true));
 $('disconnect').onclick=()=>{if(injected?.removeListener){injected.removeListener('accountsChanged',oldAccountListener);injected.removeListener('chainChanged',oldChainListener);injected.removeListener('disconnect',oldDisconnectListener);}injected=null;resetWallet();notice('Disconnected from this page. Existing token approvals remain onchain.');};
 $('closeWallet').onclick=()=>$('walletDialog').close();$('cancelReview').onclick=clearProposal;$('submitAction').onclick=execute;
 $('reviewDialog').addEventListener('cancel',e=>{if(busy)e.preventDefault();else clearProposal();});
-$('poolForm').onsubmit=reviewDeposit;$('loadPool').onclick=loadPool;$('tokenAddress').oninput=()=>{invalidate();$('tokenAmount').value='';$('tokenAmountLabel').textContent='Token budget';$('walletTokenLabel').textContent='Choose a wallet token';};$('fee').onchange=invalidate;
+$('poolForm').onsubmit=reviewDeposit;$('loadPool').onclick=loadPool;$('tokenAddress').oninput=()=>{invalidate();$('tokenAmount').value='';$('tokenAmountLabel').textContent='Token budget';showSelectedToken();};$('fee').onchange=invalidate;
 ['rwiAmount','tokenAmount','slippage'].forEach(id=>$(id).addEventListener('input',clearProposal));
 $('refreshPositions').onclick=refreshPositions;$('importPosition').onclick=importPosition;
 $('positionList').onclick=e=>{const b=e.target.closest('[data-action]');if(b&&!busy)reviewPosition(b.dataset.id,b.dataset.action);};
 $('copyRwi').onclick=async()=>{try{await navigator.clipboard.writeText(getAddress(P.RWI));notice('RWI contract copied.');}catch{notice('Copy this contract: '+getAddress(P.RWI));}};
 $('openTokens').onclick=()=>{if(!account){chooseWallet().catch(e=>notice(failure(e),true));return;}$('tokenSearch').value='';renderWalletTokens();$('tokenDialog').showModal();};
 $('closeTokens').onclick=()=>$('tokenDialog').close();$('refreshTokens').onclick=()=>loadWalletTokens();$('tokenSearch').oninput=renderWalletTokens;
-$('walletTokenList').onclick=e=>{const button=e.target.closest('[data-wallet-token]');if(!button||busy)return;const row=walletTokens.find(t=>t.address===button.dataset.walletToken);if(!row)return;invalidate();$('tokenAddress').value=row.address;$('tokenAmount').value='';$('tokenAmountLabel').textContent=row.symbol+' budget';$('walletTokenLabel').textContent=row.symbol+' · '+row.name;$('tokenDialog').close();loadPool();};
+$('walletTokenList').onclick=e=>{const button=e.target.closest('[data-wallet-token]');if(!button||busy)return;const row=walletTokens.find(t=>t.address===button.dataset.walletToken);if(!row)return;invalidate();$('tokenAddress').value=row.address;$('tokenAmount').value='';$('tokenAmountLabel').textContent=row.symbol+' budget';showSelectedToken(row);$('tokenDialog').close();loadPool();};
 renderActivity();loadPool();

@@ -2,6 +2,11 @@ const RWI='0xda2598c976e62e7e15dcca75169b404712e48b04';
 const ZERO='0x0000000000000000000000000000000000000000';
 const ADDRESS=/^0x[0-9a-fA-F]{40}$/;
 const SCALE=10n**36n;
+export function safeTokenLogo(value){
+  if(typeof value!=='string'||value.length>2048)return '';
+  let source=value.trim();if(source.startsWith('ipfs://'))source='https://ipfs.io/ipfs/'+source.slice(7).replace(/^ipfs\//,'');
+  try{const url=new URL(source);return url.protocol==='https:'&&!url.username&&!url.password?url.href:'';}catch{return '';}
+}
 export function normalizePortfolio(body){
   if(!body||!Array.isArray(body.positions))throw Error('Invalid wallet portfolio response.');
   const tokens=new Map();
@@ -11,7 +16,7 @@ export function normalizePortfolio(body){
     if(!ADDRESS.test(address)||address===ZERO||address===RWI||!Number.isInteger(decimals)||decimals<0||decimals>36)continue;
     const mark=p.prices?.now,raw=mark?.usd;
     const price=typeof raw==='string'||typeof raw==='number'?String(raw):null;
-    tokens.set(address,{address,decimals,symbol:String(p.symbol||'TOKEN').slice(0,24),name:String(p.name||p.symbol||'Token').slice(0,80),priceUsd:price&&/^\d{1,60}(?:\.\d{1,60})?$/.test(price)&&!(Number(mark?.age_days)>1)?price:null});
+    tokens.set(address,{address,decimals,symbol:String(p.symbol||'TOKEN').slice(0,24),name:String(p.name||p.symbol||'Token').slice(0,80),logo:safeTokenLogo(p.logo),priceUsd:price&&/^\d{1,60}(?:\.\d{1,60})?$/.test(price)&&!(Number(mark?.age_days)>1)?price:null});
   }
   return {tokens:[...tokens.values()].slice(0,200),partial:body.truncated===true||tokens.size>200};
 }

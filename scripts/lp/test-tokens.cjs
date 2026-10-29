@@ -1,7 +1,10 @@
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),assert=require('node:assert/strict');
 const esbuild=require('esbuild');const temp=path.join(os.tmpdir(),'rwi-lp-tokens-'+process.pid+'.cjs');
 esbuild.buildSync({entryPoints:[path.join(__dirname,'wallet-tokens.js')],outfile:temp,bundle:true,platform:'node',format:'cjs'});
-const {normalizePortfolio,holdingValue,sortHoldings,usdLabel}=require(temp);fs.unlinkSync(temp);
+const {normalizePortfolio,holdingValue,sortHoldings,usdLabel,safeTokenLogo}=require(temp);fs.unlinkSync(temp);
+assert.equal(safeTokenLogo('ipfs://bafyexample/logo.png'),'https://ipfs.io/ipfs/bafyexample/logo.png');
+assert.equal(safeTokenLogo('https://example.com/logo.png'),'https://example.com/logo.png');
+for(const bad of ['javascript:alert(1)','data:image/svg+xml,test','http://example.com/logo.png','https://user:secret@example.com/a','not-a-url'])assert.equal(safeTokenLogo(bad),'');
 const a='0x'+'1'.repeat(40),b='0x'+'2'.repeat(40),c='0x'+'3'.repeat(40);
 const rows=[{address:a,symbol:'HIGH PRICE',decimals:18,balance:'1000000000000000000',priceUsd:'1000'},{address:b,symbol:'LARGE HOLDING',decimals:6,balance:'1000000000',priceUsd:'2'},{address:c,symbol:'UNKNOWN',decimals:18,balance:'99000000000000000000000',priceUsd:null}];
 const sorted=sortHoldings(rows);assert.equal(sorted[0].address,b);assert.equal(sorted[1].address,a);assert.equal(sorted[2].address,c);assert.equal(usdLabel(sorted[0].valueUsd),'$2,000.00');
