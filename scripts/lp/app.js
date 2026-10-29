@@ -1,6 +1,7 @@
 import { JsonRpcProvider, BrowserProvider, Contract, getAddress, formatUnits, Interface } from 'ethers';
 import * as P from './protocol.js';
-import { sortHoldings, usdLabel, safeTokenLogo } from './wallet-tokens.js';
+import { sortHoldings, usdLabel } from './wallet-tokens.js';
+import { tokenLogoCandidates } from './token-logos.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -49,7 +50,7 @@ async function loadPool(){
     const rwi=P.token(P.RWI,18,'RWI'),tokens=key.currency0.toLowerCase()===P.RWI?[rwi,other]:[other,rwi];
     const data=await snapshot(key,tokens);
     if(seq!==loadSeq||epoch!==session)return;
-    loaded=data;showSelectedToken(walletTokens.find(t=>t.address===other.address.toLowerCase())||other);if(!walletTokens.find(t=>t.address===other.address.toLowerCase())?.logo)loadTokenLogo(other,seq,epoch);$('tokenAmountLabel').textContent=other.symbol+' budget';$('pairName').textContent=other.symbol+' / RWI';
+    loaded=data;showSelectedToken(walletTokens.find(t=>t.address===other.address.toLowerCase())||other);loadTokenLogo(other,seq,epoch);$('tokenAmountLabel').textContent=other.symbol+' budget';$('pairName').textContent=other.symbol+' / RWI';
     $('poolStatus').textContent=data.exists?'Initialized pool':'New pool';$('poolId').textContent=data.id;$('poolLink').href='https://app.uniswap.org/explore/pools/robinhood/'+data.id;$('poolLink').hidden=!data.exists;
     $('poolPrice').textContent=data.exists?data.pool.priceOf(other).toSignificant(8)+' RWI / '+other.symbol:'Set by your two initial deposits';
     $('poolBlock').textContent='Read at block '+data.block.toLocaleString();
@@ -66,16 +67,25 @@ async function balances(data){
 
 function showSelectedToken(token){
   const label=$('walletTokenLabel');if(!token){label.textContent='Choose a wallet token';return;}
-  const logo=safeTokenLogo(token.logo),name=token.name||token.symbol;
-  label.innerHTML='<span class="selected-token-avatar"><span class="token-monogram">'+esc(token.symbol.slice(0,2))+'</span>'+(logo?'<img class="selected-token-logo" alt="" referrerpolicy="no-referrer" src="'+esc(logo)+'" hidden>':'')+'</span><span class="selected-token-copy"><strong>'+esc(token.symbol)+'</strong><span class="selected-token-name">'+esc(name)+'</span></span>';
-  const image=label.querySelector('img');if(image){image.onload=()=>{if(!label.contains(image))return;image.hidden=false;label.querySelector('.token-monogram').hidden=true;};image.onerror=()=>{if(!label.contains(image))return;image.hidden=true;label.querySelector('.token-monogram').hidden=false;};}
+  const candidates=tokenLogoCandidates(token),name=token.name||token.symbol;
+  label.innerHTML='<span class="selected-token-avatar"><span class="token-monogram">'+esc(token.symbol.slice(0,2))+'</span><img class="selected-token-logo" alt="" referrerpolicy="no-referrer" hidden></span><span class="selected-token-copy"><strong>'+esc(token.symbol)+'</strong><span class="selected-token-name">'+esc(name)+'</span></span>';
+  const image=label.querySelector('img');let index=0,timer;
+  const next=()=>{
+    clearTimeout(timer);if(!label.contains(image))return;
+    image.hidden=true;label.querySelector('.token-monogram').hidden=false;
+    if(index>=candidates.length)return;
+    image.src=candidates[index++];timer=setTimeout(next,4000);
+  };
+  image.onload=()=>{clearTimeout(timer);if(!label.contains(image))return;image.hidden=false;label.querySelector('.token-monogram').hidden=true;};
+  image.onerror=next;next();
 }
 async function loadTokenLogo(token,seq,epoch){
   try{
-    const response=await fetch('/api/gecko?kind=token&address='+token.address.toLowerCase(),{signal:AbortSignal.timeout(8000)});if(!response.ok)return;
-    const body=await response.json(),info=body.data?.attributes;
-    if(seq!==loadSeq||epoch!==session||$('tokenAddress').value.toLowerCase()!==token.address.toLowerCase())return;
-    const logo=safeTokenLogo(info?.image_url);if(logo)showSelectedToken({symbol:token.symbol,name:token.name,logo});
+    const response=await fetch('/api/lp-token-logo?address='+token.address.toLowerCase(),{signal:AbortSignal.timeout(10000)});if(!response.ok)return;
+    const body=await response.json();
+    if(seq!==loadSeq||epoch!==session||$('tokenAddress').value.toLowerCase()!==token.address.toLowerCase()||body.address!==token.address.toLowerCase())return;
+    const walletLogo=walletTokens.find(t=>t.address===token.address.toLowerCase())?.logo;
+    if(Array.isArray(body.logos)&&body.logos.length)showSelectedToken({address:token.address,symbol:token.symbol,name:token.name,logo:walletLogo,logos:body.logos});
   }catch{}
 }
 function resetTokens(){
