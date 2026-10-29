@@ -10,6 +10,6 @@
   "private": true,
   "scripts": {
     "build": "node build.cjs",
-    "test": "node test.cjs && node test-wallet.cjs && node test-tokens.cjs && node test-logos.cjs"
+    "test": "node test.cjs && node test-wallet.cjs && node test-tokens.cjs && node test-logos.cjs && node test-logo-loader.cjs"
   }
 }

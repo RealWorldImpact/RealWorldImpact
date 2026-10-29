@@ -37,3 +37,11 @@ The selected token tries wallet-provided artwork, address-specific Dexscreener a
 The backend never fetches an arbitrary token-provided HTTP URL: metadata retrieval is restricted to a validated IPFS path on a fixed gateway, with timeouts and size limits. Logos from another token in the same trading pair are never used. `test-logos.cjs` covers source matching, ABI bounds, IPFS path validation, unavailable sources and caching, including the weallmfers address-specific fallback.
 
 Logo candidates prefer high-resolution Dexscreener images (`size=xl`, verified 800px) and large CoinGecko artwork, retaining original URLs as fallbacks. RWI uses the exact 800px logo already embedded in the homepage, saved as a shared local asset. LP badges, sidebar and favicons use that brand artwork rather than letter placeholders.
+
+## Logo loading performance
+
+Logo loading starts as soon as a token address is selected, independently of contract verification and pool reads. Sources race with bounded concurrency; high-resolution successes are cached in page memory, and updating token details does not restart or replace an already-sharp image. Background metadata can add missing sources without delaying the initial image. The default WETH identity is rendered in HTML and its small local artwork is preloaded, so it does not wait for JavaScript, RPC, IPFS, or metadata APIs.
+
+The bundled WETH icon is the sharp asset from [Uniswap's WETH asset entry](https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png). The Robinhood-specific market-data thumbnail was visibly blurry at its source; requesting a larger derivative did not recover its detail.
+
+`test-logo-loader.cjs` verifies parallel sources, cached results, sharp-image preference, cancellation and failed sources. The wallet harness verifies that the initial logo starts while pool/metadata promises are still pending.

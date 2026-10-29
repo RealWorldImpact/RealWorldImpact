@@ -2,6 +2,7 @@ import { JsonRpcProvider, BrowserProvider, Contract, getAddress, formatUnits, In
 import * as P from './protocol.js';
 import { sortHoldings, usdLabel } from './wallet-tokens.js';
 import { tokenLogoCandidates } from './token-logos.js';
+import { createLogoLoader } from './logo-loader.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -12,6 +13,10 @@ const fmt=(n,d)=>{const s=formatUnits(n,d);return s.length>24?s.slice(0,24)+'…
 const txLink=hash=>'https://robin.etherscan.io/tx/'+hash;
 let injected=null,wallet=null,account=null,session=0,busy=false,loaded=null,proposal=null,verified=false,positions=new Map(),loadSeq=0;
 let currentView='add';
+const logoLoader=createLogoLoader();
+const tokenIdentityCache=new Map([[P.WETH,{address:P.WETH,symbol:'WETH',name:'Wrapped Ether'}]]);
+const logoMetadataCache=new Map();
+let cancelSelectedLogo=null;
 let walletTokens=[],tokenRequest=0,tokenAbort=null,tokenListMessage='';
 let pending=readStore('rwi-lp-transactions',[]);
 const discovered=new Map();
@@ -46,11 +51,17 @@ async function snapshot(k,tokens,initial){
 async function loadPool(){
   const seq=++loadSeq,epoch=session;loaded=null;if(currentView==='add')notice('Reading pool state from Robinhood Chain…');
   try{
-    await verifyContracts();const other=await metadata($('tokenAddress').value);const fee=Number($('fee').value),key=P.pair(other,fee);
+    const address=getAddress($('tokenAddress').value.trim()).toLowerCase();
+    const hint=walletTokens.find(t=>t.address===address)||tokenIdentityCache.get(address)||{address,symbol:'Token',name:'Loading token details…'};
+    showSelectedToken(hint);loadTokenLogo(hint,seq,epoch);
+    const [,other]=await Promise.all([verifyContracts(),metadata(address)]);
+    if(seq!==loadSeq||epoch!==session)return;
+    tokenIdentityCache.set(address,other);showSelectedToken(walletTokens.find(t=>t.address===address)||other);
+    const fee=Number($('fee').value),key=P.pair(other,fee);
     const rwi=P.token(P.RWI,18,'RWI'),tokens=key.currency0.toLowerCase()===P.RWI?[rwi,other]:[other,rwi];
     const data=await snapshot(key,tokens);
     if(seq!==loadSeq||epoch!==session)return;
-    loaded=data;showSelectedToken(walletTokens.find(t=>t.address===other.address.toLowerCase())||other);loadTokenLogo(other,seq,epoch);$('tokenAmountLabel').textContent=other.symbol+' budget';$('pairName').textContent=other.symbol+' / RWI';
+    loaded=data;$('tokenAmountLabel').textContent=other.symbol+' budget';$('pairName').textContent=other.symbol+' / RWI';
     $('poolStatus').textContent=data.exists?'Initialized pool':'New pool';$('poolId').textContent=data.id;$('poolLink').href='https://app.uniswap.org/explore/pools/robinhood/'+data.id;$('poolLink').hidden=!data.exists;
     $('poolPrice').textContent=data.exists?data.pool.priceOf(other).toSignificant(8)+' RWI / '+other.symbol:'Set by your two initial deposits';
     $('poolBlock').textContent='Read at block '+data.block.toLocaleString();
@@ -66,26 +77,32 @@ async function balances(data){
 }
 
 function showSelectedToken(token){
-  const label=$('walletTokenLabel');if(!token){label.textContent='Choose a wallet token';return;}
-  const candidates=tokenLogoCandidates(token),name=token.name||token.symbol;
-  label.innerHTML='<span class="selected-token-avatar"><span class="token-monogram">'+esc(token.symbol.slice(0,2))+'</span><img class="selected-token-logo" alt="" referrerpolicy="no-referrer" hidden></span><span class="selected-token-copy"><strong>'+esc(token.symbol)+'</strong><span class="selected-token-name">'+esc(name)+'</span></span>';
-  const image=label.querySelector('img');let index=0,timer;
-  const next=()=>{
-    clearTimeout(timer);if(!label.contains(image))return;
-    image.hidden=true;label.querySelector('.token-monogram').hidden=false;
-    if(index>=candidates.length)return;
-    image.src=candidates[index++];timer=setTimeout(next,4000);
-  };
-  image.onload=()=>{clearTimeout(timer);if(!label.contains(image))return;image.hidden=false;label.querySelector('.token-monogram').hidden=true;};
-  image.onerror=next;next();
+  const label=$('walletTokenLabel');
+  if(!token){cancelSelectedLogo?.();label.textContent='Choose a wallet token';label.dataset.address='';return;}
+  const address=token.address.toLowerCase(),name=token.name||token.symbol,candidates=tokenLogoCandidates(token).join('|');
+  if(label.dataset.address===address&&label.querySelector('.selected-token-logo')){
+    label.querySelector('.selected-token-copy strong').textContent=token.symbol;label.querySelector('.selected-token-name').textContent=name;
+    const image=label.querySelector('img');
+    if((image.complete&&image.naturalWidth>=128)||label.dataset.candidates===candidates)return;
+  }else{
+    label.innerHTML='<span class="selected-token-avatar"><span class="token-monogram">'+esc(token.symbol.slice(0,2))+'</span><img class="selected-token-logo" alt="" referrerpolicy="no-referrer" hidden></span><span class="selected-token-copy"><strong>'+esc(token.symbol)+'</strong><span class="selected-token-name">'+esc(name)+'</span></span>';
+  }
+  label.dataset.address=address;label.dataset.candidates=candidates;cancelSelectedLogo?.();
+  const image=label.querySelector('img');
+  cancelSelectedLogo=logoLoader.load(token,result=>{
+    if(!label.contains(image)||label.dataset.address!==address)return;
+    const display=()=>{if(label.contains(image)&&image.naturalWidth){image.hidden=false;label.querySelector('.token-monogram').hidden=true;}};
+    image.onload=display;image.src=result.src;if(image.complete)display();
+  });
 }
 async function loadTokenLogo(token,seq,epoch){
+  const address=token.address.toLowerCase();if(address===P.WETH||address===P.RWI)return;
   try{
-    const response=await fetch('/api/lp-token-logo?address='+token.address.toLowerCase(),{signal:AbortSignal.timeout(10000)});if(!response.ok)return;
-    const body=await response.json();
-    if(seq!==loadSeq||epoch!==session||$('tokenAddress').value.toLowerCase()!==token.address.toLowerCase()||body.address!==token.address.toLowerCase())return;
-    const walletLogo=walletTokens.find(t=>t.address===token.address.toLowerCase())?.logo;
-    if(Array.isArray(body.logos)&&body.logos.length)showSelectedToken({address:token.address,symbol:token.symbol,name:token.name,logo:walletLogo,logos:body.logos});
+    let body=logoMetadataCache.get(address);
+    if(!body){const response=await fetch('/api/lp-token-logo?address='+address,{signal:AbortSignal.timeout(10000)});if(!response.ok)return;body=await response.json();if(body.address===address&&Array.isArray(body.logos)&&body.logos.length)logoMetadataCache.set(address,body);}
+    if(seq!==loadSeq||epoch!==session||$('tokenAddress').value.toLowerCase()!==address||body.address!==address)return;
+    const current=tokenIdentityCache.get(address)||walletTokens.find(t=>t.address===address)||token;
+    if(Array.isArray(body.logos)&&body.logos.length)showSelectedToken({address,symbol:current.symbol,name:current.name,logo:walletTokens.find(t=>t.address===address)?.logo,logos:body.logos});
   }catch{}
 }
 function resetTokens(){
