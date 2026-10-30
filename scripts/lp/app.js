@@ -13,6 +13,7 @@ import { readPositionsFast } from './position-reader.js';
 import { valuePositions, positionFeeValue } from './position-values.js';
 import { atomicSupport, checkPendingBatch, sendAtomicBatch } from './wallet-batch.js';
 import { cleanTransactions } from './transaction-history.js';
+import { createLaunchController } from './launch-client.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -121,7 +122,7 @@ function idsKey(){return 'rwi-lp-positions-'+account?.toLowerCase();}
 function remember(id){const ids=readStore(idsKey(),[]);if(!ids.includes(id))saveStore(idsKey(),[id,...ids].slice(0,100));}
 function notice(msg,error=false){$('notice').hidden=!msg;$('notice').textContent=msg;$('notice').className=error?'notice error':'notice';}
 function failure(e){if(e.code===4001||e.code==='ACTION_REJECTED')return 'Request cancelled in your wallet.';return e.shortMessage||e.reason||e.message||'The request failed. Try refreshing the chain data.';}
-function locked(v){busy=v;document.querySelectorAll('main input,main select,main button,#walletButton,#disconnect').forEach(el=>el.disabled=v);$('submitAction').disabled=v||!proposal;$('cancelReview').disabled=v;document.querySelectorAll('#positionList [data-action="remove"]').forEach(b=>{b.disabled=v||positions.get(b.dataset.id)?.liquidity===0n;});renderAmountControls();}
+function locked(v){busy=v;document.querySelectorAll('main input,main select,main textarea,main button,#walletButton,#disconnect,#tradeDialog input,#tradeDialog button').forEach(el=>el.disabled=v);$('submitAction').disabled=v||!proposal;$('cancelReview').disabled=v;document.querySelectorAll('#positionList [data-action="remove"]').forEach(b=>{b.disabled=v||positions.get(b.dataset.id)?.liquidity===0n;});renderAmountControls();launchesUI.updateDisabled(v);}
 function clearProposal(){proposal=null;$('reviewDialog').close();}
 function invalidate(){loadSeq++;loaded=null;clearProposal();$('poolStatus').textContent='Refresh pool data';$('poolPrice').textContent='—';$('poolId').textContent='—';$('poolLink').hidden=true;$('pairName').textContent='Token / RWI';$('poolBlock').textContent='Load to refresh chain data';}
 function resetWallet(){clearDepositTarget();closeWithdrawal();connectionAttempt++;forgetConnector(localStorage);session++;positionsRequest++;clearTimeout(positionsTimer);resetTokens();account=null;wallet=null;renderAmountControls();positions.clear();$('walletButton').textContent='Connect wallet';$('disconnect').hidden=true;$('walletStatus').textContent='Connect to see balances and your positions.';$('positionList').innerHTML='<div class="empty-state">Connect your wallet to load your liquidity positions.</div>';$('positionsStatus').textContent='Connect your wallet to find positions automatically.';clearProposal();renderActivity();}
@@ -526,6 +527,11 @@ async function execute(){
   try{
     if(Date.now()-p.createdAt>300000)throw Error('This review expired. Refresh and review the action again.');
     const signer=await signerFor(p.who,p.epoch);await verifyContracts();
+    if(p.kind==='launch'||p.kind==='launchfees'||p.kind==='launchbuy'||p.kind==='launchsell'){
+      for(const request of await launchesUI.tradeApprovals(p))await send(signer,request,'Approve '+p.symbol+' for sale',p.who,p.epoch);
+      const request=await launchesUI.request(p),receipt=await send(signer,request,p.label,p.who,p.epoch);
+      clearProposal();view('launch');await launchesUI.load();notice(p.label+' confirmed. The receipt is in Launch → Transaction history.');loadWalletTokens();return;
+    }
     let deadline=Math.floor(Date.now()/1000)+1200;
     let call,receipt;
     if(p.kind==='deposit'){
@@ -558,13 +564,20 @@ async function execute(){
       const iface=new Interface(P.MANAGER);
       for(const log of receipt.logs)if(log.address.toLowerCase()===P.CONTRACTS.manager){try{const e=iface.parseLog(log);if(e?.name==='Transfer'&&e.args.from===P.ZERO&&e.args.to.toLowerCase()===p.who.toLowerCase())remember(e.args.tokenId.toString());}catch{}}
     }
-    clearProposal();notice(p.label+' confirmed. View the receipt in Transactions.');
+    clearProposal();notice(p.label+' confirmed. The receipt is in Launch → Transaction history.');
     if(p.id){const next=await readPosition(p.id,true);positions.set(p.id,next);renderPositions();}
     if(loaded)await loadPool();
     loadWalletTokens();
   }catch(e){clearProposal();notice(failure(e),true);}finally{locked(false);if(account)loadPositions();}
 }
-function view(name){currentView=name;$('featuredPools').hidden=name!=='add';notice(name==='positions'?'':name==='activity'?'Transactions are filtered by your connected wallet.':'Load a token pair to read its current pool state.');document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===name);b.setAttribute('aria-pressed',String(b.dataset.view===name));});document.querySelectorAll('main>.view').forEach(v=>v.hidden=v.id!==name+'View');$('breadcrumb').textContent=name==='add'?'LP':name==='positions'?'My positions':'Transactions';clearTimeout(positionsTimer);if(name==='positions')loadPositions();}
+function view(name){currentView=name;launchesUI.watch(name==='launch');$('featuredPools').hidden=name!=='add';notice(name==='positions'||name==='launch'?'':'Load a token pair to read its current pool state.');document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===name);b.setAttribute('aria-pressed',String(b.dataset.view===name));});document.querySelectorAll('main>.view').forEach(v=>v.hidden=v.id!==name+'View');$('breadcrumb').textContent=name==='add'?'LP':name==='positions'?'My positions':'Launch';clearTimeout(positionsTimer);if(name==='positions')loadPositions();}
+const launchesUI=createLaunchController({rpc,isBusy:()=>busy,getSession:()=>({who:account,epoch:session})});
+$('launchForm').onsubmit=async event=>{event.preventDefault();if(!account){await chooseWallet();return;}locked(true);try{const p=await launchesUI.prepare(account,session);await signerFor(p.who,p.epoch);showReview(p,p.rows);}catch(e){notice(failure(e),true);}finally{locked(false);}};
+$('launchForm').addEventListener('input',clearProposal);
+$('moreLaunches').onclick=()=>launchesUI.load(true);
+$('launchedTokenList').onclick=async event=>{if(busy)return;const trade=event.target.closest('[data-launch-trade]');if(trade){try{await launchesUI.openTrade(trade.dataset.launchTrade);}catch(e){notice(failure(e),true);}return;}const button=event.target.closest('[data-launch-fees]');if(!button)return;if(!account){await chooseWallet();return;}locked(true);try{const p=await launchesUI.feeReview(button.dataset.launchFees,account,session);await signerFor(p.who,p.epoch);showReview(p,p.rows);}catch(e){notice(failure(e),true);}finally{locked(false);}};
+$('reviewTrade').onclick=async()=>{if(busy)return;if(!account){await chooseWallet();return;}locked(true);try{const p=await launchesUI.prepareTrade(account,session);await signerFor(p.who,p.epoch);showReview(p,p.rows);}catch(e){notice(failure(e),true);}finally{locked(false);}};
+
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>view(b.dataset.view));
 $('walletButton').onclick=()=>chooseWallet().catch(e=>notice(failure(e),true));
 $('disconnect').onclick=()=>{if(injected?.removeListener){injected.removeListener('accountsChanged',oldAccountListener);injected.removeListener('chainChanged',oldChainListener);injected.removeListener('disconnect',oldDisconnectListener);}injected=null;resetWallet();notice('Disconnected from this page. Existing token approvals remain onchain.');};

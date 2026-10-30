@@ -1,0 +1,1 @@
+module.exports={networks:{hardhat:{chainId:4663,hardfork:'cancun',forking:process.env.RWI_LAUNCH_FORK?{url:'https://rpc.mainnet.chain.robinhood.com'}:undefined,blockGasLimit:60000000}},solidity:'0.8.26'};

@@ -18,7 +18,13 @@ Addresses come from [Uniswap deployments](https://developers.uniswap.org/docs/pr
 
 ## Scope
 
-Pools here have no hooks and are independent of the existing Pons launch pool. This does not copy its creator-tax or donation logic. Each token/RWI pool has its own reserves and fees. Native ETH is represented by WETH. Concentrated-range setup, swaps, transfer-tax/rebasing tokens, custom hooks, and liquidity locking are not implemented. Uniswap position receipts are ERC-721 ownership records, not collectible launches.
+The Add liquidity workflow creates pools with no hooks, independently of the existing Pons launch pool. It does not copy Pons' creator-tax or donation logic. Each token/RWI pool has its own reserves and fees. Native ETH is represented by WETH in that workflow. User-selected concentrated ranges and transfer-tax/rebasing tokens are not supported. Uniswap position receipts are ERC-721 ownership records, not collectible launches. The separate Launch workflow below uses a fixed token-only range and native ETH routing.
+
+## Launch and ETH trading
+
+Launch replaces the Transactions tab and retains the browser's receipt history in an expandable section. The canonical factory is deliberately inactive until its real deployment is verified. Creators pay gas only, supply no RWI, and receive fees from a permanently locked 1% token/RWI position. All factory launches are listed automatically from its public registry, newest first.
+
+Trades on Launch use ETH → RWI → launched token for buys and the reverse for sells, with onchain two-hop quotes and a minimum output. This restriction is enforced by the LP router; unrestricted ERC-20 trading elsewhere cannot be controlled. See `contracts/launch/README.md` for economics, security boundaries, reproducible contract builds, fork tests, and the one-time wallet deployment procedure. These custom contracts have not undergone an independent audit.
 
 Writes check the connected wallet and chain before each request, explicitly pin chain ID, simulate calls and estimate gas, require successful receipts, and invalidate reviews on wallet changes. Spending maxima and withdrawal minima use SDK slippage math. No real transactions were broadcast during development verification. Indexer failure is shown; manual import remains available. Refresh positions rechecks pending transaction receipts; explorer links also show final status.
 

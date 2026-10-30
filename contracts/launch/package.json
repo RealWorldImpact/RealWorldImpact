@@ -1,0 +1,1 @@
+{"name":"rwi-launch-contracts","private":true,"scripts":{"compile":"node compile.cjs","test":"node test.cjs"},"devDependencies":{"@openzeppelin/contracts":"5.4.0","@uniswap/v4-core":"1.0.2","@uniswap/v4-periphery":"1.0.3","ethers":"6.17.0","hardhat":"2.29.1","solc":"0.8.26"}}
