@@ -1,8 +1,10 @@
 import { BrowserProvider, ContractFactory, JsonRpcProvider, keccak256, getCreateAddress } from 'ethers';
 import { walletCandidates } from '../../scripts/lp/wallet-providers.js';
 import { LAUNCH_RUNTIME_HASH, LAUNCH_CREATION_HASH, LAUNCH_ABI } from '../../scripts/lp/launch-contract.js';
+import { LAUNCH_FACTORY } from '../../scripts/lp/launch-config.js';
 const $=id=>document.getElementById(id),providers=new Map();let selected=null,who=null,artifact=null;
 const storageKey='rwi-launch-deployment-pending';
+if(LAUNCH_FACTORY){$('connect').disabled=true;$('deploy').disabled=true;$('checkDeployment').disabled=true;status('Launch is already activated. Factory: '+LAUNCH_FACTORY+'. No further deployment is needed.');}
 function pending(){const raw=localStorage.getItem(storageKey);if(!raw)return null;try{return JSON.parse(raw);}catch{throw Error('Saved deployment state is invalid. Check your wallet before deploying again.');}}
 async function checkDeployment(){
  const entry=pending();if(!entry){status('No pending deployment is saved.');return;}

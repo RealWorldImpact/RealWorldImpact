@@ -1,0 +1,14 @@
+{
+  "verifiedAt": "2026-10-30T03:58:41.860Z",
+  "chain": 4663,
+  "factory": "0xdBfabE02ab31A4Ed0c8A77c375EaF597ce7619a8",
+  "router": "0x902FF8811E0208baCaaF4d13B1Ec527fFD6DfF12",
+  "transaction": "0x17135c61df6853a94471c78e8feb3aa845b48346929739dcadd980165fff1cd9",
+  "block": 101434752,
+  "confirmations": 1119,
+  "deployer": "0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5",
+  "runtimeHash": "0x746c47564a50536731d99c568dd725ddfc783c378ce2d094172304e7115f3f35",
+  "routerRuntimeHash": "0x2d7dfd646ac01ba1992b5620a8552700b16324b52d9405de4be4a907a7427b8a",
+  "launchCount": 0,
+  "checks": "Exact creation bytecode, full factory and router runtime, successful deployment receipt, canonical RWI and Uniswap references. Read-only verification."
+}

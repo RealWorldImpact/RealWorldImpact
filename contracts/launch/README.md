@@ -1,6 +1,6 @@
 # RWI Launch
 
-Gas-only token creation on Robinhood Chain (4663), with ETH-facing trades routed through RWI. This is a new, independently implemented Uniswap v4 launch factory, not the Pons launch factory. It is not active until a deployment is verified and `scripts/lp/launch-config.js` is set to its address.
+Gas-only token creation on Robinhood Chain (4663), with ETH-facing trades routed through RWI. This is a new, independently implemented Uniswap v4 launch factory, not the Pons launch factory. The verified canonical factory is `0xdBfabE02ab31A4Ed0c8A77c375EaF597ce7619a8`, with router `0x902FF8811E0208baCaaF4d13B1Ec527fFD6DfF12`. See `deployment.json` for the successful receipt and exact code verification record. `scripts/lp/launch-config.js` binds the page and registry API to this deployment.
 
 ## Economics and custody
 

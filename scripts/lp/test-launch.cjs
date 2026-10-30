@@ -1,7 +1,7 @@
 const fs=require('fs'),path=require('path'),assert=require('assert/strict'),os=require('os'),esbuild=require('esbuild');
 const {AbiCoder,parseUnits}=require('ethers');
 const folder=fs.mkdtempSync(path.join(os.tmpdir(),'rwi-launch-test-'));
-function bundle(entry,name,active=false){const file=path.join(folder,name+'.cjs'),source=path.join(__dirname,entry);let contents=fs.readFileSync(source,'utf8');if(active)contents=contents.replace(/import \{ LAUNCH_FACTORY \} from '[^']+';/,"const LAUNCH_FACTORY='0x1111111111111111111111111111111111111111';");esbuild.buildSync({stdin:{contents,resolveDir:path.dirname(source),sourcefile:path.basename(source)},outfile:file,bundle:true,platform:'node',format:'cjs'});return require(file);}
+function bundle(entry,name,active=false){const file=path.join(folder,name+'.cjs'),source=path.join(__dirname,entry);let contents=fs.readFileSync(source,'utf8');if(entry.endsWith('lp-launches.js'))contents=contents.replace(/import \{ LAUNCH_FACTORY \} from '[^']+';/,active?"const LAUNCH_FACTORY='0x1111111111111111111111111111111111111111';":"const LAUNCH_FACTORY=null;");esbuild.buildSync({stdin:{contents,resolveDir:path.dirname(source),sourcefile:path.basename(source)},outfile:file,bundle:true,platform:'node',format:'cjs'});return require(file);}
 
 const M=bundle('launch-model.js','model'),inactive=bundle('../../api/lp-launches.js','inactive').default,active=bundle('../../api/lp-launches.js','active',true).default;
 const coder=AbiCoder.defaultAbiCoder();

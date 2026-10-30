@@ -22,7 +22,7 @@ The Add liquidity workflow creates pools with no hooks, independently of the exi
 
 ## Launch and ETH trading
 
-Launch replaces the Transactions tab and retains the browser's receipt history in an expandable section. The canonical factory is deliberately inactive until its real deployment is verified. Creators pay gas only, supply no RWI, and receive fees from a permanently locked 1% token/RWI position. All factory launches are listed automatically from its public registry, newest first.
+Launch replaces the Transactions tab and retains the browser's receipt history in an expandable section. The verified canonical factory is `0xdBfabE02ab31A4Ed0c8A77c375EaF597ce7619a8`; its deployment receipt and code hashes are recorded in `contracts/launch/deployment.json`. Creators pay gas only, supply no RWI, and receive fees from a permanently locked 1% token/RWI position. All factory launches are listed automatically from its public registry, newest first.
 
 Trades on Launch use ETH → RWI → launched token for buys and the reverse for sells, with onchain two-hop quotes and a minimum output. This restriction is enforced by the LP router; unrestricted ERC-20 trading elsewhere cannot be controlled. See `contracts/launch/README.md` for economics, security boundaries, reproducible contract builds, fork tests, and the one-time wallet deployment procedure. These custom contracts have not undergone an independent audit.
 
