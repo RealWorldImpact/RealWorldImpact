@@ -18,22 +18,22 @@ async function json(url,options={}){
   if(!response.ok)throw Error('Market discovery unavailable');
   return response.json();
 }
-async function priced(token){
+async function priced(token,{fresh=false}={}){
   const saved=prices.get(token.address);
-  if(saved&&Date.now()-saved.at<60000)return {...token,...saved.value};
+  if(!fresh&&saved&&Date.now()-saved.at<60000)return {...token,...saved.value};
   try{
     const body=await json('https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/'+token.address);
     const a=body.data?.attributes;
     if(a?.address?.toLowerCase()!==token.address)throw Error('Market address mismatch');
     const price=String(a.price_usd??'');
-    const value={priceUsd:/^\d{1,60}(?:\.\d{1,60})?$/.test(price)?price:null,logo:safeTokenLogo(a.image_url)||token.logo};
+    const value={priceUsd:/^\d{1,60}(?:\.\d{1,60})?$/.test(price)?price:null,priceUpdatedAt:Date.now(),logo:safeTokenLogo(a.image_url)||token.logo};
     if(prices.size>=500&&!prices.has(token.address))prices.delete(prices.keys().next().value);
     prices.set(token.address,{at:Date.now(),value});return {...token,...value};
-  }catch{return {...token,priceUsd:null};}
+  }catch{return {...token,priceUsd:null,priceUpdatedAt:null};}
 }
-export async function priceMarketHoldings(held){
+export async function priceMarketHoldings(held,options={}){
   const tokens=[];
-  for(let i=0;i<held.length;i+=3)tokens.push(...await Promise.all(held.slice(i,i+3).map(priced)));
+  for(let i=0;i<held.length;i+=3)tokens.push(...await Promise.all(held.slice(i,i+3).map(token=>priced(token,options))));
   return tokens;
 }
 export async function discoverMarketHoldings(wallet,exclude=[],withPrices=true){

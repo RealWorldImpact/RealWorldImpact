@@ -1,0 +1,90 @@
+const assert=require('assert/strict'),fs=require('fs'),path=require('path');
+const {JsonRpcProvider,Contract,ContractFactory,randomBytes,hexlify,ZeroAddress,AbiCoder,keccak256,concat,getCreate2Address,getCreateAddress,toBeHex,parseEther}=require('../launch/node_modules/ethers');
+const endpoint='http://127.0.0.1:8899',artifact=name=>JSON.parse(fs.readFileSync(path.join(__dirname,'artifacts',name+'.json')));
+const json=(value)=>JSON.stringify(value,(_,v)=>typeof v==='bigint'?v.toString():v,null,2);
+(async()=>{
+ const rpc=new JsonRpcProvider(endpoint,4663,{staticNetwork:true,cacheTimeout:-1});
+ rpc.pollingInterval=100; await rpc.send('hardhat_reset',[{forking:{jsonRpcUrl:'https://rpc.mainnet.chain.robinhood.com'}}]);
+ const signer=await rpc.getSigner(0),who=await signer.getAddress(),trader=await rpc.getSigner(3),traderAddress=await trader.getAddress();
+ const predicted=getCreateAddress({from:who,nonce:await rpc.getTransactionCount(who)}),hookHash=artifact('RWICreatorHook').creationHash;
+ let salt=0n,hookAddress;do{hookAddress=getCreate2Address(predicted,toBeHex(salt++,32),hookHash);}while((BigInt(hookAddress)&0x3fffn)!==0x20ccn);
+ const factory=await new ContractFactory(artifact('RWILaunchV2').abi,artifact('RWILaunchV2').bytecode,signer).deploy(toBeHex(salt-1n,32));await factory.waitForDeployment();
+ const address=await factory.getAddress();assert.equal(address,predicted);assert.equal(await factory.hook(),hookAddress);
+ const routerAddress=await factory.router(),router=new Contract(routerAddress,artifact('RWILaunchRouterV2').abi,trader),hook=new Contract(hookAddress,artifact('RWICreatorHook').abi,signer);
+ const rwiAddress=await factory.RWI(),rwi=new Contract(rwiAddress,['function balanceOf(address) view returns(uint256)','function allowance(address,address) view returns(uint256)'],rpc);
+ const manager=new Contract(await factory.POSITION_MANAGER(),['function ownerOf(uint256) view returns(address)','function getPositionLiquidity(uint256) view returns(uint128)'],rpc);
+ const deadline=async()=>Number((await rpc.getBlock('latest')).timestamp)+120;
+ const m={name:'Local Curve Test',symbol:'LCURVE',logo:'',description:'Local fork only',website:'',twitter:'',telegram:''};
+ const quoter=new Contract('0x8dc178efb8111bb0973dd9d722ebeff267c98f94',['function quoteExactInput((address exactCurrency,(address intermediateCurrency,uint24 fee,int24 tickSpacing,address hooks,bytes hookData)[] path,uint128 exactAmount) params) returns(uint256 amountOut,uint256 gasEstimate)'],rpc);
+ const rwiHop={intermediateCurrency:rwiAddress,fee:0,tickSpacing:200,hooks:await router.RWI_HOOK(),hookData:'0x'};
+ const ethHop={...rwiHop,intermediateCurrency:ZeroAddress};
+ const quote=async(currency,path,amount)=>(await quoter.quoteExactInput.staticCall({exactCurrency:currency,path,exactAmount:amount}))[0];
+ const tokens=[],evidence=[];
+ for(const [tax,token0] of [[0,true],[100,false],[200,true],[300,false]]){
+   let tokenSalt,tokenAddress;
+   const initHash=keccak256(concat([artifact('RWICurveToken').bytecode,AbiCoder.defaultAbiCoder().encode(['string','string','string','string','string','string','string','address'],[m.name,m.symbol,m.logo,m.description,m.website,m.twitter,m.telegram,who])]));
+   do{tokenSalt=hexlify(randomBytes(32));tokenAddress=getCreate2Address(address,keccak256(AbiCoder.defaultAbiCoder().encode(['address','bytes32'],[who,tokenSalt])),initHash);}while((BigInt(tokenAddress)<BigInt(rwiAddress))!==token0);
+   // Small reserves allow complete graduation without altering the fork's real ETH/RWI pool significantly.
+   const phantom=10n**20n;
+   await(await factory.launch(m,phantom,tax,tokenSalt,await deadline())).wait();tokens.push(tokenAddress);
+   const t=new Contract(tokenAddress,artifact('RWICurveToken').abi,trader);let l=await factory.launches(tokenAddress);
+   assert.equal(l.phase,0n);assert.equal(l.phantomQuote,phantom);assert.equal(l.creatorTaxBps,BigInt(tax));assert.equal(l.reservedTokens,10n**27n*2n/7n);
+   assert.equal(await t.totalSupply(),10n**27n);assert.equal(await t.balanceOf(who),0n);assert.equal(await rwi.balanceOf(who),0n);
+   const input=10n**12n,rwiIn=await quote(ZeroAddress,[rwiHop],input);
+   const charge=rwiIn/100n+rwiIn*BigInt(tax)/10000n,net=rwiIn-charge;
+   const expected=net*10n**27n/(phantom+net);
+   const [q,spent]=await factory.quoteBuy(tokenAddress,rwiIn);assert.equal(q,expected);assert.equal(spent,rwiIn);
+   await(await router.buy(tokenAddress,rwiIn,q,await deadline(),{value:input})).wait();assert.equal(await t.balanceOf(traderAddress),q);
+   assert.equal(await factory.curveRewards(tokenAddress),charge);
+   l=await factory.launches(tokenAddress);assert.equal(l.quoteReserve,net);assert.equal(l.tokenReserve,10n**27n-q);
+   const sellAmount=q/3n,gross=sellAmount*(phantom+net)/(l.tokenReserve+sellAmount),sellFees=gross/100n+gross*BigInt(tax)/10000n;
+   const [sellRwi,sellCharge]=await factory.quoteSell(tokenAddress,sellAmount);assert.equal(sellRwi,gross-sellFees);assert.equal(sellCharge,sellFees);
+   await(await t.approve(routerAddress,sellAmount)).wait();const ethQuote=await quote(rwiAddress,[ethHop],sellRwi);
+   const ethBefore=await rpc.getBalance(traderAddress),sellReceipt=await(await router.sell(tokenAddress,sellAmount,ethQuote,await deadline())).wait();
+   assert.equal(await rpc.getBalance(traderAddress),ethBefore+ethQuote-sellReceipt.fee);
+   assert.equal(await rwi.balanceOf(traderAddress),0n);assert.equal(await t.allowance(traderAddress,routerAddress),0n);
+   // Bad limits must roll back reserve, token and reward accounting atomically.
+   const snapshot=await factory.launches(tokenAddress),rewardBefore=await factory.rewardRwi(tokenAddress);
+   await assert.rejects(router.buy.staticCall(tokenAddress,rwiIn,10n**28n,await deadline(),{value:input}));assert.deepEqual(Array.from(await factory.launches(tokenAddress)),Array.from(snapshot));assert.equal(await factory.rewardRwi(tokenAddress),rewardBefore);
+   await assert.rejects(factory.connect(trader).claimRewards.staticCall(tokenAddress,1n,await deadline()));
+   await assert.rejects(factory.claimRewards.staticCall(tokenAddress,10n**30n,await deadline()));assert.equal(await factory.rewardRwi(tokenAddress),rewardBefore);
+   const claimQuote=await factory.claimRewards.staticCall(tokenAddress,1n,await deadline());const creatorBefore=await rpc.getBalance(who);
+   const claimReceipt=await(await factory.claimRewards(tokenAddress,claimQuote,await deadline())).wait();
+   assert.equal(await rpc.getBalance(who),creatorBefore+claimQuote-claimReceipt.fee);assert.equal(await rwi.balanceOf(who),0n);assert.equal(await t.balanceOf(who),0n);assert.equal(await factory.rewardRwi(tokenAddress),0n);
+   assert.deepEqual(Array.from(await factory.launches(tokenAddress)),Array.from(snapshot));
+   // An oversized final buy is clamped to the Pons reserved floor; its excess returns in ETH.
+   const finishInput=parseEther('0.0001'),finishRwi=await quote(ZeroAddress,[rwiHop],finishInput);const [finishTokens,finishSpent]=await factory.quoteBuy(tokenAddress,finishRwi);
+   assert.ok(finishSpent<finishRwi);const finishReceipt=await(await router.buy(tokenAddress,finishRwi,finishTokens,await deadline(),{value:finishInput,gasLimit:6000000})).wait();
+   l=await factory.launches(tokenAddress);if(l.phase!==2n){console.log(finishReceipt.logs.map(x=>{try{return factory.interface.parseLog(x)}catch{return null}}).filter(Boolean));throw Error('Graduation failed');}
+   assert.equal(await manager.ownerOf(l.positionId),address);assert.ok(await manager.getPositionLiquidity(l.positionId)>0n);
+   const g=finishReceipt.logs.map(x=>{try{return factory.interface.parseLog(x)}catch{return null}}).find(x=>x?.name==='PoolGraduated');
+   const seed=l.tokenReserve*l.quoteReserve/(l.phantomQuote+l.quoteReserve);assert.equal(g.args.tokenSeed,seed);assert.equal(g.args.lockedExcess,l.tokenReserve-seed);
+   assert.ok(l.quoteReserve>=phantom*5n/2n);assert.ok(l.quoteReserve-phantom*5n/2n<1000n);
+   const tradeEvent=finishReceipt.logs.map(x=>{try{return router.interface.parseLog(x)}catch{return null}}).find(x=>x?.name==='Trade');assert.ok(tradeEvent.args.ethRefund>0n);
+   assert.equal(await rwi.allowance(address,await factory.PERMIT2()),0n);assert.equal(await t.allowance(address,await factory.PERMIT2()),0n);
+   await assert.rejects(factory.quoteBuy(tokenAddress,1n));await assert.rejects(factory.quoteSell(tokenAddress,1n));
+   const tokenHop={intermediateCurrency:tokenAddress,fee:0,tickSpacing:200,hooks:hookAddress,hookData:'0x'},hookRwi={...tokenHop,intermediateCurrency:rwiAddress};
+   const poolQuote=await quote(ZeroAddress,[rwiHop,tokenHop],input),hookBefore=await hook.rewards(tokenAddress);
+   await(await router.buy(tokenAddress,0,poolQuote,await deadline(),{value:input})).wait();assert.ok(await hook.rewards(tokenAddress)>hookBefore);
+   const poolSell=poolQuote/2n;await(await t.approve(routerAddress,poolSell)).wait();const poolSellQuote=await quote(tokenAddress,[hookRwi,ethHop],poolSell);
+   await(await router.sell(tokenAddress,poolSell,poolSellQuote,await deadline())).wait();assert.ok(await hook.rewards(tokenAddress)>hookBefore);
+   const principal=await manager.getPositionLiquidity(l.positionId),locked=await t.balanceOf(address),claim=await factory.claimRewards.staticCall(tokenAddress,1n,await deadline());
+   await(await factory.claimRewards(tokenAddress,claim,await deadline())).wait();assert.equal(await hook.rewards(tokenAddress),0n);assert.equal(await factory.rewardRwi(tokenAddress),0n);
+   assert.equal(await manager.getPositionLiquidity(l.positionId),principal);assert.equal(await t.balanceOf(address),locked);assert.equal(await rwi.balanceOf(who),0n);assert.equal(await t.balanceOf(who),0n);
+   assert.equal(await rwi.balanceOf(routerAddress),0n);assert.equal(await rpc.getBalance(routerAddress),0n);assert.equal(await t.balanceOf(routerAddress),0n);
+   assert.equal(await rwi.allowance(routerAddress,address),0n);assert.equal(await t.allowance(routerAddress,address),0n);assert.equal(await rwi.allowance(address,routerAddress),0n);
+   evidence.push({token:tokenAddress,tax,token0,position:l.positionId,refund:tradeEvent.args.ethRefund,creatorEthClaim:claim});
+   console.log('PASS curve -> graduation -> v4 -> ETH claims:',tax,'bps, token0',token0);
+ }
+ for(const tax of [1,99,101,400,10000])await assert.rejects(factory.launch.staticCall(m,10n**20n,tax,hexlify(randomBytes(32)),await deadline()));
+ for(const phantom of [0,1,10n**34n])await assert.rejects(factory.launch.staticCall(m,phantom,0,hexlify(randomBytes(32)),await deadline()));
+ await assert.rejects(factory.launch.staticCall({...m,name:''},10n**20n,0,hexlify(randomBytes(32)),await deadline()));
+ await assert.rejects(factory.launch.staticCall(m,10n**20n,0,hexlify(randomBytes(32)),0));
+ await assert.rejects(factory.buyCurve.staticCall(tokens[0],1,who));await assert.rejects(factory.executeGraduation.staticCall(tokens[0]));
+ await assert.rejects(hook.register.staticCall(tokens[0],0));await assert.rejects(hook.withdrawRewards.staticCall(tokens[0]));await assert.rejects(hook.unlockCallback.staticCall('0x'));
+ await assert.rejects(router.unlockCallback.staticCall('0x'));await assert.rejects(router.convertRewards.staticCall(1,1,who));await assert.rejects(router.buy.staticCall(ZeroAddress,0,1,await deadline(),{value:1}));
+ assert.equal(artifact('RWILaunchV2').abi.filter(x=>x.type==='function'&&/withdraw|transfer|upgrade|owner|rescue/i.test(x.name)).length,0);
+ fs.writeFileSync(path.join(__dirname,'artifacts/fork-test.json'),json({testedAt:new Date().toISOString(),endpoint,chain:4663,factory:address,router:routerAddress,hook:hookAddress,evidence}));
+ console.log('PASS: local fork only; all tax options, both token orderings, Pons curve arithmetic, partial fill/refund, locked full-range graduation, ETH-only rewards, slippage rollback and access controls.');
+})().catch(e=>{console.error(e);process.exitCode=1});
+

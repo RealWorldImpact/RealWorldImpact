@@ -529,7 +529,7 @@ async function execute(){
   try{
     if(Date.now()-p.createdAt>300000)throw Error('This review expired. Refresh and review the action again.');
     const signer=await signerFor(p.who,p.epoch);await verifyContracts();
-    if(p.kind==='launch'||p.kind==='launchfees'||p.kind==='launchbuy'||p.kind==='launchsell'){
+    if(p.kind==='launch'||p.kind==='launchgraduate'||p.kind==='launchfees'||p.kind==='launchbuy'||p.kind==='launchsell'){
       for(const request of await launchesUI.tradeApprovals(p))await send(signer,request,'Approve '+p.symbol+' for sale',p.who,p.epoch);
       const request=await launchesUI.request(p),receipt=await send(signer,request,p.label,p.who,p.epoch);
       clearProposal();view('launch');await launchesUI.load();notice(p.label+' confirmed. The receipt is in Launch → Transaction history.');loadWalletTokens();return;
@@ -577,7 +577,7 @@ const launchesUI=createLaunchController({rpc,isBusy:()=>busy,getSession:()=>({wh
 $('launchForm').onsubmit=async event=>{event.preventDefault();if(!account){await chooseWallet();return;}locked(true);try{const p=await launchesUI.prepare(account,session);await signerFor(p.who,p.epoch);showReview(p,p.rows);}catch(e){notice(failure(e),true);}finally{locked(false);}};
 $('launchForm').addEventListener('input',clearProposal);
 $('moreLaunches').onclick=()=>launchesUI.load(true);
-$('launchedTokenList').onclick=async event=>{if(busy)return;const trade=event.target.closest('[data-launch-trade]');if(trade){try{await launchesUI.openTrade(trade.dataset.launchTrade);}catch(e){notice(failure(e),true);}return;}const button=event.target.closest('[data-launch-fees]');if(!button)return;if(!account){await chooseWallet();return;}locked(true);try{const p=await launchesUI.feeReview(button.dataset.launchFees,account,session);await signerFor(p.who,p.epoch);showReview(p,p.rows);}catch(e){notice(failure(e),true);}finally{locked(false);}};
+$('launchedTokenList').onclick=async event=>{if(busy)return;const trade=event.target.closest('[data-launch-trade]');if(trade){try{await launchesUI.openTrade(trade.dataset.launchTrade);}catch(e){notice(failure(e),true);}return;}const graduate=event.target.closest('[data-launch-graduate]'),button=event.target.closest('[data-launch-fees]');if(!button&&!graduate)return;if(!account){await chooseWallet();return;}locked(true);try{const p=graduate?await launchesUI.graduationReview(graduate.dataset.launchGraduate,account,session):await launchesUI.feeReview(button.dataset.launchFees,account,session);await signerFor(p.who,p.epoch);showReview(p,p.rows);}catch(e){notice(failure(e),true);}finally{locked(false);}};
 $('reviewTrade').onclick=async()=>{if(busy)return;if(!account){await chooseWallet();return;}locked(true);try{const p=await launchesUI.prepareTrade(account,session);await signerFor(p.who,p.epoch);showReview(p,p.rows);}catch(e){notice(failure(e),true);}finally{locked(false);}};
 
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>view(b.dataset.view));

@@ -7,8 +7,8 @@ const M=bundle('launch-model.js','model'),inactive=bundle('../../api/lp-launches
 const coder=AbiCoder.defaultAbiCoder();
 function response(){return{headers:{},setHeader(k,v){this.headers[k]=v},status(c){this.code=c;return this},json(b){this.body=b;return this}};}
 (async()=>{
- const terms=M.launchTerms('0.001');assert.equal(Math.abs(terms.tick%200),0);assert.ok(Number(terms.price)>0&&Number(terms.price)<=.001);assert.equal(parseUnits(terms.marketCap,18),parseUnits(terms.price,18)*1000000000n);
- for(const value of ['0','-1','1e3','x','0.000000000000000001'])assert.throws(()=>M.launchTerms(value));
+ const terms=M.launchTerms('0.00002665263821');assert.equal(terms.targetMarketCapUsd,'5000');assert.ok(Math.abs(Number(terms.marketCapUsd)-5000)<.000001);assert.equal(parseUnits(terms.marketCapRwi,18),BigInt(terms.phantomQuote));
+ for(const value of ['0','-1','1e3','x',null,'0.000000000000000000000000000000000001'])assert.throws(()=>M.launchTerms(value));
  const valid={name:'My token',symbol:'mt',description:'hello',logo:'ipfs://'+'a'.repeat(46),website:'https://example.com'};
  assert.equal(M.launchMetadata(valid).symbol,'MT');assert.match(M.launchMetadata(valid).logo,/^https:/);
  for(const patch of [{name:''},{name:'a'.repeat(33)},{symbol:'<img>'},{description:'a'.repeat(257)},{logo:'javascript:alert(1)'},{website:'http://example.com'},{twitter:'https://user:password@example.com'}])assert.throws(()=>M.launchMetadata({...valid,...patch}));

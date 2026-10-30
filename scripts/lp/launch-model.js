@@ -1,15 +1,15 @@
 import { parseUnits, formatUnits } from 'ethers';
-import { TickMath, encodeSqrtRatioX96 } from '@uniswap/v3-sdk';
 import { safeTokenLogo } from './wallet-tokens.js';
-export function launchTerms(price){
-  if(typeof price!=='string'||!/^\d{1,12}(?:\.\d{1,18})?$/.test(price.trim()))throw Error('Enter a positive starting price in RWI per token.');
-  const units=parseUnits(price.trim(),18);if(units<=0n)throw Error('Starting price must be positive.');
-  const tick=Math.floor(TickMath.getTickAtSqrtRatio(encodeSqrtRatioX96(units.toString(),(10n**18n).toString()))/200)*200;
-  if(tick< -400000||tick>400000)throw Error('Choose a less extreme starting price.');
-  const sqrt=BigInt(TickMath.getSqrtRatioAtTick(tick).toString());
-  const actual=sqrt*sqrt*10n**18n/(1n<<192n);
-  return {tick,price:formatUnits(actual,18),marketCap:formatUnits(actual*1000000000n,18)};
+export const LAUNCH_TARGET_USD='5000',LAUNCH_SUPPLY=1000000000n;
+export function launchTerms(rwiPriceUsd){
+  if(typeof rwiPriceUsd!=='string'||!/^\d{1,18}(?:\.\d{1,36})?$/.test(rwiPriceUsd))throw Error('A current RWI USD price is required to set the $5,000 launch target.');
+  const usd=parseUnits(rwiPriceUsd,36);if(usd<=0n)throw Error('The RWI USD price must be positive.');
+  const phantom=5000n*10n**54n/usd;
+  if(phantom<10n**12n||phantom>10n**33n)throw Error('The RWI price is outside the supported launch range.');
+  const threshold=phantom*5n/2n,supply=LAUNCH_SUPPLY*10n**18n,reserved=supply*phantom/(phantom+threshold);
+  return {phantomQuote:phantom.toString(),graduationThreshold:threshold.toString(),reservedTokens:reserved.toString(),price:formatUnits(phantom*10n**18n/supply,18),marketCapRwi:formatUnits(phantom,18),targetMarketCapUsd:LAUNCH_TARGET_USD,marketCapUsd:formatUnits(phantom*usd/10n**18n,36),graduationTargetUsd:formatUnits(threshold*usd/10n**18n,36),rwiPriceUsd};
 }
+export function creatorTax(value){const tax=Number(value);if(!['0','100','200','300'].includes(String(value))||!Number.isInteger(tax))throw Error('Choose no extra tax, 1%, 2%, or 3%.');return tax;}
 export function launchMetadata(input){
   const name=String(input.name||'').trim(),symbol=String(input.symbol||'').trim().toUpperCase();
   if(!name||name.length>32)throw Error('Enter a token name of 1–32 characters.');
