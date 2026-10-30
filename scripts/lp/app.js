@@ -7,6 +7,7 @@ import { walletCandidates } from './wallet-providers.js';
 import { readWalletHoldings } from './wallet-balances.js';
 import { matchDollarAmounts } from './deposit-amounts.js';
 import { featuredLiquidityUrl } from './featured-pools.js';
+import { saveConnector, forgetConnector, savedConnector } from './wallet-session.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -76,6 +77,8 @@ async function loadFeaturedPools(){
 }
 let pending=readStore('rwi-lp-transactions',[]);
 const discovered=new Map();
+let connectionAttempt=0;
+const restoredProviders=new WeakSet();
 function readStore(k,fallback){try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(v)?v:fallback;}catch{return fallback;}}
 function saveStore(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
 function idsKey(){return 'rwi-lp-positions-'+account?.toLowerCase();}
@@ -85,7 +88,7 @@ function failure(e){if(e.code===4001||e.code==='ACTION_REJECTED')return 'Request
 function locked(v){busy=v;document.querySelectorAll('main input,main select,main button,#walletButton,#disconnect').forEach(el=>el.disabled=v);$('submitAction').disabled=v||!proposal;$('cancelReview').disabled=v;renderAmountControls();}
 function clearProposal(){proposal=null;$('reviewDialog').close();}
 function invalidate(){loadSeq++;loaded=null;clearProposal();$('poolStatus').textContent='Refresh pool data';$('poolPrice').textContent='—';$('poolId').textContent='—';$('poolLink').hidden=true;$('pairName').textContent='Token / RWI';$('poolBlock').textContent='Load to refresh chain data';}
-function resetWallet(){session++;resetTokens();account=null;wallet=null;renderAmountControls();positions.clear();$('walletButton').textContent='Connect wallet';$('disconnect').hidden=true;$('walletStatus').textContent='Connect to see balances and your positions.';$('positionList').innerHTML='<div class="empty-state">Connect your wallet to load your liquidity positions.</div>';clearProposal();renderActivity();}
+function resetWallet(){connectionAttempt++;forgetConnector(localStorage);session++;resetTokens();account=null;wallet=null;renderAmountControls();positions.clear();$('walletButton').textContent='Connect wallet';$('disconnect').hidden=true;$('walletStatus').textContent='Connect to see balances and your positions.';$('positionList').innerHTML='<div class="empty-state">Connect your wallet to load your liquidity positions.</div>';clearProposal();renderActivity();}
 async function verifyContracts(){
   if(verified)return;
   const [chain,pool,permit]=await Promise.all([rpc.send('eth_chainId',[]),manager.poolManager(),manager.permit2()]);
@@ -241,7 +244,13 @@ async function loadWalletTokens(){
   }finally{if(active())tokenAbort=null;}
 }
 
-function walletCandidate(detail){if(detail?.provider&&detail?.info?.uuid)discovered.set(detail.info.uuid,{name:detail.info.name,provider:detail.provider});}
+function walletCandidate(detail){if(detail?.provider&&detail?.info?.uuid){discovered.set(detail.info.uuid,{name:detail.info.name,rdns:detail.info.rdns,provider:detail.provider});Promise.resolve().then(restoreWallet);}}
+async function restoreWallet(){
+  if(account||injected)return;
+  const candidate=savedConnector(localStorage,walletCandidates([...discovered.values()],window.ethereum));
+  if(!candidate||restoredProviders.has(candidate.provider))return;
+  restoredProviders.add(candidate.provider);await connect(candidate.provider,true,candidate);
+}
 window.addEventListener('eip6963:announceProvider',e=>walletCandidate(e.detail));window.dispatchEvent(new Event('eip6963:requestProvider'));
 async function chooseWallet(){
   if(account){await switchNetwork();return;}
@@ -249,7 +258,7 @@ async function chooseWallet(){
   const candidates=walletCandidates([...discovered.values()],window.ethereum);
   const list=$('walletChoices');list.innerHTML='';
   if(!candidates.length){list.innerHTML='<p>No browser wallet was detected. Open this page in your wallet’s browser or install an Ethereum-compatible wallet.</p>';}
-  candidates.forEach(c=>{const b=document.createElement('button');b.className='secondary-button';b.textContent=c.name;b.onclick=()=>connect(c.provider);list.append(b);});
+  candidates.forEach(c=>{const b=document.createElement('button');b.className='secondary-button';b.textContent=c.name;b.onclick=()=>connect(c.provider,false,c);list.append(b);});
   $('walletDialog').showModal();
 }
 async function switchNetwork(){
@@ -264,23 +273,27 @@ async function syncWallet(){
   const [accounts,chain]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);
   if(epoch!==session||provider!==injected)return;
   if(!accounts.length){resetWallet();return;}
-  account=getAddress(accounts[0]);wallet=new BrowserProvider(provider,'any',{cacheTimeout:-1});
+  account=getAddress(accounts[0]);wallet=new BrowserProvider(provider,'any',{cacheTimeout:-1});renderAmountControls();
   $('walletButton').textContent=Number(chain)===P.CHAIN?short(account):'Switch network';$('disconnect').hidden=false;
   $('walletStatus').textContent=Number(chain)===P.CHAIN?'Connected on Robinhood Chain.':'Switch to Robinhood Chain to manage liquidity.';
   $('positionList').innerHTML='<div class="empty-state">Use “Refresh positions” or import a position ID below.</div>';
   renderActivity();
   if(Number(chain)!==P.CHAIN){tokenListMessage='Switch to Robinhood Chain to load your holdings.';$('walletTokenStatus').textContent=tokenListMessage;}
-  if(Number(chain)===P.CHAIN){loadWalletTokens();if(loaded)await balances(loaded);}
+  if(Number(chain)===P.CHAIN){loadWalletTokens();if(loaded)await balances(loaded);else loadPool();}
 }
 let oldAccountListener,oldChainListener,oldDisconnectListener;
-async function connect(provider){
+async function connect(provider,restore=false,candidate=null){
+  const attempt=++connectionAttempt;
   try{
+    const accounts=await provider.request({method:restore?'eth_accounts':'eth_requestAccounts'});
+    if(attempt!==connectionAttempt||!accounts?.length)return;
     if(injected?.removeListener){injected.removeListener('accountsChanged',oldAccountListener);injected.removeListener('chainChanged',oldChainListener);injected.removeListener('disconnect',oldDisconnectListener);}
-    injected=provider;await provider.request({method:'eth_requestAccounts'});
+    injected=provider;
     oldAccountListener=()=>syncWallet().catch(e=>notice(failure(e),true));oldChainListener=oldAccountListener;oldDisconnectListener=()=>{resetWallet();notice('Wallet disconnected.');};
     provider.on?.('accountsChanged',oldAccountListener);provider.on?.('chainChanged',oldChainListener);provider.on?.('disconnect',oldDisconnectListener);
     $('walletDialog').close();await syncWallet();
-  }catch(e){notice(failure(e),true);}
+    if(injected===provider&&account)saveConnector(localStorage,candidate||walletCandidates([...discovered.values()],window.ethereum).find(c=>c.provider===provider));
+  }catch(e){if(!restore&&attempt===connectionAttempt)notice(failure(e),true);}
 }
 async function signerFor(who,epoch){
   if(!injected||!wallet||session!==epoch||account!==who)throw Error('Your wallet changed. Review the action again.');
@@ -437,4 +450,4 @@ $('openTokens').onclick=()=>{if(!account){chooseWallet().catch(e=>notice(failure
 $('closeTokens').onclick=()=>$('tokenDialog').close();$('tokenDialog').addEventListener('close',()=>stopTokenRowLogos());$('refreshTokens').onclick=()=>loadWalletTokens();$('tokenSearch').oninput=renderWalletTokens;
 $('walletTokenList').onclick=e=>{const button=e.target.closest('[data-wallet-token]');if(!button||busy)return;const row=walletTokens.find(t=>t.address===button.dataset.walletToken);if(!row)return;invalidate();$('tokenAddress').value=row.address;amountDriver={side:'rwi',percent:0};renderAmountControls();$('tokenAmountLabel').textContent=row.symbol+' amount (USD)';showSelectedToken(row);$('tokenDialog').close();loadPool();};
 $('refreshFeatured').onclick=loadFeaturedPools;
-loadFeaturedPools();renderAmountControls();renderActivity();loadPool();
+loadFeaturedPools();renderAmountControls();renderActivity();loadPool();Promise.resolve().then(restoreWallet);
