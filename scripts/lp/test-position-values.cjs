@@ -6,6 +6,6 @@ const prices=new Map([[rwi.address,'0.02'],[usd.address,'1']]),a=p('1',usd,10000
 assert.equal(positionValue(a,prices).valueUsd,20n*10n**36n);assert.equal(positionValue(b,prices).valueUsd,4n*10n**36n);
 assert.equal(positionValue(estimated,prices).estimated,true);assert.equal(positionValue(estimated,prices).valueUsd,8n*10n**34n);
 assert.equal(positionValue(empty,prices).valueUsd,0n);assert.equal(positionValue(unknown,prices).valueUsd,null);
-assert.deepEqual(valuePositions([empty,b,unknown,a,estimated],prices).map(x=>x.position.id),['1','2','3','4','5']);
+assert.deepEqual(valuePositions([empty,b,unknown,a,estimated],prices).map(x=>x.position.id),['1','2','3','5']);
 assert.equal(positionValue(a,new Map()).valueUsd,null);
 console.log('PASS: exact principal USD values, decimal differences, descending value sort, labeled pool-implied estimates, empty positions and unavailable prices.');

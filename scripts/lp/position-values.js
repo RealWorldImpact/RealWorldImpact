@@ -17,7 +17,7 @@ export function positionValue(position,prices){
   return {valueUsd,estimated};
 }
 export function valuePositions(positions,prices){
-  return positions.map(position=>({position,...positionValue(position,prices)})).sort((a,b)=>{
+  return positions.filter(position=>position.liquidity>0n).map(position=>({position,...positionValue(position,prices)})).sort((a,b)=>{
     if(a.valueUsd===null&&b.valueUsd!==null)return 1;
     if(b.valueUsd===null&&a.valueUsd!==null)return -1;
     if(a.valueUsd!==b.valueUsd)return a.valueUsd>b.valueUsd?-1:1;

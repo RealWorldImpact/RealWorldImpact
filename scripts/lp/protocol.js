@@ -43,10 +43,17 @@ export function makeDeposit(pool, budgets, slippageBps, ticks) {
   // Reserve headroom so slippage-adjusted maxima never exceed the typed budgets.
   const padded=budgets.map(n=>n*10000n/BigInt(10000+slippageBps)-2n);
   if(padded.some(n=>n<=0n))throw Error('Amounts are too small for this token.');
-  const p=Position.fromAmounts({pool,tickLower:lower,tickUpper:upper,amount0:padded[0].toString(),amount1:padded[1].toString(),useFullPrecision:true});
+  let p=Position.fromAmounts({pool,tickLower:lower,tickUpper:upper,amount0:padded[0].toString(),amount1:padded[1].toString(),useFullPrecision:true});
   if(BigInt(p.liquidity.toString())===0n)throw Error('Amounts are too small to create liquidity.');
-  const max=p.mintAmountsWithSlippage(new Percent(slippageBps,10000));
-  const caps=[BigInt(max.amount0.toString()),BigInt(max.amount1.toString())];
+  const maxima=position=>{const max=position.mintAmountsWithSlippage(new Percent(slippageBps,10000));return [BigInt(max.amount0.toString()),BigInt(max.amount1.toString())];};
+  let caps=maxima(p);
+  // Narrow existing ranges can amplify slippage maxima. Scale liquidity to keep both caps within the chosen amounts.
+  for(let step=0;step<8&&caps.some((n,i)=>n>budgets[i]);step++){
+    const current=BigInt(p.liquidity.toString());let next=current;
+    for(let i=0;i<2;i++)if(caps[i]>0n){const limit=current*budgets[i]/caps[i];if(limit<next)next=limit;}
+    next-=2n;if(next<=0n)throw Error('Amounts are too small to create liquidity.');
+    p=new Position({pool,tickLower:lower,tickUpper:upper,liquidity:next.toString()});caps=maxima(p);
+  }
   if(caps.some((n,i)=>n>budgets[i]||n>=(1n<<128n)))throw Error('Deposit exceeds your limits. Reduce amounts and try again.');
   return {position:p,caps};
 }

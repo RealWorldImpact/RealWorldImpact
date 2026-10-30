@@ -15,6 +15,8 @@ const multi=new Interface(['function multicall(bytes[])']);const calls=multi.dec
 const modify=new Interface(['function modifyLiquidities(bytes,uint256)']);
 const inner=modify.decodeFunctionData('modifyLiquidities',calls[1]);
 const [actions,params]=AbiCoder.defaultAbiCoder().decode(['bytes','bytes[]'],inner[0]);assert.equal(actions,'0x020d');
+const increase=P.addCall(position,'0x2222222222222222222222222222222222222222',slip,2000000000,false,'42');
+const increaseInner=modify.decodeFunctionData('modifyLiquidities',increase.calldata);const [increaseActions,increaseParams]=AbiCoder.defaultAbiCoder().decode(['bytes','bytes[]'],increaseInner[0]);assert(increaseActions.startsWith('0x00'));const increaseDecoded=AbiCoder.defaultAbiCoder().decode(['uint256','uint256','uint128','uint128','bytes'],increaseParams[0]);assert.equal(increaseDecoded[0],42n);assert.equal(increaseDecoded[2],caps[0]);assert.equal(increaseDecoded[3],caps[1]);
 const mint=AbiCoder.defaultAbiCoder().decode(['tuple(address,address,uint24,int24,address)','int24','int24','uint256','uint128','uint128','address','bytes'],params[0]);assert.equal(mint[4],caps[0]);assert.equal(mint[5],caps[1]);assert.equal(mint[6],'0x2222222222222222222222222222222222222222');
 assert(Math.abs(Number(pool.priceOf(other).toSignificant(8))-250000)<0.01);
 const init=new Interface(['function initializePool((address currency0,address currency1,uint24 fee,int24 tickSpacing,address hooks),uint160)']);const decoded=init.decodeFunctionData('initializePool',calls[0]);assert.equal(decoded[0][4],P.ZERO);
@@ -22,6 +24,7 @@ for(const percent of[1,25,50,100])assert(P.removeCall(position,'42',percent,slip
 assert(P.collectCall(position,'42','0x2222222222222222222222222222222222222222',2000000000).calldata.length>10);
 const lo=-887220n,hi=887220n;const packed=(BigInt.asUintN(24,hi)<<32n)|(BigInt.asUintN(24,lo)<<8n);assert.deepEqual(P.unpackTicks(packed),[Number(lo),Number(hi)]);
 }
+const topupKey=P.pair(b,10000),topupTokens=topupKey.currency0.toLowerCase()===P.RWI?[a,b]:[b,a],topupBudgets=topupTokens.map(t=>t.symbol==='RWI'?P.amount('250000',18):P.amount('1',18)),topupPool=P.buildPool(topupKey,topupTokens,[0n,0],'0',topupBudgets),baseTick=Math.floor(topupPool.tickCurrent/200)*200,customTicks=[baseTick-200,baseTick+200],topup=P.makeDeposit(topupPool,topupBudgets,50,customTicks);assert.equal(topup.position.tickLower,customTicks[0]);assert.equal(topup.position.tickUpper,customTicks[1]);assert(topup.caps.every((v,i)=>v<=topupBudgets[i]));
 for(const v of['0','-1','1e5','1,000','NaN','Infinity','0.0000001'])assert.throws(()=>P.amount(v,6));assert.throws(()=>P.pair(a,3000));assert.throws(()=>P.pair(b,1234));
 const app=fs.readFileSync(path.join(__dirname,'app.js'),'utf8'),html=fs.readFileSync(path.join(__dirname,'../../LP.html'),'utf8');for(const m of app.matchAll(/\$\('([^']+)'\)/g))assert(html.includes('id="'+m[1]+'"'),'Missing DOM id '+m[1]);
 assert(!/Liquidity Lab|simulation mode|demo swap|reset demo/i.test(html));
