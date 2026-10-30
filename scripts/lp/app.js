@@ -11,6 +11,7 @@ import { saveConnector, forgetConnector, savedConnector } from './wallet-session
 import { discoverPositionIds } from './position-discovery.js';
 import { readPositionsFast } from './position-reader.js';
 import { valuePositions, positionFeeValue } from './position-values.js';
+import { atomicSupport, checkPendingBatch, sendAtomicBatch } from './wallet-batch.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -364,22 +365,26 @@ async function send(signer,request,label,who,epoch){
   if(receipt.status!==1){updateActivity(tx.hash,'Reverted');throw Error('The transaction reverted. No liquidity change was confirmed.');}
   updateActivity(receipt.hash,'Confirmed');await signerFor(who,epoch);return receipt;
 }
-async function approvals(p,signer){
-  const expiration=Math.floor(Date.now()/1000)+1200;
+async function approvalCalls(p){
+  const expiration=Math.floor(Date.now()/1000)+1200,calls=[];
   for(let i=0;i<2;i++){
-    const t=p.position.pool['currency'+i],cap=p.caps[i],contract=new Contract(t.address,P.ERC20,rpc);
-    const allowance=await contract.allowance(p.who,P.CONTRACTS.permit);
+    const t=p.position.pool['currency'+i],cap=p.caps[i];if(cap===0n)continue;
+    const contract=new Contract(t.address,P.ERC20,rpc),permit=new Contract(P.CONTRACTS.permit,P.PERMIT,rpc);
+    const [allowance,a]=await Promise.all([contract.allowance(p.who,P.CONTRACTS.permit),permit.allowance(p.who,t.address,P.CONTRACTS.manager)]);
     if(allowance<cap){
-      if(allowance>0n)await send(signer,{to:t.address,data:contract.interface.encodeFunctionData('approve',[P.CONTRACTS.permit,0n])},'Reset '+t.symbol+' allowance',p.who,p.epoch);
-      await send(signer,{to:t.address,data:contract.interface.encodeFunctionData('approve',[P.CONTRACTS.permit,cap])},'Approve '+t.symbol+' to Permit2',p.who,p.epoch);
+      if(allowance>0n)calls.push({to:t.address,data:contract.interface.encodeFunctionData('approve',[P.CONTRACTS.permit,0n]),label:'Reset '+t.symbol+' allowance'});
+      calls.push({to:t.address,data:contract.interface.encodeFunctionData('approve',[P.CONTRACTS.permit,cap]),label:'Approve '+t.symbol+' to Permit2'});
     }
-    const permit=new Contract(P.CONTRACTS.permit,P.PERMIT,rpc),a=await permit.allowance(p.who,t.address,P.CONTRACTS.manager);
-    if(a[0]<cap||a[1]<BigInt(Math.floor(Date.now()/1000)+600))await send(signer,{to:P.CONTRACTS.permit,data:permit.interface.encodeFunctionData('approve',[t.address,P.CONTRACTS.manager,cap,expiration])},'Authorize '+t.symbol+' for LP deposit',p.who,p.epoch);
+    if(a[0]<cap||a[1]<BigInt(Math.floor(Date.now()/1000)+600))calls.push({to:P.CONTRACTS.permit,data:permit.interface.encodeFunctionData('approve',[t.address,P.CONTRACTS.manager,cap,expiration]),label:'Authorize '+t.symbol+' for LP deposit'});
   }
+  return calls;
+}
+async function approvals(p,signer){
+  for(const {label,...request} of await approvalCalls(p))await send(signer,request,label,p.who,p.epoch);
 }
 function showReview(p,rows){
   proposal=p;$('reviewTitle').textContent=p.label;$('reviewRows').innerHTML=rows.map(([a,b])=>'<dt>'+esc(a)+'</dt><dd>'+esc(b)+'</dd>').join('');
-  $('approvalNote').hidden=p.kind!=='deposit';$('submitAction').textContent=p.kind==='deposit'?'Approve & deposit':'Confirm in wallet';$('submitAction').disabled=false;$('reviewDialog').showModal();
+  $('approvalNote').hidden=p.kind!=='deposit';$('submitAction').textContent=p.kind==='deposit'?'Confirm deposit':'Confirm in wallet';$('submitAction').disabled=false;$('reviewDialog').showModal();
 }
 async function reviewDeposit(event){
   event?.preventDefault();locked(true);
@@ -520,20 +525,32 @@ async function execute(){
     if(Date.now()-p.createdAt>300000)throw Error('This review expired. Refresh and review the action again.');
     const signer=await signerFor(p.who,p.epoch);await verifyContracts();
     let deadline=Math.floor(Date.now()/1000)+1200;
-    let call;
+    let call,receipt;
     if(p.kind==='deposit'){
-      await approvals(p,signer);
+      const provider=injected;
+      const batchOptions={onReceipt:r=>activity({hash:r.transactionHash,label:p.label,status:'Confirmed',account:p.who.toLowerCase()})};
+      await checkPendingBatch(provider,localStorage,p.who,P.CHAIN,batchOptions);
+      const batching=await atomicSupport(provider,p.who,P.CHAIN);
+      await signerFor(p.who,p.epoch);
+      if(!batching)await approvals(p,signer);
       const fresh=await snapshot(p.live.key,p.live.tokens);
       if(fresh.exists!==p.live.exists)throw Error('The pool changed while approvals were pending. Review the deposit again.');
       deadline=Math.floor(Date.now()/1000)+1200;
       if(p.id){const owned=await readPosition(p.id);if(owned.live.id!==p.live.id||owned.position.tickLower!==p.position.tickLower||owned.position.tickUpper!==p.position.tickUpper)throw Error('The selected position changed. Review it again.');}
       call=P.addCall(p.position,p.who,p.slip,deadline,!p.id&&!p.live.exists,p.id);
+      if(batching){
+        const calls=await approvalCalls(p);
+        if(calls.length){
+          notice('Confirm the approvals and deposit together in your wallet. A wallet upgrade may require an additional confirmation.');
+          receipt=await sendAtomicBatch(provider,localStorage,p.who,P.CHAIN,[...calls,{to:P.CONTRACTS.manager,data:call.calldata,value:BigInt(call.value)}],{...batchOptions,check:()=>signerFor(p.who,p.epoch)});
+        }
+      }
     }else{
       const fresh=await readPosition(p.id);
       if(fresh.liquidity!==p.liquidity)throw Error('Your position changed. Review the action again.');
       call=p.kind==='remove'?P.removeCall(p.position,p.id,p.percentage,p.slip,deadline):P.collectCall(p.position,p.id,p.who,deadline);
     }
-    const receipt=await send(signer,{to:P.CONTRACTS.manager,data:call.calldata,value:BigInt(call.value)},p.label,p.who,p.epoch);
+    if(!receipt)receipt=await send(signer,{to:P.CONTRACTS.manager,data:call.calldata,value:BigInt(call.value)},p.label,p.who,p.epoch);
     if(p.kind==='deposit'){
       const iface=new Interface(P.MANAGER);
       for(const log of receipt.logs)if(log.address.toLowerCase()===P.CONTRACTS.manager){try{const e=iface.parseLog(log);if(e?.name==='Transfer'&&e.args.from===P.ZERO&&e.args.to.toLowerCase()===p.who.toLowerCase())remember(e.args.tokenId.toString());}catch{}}
