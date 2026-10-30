@@ -76,3 +76,20 @@
 
 .launch-progress{margin:18px 0}.launch-progress label{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px}.launch-progress progress{display:block;width:100%;height:7px;border:0;border-radius:8px;background:#252b21;accent-color:var(--lime)}.launch-progress progress::-webkit-progress-bar{background:#252b21;border-radius:8px}.launch-progress progress::-webkit-progress-value{background:#c9ff00;border-radius:8px}.launch-progress progress::-moz-progress-bar{background:#c9ff00;border-radius:8px}.launch-progress small{display:block;margin-top:8px;color:#a3ac9c}.launch-card-title .pool-tag{white-space:normal;text-align:center}
 @media(max-width:600px){.launch-card-actions{display:grid;grid-template-columns:1fr}.launch-card-actions .primary-button,.launch-card-actions .secondary-button{width:100%;max-width:none}.launch-card-title{flex-wrap:wrap}.launch-card-title .pool-tag{margin-left:0}}
+
+/* Launch logo editor */
+#launchCreatorTax{display:block;width:112px;max-width:100%;min-height:44px}
+.launch-image-preview{border-radius:50%}.launch-image-preview>img{padding:0}
+.launch-image-controls .text-button{margin-right:14px;min-height:36px}
+.launch-image-editor{margin:18px 0;padding:20px;background:#10150d;border:1px solid var(--line);border-radius:12px}
+.launch-image-editor-heading,.launch-image-zoom-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.launch-image-editor-heading h4{margin:0;font-size:16px}.launch-image-editor-heading .pool-tag{font-size:9px}
+.launch-image-stage{display:flex;justify-content:center;margin:20px 0 10px}
+#launchImageCanvas{display:block;width:min(100%,280px);height:auto;aspect-ratio:1;border-radius:50%;background:#20261a;outline:1px solid #52613a;touch-action:none;cursor:grab}
+#launchImageCanvas:active{cursor:grabbing}#launchImageCanvas:focus-visible{outline:2px solid var(--lime);outline-offset:4px}
+.launch-image-zoom-heading label{margin:8px 0}.launch-image-zoom-heading output{font:12px var(--mono);color:var(--lime)}
+#launchImageZoom{display:block;width:100%;height:36px;padding:0;margin:0;accent-color:var(--lime);cursor:pointer}
+.launch-image-tools{display:flex;align-items:center;gap:20px;margin-top:8px}.launch-image-tools button{min-height:44px}
+.launch-image-editor-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.launch-image-editor-actions button{min-height:44px;margin:0;flex:1;max-width:180px}
+@media(max-width:600px){.launch-image-editor{padding:16px}.launch-image-editor-heading{flex-wrap:wrap;gap:8px}.launch-image-editor-actions button{padding-left:12px;padding-right:12px}}

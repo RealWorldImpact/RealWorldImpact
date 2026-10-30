@@ -11,7 +11,8 @@
   "type": "module",
   "scripts": {
     "build": "node build.cjs",
-    "test": "node test.cjs && node test-wallet.cjs && node test-wallet-batch.cjs && node test-security.cjs && node test-launch.cjs && node test-launch-pricing.cjs && node test-launch-v2.cjs && node test-launch-controller.cjs && node test-launch-images.cjs && node test-launch-image-client.cjs && node test-wallet-loading.cjs && node test-position-discovery.cjs && node test-position-reader.cjs && node test-position-values.cjs && node test-position-metrics.cjs && node test-deposit-amounts.cjs && node test-featured-pools.cjs && node test-tokens.cjs && node test-market-discovery.cjs && node test-logos.cjs && node test-logo-loader.cjs"
+    "test:image-editor": "node test-launch-image-editor.cjs && node test-launch-image-client.cjs && node test-launch-images.cjs",
+    "test": "node test.cjs && node test-wallet.cjs && node test-wallet-batch.cjs && node test-security.cjs && node test-launch.cjs && node test-launch-pricing.cjs && node test-launch-v2.cjs && node test-launch-controller.cjs && node test-launch-images.cjs && node test-launch-image-editor.cjs && node test-launch-image-client.cjs && node test-wallet-loading.cjs && node test-position-discovery.cjs && node test-position-reader.cjs && node test-position-values.cjs && node test-position-metrics.cjs && node test-deposit-amounts.cjs && node test-featured-pools.cjs && node test-tokens.cjs && node test-market-discovery.cjs && node test-logos.cjs && node test-logo-loader.cjs"
   },
   "overrides": {
     "@ethersproject/providers": {

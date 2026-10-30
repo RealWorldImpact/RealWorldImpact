@@ -13,6 +13,19 @@ export function checkImageDimensions(width,height){
   if(!Number.isInteger(width)||!Number.isInteger(height)||width<IMAGE_MIN_SIDE||height<IMAGE_MIN_SIDE)throw Error('Use an image at least 128 × 128 pixels. A 512 × 512 image works best.');
   if(width>8192||height>8192||width*height>IMAGE_MAX_PIXELS)throw Error('This image is too large. Use an image under 16 megapixels and 8192 pixels per side.');
 }
+export function checkStillImage(bytes){
+  const kind=imageKind(bytes),view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+  if(kind==='png')for(let offset=8;offset+12<=bytes.length;){
+    const size=view.getUint32(offset),tag=String.fromCharCode(...bytes.slice(offset+4,offset+8));
+    if(tag==='acTL')throw Error('Choose a still image instead of an animation.');
+    if(size>bytes.length-offset-12)throw Error('The image is incomplete or damaged.');offset+=size+12;
+  }
+  if(kind==='webp')for(let offset=12;offset+8<=bytes.length;){
+    const size=view.getUint32(offset+4,true),tag=String.fromCharCode(...bytes.slice(offset,offset+4));
+    if(tag==='ANIM'||tag==='ANMF'||(tag==='VP8X'&&size>0&&(bytes[offset+8]&2)))throw Error('Choose a still image instead of an animation.');
+    if(size>bytes.length-offset-8)throw Error('The image is incomplete or damaged.');offset+=8+size+(size%2);
+  }
+}
 export function imageUploadMessage(address,digest,issuedAt){
   if(!/^0x[0-9a-fA-F]{40}$/.test(address)||!/^0x[0-9a-f]{64}$/.test(digest)||!Number.isSafeInteger(issuedAt))throw Error('Invalid image upload request.');
   return ['RWI LP token image upload','Website: https://www.rwihood.org','Network: Robinhood Chain (4663)','Wallet: '+address.toLowerCase(),'Image SHA-256: '+digest,'Issued at: '+issuedAt,'Publish this image as a public token logo.','This signature cannot transfer tokens or authorize a transaction.'].join('\n');
