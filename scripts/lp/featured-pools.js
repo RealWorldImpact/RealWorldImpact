@@ -1,5 +1,9 @@
 import { safeTokenLogo } from './wallet-tokens.js';
 const RWI='robinhood_0xda2598c976e62e7e15dcca75169b404712e48b04';
+export function featuredLiquidityUrl(address){
+  if(typeof address!=='string'||!/^0x(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})$/.test(address))throw Error('Invalid featured pool');
+  return 'https://app.uniswap.org/positions/add/robinhood/'+address.toLowerCase();
+}
 export function rankFeaturedPools(pages){
   const pools=new Map();
   for(const body of pages){

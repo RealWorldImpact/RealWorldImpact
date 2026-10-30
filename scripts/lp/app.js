@@ -6,6 +6,7 @@ import { createLogoLoader } from './logo-loader.js';
 import { walletCandidates } from './wallet-providers.js';
 import { readWalletHoldings } from './wallet-balances.js';
 import { matchDollarAmounts } from './deposit-amounts.js';
+import { featuredLiquidityUrl } from './featured-pools.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -60,7 +61,7 @@ async function loadFeaturedPools(){
     if(!response.ok||!Array.isArray(body.pools))throw Error('Pool data unavailable');
     const pools=body.pools.filter(p=>/^0x(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(p.address));
     const money=value=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2}).format(value);
-    $('featuredPoolList').innerHTML=pools.length?pools.map(p=>'<article class="featured-pool"><div class="featured-pair"><div class="featured-icons"><img src="/assets/rwi-logo.webp" alt="RWI" width="32" height="32"><img data-featured-logo="'+p.address+'" alt="" width="32" height="32" hidden></div><div><h3>'+esc(p.name)+'</h3><p>'+esc(p.dex)+'</p></div></div><div class="featured-metrics"><div><span>24H VOLUME</span><strong>'+esc(money(p.volume24h))+'</strong></div><div><span>LIQUIDITY</span><strong>'+esc(money(p.liquidityUsd))+'</strong></div></div><a href="https://www.geckoterminal.com/robinhood/pools/'+p.address+'" target="_blank" rel="noopener">View pool ↗</a></article>').join(''):'<p class="help">No RWI pools have reported trading volume and liquidity in the last 24 hours.</p>';
+    $('featuredPoolList').innerHTML=pools.length?pools.map(p=>'<article class="featured-pool"><div class="featured-pair"><div class="featured-icons"><img src="/assets/rwi-logo.webp" alt="RWI" width="32" height="32"><img data-featured-logo="'+p.address+'" alt="" width="32" height="32" hidden></div><div><h3>'+esc(p.name)+'</h3><p>'+esc(p.dex)+'</p></div></div><div class="featured-metrics"><div><span>24H VOLUME</span><strong>'+esc(money(p.volume24h))+'</strong></div><div><span>LIQUIDITY</span><strong>'+esc(money(p.liquidityUsd))+'</strong></div></div><div class="featured-actions"><a class="primary-button" href="'+esc(featuredLiquidityUrl(p.address))+'" target="_blank" rel="noopener" title="Add liquidity to this exact pool on Uniswap">Add liquidity ↗</a><a href="https://www.geckoterminal.com/robinhood/pools/'+p.address+'" target="_blank" rel="noopener">View pool ↗</a></div></article>').join(''):'<p class="help">No RWI pools have reported trading volume and liquidity in the last 24 hours.</p>';
     for(const image of document.querySelectorAll('[data-featured-logo]')){
       const other=pools.find(p=>p.address===image.dataset.featuredLogo)?.other;if(!other)continue;
       const token={...other,address:[P.ZERO,'0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'].includes(other.address)?P.WETH:other.address};
