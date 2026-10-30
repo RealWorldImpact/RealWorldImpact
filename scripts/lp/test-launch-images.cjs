@@ -1,6 +1,10 @@
 const assert=require('node:assert/strict'),sharp=require('../../node_modules/sharp'),{Wallet,sha256,verifyMessage}=require('ethers');
 (async()=>{
  const {normalizeImage,createImageUploadHandler}=await import('./server/launch-image-upload.js');
+ const {createBlobImageStorage}=await import('./server/blob-image-storage.js'),{BlobNotFoundError}=await import('@vercel/blob');
+ const adapter=createBlobImageStorage({head:async()=>{throw new BlobNotFoundError()},list:async()=>({blobs:[]}),put:async(_path,_bytes,options)=>options});
+ assert.equal(await adapter.find('missing.png'),null,'SDK errors must use their class, not Error.name');
+ assert.equal((await adapter.put('image.png',Buffer.alloc(0))).allowOverwrite,false);
  const {imageUploadMessage,uploadedImageUrl,IMAGE_STORE_ORIGIN}=await import('./launch-image-policy.js');
  const png=await sharp({create:{width:1024,height:512,channels:4,background:{r:180,g:220,b:0,alpha:.5}}}).png().toBuffer();
  const normalized=await normalizeImage(png),m=await sharp(normalized.bytes).metadata();assert.equal(m.width,512);assert.equal(m.height,256);assert.equal(m.hasAlpha,true);assert.equal(m.exif,undefined);

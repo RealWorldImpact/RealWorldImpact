@@ -1,13 +1,14 @@
 import { createHash } from 'node:crypto';
 import sharp from 'sharp';
-import { verifyMessage, hashMessage, JsonRpcProvider, Contract } from 'ethers';
+import { verifyMessage, hashMessage, JsonRpcProvider, Contract, FetchRequest } from 'ethers';
 import { IMAGE_MAX_BYTES, IMAGE_MAX_PIXELS, imageKind, checkImageDimensions, imageUploadMessage, uploadedImageUrl } from '../launch-image-policy.js';
 const digest=bytes=>'0x'+createHash('sha256').update(bytes).digest('hex');
 const error=(message,status=400)=>Object.assign(Error(message),{status});
 export async function authorizeImage(address,message,signature){
   try{if(verifyMessage(message,signature).toLowerCase()===address)return true;}catch{}
   // Smart-contract wallets can use the standard EIP-1271 signature check.
-  const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',4663,{staticNetwork:true});
+  const connection=new FetchRequest('https://rpc.mainnet.chain.robinhood.com');connection.timeout=10000;
+  const rpc=new JsonRpcProvider(connection,4663,{staticNetwork:true});
   try{if(await rpc.getCode(address)==='0x')return false;return (await new Contract(address,['function isValidSignature(bytes32,bytes) view returns(bytes4)'],rpc).isValidSignature(hashMessage(message),signature))==='0x1626ba7e';}catch{return false;}finally{rpc.destroy();}
 }
 export async function normalizeImage(bytes){
@@ -51,7 +52,8 @@ export function createImageUploadHandler({storage,authorize=authorizeImage,clock
       let blob=await storage.find(pathname);
       if(!blob){
         const recent=await storage.list(prefix,8);if(recent.length>=8)throw error('This wallet has uploaded 8 images today. Reuse an uploaded image or try again tomorrow.',429);
-        try{blob=await storage.put(pathname,normalized.bytes);}catch(e){if(e.name!=='BlobAlreadyExistsError')throw e;blob=await storage.find(pathname);}
+        // Another request can finish the same immutable upload between head and put.
+        try{blob=await storage.put(pathname,normalized.bytes);}catch(e){blob=await storage.find(pathname);if(!blob)throw e;}
       }
       const url=uploadedImageUrl(blob?.url);if(!url)throw error('Image storage returned an unexpected address. Please try again.',503);
       await verifyPublic(url,normalized.bytes);

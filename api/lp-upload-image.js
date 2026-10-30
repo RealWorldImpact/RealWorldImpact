@@ -1,11 +1,8 @@
 import { head, list, put } from '@vercel/blob';
 import { createHash } from 'node:crypto';
 import { createImageUploadHandler } from '../scripts/lp/server/launch-image-upload.js';
-const storage={
-  async find(pathname){try{return await head(pathname);}catch(e){if(e.name==='BlobNotFoundError')return null;throw e;}},
-  async list(prefix,limit){return (await list({prefix,limit})).blobs;},
-  put(pathname,bytes){return put(pathname,bytes,{access:'public',contentType:'image/png',addRandomSuffix:false,allowOverwrite:false,cacheControlMaxAge:31536000});}
-};
+import { createBlobImageStorage } from '../scripts/lp/server/blob-image-storage.js';
+const storage=createBlobImageStorage({head,list,put});
 export default createImageUploadHandler({storage,
   allowedOrigins:['https://www.rwihood.org','https://rwihood.org',...(process.env.VERCEL_URL?['https://'+process.env.VERCEL_URL]:[])],
   async verifyPublic(url,expected){
