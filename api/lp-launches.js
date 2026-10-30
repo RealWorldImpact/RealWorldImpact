@@ -1,6 +1,7 @@
 import { LAUNCH_FACTORY } from '../scripts/lp/launch-config.js';
 import { LAUNCH_SELECTORS } from '../scripts/lp/launch-contract.js';
 import { decodeAbiString } from '../scripts/lp/token-logos.js';
+import curveRegistry from '../scripts/lp/server/launch-registry-v2.js';
 const RPC='https://rpc.mainnet.chain.robinhood.com';
 let saved=null;
 async function batch(calls){
@@ -11,6 +12,8 @@ async function batch(calls){
 const word=n=>BigInt(n).toString(16).padStart(64,'0');
 export default async function handler(req,res){
   if(req.method!=='GET')return res.status(405).json({error:'Method not allowed'});
+  if(req.query.version==='2')return curveRegistry(req,res);
+  if(req.query.version!==undefined&&req.query.version!=='1')return res.status(400).json({error:'Invalid launch version'});
   const raw=req.query.before;
   if(raw!==undefined&&(typeof raw!=='string'||!/^\d{1,10}$/.test(raw)))return res.status(400).json({error:'Invalid launch cursor'});
   if(!LAUNCH_FACTORY)return res.status(200).json({active:false,launches:[],total:0,next:null});

@@ -1,6 +1,6 @@
 import { Interface } from 'ethers';
-import { LAUNCH_V2_FACTORY as LAUNCH_FACTORY } from '../scripts/lp/launch-v2-config.js';
-import { LAUNCH_V2_ABI } from '../scripts/lp/launch-v2-contract.js';
+import { LAUNCH_V2_FACTORY as LAUNCH_FACTORY } from '../launch-v2-config.js';
+import { LAUNCH_V2_ABI } from '../launch-v2-contract.js';
 const factory=new Interface(LAUNCH_V2_ABI),tokenInterface=new Interface(['function name() view returns(string)','function symbol() view returns(string)','function logo() view returns(string)','function description() view returns(string)']);
 let saved=null;
 async function batch(calls){

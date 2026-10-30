@@ -45,7 +45,7 @@ export function createLaunchController({rpc,isBusy,getSession,getSigner,onFormCh
   async function load(append=false){
     const request=++sequence;$('launchesStatus').textContent=rows.length?'Updating launches…':'Loading the onchain launch registry…';
     try{
-      const response=await fetch('/api/lp-launches-v2'+(append&&next!==null?'?before='+encodeURIComponent(next):''),{signal:AbortSignal.timeout(15000)}),body=await response.json();
+      const response=await fetch('/api/lp-launches?version=2'+(append&&next!==null?'&before='+encodeURIComponent(next):''),{signal:AbortSignal.timeout(15000)}),body=await response.json();
       if(request!==sequence)return;if(!response.ok)throw Error(body.error||'Launches could not be loaded.');
       if(body.active===false){rows=[];next=null;render();$('launchesStatus').textContent='Preview · Launching opens after the one-time contract deployment.';return;}
       if(body.factory?.toLowerCase()!==LAUNCH_FACTORY?.toLowerCase()||!Array.isArray(body.launches))throw Error('The launch registry could not be verified.');

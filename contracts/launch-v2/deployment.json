@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "verifiedAt": "2026-10-30T05:32:07.158Z",
+  "chain": 4663,
+  "factory": "0xDD48b107aEA9666F19078aB4103E2384c31CF983",
+  "hook": "0xd354f9Cd070005a9e6A6D9E7D6F84EE34ea2a0cC",
+  "router": "0x5CCe510eE34b1F8f0b05A20691c6d3DA8Ed4e2ee",
+  "block": 101488112,
+  "transaction": "0x4741b4de414ddb381a9d1728a052c5c16c0a29d01a1fe15d697e6c722e78931b",
+  "runtimeHash": "0x51331e72a8d1ff555f3f268da23a5b2e0d4e1bebae2f3657e686707fc5fdf993",
+  "confirmations": 896,
+  "deployer": "0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5",
+  "hookSalt": "0x0000000000000000000000000000000000000000000000000000000000000345",
+  "hookRuntimeHash": "0xa194017d8aebffd89e9d7dbaea6744d532b1a282a4ec2bcac0112ba9ee87f821",
+  "routerRuntimeHash": "0x719582d3299bc2d82fb110a5476b07a250208005ca80dac9b2eea140d3e37eac",
+  "launchCount": 0,
+  "legacyLaunchCount": 0,
+  "checks": "Exact creation bytecode and constructor salt; successful zero-value receipt; full factory, hook and router runtimes; CREATE/CREATE2 addresses; factory bindings; hook permissions; canonical RWI/Uniswap references; supply/base fee; empty new and legacy registries. Read-only verification."
+}

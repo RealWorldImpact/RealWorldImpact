@@ -1,6 +1,6 @@
 # RWI curve launches — replacement deployment
 
-This build is prepared for a new deployment. `scripts/lp/launch-v2-config.js` deliberately has no live address until the human wallet owner deploys and the resulting contracts are independently verified. The original factory remains immutable at `0xdBfabE02ab31A4Ed0c8A77c375EaF597ce7619a8`. Do not substitute a localhost-fork address in live configuration.
+The human wallet owner deployed this build on Robinhood Chain at block **101488112**. The factory is `0xDD48b107aEA9666F19078aB4103E2384c31CF983`, the creator-fee hook is `0xd354f9Cd070005a9e6A6D9E7D6F84EE34ea2a0cC`, and the ETH router is `0x5CCe510eE34b1F8f0b05A20691c6d3DA8Ed4e2ee`. `deployment.json` records independent read-only verification of the exact creation bytecode, constructor salt, receipt, all three runtimes and their bindings. `scripts/lp/launch-v2-config.js` binds the page and registry to this verified deployment. Both the new and original registries had zero launches at activation verification. The original factory remains immutable at `0xdBfabE02ab31A4Ed0c8A77c375EaF597ce7619a8`; its source, deployment record and registry API are retained.
 
 ## Pons curve provenance
 
@@ -68,6 +68,6 @@ These tests hardcode localhost for writes. They deploy test contracts and exerci
 2. The helper predicts the new factory from the wallet nonce, mines the required hook-address flags (`0x20cc`), verifies creation-code hashes, estimates gas, and checks wallet/network/nonce again. A single human-approved transaction deploys factory, hook and router with zero ETH value. It does not launch a token.
 3. Pending details are saved before submission. On interruption use **Check deployment status** instead of deploying again. The helper verifies all three runtimes and their factory bindings.
 4. Independently verify the successful receipt, addresses, runtime hashes, fixed dependencies and empty initial registry. Save the public deployment record. Recheck the old factory's launch count before activation; if any legacy launches exist, preserve their registry and v1 trading/fee actions before switching the page.
-5. Only then populate `scripts/lp/launch-v2-config.js`, rebuild LP and setup, run the checks and publish. Keep v1 source, ABI, deployment record, configuration and registry API available. No live address is fabricated or inferred from a test deployment.
+5. Only then populate `scripts/lp/launch-v2-config.js`, rebuild LP and setup, run the checks and publish. Keep v1 source, ABI, deployment record, configuration and registry API available. This procedure is complete for the deployment above; the setup page disables further deployment when the live address is configured.
 
 No private key or signing service is stored by this project. The setup page is for the human wallet owner; automated tooling does not sign or submit a live deployment.
