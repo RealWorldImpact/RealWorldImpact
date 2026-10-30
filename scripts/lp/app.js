@@ -1,10 +1,11 @@
 import { JsonRpcProvider, BrowserProvider, Contract, getAddress, formatUnits, Interface } from 'ethers';
 import * as P from './protocol.js';
-import { sortHoldings, usdLabel } from './wallet-tokens.js';
+import { sortHoldings, usdLabel, holdingValue } from './wallet-tokens.js';
 import { tokenLogoCandidates } from './token-logos.js';
 import { createLogoLoader } from './logo-loader.js';
 import { walletCandidates } from './wallet-providers.js';
 import { readWalletHoldings } from './wallet-balances.js';
+import { percentageAmount } from './deposit-amounts.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -22,6 +23,27 @@ const logoMetadataInFlight=new Map();
 let stopTokenRowLogos=()=>{};
 let cancelSelectedLogo=null;
 let walletTokens=[],tokenRequest=0,tokenAbort=null,tokenListMessage='';
+const amountHoldings=new Map(),amountPrices=new Map();
+function renderAmountControls(){
+  for(const side of ['rwi','token']){
+    const address=side==='rwi'?P.RWI:$('tokenAddress').value.trim().toLowerCase(),held=amountHoldings.get(address);
+    const slider=$(side+'Percent'),percent=Number(slider.value)||0;
+    const price=walletTokens.find(t=>t.address===address)?.priceUsd??amountPrices.get(address)??null;
+    const symbol=side==='rwi'?'RWI':held?.symbol||'token';
+    slider.disabled=busy||!account||!held||held.balance===0n;
+    $(side+'PercentValue').textContent=percent+'%';slider.setAttribute('aria-valuetext',percent+'% of your '+symbol+' holdings');
+    $(side+'Amount').textContent=!account?'$0.00':held?usdLabel(percent===0?0n:holdingValue(percentageAmount(held.balance,percent),held.decimals,price)):'—';
+    $(side+'Available').textContent=!account?'Connect wallet to choose an amount.':held?'Available: '+usdLabel(holdingValue(held.balance,held.decimals,price)):'Loading wallet balance…';
+  }
+}
+function resetAmountControls(){amountHoldings.clear();$('rwiPercent').value='0';$('tokenPercent').value='0';renderAmountControls();}
+function selectedAmount(side){
+  const address=side==='rwi'?P.RWI:$('tokenAddress').value.trim().toLowerCase(),held=amountHoldings.get(address);
+  if(!held)throw Error('Wait for your wallet balances to load.');
+  const amount=percentageAmount(held.balance,Number($(side+'Percent').value));
+  if(amount<=0n||amount>=(1n<<128n))throw Error('Choose a positive amount for each token.');
+  return amount;
+}
 let pending=readStore('rwi-lp-transactions',[]);
 const discovered=new Map();
 function readStore(k,fallback){try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(v)?v:fallback;}catch{return fallback;}}
@@ -30,10 +52,10 @@ function idsKey(){return 'rwi-lp-positions-'+account?.toLowerCase();}
 function remember(id){const ids=readStore(idsKey(),[]);if(!ids.includes(id))saveStore(idsKey(),[id,...ids].slice(0,100));}
 function notice(msg,error=false){$('notice').textContent=msg;$('notice').className=error?'notice error':'notice';}
 function failure(e){if(e.code===4001||e.code==='ACTION_REJECTED')return 'Request cancelled in your wallet.';return e.shortMessage||e.reason||e.message||'The request failed. Try refreshing the chain data.';}
-function locked(v){busy=v;document.querySelectorAll('main input,main select,main button,#walletButton,#disconnect').forEach(el=>el.disabled=v);$('submitAction').disabled=v||!proposal;$('cancelReview').disabled=v;}
+function locked(v){busy=v;document.querySelectorAll('main input,main select,main button,#walletButton,#disconnect').forEach(el=>el.disabled=v);$('submitAction').disabled=v||!proposal;$('cancelReview').disabled=v;renderAmountControls();}
 function clearProposal(){proposal=null;$('reviewDialog').close();}
 function invalidate(){loadSeq++;loaded=null;clearProposal();$('poolStatus').textContent='Refresh pool data';$('poolPrice').textContent='—';$('poolId').textContent='—';$('poolLink').hidden=true;$('pairName').textContent='Token / RWI';$('poolBlock').textContent='Load to refresh chain data';}
-function resetWallet(){session++;resetTokens();account=null;wallet=null;positions.clear();$('walletButton').textContent='Connect wallet';$('disconnect').hidden=true;$('walletStatus').textContent='Connect to see balances and your positions.';$('positionList').innerHTML='<div class="empty-state">Connect your wallet to load your liquidity positions.</div>';clearProposal();renderActivity();}
+function resetWallet(){session++;resetTokens();account=null;wallet=null;renderAmountControls();positions.clear();$('walletButton').textContent='Connect wallet';$('disconnect').hidden=true;$('walletStatus').textContent='Connect to see balances and your positions.';$('positionList').innerHTML='<div class="empty-state">Connect your wallet to load your liquidity positions.</div>';clearProposal();renderActivity();}
 async function verifyContracts(){
   if(verified)return;
   const [chain,pool,permit]=await Promise.all([rpc.send('eth_chainId',[]),manager.poolManager(),manager.permit2()]);
@@ -66,7 +88,7 @@ async function loadPool(){
     const rwi=P.token(P.RWI,18,'RWI'),tokens=key.currency0.toLowerCase()===P.RWI?[rwi,other]:[other,rwi];
     const data=await snapshot(key,tokens);
     if(seq!==loadSeq||epoch!==session)return;
-    loaded=data;$('tokenAmountLabel').textContent=other.symbol+' amount';$('pairName').textContent=other.symbol+' / RWI';
+    loaded=data;$('tokenAmountLabel').textContent=other.symbol+' amount (USD)';$('pairName').textContent=other.symbol+' / RWI';
     $('poolStatus').textContent=data.exists?'Initialized pool':'New pool';$('poolId').textContent=data.id;$('poolLink').href='https://app.uniswap.org/explore/pools/robinhood/'+data.id;$('poolLink').hidden=!data.exists;
     $('poolPrice').textContent=data.exists?data.pool.priceOf(other).toSignificant(8)+' RWI / '+other.symbol:'Set by your two initial deposits';
     $('poolBlock').textContent='Read at block '+data.block.toLocaleString();
@@ -77,7 +99,13 @@ async function loadPool(){
 async function balances(data){
   const epoch=session,who=account;if(!who)return;
   const values=await Promise.all(data.tokens.map(t=>new Contract(t.address,P.ERC20,rpc).balanceOf(who)));
-  if(epoch!==session||who!==account)return;
+  if(epoch!==session||who!==account||loaded!==data)return;
+  data.tokens.forEach((t,i)=>amountHoldings.set(t.address.toLowerCase(),{balance:values[i],decimals:t.decimals,symbol:t.symbol}));renderAmountControls();
+  fetch('/api/lp-token-prices?addresses='+data.tokens.map(t=>t.address.toLowerCase()).join(','),{signal:AbortSignal.timeout(8000)}).then(async response=>{
+    if(!response.ok)return;const body=await response.json();if(epoch!==session||who!==account||loaded!==data)return;
+    for(const t of data.tokens){const address=t.address.toLowerCase(),price=body.prices?.[address];if(typeof price==='string'&&/^\d{1,60}(?:\.\d{1,60})?$/.test(price))amountPrices.set(address,price);}
+    renderAmountControls();
+  }).catch(()=>{});
   $('walletStatus').textContent=values.map((n,i)=>fmt(n,data.tokens[i].decimals)+' '+data.tokens[i].symbol).join(' · ');
 }
 
@@ -148,6 +176,7 @@ function observeTokenRowLogos(rows){
   return()=>{stopped=true;observer?.disconnect();root.removeEventListener('scroll',checkVisible);cancellations.forEach(cancel=>cancel());};
 }
 function resetTokens(){
+  resetAmountControls();
   stopTokenRowLogos();
   tokenRequest++;tokenAbort?.abort();tokenAbort=null;walletTokens=[];tokenListMessage='';
   $('walletTokenStatus').textContent='Connect your wallet to see holdings, highest USD value first.';$('walletTokenList').innerHTML='';$('tokenListNote').textContent='';$('tokenDialog').close();
@@ -173,7 +202,7 @@ async function loadWalletTokens(){
     if(!active())return;
     const {rows,failed}=await readWalletHoldings(body.tokens,who,request=>rpc.call(request));
     if(!active())return;
-    walletTokens=sortHoldings(rows);const unpriced=walletTokens.filter(t=>t.valueUsd===null).length;
+    walletTokens=sortHoldings(rows);renderAmountControls();const unpriced=walletTokens.filter(t=>t.valueUsd===null).length;
     tokenListMessage=(body.partial||failed?'Some holdings could not be loaded; enter a contract for a missing token. ':'')+(unpriced?unpriced+' token'+(unpriced===1?' has':'s have')+' no current USD price and '+(unpriced===1?'appears':'appear')+' last. ':'')+'USD values are estimates. Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'.';
     $('walletTokenStatus').textContent=walletTokens.length+' wallet token'+(walletTokens.length===1?'':'s')+' · sorted by value held in USD'+(body.partial||failed?' · partial list':'');
     renderWalletTokens();
@@ -271,7 +300,7 @@ async function reviewDeposit(event){
   try{
     if(!account)throw Error('Connect your wallet first.');const who=account,epoch=session;await signerFor(who,epoch);await loadPool();
     if(!loaded)throw Error('Pool data could not be loaded.');const data=loaded;
-    const other=data.tokens.find(t=>t.address.toLowerCase()!==P.RWI),r=P.amount($('rwiAmount').value,18),t=P.amount($('tokenAmount').value,other.decimals);
+    const other=data.tokens.find(t=>t.address.toLowerCase()!==P.RWI),r=selectedAmount('rwi'),t=selectedAmount('token');
     const budgets=data.key.currency0.toLowerCase()===P.RWI?[r,t]:[t,r];
     const live=await snapshot(data.key,data.tokens,budgets),slip=P.DEFAULT_SLIPPAGE_BPS;
     const {position,caps}=P.makeDeposit(live.pool,budgets,slip);
@@ -369,12 +398,12 @@ $('walletButton').onclick=()=>chooseWallet().catch(e=>notice(failure(e),true));
 $('disconnect').onclick=()=>{if(injected?.removeListener){injected.removeListener('accountsChanged',oldAccountListener);injected.removeListener('chainChanged',oldChainListener);injected.removeListener('disconnect',oldDisconnectListener);}injected=null;resetWallet();notice('Disconnected from this page. Existing token approvals remain onchain.');};
 $('closeWallet').onclick=()=>$('walletDialog').close();$('cancelReview').onclick=clearProposal;$('submitAction').onclick=execute;
 $('reviewDialog').addEventListener('cancel',e=>{if(busy)e.preventDefault();else clearProposal();});
-$('poolForm').onsubmit=reviewDeposit;$('loadPool').onclick=loadPool;$('tokenAddress').oninput=()=>{invalidate();$('tokenAmount').value='';$('tokenAmountLabel').textContent='Token amount';showSelectedToken();};$('fee').onchange=()=>{invalidate();loadPool();};
-['rwiAmount','tokenAmount'].forEach(id=>$(id).addEventListener('input',clearProposal));
+$('poolForm').onsubmit=reviewDeposit;$('loadPool').onclick=loadPool;$('tokenAddress').oninput=()=>{invalidate();$('tokenPercent').value='0';renderAmountControls();$('tokenAmountLabel').textContent='Token amount (USD)';showSelectedToken();};$('fee').onchange=()=>{invalidate();loadPool();};
+['rwiPercent','tokenPercent'].forEach(id=>$(id).addEventListener('input',()=>{clearProposal();renderAmountControls();}));
 $('refreshPositions').onclick=refreshPositions;$('importPosition').onclick=importPosition;
 $('positionList').onclick=e=>{const b=e.target.closest('[data-action]');if(b&&!busy)reviewPosition(b.dataset.id,b.dataset.action);};
 $('copyRwi').onclick=async()=>{try{await navigator.clipboard.writeText(getAddress(P.RWI));notice('RWI contract copied.');}catch{notice('Copy this contract: '+getAddress(P.RWI));}};
 $('openTokens').onclick=()=>{if(!account){chooseWallet().catch(e=>notice(failure(e),true));return;}$('tokenSearch').value='';renderWalletTokens();$('tokenDialog').showModal();};
 $('closeTokens').onclick=()=>$('tokenDialog').close();$('tokenDialog').addEventListener('close',()=>stopTokenRowLogos());$('refreshTokens').onclick=()=>loadWalletTokens();$('tokenSearch').oninput=renderWalletTokens;
-$('walletTokenList').onclick=e=>{const button=e.target.closest('[data-wallet-token]');if(!button||busy)return;const row=walletTokens.find(t=>t.address===button.dataset.walletToken);if(!row)return;invalidate();$('tokenAddress').value=row.address;$('tokenAmount').value='';$('tokenAmountLabel').textContent=row.symbol+' amount';showSelectedToken(row);$('tokenDialog').close();loadPool();};
-renderActivity();loadPool();
+$('walletTokenList').onclick=e=>{const button=e.target.closest('[data-wallet-token]');if(!button||busy)return;const row=walletTokens.find(t=>t.address===button.dataset.walletToken);if(!row)return;invalidate();$('tokenAddress').value=row.address;$('tokenPercent').value='0';renderAmountControls();$('tokenAmountLabel').textContent=row.symbol+' amount (USD)';showSelectedToken(row);$('tokenDialog').close();loadPool();};
+renderAmountControls();renderActivity();loadPool();

@@ -2,7 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
 const ethers=require('ethers');
 const who='0x2222222222222222222222222222222222222222';
 function harness(){
- const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{id,value:'',textContent:'',innerHTML:'',hidden:false,disabled:false,classList:{toggle(){}},addEventListener(){},close(){},showModal(){},append(){}});return nodes.get(id)};
+ const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{id,value:'',textContent:'',innerHTML:'',hidden:false,disabled:false,classList:{toggle(){}},addEventListener(){},setAttribute(){},close(){},showModal(){},append(){}});return nodes.get(id)};
  let chain='0x1237',accounts=[who],sendCount=0,callFail=false,estimateFail=false,revert=false,afterEstimate=()=>{},afterWait=()=>{},captured;
  const store=new Map(),hash='0x'+'a'.repeat(64);
  const signer={provider:{call:async()=>{if(callFail)throw Error('preflight failed');return '0x';}},estimateGas:async()=>{if(estimateFail)throw Error('estimate failed');afterEstimate();return 100n;},sendTransaction:async req=>{sendCount++;captured=req;return{hash,wait:async()=>{afterWait();if(revert)throw {receipt:{status:0},message:'reverted'};return {hash,status:1,logs:[]}}}}};
