@@ -49,6 +49,7 @@
 
 /* Keep every mobile featured card on the same header / metrics / actions grid. */
 @media(max-width:760px){
+  .featured-heading .text-button{flex-shrink:0;white-space:nowrap;}
   .featured-pool,.featured-pool:only-child{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;padding:18px;align-items:stretch;}
   .featured-pool .featured-pair{min-height:52px;align-items:center;}
   .featured-pool .featured-icons{width:62px;min-width:62px;}
