@@ -28,13 +28,13 @@ export async function normalizeImage(bytes){
     return {bytes:output.data,width:output.info.width,height:output.info.height};
   }catch(e){throw error(e.status?e.message:/at least|megapixels/.test(e.message)?e.message:'The image could not be read completely. Choose another file.');}
 }
-export function createImageUploadHandler({storage,authorize=authorizeImage,clock=Date.now,verifyPublic=async()=>{},allowedOrigins=['https://www.rwihood.org','https://rwihood.org']}={}){
+export function createImageUploadHandler({storage,authorize=authorizeImage,clock=Date.now,verifyPublic=async()=>{},onError=()=>{},allowedOrigins=['https://www.rwihood.org','https://rwihood.org']}={}){
   const rates=new Map(),saved=new Map();
   const rate=key=>{const now=clock(),entry=rates.get(key);if(entry&&now-entry.at<60000){if(entry.count++>=20)throw error('Too many upload attempts. Please wait a minute.',429);}else{if(rates.size>=1000)rates.delete(rates.keys().next().value);rates.set(key,{at:now,count:1});}};
   return async(req,res)=>{
     res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');
     if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
-    try{
+    let stage='validation';try{
       const origin=req.headers?.origin;if(origin&&!allowedOrigins.includes(origin))throw error('Upload from the RWI LP page.',403);
       if(!String(req.headers?.['content-type']||'').startsWith('application/json'))throw error('Invalid upload format.',415);
       if(Number(req.headers?.['content-length'])>4_300_000)throw error('Choose an image smaller than 3 MB.',413);
@@ -49,16 +49,16 @@ export function createImageUploadHandler({storage,authorize=authorizeImage,clock
       rate('wallet:'+address);
       const key=address+':'+sha256,existing=saved.get(key);if(existing&&clock()-existing.at<600000)return res.status(200).json(existing.body);
       const normalized=await normalizeImage(bytes),imageHash=digest(normalized.bytes).slice(2),day=new Date(issuedAt*1000).toISOString().slice(0,10),prefix='launch-images/v1/'+address+'/'+day+'/',pathname=prefix+imageHash+'.png';
-      let blob=await storage.find(pathname);
+      stage='storage-find';let blob=await storage.find(pathname);
       if(!blob){
-        const recent=await storage.list(prefix,8);if(recent.length>=8)throw error('This wallet has uploaded 8 images today. Reuse an uploaded image or try again tomorrow.',429);
+        stage='storage-list';const recent=await storage.list(prefix,8);if(recent.length>=8)throw error('This wallet has uploaded 8 images today. Reuse an uploaded image or try again tomorrow.',429);
         // Another request can finish the same immutable upload between head and put.
-        try{blob=await storage.put(pathname,normalized.bytes);}catch(e){blob=await storage.find(pathname);if(!blob)throw e;}
+        stage='storage-put';try{blob=await storage.put(pathname,normalized.bytes);}catch(e){blob=await storage.find(pathname);if(!blob)throw e;}
       }
       const url=uploadedImageUrl(blob?.url);if(!url)throw error('Image storage returned an unexpected address. Please try again.',503);
-      await verifyPublic(url,normalized.bytes);
+      stage='public-verification';await verifyPublic(url,normalized.bytes);
       const result={url,sha256:'0x'+imageHash,width:normalized.width,height:normalized.height,size:normalized.bytes.length};
       if(saved.size>=500)saved.delete(saved.keys().next().value);saved.set(key,{at:clock(),body:result});return res.status(200).json(result);
-    }catch(e){return res.status(e.status||503).json({error:e.status?e.message:'Image hosting is temporarily unavailable. Your token has not been launched. Please try again.'});}
+    }catch(e){if(!e.status||e.status>=500)onError(stage,e);return res.status(e.status||503).json({error:e.status?e.message:'Image hosting is temporarily unavailable. Your token has not been launched. Please try again.'});}
   };
 }
