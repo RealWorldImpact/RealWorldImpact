@@ -1,0 +1,241 @@
+{
+  "reviewedAt": "2026-10-30T23:41:53.776Z",
+  "status": "Local candidate validated; production release blocked",
+  "productionReady": false,
+  "liveWebsiteChanged": false,
+  "mainnetTransactionsSubmitted": 0,
+  "remaining": [
+    "Review and configure a manipulation-resistant production RWI/USD adapter; test source is not acceptable",
+    "Integrate and test the new API, user transaction previews, graduation lifecycle and automation",
+    "Independent review of the exact final contracts and oracle configuration before production deployment"
+  ],
+  "requirements": {
+    "startingFdvUsd": 5000,
+    "minimumGraduationFdvUsd": 50000,
+    "minimumActualPoolUsd": 5000,
+    "quoteRoundingHeadroomUsd": 0.01,
+    "oracleMaxAgeSeconds": 300,
+    "oracleMinWindowSeconds": 1800,
+    "eligibilityDelaySeconds": 300
+  },
+  "math": {
+    "testedAt": "2026-10-30T23:40:59.870Z",
+    "localOnly": true,
+    "termChecks": 8,
+    "solidityIntegerComparisons": 792,
+    "checks": "Initial and partially traded curves, exact minimal final fill, FDV and both thresholds, eight launch prices and all fees"
+  },
+  "economics": {
+    "testedAt": "2026-10-30T23:37:01.528Z",
+    "deterministicSeed": "0x431da32a",
+    "randomTradeChecks": 57888,
+    "feeBoundaryChecks": 41600,
+    "minimalFinalFillCases": 196,
+    "referenceScenarios": [
+      {
+        "launchRwiUsd": 0.00002728163605,
+        "subsequentPriceMultiple": 0.01,
+        "taxBps": 0,
+        "requiredNetRwi": 9163709960.129023,
+        "fdvUsd": 2359395.1164333043,
+        "poolUsd": 5000.0199999999995,
+        "soldPercent": 23.01740745063149,
+        "pooledPercent": 0.105959785310536,
+        "lockedPercent": 76.87663276405797,
+        "postGraduationFdvIfAllBuyersSellNoFees": 49.54281307367343,
+        "requiresMoreThanReferenceRwiTotalSupply": true
+      },
+      {
+        "launchRwiUsd": 0.00002728163605,
+        "subsequentPriceMultiple": 0.1,
+        "taxBps": 0,
+        "requiredNetRwi": 916370996.0129023,
+        "fdvUsd": 255895.01058484588,
+        "poolUsd": 5000.0199999999995,
+        "soldPercent": 22.101707885087155,
+        "pooledPercent": 0.9769670750071477,
+        "lockedPercent": 76.9213250399057,
+        "postGraduationFdvIfAllBuyersSellNoFees": 458.5639739407981,
+        "requiresMoreThanReferenceRwiTotalSupply": false
+      },
+      {
+        "launchRwiUsd": 0.00002728163605,
+        "subsequentPriceMultiple": 0.5,
+        "taxBps": 0,
+        "requiredNetRwi": 183274199.20258045,
+        "fdvUsd": 70877.2233983162,
+        "poolUsd": 5000.0199999999995,
+        "soldPercent": 18.78098620143087,
+        "pooledPercent": 3.5272403180220957,
+        "lockedPercent": 77.69177348054703,
+        "postGraduationFdvIfAllBuyersSellNoFees": 1771.9305849579052,
+        "requiresMoreThanReferenceRwiTotalSupply": false
+      },
+      {
+        "launchRwiUsd": 0.00002728163605,
+        "subsequentPriceMultiple": 1,
+        "taxBps": 0,
+        "requiredNetRwi": 91637099.60129023,
+        "fdvUsd": 49999.99999999999,
+        "poolUsd": 5000.0199999999995,
+        "soldPercent": 15.8114515463951,
+        "pooledPercent": 5.00002,
+        "lockedPercent": 79.1885284536049,
+        "postGraduationFdvIfAllBuyersSellNoFees": 2886.076962755087,
+        "requiresMoreThanReferenceRwiTotalSupply": false
+      },
+      {
+        "launchRwiUsd": 0.00002728163605,
+        "subsequentPriceMultiple": 2,
+        "taxBps": 0,
+        "requiredNetRwi": 52384430.757746965,
+        "fdvUsd": 49999.99999999999,
+        "poolUsd": 5716.531898477114,
+        "soldPercent": 12.782553920540751,
+        "pooledPercent": 5.716531898477114,
+        "lockedPercent": 81.50091418098214,
+        "postGraduationFdvIfAllBuyersSellNoFees": 4774.575140626314,
+        "requiresMoreThanReferenceRwiTotalSupply": false
+      },
+      {
+        "launchRwiUsd": 0.00002728163605,
+        "subsequentPriceMultiple": 10,
+        "taxBps": 0,
+        "requiredNetRwi": 9163709.960129023,
+        "fdvUsd": 73960.49894151541,
+        "poolUsd": 5000.0199999999995,
+        "soldPercent": 4.11108851459224,
+        "pooledPercent": 3.3801962341775083,
+        "lockedPercent": 92.50871525123026,
+        "postGraduationFdvIfAllBuyersSellNoFees": 15058.130236662924,
+        "requiresMoreThanReferenceRwiTotalSupply": false
+      },
+      {
+        "launchRwiUsd": 0.00002728163605,
+        "subsequentPriceMultiple": 100,
+        "taxBps": 0,
+        "requiredNetRwi": 916370.9960129022,
+        "fdvUsd": 521856.54883566697,
+        "poolUsd": 5000.0199999999995,
+        "soldPercent": 0.4894193937836838,
+        "pooledPercent": 0.47906076978009815,
+        "lockedPercent": 99.03151983643622,
+        "postGraduationFdvIfAllBuyersSellNoFees": 127688.23798204513,
+        "requiresMoreThanReferenceRwiTotalSupply": false
+      }
+    ],
+    "coverage": "8 launch prices; 0.01x through 100x subsequent RWI movement; all four creator fee settings; integer dust; reserve/fee segregation; no redemption of phantom reserves; product monotonicity",
+    "limitations": "Algebraic scenarios treat RWI moves as exogenous. They are not predictions and do not measure oracle integrity, availability, executable route depth, gas, or MEV."
+  },
+  "fork": {
+    "concurrentLaunchIsolation": true,
+    "reentrantEthClaimRejected": true,
+    "rejectedRecipientRollback": true,
+    "implementation": {
+      "factoryRuntimeHash": "0x31a277d2fbc47bf0b9040a3667141661215c87bd6cababfd7ee3002b3b142780",
+      "factoryCreationHash": "0xdd198c4a2b3cf125f0f66b581db037b32b0807249feb8511a42defd58e93827b",
+      "hookRuntimeHash": "0x3202b062faae6928b4e8e26b212cbf2ceb7df9b6db41369b80a5fc546ec615ab",
+      "routerRuntimeHash": "0x63234bc7225d6913588a8826daf14ab8e0f5f75cff16a240305b15059514efcc"
+    },
+    "referencePriceGraduation": {
+      "rwiUsd": "27281636050000",
+      "netRwi": "91637099601290223984010794"
+    },
+    "testedAt": "2026-10-30T23:39:35.181Z",
+    "localOnly": true,
+    "fork": {
+      "chainId": 4663,
+      "forkBlockNumber": 102116970,
+      "forkBlockHash": "0x3e5775ed5f52604079865e9ac62014aa08fd9356cc4f1524afed712c4471d577"
+    },
+    "oracle": "Mutable test double; not a production feed",
+    "cases": [
+      {
+        "tax": 0,
+        "token0": false,
+        "actualPoolUsd": "5000020000000000000395",
+        "readyReserve": "250001000000000000115478",
+        "position": "4107376"
+      },
+      {
+        "tax": 0,
+        "token0": true,
+        "actualPoolUsd": "5000020000000000000395",
+        "readyReserve": "250001000000000000115477",
+        "position": "4107376"
+      },
+      {
+        "tax": 100,
+        "token0": false,
+        "actualPoolUsd": "5000020000000000000395",
+        "readyReserve": "250001000000000000115478",
+        "position": "4107376"
+      },
+      {
+        "tax": 100,
+        "token0": true,
+        "actualPoolUsd": "5000020000000000000395",
+        "readyReserve": "250001000000000000115478",
+        "position": "4107376"
+      },
+      {
+        "tax": 200,
+        "token0": false,
+        "actualPoolUsd": "5000020000000000000395",
+        "readyReserve": "250001000000000000115477",
+        "position": "4107376"
+      },
+      {
+        "tax": 200,
+        "token0": true,
+        "actualPoolUsd": "5000020000000000000395",
+        "readyReserve": "250001000000000000115477",
+        "position": "4107376"
+      },
+      {
+        "tax": 300,
+        "token0": false,
+        "actualPoolUsd": "5000020000000000000395",
+        "readyReserve": "250001000000000000115477",
+        "position": "4107376"
+      },
+      {
+        "tax": 300,
+        "token0": true,
+        "actualPoolUsd": "5000020000000000000395",
+        "readyReserve": "250001000000000000115477",
+        "position": "4107376"
+      }
+    ],
+    "oracleFailureCases": 10,
+    "failedGraduationRedemption": true,
+    "currentPriceRechecked": true,
+    "zeroFundingPriceRiseRejected": true,
+    "exactOutputSwaps": 16,
+    "claimRollback": true,
+    "donationIsolation": true,
+    "mainnetTransactions": 0
+  },
+  "compiler": {
+    "version": "0.8.26+commit.8a97fa7a.Emscripten.clang",
+    "optimizerRuns": 200,
+    "viaIR": true,
+    "evmVersion": "cancun",
+    "factoryRuntimeBytes": 22117,
+    "factoryCreationBytes": 34963,
+    "factoryRuntimeTemplateHash": "0x6342856e509e40dbd8b8d85c31eaeb2405318b4da7694e8c473e750df31fd305",
+    "immutableNote": "Factory deployed runtime includes the oracle address; template hash alone is not a deployed-code check."
+  },
+  "sourceSha256": {
+    "CurveEconomics.sol": "476098237c9c9a0416be22df6e01981651dd11372d647a4b296ad00e86a8a68d",
+    "IRwiUsdOracle.sol": "3c30966260e93f071354639dcb62d870bd8d75a94ce7c2177831f722c41490f2",
+    "RWILaunchV4.sol": "f567e3e3a68631639c0ce989e5f1cd8ff8e35f4d33791f28dbe3d3e8ac418fcd",
+    "RWICreatorHookV4.sol": "1514e85767890d6b0594749f75bd6105c79e11288491b682e88b1318f1a0d36c",
+    "TestSupport.sol": "9f3b68370917625e26ad9fb9857785448f0da372bce61bd2786d08256166af04",
+    "compile.cjs": "69a6217c11a4b8ae13b4f5e585a393a655cf61985f4f823aabef353e6b6615f3",
+    "test-fork.cjs": "d4b789c75444c794d0d8a87b7d44e0baae77c4363de2531a93ac18afaeaa1c6f",
+    "test-economics.cjs": "f95b0edc1591b2fcc180e20f4a8b916da7e51202f2959bffbe054d19e8fb3061",
+    "test-solidity-math.cjs": "b9a947bc426a1153ccc9029182993b56f6f29bc29e20502ed67459d7456e57ed",
+    "economics-model.cjs": "f5778d45064dbc6540966d480f2fc167c314913b0fb213ce853898c9653761bd"
+  }
+}
