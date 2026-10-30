@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-10-30T22:39:13.221Z",
+  "block": 102083065,
+  "directoryCount": 58,
+  "rwiFeeds": [],
+  "ethUsdFeed": {
+    "address": "0x78F3556b67E17Df817D51Ef5a990cDaF09E8d3A9",
+    "description": "ETH / USD",
+    "decimals": 8,
+    "price": "2236.64181548",
+    "updatedAt": 1793389830,
+    "ageSeconds": 10122,
+    "publishedHeartbeatSeconds": 86400,
+    "deviationPercent": 0.5
+  },
+  "mainPool": {
+    "poolId": "0xa72a9de2c6e3db34308a8ae61e927ceffea630218ca1e712b70b61341c3e99a1",
+    "rwiSpotUsd": 0.000027245718869551743,
+    "activeLiquidity": "29469153199307518854288",
+    "routes": [
+      {
+        "rwi": "1000000",
+        "quotedEth": "0.012471870907341808",
+        "usdAtEthFeed": 27.895107988629178
+      },
+      {
+        "rwi": "10000000",
+        "quotedEth": "0.129086233074137869",
+        "usdAtEthFeed": 288.7196666964141
+      },
+      {
+        "rwi": "91636733.054358006509657253",
+        "quotedEth": "1.733569952809682317",
+        "usdAtEthFeed": 3877.375046513826
+      },
+      {
+        "rwi": "100000000",
+        "quotedEth": "1.986522607392587198",
+        "usdAtEthFeed": 4443.139531090619
+      },
+      {
+        "rwi": "458183665",
+        "quoteUnavailable": true
+      }
+    ]
+  },
+  "note": "Read-only snapshot. Spot and execution prices are not manipulation-resistant oracle prices. No mainnet transaction was submitted."
+}

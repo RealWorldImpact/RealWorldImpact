@@ -1,0 +1,240 @@
+{
+  "checkedAt": "2026-10-30T22:47:32.473Z",
+  "deploymentSuitable": false,
+  "reason": "Fixed RWI graduation fails the live USD requirement.",
+  "referencePrice": "0.00002728163605",
+  "capRwi": 9999256.417417528,
+  "scenarioMethod": "Independent constant-product algebra, ignoring sub-wei rounding and fees; after-launch price changes are exogenous scenarios, not predictions.",
+  "scenarios": [
+    {
+      "rwiPriceMultiplier": 0.01,
+      "preparedV3GraduationFdvUsd": 500,
+      "netRwiForLive50kWithSameCurve": 141612245.77868757,
+      "exceedsPreparedReserveCap": true,
+      "zeroBuyersCanMeetPriceTarget": false,
+      "indicativePoolUsdAtLiveTarget": 77.26827499114607
+    },
+    {
+      "rwiPriceMultiplier": 0.1,
+      "preparedV3GraduationFdvUsd": 5000,
+      "netRwiForLive50kWithSameCurve": 41619681.60451229,
+      "exceedsPreparedReserveCap": true,
+      "zeroBuyersCanMeetPriceTarget": false,
+      "indicativePoolUsdAtLiveTarget": 227.09060121023685
+    },
+    {
+      "rwiPriceMultiplier": 0.5,
+      "preparedV3GraduationFdvUsd": 25000,
+      "netRwiForLive50kWithSameCurve": 16056576.99274019,
+      "exceedsPreparedReserveCap": true,
+      "zeroBuyersCanMeetPriceTarget": false,
+      "indicativePoolUsdAtLiveTarget": 438.04968972474137
+    },
+    {
+      "rwiPriceMultiplier": 1,
+      "preparedV3GraduationFdvUsd": 50000,
+      "netRwiForLive50kWithSameCurve": 9999256.41741753,
+      "exceedsPreparedReserveCap": false,
+      "zeroBuyersCanMeetPriceTarget": false,
+      "indicativePoolUsdAtLiveTarget": 545.5921487012239
+    },
+    {
+      "rwiPriceMultiplier": 2,
+      "preparedV3GraduationFdvUsd": 100000,
+      "netRwiForLive50kWithSameCurve": 5716083.962786078,
+      "exceedsPreparedReserveCap": false,
+      "zeroBuyersCanMeetPriceTarget": false,
+      "indicativePoolUsdAtLiveTarget": 623.7764892158862
+    },
+    {
+      "rwiPriceMultiplier": 5,
+      "preparedV3GraduationFdvUsd": 250000,
+      "netRwiForLive50kWithSameCurve": 1915492.9535821122,
+      "exceedsPreparedReserveCap": false,
+      "zeroBuyersCanMeetPriceTarget": false,
+      "indicativePoolUsdAtLiveTarget": 522.5778161596672
+    },
+    {
+      "rwiPriceMultiplier": 10,
+      "preparedV3GraduationFdvUsd": 500000,
+      "netRwiForLive50kWithSameCurve": 0,
+      "exceedsPreparedReserveCap": false,
+      "zeroBuyersCanMeetPriceTarget": true,
+      "indicativePoolUsdAtLiveTarget": 0
+    },
+    {
+      "rwiPriceMultiplier": 100,
+      "preparedV3GraduationFdvUsd": 5000000,
+      "netRwiForLive50kWithSameCurve": 0,
+      "exceedsPreparedReserveCap": false,
+      "zeroBuyersCanMeetPriceTarget": true,
+      "indicativePoolUsdAtLiveTarget": 0
+    }
+  ],
+  "newLaunches": [
+    {
+      "rwiPriceMultiplier": 0.1,
+      "netRwi": 9999256.417417528,
+      "netReserveUsd": 27.27960743506119,
+      "poolUsd": 54.55921487012238,
+      "soldPercent": 0.172531,
+      "lockedPercent": 99.772909
+    },
+    {
+      "rwiPriceMultiplier": 1,
+      "netRwi": 9999256.417417528,
+      "netReserveUsd": 272.7960743506119,
+      "poolUsd": 545.5921487012238,
+      "soldPercent": 1.725313,
+      "lockedPercent": 97.729093
+    },
+    {
+      "rwiPriceMultiplier": 10,
+      "netRwi": 9999256.417417528,
+      "netReserveUsd": 2727.960743506119,
+      "poolUsd": 5455.921487012238,
+      "soldPercent": 17.253138,
+      "lockedPercent": 77.290939
+    },
+    {
+      "rwiPriceMultiplier": 100,
+      "netRwi": 3962881.214685032,
+      "netReserveUsd": 10811.388300841896,
+      "poolUsd": 21622.776601683792,
+      "soldPercent": 68.377223,
+      "lockedPercent": 9.999999
+    },
+    {
+      "rwiPriceMultiplier": 1000,
+      "netRwi": 396288.1214685032,
+      "netReserveUsd": 10811.388300841896,
+      "poolUsd": 21622.776601683792,
+      "soldPercent": 68.377223,
+      "lockedPercent": 9.999999
+    }
+  ],
+  "churn": [
+    {
+      "additionalTaxBps": 0,
+      "roundTrips": 1000,
+      "grossRwiVolume": "100494999999999999999000",
+      "netRwiReserve": "1000",
+      "totalFeesRwi": "1004949999999999999000",
+      "creatorFeesRwi": "0",
+      "graduates": false
+    },
+    {
+      "additionalTaxBps": 100,
+      "roundTrips": 1000,
+      "grossRwiVolume": "99989999999999999999000",
+      "netRwiReserve": "1000",
+      "totalFeesRwi": "1999799999999999998000",
+      "creatorFeesRwi": "999899999999999999000",
+      "graduates": false
+    },
+    {
+      "additionalTaxBps": 200,
+      "roundTrips": 1000,
+      "grossRwiVolume": "99484999999999999999000",
+      "netRwiReserve": "1000",
+      "totalFeesRwi": "2984549999999999998000",
+      "creatorFeesRwi": "1989699999999999999000",
+      "graduates": false
+    },
+    {
+      "additionalTaxBps": 300,
+      "roundTrips": 1000,
+      "grossRwiVolume": "98979999999999999999000",
+      "netRwiReserve": "1000",
+      "totalFeesRwi": "3959199999999999998000",
+      "creatorFeesRwi": "2969399999999999999000",
+      "graduates": false
+    }
+  ],
+  "currentDistribution": {
+    "soldPercent": "1.725313",
+    "poolPercent": "0.545592",
+    "lockedPercent": "97.729093",
+    "nonPermanentlyLockedValueAt50k": 1135.4534999999944
+  },
+  "revisedRequirements": {
+    "startingFdvUsd": 5000,
+    "graduationFdvUsd": 50000,
+    "minimumPoolUsd": 5000,
+    "minimumQuoteUsd": 2500,
+    "liveUsdOracleRequired": true,
+    "oracleNotImplemented": true
+  },
+  "candidateUnchangedPriceAllocation": {
+    "initialInventoryPercent": 23.123764778713216,
+    "soldPercent": 15.811388300841895,
+    "poolPercent": 5,
+    "lockedPercent": 79.1886116991581
+  },
+  "revisedScenarios": [
+    {
+      "rwiPriceMultiplier": 0.01,
+      "minimumRwiFromLiquidityAlone": 9163673305.4358,
+      "netRwiAtBothConditions": 9163673305.4358,
+      "graduationFdvUsd": 2359395.1164333043,
+      "poolUsd": 5000,
+      "limitingCondition": "liquidity"
+    },
+    {
+      "rwiPriceMultiplier": 0.1,
+      "minimumRwiFromLiquidityAlone": 916367330.5435799,
+      "netRwiAtBothConditions": 916367330.5435799,
+      "graduationFdvUsd": 255895.01058484585,
+      "poolUsd": 5000,
+      "limitingCondition": "liquidity"
+    },
+    {
+      "rwiPriceMultiplier": 0.5,
+      "minimumRwiFromLiquidityAlone": 183273466.108716,
+      "netRwiAtBothConditions": 183273466.108716,
+      "graduationFdvUsd": 70877.22339831622,
+      "poolUsd": 5000,
+      "limitingCondition": "liquidity"
+    },
+    {
+      "rwiPriceMultiplier": 1,
+      "minimumRwiFromLiquidityAlone": 91636733.054358,
+      "netRwiAtBothConditions": 91636733.054358,
+      "graduationFdvUsd": 50000.00000000001,
+      "poolUsd": 5000,
+      "limitingCondition": "liquidity"
+    },
+    {
+      "rwiPriceMultiplier": 2,
+      "minimumRwiFromLiquidityAlone": 45818366.527179,
+      "netRwiAtBothConditions": 52384221.22086208,
+      "graduationFdvUsd": 50000.00000000001,
+      "poolUsd": 5716.509032440984,
+      "limitingCondition": "price"
+    },
+    {
+      "rwiPriceMultiplier": 5,
+      "minimumRwiFromLiquidityAlone": 18327346.610871598,
+      "netRwiAtBothConditions": 18327346.610871598,
+      "graduationFdvUsd": 51298.22128134703,
+      "poolUsd": 4999.999999999999,
+      "limitingCondition": "liquidity"
+    },
+    {
+      "rwiPriceMultiplier": 10,
+      "minimumRwiFromLiquidityAlone": 9163673.305435799,
+      "netRwiAtBothConditions": 9163673.305435799,
+      "graduationFdvUsd": 73960.49894151541,
+      "poolUsd": 4999.999999999999,
+      "limitingCondition": "liquidity"
+    },
+    {
+      "rwiPriceMultiplier": 100,
+      "minimumRwiFromLiquidityAlone": 916367.33054358,
+      "netRwiAtBothConditions": 916367.33054358,
+      "graduationFdvUsd": 521856.548835667,
+      "poolUsd": 5000,
+      "limitingCondition": "liquidity"
+    }
+  ]
+}

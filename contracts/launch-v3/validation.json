@@ -1,6 +1,6 @@
 {
   "checkedAt": "2026-10-30T22:25:56.157Z",
-  "status": "Prepared, not deployed or activated",
+  "status": "Superseded: deployment blocked after live-USD economic review",
   "localRuntimeChecks": {
     "factory": {
       "creationHash": "0x09fe5fb76a13a4fd536a42d432535d81381f72003af59990d4c63e5ac08763df",
@@ -71,5 +71,13 @@
     "soldPercent": "1.725313",
     "poolPercent": "0.545592",
     "lockedPercent": "97.729093"
-  }
+  },
+  "revisedRequirements": {
+    "startingFdvUsd": 5000,
+    "graduationMinimumFdvUsd": 50000,
+    "minimumPoolLiquidityUsd": 5000,
+    "liveRwiUsdPriceRequired": true
+  },
+  "economicAcceptance": false,
+  "economicReview": "ECONOMIC-REVIEW.md"
 }

@@ -1,6 +1,8 @@
 # RWI launches — bounded-reserve curve (V3)
 
-**Prepared replacement; not activated.** The deployed V2 contracts are immutable. `scripts/lp/launch-v3-config.js` intentionally has no address until a human deploys this build and its receipt, creation input, runtime code and dependencies are independently verified. V1/V2 sources, deployment records and registry API versions remain available. Check their launch counts again before activating V3; any existing launches must retain trading, rewards and public-profile access.
+**SUPERSEDED — DO NOT DEPLOY.** The economic review found this build does not meet the revised requirement: live USD valuation of at least $50,000 **and** at least $5,000 total pool liquidity. Its setup page blocks deployment. See [the economic review](ECONOMIC-REVIEW.md). Previous implementation tests below remain historical evidence, not approval of the revised economics.
+
+The deployed V2 contracts are immutable. `scripts/lp/launch-v3-config.js` remains empty. V1/V2 sources, deployment records and registry API versions are retained. No replacement has been activated.
 
 ## Targets and distribution
 
