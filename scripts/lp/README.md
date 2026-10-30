@@ -47,3 +47,5 @@ The bundled WETH icon is the sharp asset from [Uniswap's WETH asset entry](https
 `test-logo-loader.cjs` verifies parallel sources, cached results, sharp-image preference, cancellation and failed sources. The wallet harness verifies that the initial logo starts while pool/metadata promises are still pending.
 
 The token picker uses the same thin lime scrollbar styling as the homepage receipts and dark Vote dialogs. List rows use the shared high-resolution logo loader and cache. IntersectionObserver starts images only for visible/nearby rows; missing initial sources can use the shared address-matched metadata resolver. Closing, searching, refreshing or changing wallets cancels detached row updates. The list flexes to fit the dialog before an outer scrollbar is needed.
+
+The add-liquidity form applies full-range positions and 50 bps (0.5%) slippage automatically, matching the Uniswap v4 SDK liquidity example at https://developers.uniswap.org/docs/liquidity/overview. There are no slippage or range controls in the form. Deposit and withdrawal previews still show the protection and spending limits before signing.

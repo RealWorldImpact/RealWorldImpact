@@ -4,6 +4,8 @@ import { TickMath, nearestUsableTick, encodeSqrtRatioX96 } from '@uniswap/v3-sdk
 import { getAddress, parseUnits, formatUnits, AbiCoder, keccak256 } from 'ethers';
 
 export const CHAIN = 4663;
+// Uniswap's v4 liquidity SDK example uses Percent(50, 10_000), or 0.5%.
+export const DEFAULT_SLIPPAGE_BPS = 50;
 export const RWI = '0xda2598c976e62e7e15dcca75169b404712e48b04';
 export const WETH = '0x0bd7d308f8e1639fab988df18a8011f41eacad73';
 export const ZERO = '0x0000000000000000000000000000000000000000';
@@ -56,7 +58,7 @@ export function removeCall(position, id, percentage, slip, deadline) {
   if(!Number.isInteger(percentage)||percentage<1||percentage>100)throw Error('Choose 1% to 100%.');
   return V4PositionManager.removeCallParameters(position,{tokenId:id,liquidityPercentage:new Percent(percentage,100),slippageTolerance:new Percent(slip,10000),deadline:String(deadline),burnToken:false});
 }
-export function collectCall(position,id,account,deadline) {return V4PositionManager.collectCallParameters(position,{tokenId:id,recipient:account,slippageTolerance:new Percent(100,10000),deadline:String(deadline)});}
+export function collectCall(position,id,account,deadline) {return V4PositionManager.collectCallParameters(position,{tokenId:id,recipient:account,slippageTolerance:new Percent(DEFAULT_SLIPPAGE_BPS,10000),deadline:String(deadline)});}
 export function unpackTicks(info) {const signed=n=>Number(BigInt.asIntN(24,n));return [signed((info>>8n)&0xffffffn),signed((info>>32n)&0xffffffn)];}
 export function ownedPosition(pool,liquidity,info) {const [tickLower,tickUpper]=unpackTicks(info);return new Position({pool,liquidity:liquidity.toString(),tickLower,tickUpper});}
 export { formatUnits, Percent, Position };

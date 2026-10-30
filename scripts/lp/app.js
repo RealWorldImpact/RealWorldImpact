@@ -280,7 +280,7 @@ async function reviewDeposit(event){
     if(!loaded)throw Error('Pool data could not be loaded.');const data=loaded;
     const other=data.tokens.find(t=>t.address.toLowerCase()!==P.RWI),r=P.amount($('rwiAmount').value,18),t=P.amount($('tokenAmount').value,other.decimals);
     const budgets=data.key.currency0.toLowerCase()===P.RWI?[r,t]:[t,r];
-    const live=await snapshot(data.key,data.tokens,budgets),slip=Number($('slippage').value);
+    const live=await snapshot(data.key,data.tokens,budgets),slip=P.DEFAULT_SLIPPAGE_BPS;
     const {position,caps}=P.makeDeposit(live.pool,budgets,slip);
     const balances=await Promise.all(data.tokens.map(t=>new Contract(t.address,P.ERC20,rpc).balanceOf(who)));
     if(balances.some((n,i)=>n<caps[i]))throw Error('Your wallet does not have enough tokens for this deposit.');
@@ -329,7 +329,7 @@ async function refreshPositions(){
 }
 async function reviewPosition(id,kind){
   locked(true);try{
-    const p=await readPosition(id),percentage=Number($('withdrawPercent').value),slip=Number($('slippage').value);await signerFor(p.who,p.epoch);
+    const p=await readPosition(id),percentage=Number($('withdrawPercent').value),slip=P.DEFAULT_SLIPPAGE_BPS;await signerFor(p.who,p.epoch);
     if(kind==='remove'&&p.liquidity===0n)throw Error('This position has no remaining liquidity.');
     const rows=[['Position',id],['Network','Robinhood Chain (4663)'],['Recipient',p.who],['Pool ID',p.live.id]];
     if(kind==='remove'){
@@ -377,7 +377,7 @@ $('disconnect').onclick=()=>{if(injected?.removeListener){injected.removeListene
 $('closeWallet').onclick=()=>$('walletDialog').close();$('cancelReview').onclick=clearProposal;$('submitAction').onclick=execute;
 $('reviewDialog').addEventListener('cancel',e=>{if(busy)e.preventDefault();else clearProposal();});
 $('poolForm').onsubmit=reviewDeposit;$('loadPool').onclick=loadPool;$('tokenAddress').oninput=()=>{invalidate();$('tokenAmount').value='';$('tokenAmountLabel').textContent='Token budget';showSelectedToken();};$('fee').onchange=invalidate;
-['rwiAmount','tokenAmount','slippage'].forEach(id=>$(id).addEventListener('input',clearProposal));
+['rwiAmount','tokenAmount'].forEach(id=>$(id).addEventListener('input',clearProposal));
 $('refreshPositions').onclick=refreshPositions;$('importPosition').onclick=importPosition;
 $('positionList').onclick=e=>{const b=e.target.closest('[data-action]');if(b&&!busy)reviewPosition(b.dataset.id,b.dataset.action);};
 $('copyRwi').onclick=async()=>{try{await navigator.clipboard.writeText(getAddress(P.RWI));notice('RWI contract copied.');}catch{notice('Copy this contract: '+getAddress(P.RWI));}};
