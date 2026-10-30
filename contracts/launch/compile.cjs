@@ -1,10 +1,13 @@
 const fs=require('fs'),path=require('path'),solc=require('solc');
-const input={language:'Solidity',sources:{'RWILaunchFactory.sol':{content:fs.readFileSync(path.join(__dirname,'RWILaunchFactory.sol'),'utf8')}},settings:{optimizer:{enabled:true,runs:200},viaIR:true,evmVersion:'cancun',outputSelection:{'*':{'*':['abi','evm.bytecode.object','evm.deployedBytecode.object']}}}};
-if(process.argv.includes('--test'))input.sources['SwapTest.sol']={content:fs.readFileSync(path.join(__dirname,'SwapTest.sol'),'utf8')};
-const output=JSON.parse(solc.compile(JSON.stringify(input),{import:name=>{try{return{contents:fs.readFileSync(path.join(__dirname,'node_modules',name),'utf8')}}catch{return{error:'Missing import '+name}}}}));
+const source=file=>fs.readFileSync(file,'utf8').replace(/\r\n/g,'\n');
+const input={language:'Solidity',sources:{'RWILaunchFactory.sol':{content:source(path.join(__dirname,'RWILaunchFactory.sol'))}},settings:{optimizer:{enabled:true,runs:200},viaIR:true,evmVersion:'cancun',outputSelection:{'*':{'*':['abi','evm.bytecode.object','evm.deployedBytecode.object']}}}};
+if(process.argv.includes('--test'))input.sources['SwapTest.sol']={content:source(path.join(__dirname,'SwapTest.sol'))};
+const output=JSON.parse(solc.compile(JSON.stringify(input),{import:name=>{try{return{contents:source(path.join(__dirname,'node_modules',name))}}catch{return{error:'Missing import '+name}}}}));
 for(const error of output.errors||[])console.log(error.formattedMessage);
 if(output.errors?.some(e=>e.severity==='error'))process.exit(1);
 fs.mkdirSync(path.join(__dirname,'artifacts'),{recursive:true});
+// Keep a complete, line-ending-stable compiler input for explorer verification.
+fs.writeFileSync(path.join(__dirname,'artifacts/standard-input.json'),JSON.stringify({...input,sources:Object.fromEntries(Object.keys(output.sources).map(name=>[name,{content:input.sources[name]?.content??source(path.join(__dirname,'node_modules',name))}]))}));
 for(const [name,c]of Object.entries({...output.contracts['RWILaunchFactory.sol'],...output.contracts['SwapTest.sol']}))fs.writeFileSync(path.join(__dirname,'artifacts',name+'.json'),JSON.stringify({abi:c.abi,bytecode:'0x'+c.evm.bytecode.object,deployedBytecode:'0x'+c.evm.deployedBytecode.object}));
 const c=output.contracts['RWILaunchFactory.sol'].RWILaunchFactory;console.log('Factory runtime bytes:',c.evm.deployedBytecode.object.length/2);
 if(c.evm.deployedBytecode.object.length/2>24576||c.evm.bytecode.object.length/2>49152)throw Error('Factory exceeds deployment size limits');

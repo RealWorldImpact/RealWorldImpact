@@ -24,7 +24,7 @@ The mandatory route applies to trades made through this router. These are unrest
 
 ## Build and verification
 
-From `contracts/launch`, run `npm ci --ignore-scripts` and `npm run compile`. Solidity is pinned to 0.8.26, optimizer 200 runs, via-IR, Cancun. `compile.cjs` checks runtime/initcode size limits, produces reproducible public bytecode in `assets/launch-contract.json`, and generates the ABI and code hashes in `scripts/lp/launch-contract.js`.
+From `contracts/launch`, run `npm ci --ignore-scripts` and `npm run compile`. Solidity is pinned to 0.8.26, optimizer 200 runs, via-IR, Cancun. `compile.cjs` normalizes source line endings, checks runtime/initcode size limits, produces reproducible public bytecode in `assets/launch-contract.json`, and generates the ABI and code hashes in `scripts/lp/launch-contract.js`. The complete normalized compiler input is saved as `artifacts/standard-input.json` for explorer source verification.
 
 Run a **local fork**, never a live network writer:
 
