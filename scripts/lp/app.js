@@ -5,7 +5,7 @@ import { tokenLogoCandidates } from './token-logos.js';
 import { createLogoLoader } from './logo-loader.js';
 import { walletCandidates } from './wallet-providers.js';
 import { readWalletHoldings } from './wallet-balances.js';
-import { percentageAmount } from './deposit-amounts.js';
+import { matchDollarAmounts } from './deposit-amounts.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -25,24 +25,31 @@ let stopTokenRowLogos=()=>{};
 let cancelSelectedLogo=null;
 let walletTokens=[],tokenRequest=0,tokenAbort=null,tokenListMessage='';
 const amountHoldings=new Map(),amountPrices=new Map();
+let amountDriver={side:'rwi',percent:0},amountSelection={rwi:0n,token:0n};
 function renderAmountControls(){
+  const states={};
   for(const side of ['rwi','token']){
     const address=side==='rwi'?P.RWI:$('tokenAddress').value.trim().toLowerCase(),held=amountHoldings.get(address);
-    const slider=$(side+'Percent'),percent=Number(slider.value)||0;
-    const price=walletTokens.find(t=>t.address===address)?.priceUsd??amountPrices.get(address)??null;
-    const symbol=side==='rwi'?'RWI':held?.symbol||'token';
-    slider.disabled=busy||!account||!held||held.balance===0n;
-    $(side+'PercentValue').textContent=percent+'%';slider.setAttribute('aria-valuetext',percent+'% of your '+symbol+' holdings');
-    $(side+'Amount').textContent=!account?'$0.00':held?usdLabel(percent===0?0n:holdingValue(percentageAmount(held.balance,percent),held.decimals,price)):'—';
-    $(side+'Available').textContent=!account?'Connect wallet to choose an amount.':held?'Available: '+usdLabel(holdingValue(held.balance,held.decimals,price)):'Loading wallet balance…';
+    states[side]=held?{...held,priceUsd:walletTokens.find(t=>t.address===address)?.priceUsd??amountPrices.get(address)??null}:null;
   }
+  const source=amountDriver.side,target=source==='rwi'?'token':'rwi';
+  const match=states[source]&&states[target]?matchDollarAmounts(states[source],states[target],amountDriver.percent):null;
+  const next={rwi:0n,token:0n};if(match){next[source]=match.sourceAmount;next[target]=match.targetAmount;}
+  if(proposal?.kind==='deposit'&&(next.rwi!==amountSelection.rwi||next.token!==amountSelection.token))clearProposal();
+  amountSelection=next;
+  for(const side of ['rwi','token']){
+    const held=states[side],slider=$(side+'Percent'),percent=match?(side===source?match.sourcePercent:match.targetPercent):0;
+    slider.value=String(percent);slider.disabled=busy||!account||!match||!states.rwi?.balance||!states.token?.balance;
+    $(side+'PercentValue').textContent=percent+'%';slider.setAttribute('aria-valuetext',percent+'% of your '+(side==='rwi'?'RWI':held?.symbol||'token')+' holdings');
+    $(side+'Amount').textContent=!account?'$0.00':held?match?usdLabel(holdingValue(next[side],held.decimals,held.priceUsd)):'USD unavailable':'—';
+    $(side+'Available').textContent=!account?'Connect wallet to choose an amount.':held?'Available: '+usdLabel(holdingValue(held.balance,held.decimals,held.priceUsd)):'Loading wallet balance…';
+  }
+  $('amountMatchNote').textContent=!account?'Move either slider to match both sides in USD.':!match?'Waiting for both wallet balances and USD prices.':match.capped?'Matched to the smaller wallet holding.':'Both sides match in USD, rounded down to token precision.';
 }
-function resetAmountControls(){amountHoldings.clear();$('rwiPercent').value='0';$('tokenPercent').value='0';renderAmountControls();}
+function resetAmountControls(){amountHoldings.clear();amountDriver={side:'rwi',percent:0};renderAmountControls();}
 function selectedAmount(side){
-  const address=side==='rwi'?P.RWI:$('tokenAddress').value.trim().toLowerCase(),held=amountHoldings.get(address);
-  if(!held)throw Error('Wait for your wallet balances to load.');
-  const amount=percentageAmount(held.balance,Number($(side+'Percent').value));
-  if(amount<=0n||amount>=(1n<<128n))throw Error('Choose a positive amount for each token.');
+  const amount=amountSelection[side];
+  if(amount<=0n||amount>=(1n<<128n))throw Error('Choose a positive matched amount for both tokens.');
   return amount;
 }
 async function loadFeaturedPools(){
@@ -420,13 +427,13 @@ $('walletButton').onclick=()=>chooseWallet().catch(e=>notice(failure(e),true));
 $('disconnect').onclick=()=>{if(injected?.removeListener){injected.removeListener('accountsChanged',oldAccountListener);injected.removeListener('chainChanged',oldChainListener);injected.removeListener('disconnect',oldDisconnectListener);}injected=null;resetWallet();notice('Disconnected from this page. Existing token approvals remain onchain.');};
 $('closeWallet').onclick=()=>$('walletDialog').close();$('cancelReview').onclick=clearProposal;$('submitAction').onclick=execute;
 $('reviewDialog').addEventListener('cancel',e=>{if(busy)e.preventDefault();else clearProposal();});
-$('poolForm').onsubmit=reviewDeposit;$('loadPool').onclick=loadPool;$('tokenAddress').oninput=()=>{invalidate();$('tokenPercent').value='0';renderAmountControls();$('tokenAmountLabel').textContent='Token amount (USD)';showSelectedToken();};$('fee').onchange=()=>{invalidate();loadPool();};
-['rwiPercent','tokenPercent'].forEach(id=>$(id).addEventListener('input',()=>{clearProposal();renderAmountControls();}));
+$('poolForm').onsubmit=reviewDeposit;$('loadPool').onclick=loadPool;$('tokenAddress').oninput=()=>{invalidate();amountDriver={side:'rwi',percent:0};renderAmountControls();$('tokenAmountLabel').textContent='Token amount (USD)';showSelectedToken();};$('fee').onchange=()=>{invalidate();loadPool();};
+['rwi','token'].forEach(side=>$(side+'Percent').addEventListener('input',()=>{clearProposal();amountDriver={side,percent:Number($(side+'Percent').value)};renderAmountControls();}));
 $('refreshPositions').onclick=refreshPositions;$('importPosition').onclick=importPosition;
 $('positionList').onclick=e=>{const b=e.target.closest('[data-action]');if(b&&!busy)reviewPosition(b.dataset.id,b.dataset.action);};
 $('copyRwi').onclick=async()=>{try{await navigator.clipboard.writeText(getAddress(P.RWI));notice('RWI contract copied.');}catch{notice('Copy this contract: '+getAddress(P.RWI));}};
 $('openTokens').onclick=()=>{if(!account){chooseWallet().catch(e=>notice(failure(e),true));return;}$('tokenSearch').value='';renderWalletTokens();$('tokenDialog').showModal();};
 $('closeTokens').onclick=()=>$('tokenDialog').close();$('tokenDialog').addEventListener('close',()=>stopTokenRowLogos());$('refreshTokens').onclick=()=>loadWalletTokens();$('tokenSearch').oninput=renderWalletTokens;
-$('walletTokenList').onclick=e=>{const button=e.target.closest('[data-wallet-token]');if(!button||busy)return;const row=walletTokens.find(t=>t.address===button.dataset.walletToken);if(!row)return;invalidate();$('tokenAddress').value=row.address;$('tokenPercent').value='0';renderAmountControls();$('tokenAmountLabel').textContent=row.symbol+' amount (USD)';showSelectedToken(row);$('tokenDialog').close();loadPool();};
+$('walletTokenList').onclick=e=>{const button=e.target.closest('[data-wallet-token]');if(!button||busy)return;const row=walletTokens.find(t=>t.address===button.dataset.walletToken);if(!row)return;invalidate();$('tokenAddress').value=row.address;amountDriver={side:'rwi',percent:0};renderAmountControls();$('tokenAmountLabel').textContent=row.symbol+' amount (USD)';showSelectedToken(row);$('tokenDialog').close();loadPool();};
 $('refreshFeatured').onclick=loadFeaturedPools;
 loadFeaturedPools();renderAmountControls();renderActivity();loadPool();
