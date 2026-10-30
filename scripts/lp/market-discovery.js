@@ -27,6 +27,7 @@ async function priced(token){
     if(a?.address?.toLowerCase()!==token.address)throw Error('Market address mismatch');
     const price=String(a.price_usd??'');
     const value={priceUsd:/^\d{1,60}(?:\.\d{1,60})?$/.test(price)?price:null,logo:safeTokenLogo(a.image_url)||token.logo};
+    if(prices.size>=500&&!prices.has(token.address))prices.delete(prices.keys().next().value);
     prices.set(token.address,{at:Date.now(),value});return {...token,...value};
   }catch{return {...token,priceUsd:null};}
 }

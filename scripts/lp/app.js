@@ -12,6 +12,7 @@ import { discoverPositionIds } from './position-discovery.js';
 import { readPositionsFast } from './position-reader.js';
 import { valuePositions, positionFeeValue } from './position-values.js';
 import { atomicSupport, checkPendingBatch, sendAtomicBatch } from './wallet-batch.js';
+import { cleanTransactions } from './transaction-history.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -80,6 +81,7 @@ function renderAmountControls(){
     $(side+'Amount').textContent=!account?'$0.00':held?match?usdLabel(holdingValue(next[side],held.decimals,held.priceUsd)):'USD unavailable':'—';
     $(side+'Available').textContent=!account?'Connect wallet to choose an amount.':held?'Available: '+usdLabel(holdingValue(held.balance,held.decimals,held.priceUsd)):'Loading wallet balance…';
   }
+  $('reviewLiquidity').disabled=busy||Boolean(account)&&(amountSelection.rwi<=0n||amountSelection.token<=0n||!loaded);
   $('amountMatchNote').textContent=!account?'Move either slider to match both sides in USD.':!match?'Waiting for both wallet balances and USD prices.':match.capped?'Matched to the smaller wallet holding.':'Both sides match in USD, rounded down to token precision.';
 }
 function resetAmountControls(){amountHoldings.clear();amountDriver={side:'rwi',percent:0};renderAmountControls();}
@@ -109,7 +111,7 @@ async function loadFeaturedPools(){
     if(request===featuredRequest){$('featuredPoolList').innerHTML='<p class="help">Featured pools are temporarily unavailable. Use Refresh to try again.</p>';$('featuredPoolNote').textContent='';}
   }finally{if(request===featuredRequest)$('refreshFeatured').disabled=false;}
 }
-let pending=readStore('rwi-lp-transactions',[]);
+let pending=cleanTransactions(readStore('rwi-lp-transactions',[]));
 const discovered=new Map();
 let connectionAttempt=0;
 const restoredProviders=new WeakSet();
@@ -333,7 +335,7 @@ async function connect(provider,restore=false,candidate=null){
     if(attempt!==connectionAttempt||!accounts?.length)return;
     if(injected?.removeListener){injected.removeListener('accountsChanged',oldAccountListener);injected.removeListener('chainChanged',oldChainListener);injected.removeListener('disconnect',oldDisconnectListener);}
     injected=provider;
-    oldAccountListener=()=>syncWallet().catch(e=>notice(failure(e),true));oldChainListener=oldAccountListener;oldDisconnectListener=()=>{resetWallet();notice('Wallet disconnected.');};
+    oldAccountListener=()=>syncWallet().catch(e=>notice(failure(e),true));oldChainListener=oldAccountListener;oldDisconnectListener=()=>{if(injected!==provider)return;provider.removeListener?.('accountsChanged',oldAccountListener);provider.removeListener?.('chainChanged',oldChainListener);provider.removeListener?.('disconnect',oldDisconnectListener);injected=null;resetWallet();notice('Wallet disconnected.');};
     provider.on?.('accountsChanged',oldAccountListener);provider.on?.('chainChanged',oldChainListener);provider.on?.('disconnect',oldDisconnectListener);
     $('walletDialog').close();await syncWallet();
     if(injected===provider&&account)saveConnector(localStorage,candidate||walletCandidates([...discovered.values()],window.ethereum).find(c=>c.provider===provider));
@@ -345,11 +347,11 @@ async function signerFor(who,epoch){
   if(session!==epoch||Number(chain)!==P.CHAIN||accounts[0]?.toLowerCase()!==who.toLowerCase())throw Error('Wallet or network changed. Review the action again.');
   return wallet.getSigner(who);
 }
-function activity(entry){pending=[{account:account?.toLowerCase(),...entry,chain:P.CHAIN,time:new Date().toISOString()},...pending].slice(0,100);saveStore('rwi-lp-transactions',pending);renderActivity();}
+function activity(entry){pending=cleanTransactions([{account:account?.toLowerCase(),...entry,chain:P.CHAIN,time:new Date().toISOString()},...pending]);saveStore('rwi-lp-transactions',pending);renderActivity();}
 function updateActivity(hash,status){const entry=pending.find(x=>x.hash===hash);if(entry){entry.status=status;saveStore('rwi-lp-transactions',pending);renderActivity();}}
 function renderActivity(){
   const rows=pending.filter(x=>x.account===account?.toLowerCase());
-  $('activityList').innerHTML=rows.length?rows.map(x=>'<div class="activity-row"><div><strong>'+esc(x.label)+'</strong><small>'+esc(x.status)+' · '+esc(new Date(x.time).toLocaleString())+'</small></div><a target="_blank" rel="noopener" href="'+txLink(x.hash)+'">'+short(x.hash)+' ↗</a></div>').join(''):'<div class="empty-state">Your submitted transactions will appear here. No sample activity.</div>';
+  $('activityList').innerHTML=rows.length?rows.map(x=>'<div class="activity-row"><div><strong>'+esc(x.label)+'</strong><small>'+esc(x.status)+' · '+esc(new Date(x.time).toLocaleString())+'</small></div><a target="_blank" rel="noopener" href="'+esc(txLink(x.hash))+'">'+short(x.hash)+' ↗</a></div>').join(''):'<div class="empty-state">Your submitted transactions will appear here. No sample activity.</div>';
 }
 async function send(signer,request,label,who,epoch){
   await signerFor(who,epoch);notice(label+': checking transaction…');
@@ -387,7 +389,7 @@ function showReview(p,rows){
   $('approvalNote').hidden=p.kind!=='deposit';$('submitAction').textContent=p.kind==='deposit'?'Confirm deposit':'Confirm in wallet';$('submitAction').disabled=false;$('reviewDialog').showModal();
 }
 async function reviewDeposit(event){
-  event?.preventDefault();locked(true);
+  event?.preventDefault();if(!account){await chooseWallet();return;}locked(true);
   try{
     if(!account)throw Error('Connect your wallet first.');const who=account,epoch=session;await signerFor(who,epoch);await loadPool();
     if(!loaded)throw Error('Pool data could not be loaded.');const data=loaded;
@@ -400,7 +402,7 @@ async function reviewDeposit(event){
     if(balances.some((n,i)=>n<caps[i]))throw Error('Your wallet does not have enough tokens for this deposit.');
     await signerFor(who,epoch);
     const p={kind:'deposit',id:target?.id,who,epoch,position,caps,live,slip,createdAt:Date.now(),label:target?'Add to position #'+target.id:live.exists?'Add liquidity':'Create pool & add liquidity'};
-    showReview(p,[...(target?[['Position',target.id]]:[]),['Network','Robinhood Chain (4663)'],['Pair',other.symbol+' / RWI'],['Pool fee',(Number(data.key.fee)/10000)+'%'],['Range',target?'Existing position range':'Full range'],['Pool hooks','None'],['Pool ID',live.id],...caps.map((n,i)=>['Maximum '+data.tokens[i].symbol,formatUnits(n,data.tokens[i].decimals)]),['Slippage',(slip/100)+'%'],['Recipient',who],['Position Manager',P.CONTRACTS.manager],['Expiry','20 minutes after confirmation']]);
+    showReview(p,[...(target?[['Position',target.id]]:[]),['Network','Robinhood Chain (4663)'],['Pair',other.symbol+' / RWI'],['Pool fee',(Number(data.key.fee)/10000)+'%'],['Range',target?'Existing position range':'Full range'],['Pool hooks','None'],['Pool ID',live.id],...caps.map((n,i)=>['Maximum '+data.tokens[i].symbol,formatUnits(n,data.tokens[i].decimals)]),['Slippage',(slip/100)+'%'],['Recipient',who],['Position Manager',P.CONTRACTS.manager],['Expiry','20 minutes from transaction preparation']]);
     notice('Review the deposit. Only your wallet can authorize it.');
   }catch(e){notice(failure(e),true);}finally{locked(false);}
 }
@@ -551,6 +553,7 @@ async function execute(){
       call=p.kind==='remove'?P.removeCall(p.position,p.id,p.percentage,p.slip,deadline):P.collectCall(p.position,p.id,p.who,deadline);
     }
     if(!receipt)receipt=await send(signer,{to:P.CONTRACTS.manager,data:call.calldata,value:BigInt(call.value)},p.label,p.who,p.epoch);
+    if(p.who!==account||p.epoch!==session){clearProposal();notice(p.label+' confirmed for the previous wallet. Switch back to see the updated position.');return;}
     if(p.kind==='deposit'){
       const iface=new Interface(P.MANAGER);
       for(const log of receipt.logs)if(log.address.toLowerCase()===P.CONTRACTS.manager){try{const e=iface.parseLog(log);if(e?.name==='Transfer'&&e.args.from===P.ZERO&&e.args.to.toLowerCase()===p.who.toLowerCase())remember(e.args.tokenId.toString());}catch{}}
