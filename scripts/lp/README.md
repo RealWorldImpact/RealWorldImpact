@@ -12,7 +12,7 @@ Addresses come from [Uniswap deployments](https://developers.uniswap.org/docs/pr
 
 - Initialize a new pool and mint full-range liquidity atomically; add another position to an existing pool.
 - Read the current pool state through StateView.
-- Import owned positions by ID, with optional Blockscout discovery and locally saved receipt IDs for positions created here.
+- Import owned positions by ID, with automatic onchain discovery and locally saved receipt IDs for positions created here.
 - Withdraw liquidity or collect fees for owned RWI positions without hooks. A 100% withdrawal retains the empty position receipt.
 - Approve tokens to Permit2, then authorize PositionManager with expiring, capped limits. Existing larger allowances are not reduced; some existing allowances require a reset transaction.
 
@@ -61,3 +61,5 @@ The deposit sliders are linked by USD value in both directions. Moving one compu
 Every featured card has an Add liquidity action opening Uniswap’s pool-specific /positions/add/robinhood/{poolIdOrAddress} route. The exact ID is preserved, and Uniswap resolves the pool’s currencies, fee, tick spacing, and hook. The leading Pons pool’s native ETH and V2MemeHook were verified in Uniswap’s deposit route. This avoids substituting the LP form’s WETH/no-hook pool. Wallet approval remains with the user on Uniswap.
 
 Wallet continuity stores only the selected connector name/reverse-DNS identifier in localStorage. On return, the matching provider is restored with eth_accounts; restoration never requests new wallet authorization or switches networks automatically. Late EIP-6963 announcements can restore the saved connector. LP tabs share the active provider, while explicit disconnect clears the saved choice and invalidates pending connection attempts. Uniswap is a separate origin and retains its own wallet session.
+
+My positions loads on connection/restoration and on entering the section, then updates every 30 seconds while open and when the window regains focus. Confirmed LP actions trigger an update. Discovery reads wallet-filtered incoming ERC-721 Transfer logs from the verified PositionManager in bounded RPC ranges, then verifies current ownership and the exact RWI pair. Incremental scans include a 16-block overlap. Failed discovery retries automatically, retains known positions, and cannot overwrite a newer wallet session. The refresh button is removed; receipt-ID lookup remains collapsed as an optional fallback. Native-ETH/custom-hook positions are listed with external-management labels rather than silently skipped. Cards show in-range/out-of-range/empty states.

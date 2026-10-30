@@ -8,6 +8,7 @@ import { readWalletHoldings } from './wallet-balances.js';
 import { matchDollarAmounts } from './deposit-amounts.js';
 import { featuredLiquidityUrl } from './featured-pools.js';
 import { saveConnector, forgetConnector, savedConnector } from './wallet-session.js';
+import { discoverPositionIds } from './position-discovery.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -17,6 +18,8 @@ const short=s=>s.slice(0,6)+'…'+s.slice(-4);
 const fmt=(n,d)=>{const s=formatUnits(n,d);return s.length>24?s.slice(0,24)+'…':s;};
 const txLink=hash=>'https://robin.etherscan.io/tx/'+hash;
 let injected=null,wallet=null,account=null,session=0,busy=false,loaded=null,proposal=null,verified=false,positions=new Map(),loadSeq=0;
+let positionsRequest=0,positionsLoading=null,positionsTimer=null;
+const positionScans=new Map();
 let currentView='add';
 let featuredRequest=0;
 const logoLoader=createLogoLoader();
@@ -85,10 +88,10 @@ function idsKey(){return 'rwi-lp-positions-'+account?.toLowerCase();}
 function remember(id){const ids=readStore(idsKey(),[]);if(!ids.includes(id))saveStore(idsKey(),[id,...ids].slice(0,100));}
 function notice(msg,error=false){$('notice').textContent=msg;$('notice').className=error?'notice error':'notice';}
 function failure(e){if(e.code===4001||e.code==='ACTION_REJECTED')return 'Request cancelled in your wallet.';return e.shortMessage||e.reason||e.message||'The request failed. Try refreshing the chain data.';}
-function locked(v){busy=v;document.querySelectorAll('main input,main select,main button,#walletButton,#disconnect').forEach(el=>el.disabled=v);$('submitAction').disabled=v||!proposal;$('cancelReview').disabled=v;renderAmountControls();}
+function locked(v){busy=v;document.querySelectorAll('main input,main select,main button,#walletButton,#disconnect').forEach(el=>el.disabled=v);$('submitAction').disabled=v||!proposal;$('cancelReview').disabled=v;document.querySelectorAll('#positionList [data-action="remove"]').forEach(b=>{b.disabled=v||positions.get(b.dataset.id)?.liquidity===0n;});renderAmountControls();}
 function clearProposal(){proposal=null;$('reviewDialog').close();}
 function invalidate(){loadSeq++;loaded=null;clearProposal();$('poolStatus').textContent='Refresh pool data';$('poolPrice').textContent='—';$('poolId').textContent='—';$('poolLink').hidden=true;$('pairName').textContent='Token / RWI';$('poolBlock').textContent='Load to refresh chain data';}
-function resetWallet(){connectionAttempt++;forgetConnector(localStorage);session++;resetTokens();account=null;wallet=null;renderAmountControls();positions.clear();$('walletButton').textContent='Connect wallet';$('disconnect').hidden=true;$('walletStatus').textContent='Connect to see balances and your positions.';$('positionList').innerHTML='<div class="empty-state">Connect your wallet to load your liquidity positions.</div>';clearProposal();renderActivity();}
+function resetWallet(){connectionAttempt++;forgetConnector(localStorage);session++;positionsRequest++;clearTimeout(positionsTimer);resetTokens();account=null;wallet=null;renderAmountControls();positions.clear();$('walletButton').textContent='Connect wallet';$('disconnect').hidden=true;$('walletStatus').textContent='Connect to see balances and your positions.';$('positionList').innerHTML='<div class="empty-state">Connect your wallet to load your liquidity positions.</div>';$('positionsStatus').textContent='Connect your wallet to find positions automatically.';clearProposal();renderActivity();}
 async function verifyContracts(){
   if(verified)return;
   const [chain,pool,permit]=await Promise.all([rpc.send('eth_chainId',[]),manager.poolManager(),manager.permit2()]);
@@ -269,17 +272,17 @@ async function switchNetwork(){
 }
 async function syncWallet(){
   const provider=injected;if(!provider)return;
-  const epoch=++session;resetTokens();clearProposal();positions.clear();
+  const epoch=++session;positionsRequest++;clearTimeout(positionsTimer);resetTokens();clearProposal();positions.clear();
   const [accounts,chain]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);
   if(epoch!==session||provider!==injected)return;
   if(!accounts.length){resetWallet();return;}
   account=getAddress(accounts[0]);wallet=new BrowserProvider(provider,'any',{cacheTimeout:-1});renderAmountControls();
   $('walletButton').textContent=Number(chain)===P.CHAIN?short(account):'Switch network';$('disconnect').hidden=false;
   $('walletStatus').textContent=Number(chain)===P.CHAIN?'Connected on Robinhood Chain.':'Switch to Robinhood Chain to manage liquidity.';
-  $('positionList').innerHTML='<div class="empty-state">Use “Refresh positions” or import a position ID below.</div>';
+  $('positionList').innerHTML='<div class="empty-state">Loading your positions automatically…</div>';$('positionsStatus').textContent='Checking your position history…';
   renderActivity();
   if(Number(chain)!==P.CHAIN){tokenListMessage='Switch to Robinhood Chain to load your holdings.';$('walletTokenStatus').textContent=tokenListMessage;}
-  if(Number(chain)===P.CHAIN){loadWalletTokens();if(loaded)await balances(loaded);else loadPool();}
+  if(Number(chain)===P.CHAIN){loadPositions();loadWalletTokens();if(loaded)await balances(loaded);else loadPool();}
 }
 let oldAccountListener,oldChainListener,oldDisconnectListener;
 async function connect(provider,restore=false,candidate=null){
@@ -355,42 +358,56 @@ async function reviewDeposit(event){
     notice('Review the deposit. Only your wallet can authorize it.');
   }catch(e){notice(failure(e),true);}finally{locked(false);}
 }
-async function readPosition(id){
+async function readPosition(id,includeExternal=false){
   if(!/^\d+$/.test(id)||BigInt(id)<=0n)throw Error('Enter a valid position ID.');await verifyContracts();
   const who=account,epoch=session;if(!who)throw Error('Connect your wallet first.');
   const [owner,result,liquidity]=await Promise.all([manager.ownerOf(id),manager.getPoolAndPositionInfo(id),manager.getPositionLiquidity(id)]);
   if(owner.toLowerCase()!==who.toLowerCase())throw Error('This position is not owned by your connected wallet.');
   const raw=result[0],k={currency0:raw[0],currency1:raw[1],fee:Number(raw[2]),tickSpacing:Number(raw[3]),hooks:raw[4]};
   if(![k.currency0.toLowerCase(),k.currency1.toLowerCase()].includes(P.RWI))throw Error('This position is not paired with RWI.');
-  if(k.hooks.toLowerCase()!==P.ZERO)throw Error('This position uses custom hooks. Manage it through its original venue. LP supports pools without hooks.');
-  if(k.currency0===P.ZERO||k.currency1===P.ZERO)throw Error('Native ETH positions are not supported here. Use the original venue.');
-  const tokens=await Promise.all([metadata(k.currency0),metadata(k.currency1)]),live=await snapshot(k,tokens),position=P.ownedPosition(live.pool,liquidity,result[1]);
-  if(session!==epoch||account!==who)throw Error('Wallet changed. Refresh positions.');
+  const external=k.hooks.toLowerCase()!==P.ZERO||k.currency0.toLowerCase()===P.ZERO||k.currency1.toLowerCase()===P.ZERO;
+  if(external&&!includeExternal)throw Error('Manage this pool through its original venue.');
+  const tokens=await Promise.all([k.currency0,k.currency1].map(address=>address.toLowerCase()===P.ZERO?{address:P.ZERO,decimals:18,symbol:'ETH'}:metadata(address)));
+  if(session!==epoch||account!==who)throw Error('Wallet changed. Positions will update automatically.');
+  if(external)return {id,who,epoch,live:{key:k,tokens,id:P.poolId(k)},liquidity,external:true};
+  const live=await snapshot(k,tokens),position=P.ownedPosition(live.pool,liquidity,result[1]);
+  if(session!==epoch||account!==who)throw Error('Wallet changed. Positions will update automatically.');
   return {id,who,epoch,live,position,liquidity};
 }
 function renderPositions(){
-  $('positionList').innerHTML=positions.size?[...positions.values()].map(p=>'<article class="position-card"><div class="position-title"><div><span class="eyebrow">POSITION '+esc(p.id)+'</span><h3>'+esc(p.live.tokens.map(t=>t.symbol).join(' / '))+'</h3></div><span class="pool-tag">'+(p.live.key.fee/10000)+'% fee</span></div><div class="position-amounts"><span>'+esc(p.position.amount0.toSignificant(8))+' '+esc(p.live.tokens[0].symbol)+'</span><span>'+esc(p.position.amount1.toSignificant(8))+' '+esc(p.live.tokens[1].symbol)+'</span></div><p class="small muted">Principal at the current price · fees excluded. Ticks '+p.position.tickLower+' to '+p.position.tickUpper+'.</p><div class="position-actions"><button class="secondary-button" data-id="'+p.id+'" data-action="remove" '+(p.liquidity===0n?'disabled':'')+'>Withdraw</button><button class="secondary-button" data-id="'+p.id+'" data-action="collect">Collect fees</button><a href="https://robin.etherscan.io/nft/'+P.CONTRACTS.manager+'/'+p.id+'" target="_blank" rel="noopener">View receipt ↗</a></div></article>').join(''):'<div class="empty-state">No supported RWI positions found in your saved IDs. Import another position below.</div>';
+  $('positionList').innerHTML=positions.size?[...positions.values()].sort((a,b)=>Number(b.liquidity>0n)-Number(a.liquidity>0n)||(BigInt(a.id)>BigInt(b.id)?-1:1)).map(p=>{
+    const state=p.liquidity===0n?'Empty':p.external?'Managed externally':p.live.pool.tickCurrent>=p.position.tickLower&&p.live.pool.tickCurrent<p.position.tickUpper?'In range':'Out of range';
+    return '<article class="position-card"><div class="position-title"><div><span class="eyebrow">POSITION '+esc(p.id)+'</span><h3>'+esc(p.live.tokens.map(t=>t.symbol).join(' / '))+'</h3></div><span class="pool-tag">'+esc(state)+'</span></div>'+(p.external?'<p class="small muted">This pool uses native ETH or a custom hook. Manage liquidity and fees at its original venue.</p>':'<div class="position-amounts"><span>'+esc(p.position.amount0.toSignificant(8))+' '+esc(p.live.tokens[0].symbol)+'</span><span>'+esc(p.position.amount1.toSignificant(8))+' '+esc(p.live.tokens[1].symbol)+'</span></div><p class="small muted">'+(p.live.key.fee/10000)+'% pool fee · Principal at current price; accrued fees excluded.</p>')+'<div class="position-actions">'+(p.external?'':'<button class="secondary-button" data-id="'+p.id+'" data-action="remove" '+(busy||p.liquidity===0n?'disabled':'')+'>Withdraw</button><button class="secondary-button" data-id="'+p.id+'" data-action="collect" '+(busy?'disabled':'')+'>Collect fees</button>')+'<a href="https://robin.etherscan.io/nft/'+P.CONTRACTS.manager+'/'+p.id+'" target="_blank" rel="noopener">View receipt ↗</a></div></article>';
+  }).join(''):'<div class="empty-state">No RWI liquidity positions were found for this wallet.</div>';
 }
-async function importPosition(){locked(true);try{const id=$('positionId').value.trim(),p=await readPosition(id);positions.set(id,p);remember(id);renderPositions();notice('Position '+id+' loaded from chain.');}catch(e){notice(failure(e),true);}finally{locked(false);}}
-async function refreshPositions(){
-  locked(true);try{
-    if(!account)throw Error('Connect your wallet first.');const epoch=session,who=account;positions.clear();
-    const ids=readStore(idsKey(),[]).filter(x=>/^\d+$/.test(x));
-    // Indexer discovery is optional; onchain ownerOf and PoolKey remain authoritative.
-    let indexerFailed=false;
+async function importPosition(){locked(true);try{const id=$('positionId').value.trim(),p=await readPosition(id,true);positions.set(id,p);remember(id);renderPositions();notice('Position '+id+' loaded from chain.');}catch(e){notice(failure(e),true);}finally{locked(false);}}
+async function loadPositions(){
+  if(!account)return;
+  if(busy){if(currentView==='positions'){clearTimeout(positionsTimer);positionsTimer=setTimeout(loadPositions,5000);}return;}
+  const who=account,epoch=session;if(positionsLoading?.who===who&&positionsLoading.epoch===epoch)return positionsLoading.promise;
+  const request=++positionsRequest,active=()=>request===positionsRequest&&epoch===session&&who===account;
+  clearTimeout(positionsTimer);$('positionsStatus').textContent=positions.size?'Updating positions…':'Finding your positions…';
+  const promise=(async()=>{
     try{
-      const r=await fetch('https://robinhoodchain.blockscout.com/api/v2/addresses/'+who+'/nft?type=ERC-721',{signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error();const j=await r.json();
-      for(const x of j.items||[])if((x.token?.address_hash||x.token?.address||'').toLowerCase()===P.CONTRACTS.manager&&/^\d+$/.test(x.id||''))ids.push(String(x.id));
-      if(j.next_page_params)indexerFailed=true;
-    }catch{indexerFailed=true;}
-    let skipped=0;
-    for(const id of [...new Set(ids)].slice(0,100)){
-      if(epoch!==session||who!==account)throw Error('Wallet changed. Refresh positions.');
-      try{const p=await readPosition(id);positions.set(id,p);remember(id);}catch{skipped++;}
-    }
-    renderPositions();notice('Loaded '+positions.size+' supported positions.'+(indexerFailed?' Discovery is incomplete; import any missing position by its ID.':'')+(skipped?' Other, transferred, or unsupported positions were skipped.':''));
-    for(const tx of pending.filter(x=>x.account===who.toLowerCase()&&x.status.startsWith('Pending')).slice(0,20)){const r=await rpc.getTransactionReceipt(tx.hash);if(r)updateActivity(tx.hash,r.status===1?'Confirmed':'Reverted');}
-  }catch(e){notice(failure(e),true);}finally{locked(false);}
+      if(Number(await injected.request({method:'eth_chainId'}))!==P.CHAIN){if(active())$('positionsStatus').textContent='Switch to Robinhood Chain to see positions.';return;}
+      const key=who.toLowerCase(),scan=await discoverPositionIds(rpc,P.CONTRACTS.manager,who,positionScans.get(key));if(!active())return;
+      if(!scan.partial){if(positionScans.size>=5&&!positionScans.has(key))positionScans.delete(positionScans.keys().next().value);positionScans.set(key,scan);}
+      const ids=[...new Set([...scan.ids,...readStore(idsKey(),[]).filter(x=>/^\d+$/.test(x))])],next=new Map();let failed=0;
+      for(let i=0;i<ids.length;i+=5){
+        if(!active())return;
+        const results=await Promise.allSettled(ids.slice(i,i+5).map(id=>readPosition(id,true)));
+        if(!active())return;
+        for(const result of results)if(result.status==='fulfilled'){next.set(result.value.id,result.value);remember(result.value.id);}else if(result.reason?.code!=='CALL_EXCEPTION'&&!/not owned|not paired with RWI/.test(result.reason?.message||''))failed++;
+      }
+      if(!active())return;
+      if(failed){for(const [id,p] of positions)if(!next.has(id))next.set(id,p);}
+      positions=next;renderPositions();
+      $('positionsStatus').textContent=positions.size+' RWI position'+(positions.size===1?'':'s')+' · '+[...positions.values()].filter(p=>p.liquidity>0n).length+' funded · Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+(scan.partial||failed?' · Some data is still syncing; retrying automatically.':' · Updates automatically.');
+      if((scan.partial||failed)&&!positions.size)$('positionList').innerHTML='<div class="empty-state">Position history is temporarily incomplete. Checking again automatically…</div>';
+      for(const tx of pending.filter(x=>x.account===who.toLowerCase()&&x.status.startsWith('Pending')).slice(0,20))rpc.getTransactionReceipt(tx.hash).then(receipt=>{if(active()&&receipt)updateActivity(tx.hash,receipt.status===1?'Confirmed':'Reverted');}).catch(()=>{});
+    }catch{if(active()){$('positionsStatus').textContent='Position data is temporarily unavailable. Retrying automatically.';if(!positions.size)$('positionList').innerHTML='<div class="empty-state">Your positions will appear here when chain data is available.</div>';}}
+    finally{if(active()){positionsLoading=null;if(currentView==='positions')positionsTimer=setTimeout(loadPositions,30000);}}
+  })();positionsLoading={who,epoch,promise};return promise;
 }
 async function reviewPosition(id,kind){
   locked(true);try{
@@ -430,12 +447,12 @@ async function execute(){
       for(const log of receipt.logs)if(log.address.toLowerCase()===P.CONTRACTS.manager){try{const e=iface.parseLog(log);if(e?.name==='Transfer'&&e.args.from===P.ZERO&&e.args.to.toLowerCase()===p.who.toLowerCase())remember(e.args.tokenId.toString());}catch{}}
     }
     clearProposal();notice(p.label+' confirmed. View the receipt in Transactions.');
-    if(p.id){const next=await readPosition(p.id);positions.set(p.id,next);renderPositions();}
+    if(p.id){const next=await readPosition(p.id,true);positions.set(p.id,next);renderPositions();}
     if(loaded)await loadPool();
     loadWalletTokens();
-  }catch(e){clearProposal();notice(failure(e),true);}finally{locked(false);}
+  }catch(e){clearProposal();notice(failure(e),true);}finally{locked(false);if(account)loadPositions();}
 }
-function view(name){currentView=name;$('featuredPools').hidden=name!=='add';notice(name==='positions'?(account?'Refresh your positions or import a position ID below.':'Connect your wallet, then refresh or import a position.'):name==='activity'?'Transactions are filtered by your connected wallet.':'Load a token pair to read its current pool state.');document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===name);b.setAttribute('aria-pressed',String(b.dataset.view===name));});document.querySelectorAll('main>.view').forEach(v=>v.hidden=v.id!==name+'View');$('breadcrumb').textContent=name==='add'?'LP':name==='positions'?'My positions':'Transactions';}
+function view(name){currentView=name;$('featuredPools').hidden=name!=='add';notice(name==='positions'?(account?'Your positions load and update automatically.':'Connect your wallet to see your positions automatically.'):name==='activity'?'Transactions are filtered by your connected wallet.':'Load a token pair to read its current pool state.');document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===name);b.setAttribute('aria-pressed',String(b.dataset.view===name));});document.querySelectorAll('main>.view').forEach(v=>v.hidden=v.id!==name+'View');$('breadcrumb').textContent=name==='add'?'LP':name==='positions'?'My positions':'Transactions';clearTimeout(positionsTimer);if(name==='positions')loadPositions();}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>view(b.dataset.view));
 $('walletButton').onclick=()=>chooseWallet().catch(e=>notice(failure(e),true));
 $('disconnect').onclick=()=>{if(injected?.removeListener){injected.removeListener('accountsChanged',oldAccountListener);injected.removeListener('chainChanged',oldChainListener);injected.removeListener('disconnect',oldDisconnectListener);}injected=null;resetWallet();notice('Disconnected from this page. Existing token approvals remain onchain.');};
@@ -443,7 +460,8 @@ $('closeWallet').onclick=()=>$('walletDialog').close();$('cancelReview').onclick
 $('reviewDialog').addEventListener('cancel',e=>{if(busy)e.preventDefault();else clearProposal();});
 $('poolForm').onsubmit=reviewDeposit;$('loadPool').onclick=loadPool;$('tokenAddress').oninput=()=>{invalidate();amountDriver={side:'rwi',percent:0};renderAmountControls();$('tokenAmountLabel').textContent='Token amount (USD)';showSelectedToken();};$('fee').onchange=()=>{invalidate();loadPool();};
 ['rwi','token'].forEach(side=>$(side+'Percent').addEventListener('input',()=>{clearProposal();amountDriver={side,percent:Number($(side+'Percent').value)};renderAmountControls();}));
-$('refreshPositions').onclick=refreshPositions;$('importPosition').onclick=importPosition;
+$('importPosition').onclick=importPosition;
+window.addEventListener('focus',()=>{if(currentView==='positions'&&account&&!busy)loadPositions();});
 $('positionList').onclick=e=>{const b=e.target.closest('[data-action]');if(b&&!busy)reviewPosition(b.dataset.id,b.dataset.action);};
 $('copyRwi').onclick=async()=>{try{await navigator.clipboard.writeText(getAddress(P.RWI));notice('RWI contract copied.');}catch{notice('Copy this contract: '+getAddress(P.RWI));}};
 $('openTokens').onclick=()=>{if(!account){chooseWallet().catch(e=>notice(failure(e),true));return;}$('tokenSearch').value='';renderWalletTokens();$('tokenDialog').showModal();};
