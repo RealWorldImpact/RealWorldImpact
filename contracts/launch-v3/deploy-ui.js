@@ -46,5 +46,5 @@ $('deploy').onclick=async()=>{if(DEPLOYMENT_BLOCKED||!preparation||working)retur
   const tx=await signer.sendTransaction({...preparation.request,nonce:entry.nonce,chainId:4663,value:0n,gasLimit:preparation.gas*120n/100n});entry.hash=tx.hash;localStorage.setItem(storageKey,JSON.stringify(entry));
   status('Deployment submitted. Waiting for confirmation…');const receipt=await tx.wait(1);if(receipt.status!==1)throw Error('Deployment did not complete. Use Check deployment status.');if(!await verify(entry))throw Error('Code is not visible yet. Use Check deployment status.');
 }catch(e){if(e.code===4001||e.code==='ACTION_REJECTED'){localStorage.removeItem(storageKey);preparation=null;}status(e.shortMessage||e.message,true)}finally{working=false;buttons()}};
-if(DEPLOYMENT_BLOCKED)status('Do not deploy this build. Its fixed RWI target does not meet the revised live $50,000 graduation requirement.');
+if(DEPLOYMENT_BLOCKED)status('Do not deploy this build. Its fixed RWI target does not meet the revised live $40,000 graduation requirement.');
 else if(LAUNCH_V3_FACTORY)status('This replacement is already activated at '+LAUNCH_V3_FACTORY+'. No deployment is needed.');buttons();

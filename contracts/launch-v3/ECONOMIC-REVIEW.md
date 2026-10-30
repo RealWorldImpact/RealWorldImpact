@@ -1,5 +1,7 @@
 # Bonding curve economic review — 2026-10-30
 
+> Historical review: the current graduation target is now $40,000 with $5,000 minimum actual pool liquidity and no fixed RWI token-count target. See the [current V4 review](../launch-v4/README.md). The calculations below document the superseded $50,000 proposal.
+
 **Result: V3 must not be deployed.** Its earlier implementation tests passed, but the old specification does not meet the revised economics. No mainnet transactions were submitted and the live website has not changed. This engineering review is not an independent security audit.
 
 ## Approved requirements

@@ -59,7 +59,7 @@ const W=10n**18n,S=10n**27n;
   if(tax===0&&!token0){
    await setPrice(10n**9n);await assert.rejects(factory.quoteBuy(token,W));await assert.rejects(factory.launch.staticCall(m,10n**9n,10n**9n,0,hexlify(randomBytes(32)),await deadline()));await sell(token,(await t.balanceOf(buyer))/100n);await setPrice(initial);
   }
-  await eligibleFill(token);l=await factory.launches(token);let status=await factory.graduationStatus(token);assert(status.eligible);assert(!status.delayComplete);assert.equal(l.phase,0n);assert(l.quoteReserve*initial/W>=parseEther('2500.01'));
+  await eligibleFill(token);l=await factory.launches(token);let status=await factory.graduationStatus(token);assert(status.eligible);assert(status.fdvUsd>=40000n*W&&status.fdvUsd<40000n*W+10n**12n);assert(!status.delayComplete);assert.equal(l.phase,0n);assert(l.quoteReserve*initial/W>=parseEther('2500.01'));
   await assert.rejects(factory.quoteBuy(token,W));await assert.rejects(factory.graduate.staticCall(token));assert((await factory.quoteSell(token,(await t.balanceOf(buyer))/10n))[0]>0n);
   // Selling below the threshold cancels readiness; fresh net buying must qualify again.
   await sell(token,(await t.balanceOf(buyer))/100n);assert.equal((await factory.launches(token)).readySince,0n);await eligibleFill(token);
@@ -99,7 +99,7 @@ const W=10n**18n,S=10n**27n;
   cases.push({tax,token0,actualPoolUsd:actualUsd,readyReserve:beforeGraduate.quoteReserve,position:l.positionId});console.log('PASS',tax,'bps, token0',token0,'actual USD',Number(actualUsd)/1e18);
  }
  await restore();await setPrice(initial);const early=await create(0,true),earlyAddress=await early.getAddress();await setPrice(initial*100n);assert.equal((await factory.graduationStatus(earlyAddress)).eligible,false);await(await factory.checkpoint(earlyAddress)).wait();assert.equal((await factory.launches(earlyAddress)).readySince,0n);await assert.rejects(factory.graduate.staticCall(earlyAddress));
- await eligibleFill(earlyAddress);assert((await factory.graduationStatus(earlyAddress)).fdvUsd>50000n*W);assert((await factory.graduationStatus(earlyAddress)).quoteUsd>=parseEther('2500.01'));
+ await eligibleFill(earlyAddress);assert((await factory.launches(earlyAddress)).quoteReserve<parseEther('2501'));assert((await factory.graduationStatus(earlyAddress)).fdvUsd>40000n*W);assert((await factory.graduationStatus(earlyAddress)).quoteUsd>=parseEther('2500.01'));
  for(const action of [()=>factory.buyCurve.staticCall(earlyAddress,W,buyer),()=>factory.sellCurve.staticCall(earlyAddress,W,buyer),()=>factory.executeGraduation.staticCall(earlyAddress),()=>factory.refreshEligibility.staticCall(earlyAddress),()=>hook.register.staticCall(earlyAddress,0),()=>hook.withdrawRewards.staticCall(earlyAddress),()=>hook.unlockCallback.staticCall('0x'),()=>router.unlockCallback.staticCall('0x'),()=>router.convertRewards.staticCall(W,1n,buyer)])await assert.rejects(action);
  // Complete one graduation at the checked RWI reference price using the actual ETH/RWI route.
  await restore();const reference=27281636050000n;await setPrice(reference);const actual=await create(300,true),actualToken=await actual.getAddress();await eligibleFill(actualToken);await rpc.send('evm_increaseTime',[301]);await rpc.send('evm_mine',[]);await setPrice(reference);await(await factory.graduate(actualToken,{gasLimit:3000000})).wait();const actualRecord=await factory.launches(actualToken);assert.equal(actualRecord.phase,2n);assert(actualRecord.seededQuote*reference/W>=2500n*W);

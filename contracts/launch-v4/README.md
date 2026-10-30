@@ -2,12 +2,14 @@
 
 Status: **local research build; not deployed, not connected to LP, not production approved.** V3 deployment remains disabled. Live V1/V2 contracts and the website are unchanged. The review fixes specific defects and adds tests; it is not an independent security audit or a claim that the system is perfect.
 
-## Requirements preserved
+## Current requirements
+
+The graduation target is **$40,000**, with the previously selected **$5,000 actual pool-liquidity minimum**. There is **no fixed RWI quantity, RWI fundraising quota, or per-launch RWI cap**. The token amount in the pool varies with RWI’s verified current USD price. Funding examples below describe sensitivity only; they are not extra graduation conditions.
 
 | Requirement | Candidate behavior |
 | --- | --- |
 | Initial valuation | $5,000 price × full billion-token supply, calculated onchain from a verified RWI/USD reference |
-| Graduation valuation | At least $50,000, using a conservative current oracle valuation |
+| Graduation valuation | At least $40,000, using a conservative current oracle valuation |
 | Minimum pool | At least $5,000 actually deposited; approximately $2,500 of real RWI and $2,500 of launched tokens |
 | Creator funding | No RWI deposit and no launch fee; network gas remains payable |
 | Pricing | Pons-style constant product with a virtual RWI reserve |
@@ -22,7 +24,7 @@ The existing ETH/RWI pool charges its own routing fees. Selecting 0% **additiona
 
 | Finding | Change | Verification |
 | --- | --- | --- |
-| Fixed RWI target could graduate at $5k or $500k instead of the live $50k target | Evaluate current USD conditions independently from constant-product pricing | Price-rise/drop scenarios, execution-time rechecks |
+| Fixed RWI targets drift away from the intended USD valuation | Evaluate current USD conditions independently from constant-product pricing | Price-rise/drop scenarios, execution-time rechecks |
 | The old 1% RWI supply ceiling cannot fund the selected $5k pool at the reference price | Remove the conflicting per-launch ceiling and fixed inventory floor | Final-fill and actual-funded-pool tests |
 | A failed graduation could leave buyers unable to redeem | Keep the curve open for sells until pool creation succeeds atomically | Actual sell during a deliberately broken PositionManager |
 | Stale or unavailable pricing could either force unsafe graduation or freeze exits | Reject new launches/buys/graduation; keep reserve-based sells independent of oracle availability | Ten malformed, stale, reverting, or gas-consuming feed cases |
@@ -45,11 +47,11 @@ Let `P` be virtual RWI, `Q` real net RWI reserves, and `T` remaining curve token
 - Fees are recorded separately from principal. Donations are not included in either ledger.
 - Price in RWI: `(P + Q) / T`.
 - Full-supply USD valuation: `price in RWI × 1 billion × conservative RWI/USD`.
-- Graduation requires valuation ≥ $50,000 and net quote value ≥ $2,500.01. The extra cent is rounding headroom, not an additional fee.
+- Graduation requires valuation ≥ $40,000 and net quote value ≥ $2,500.01. The extra cent is rounding headroom, not an additional fee.
 - Pool token seed: `floor(T × Q / (P + Q))`. This preserves the terminal curve price to integer precision when initializing the v4 pool.
 - After minting, the contract checks at least $5,000 of **actual** deposited value. The unused rounding dust remains locked.
 
-For unchanged RWI price, calibrating the reserve uses `virtual quote USD = 2500.01 / (sqrt(10) - 1)`. Approximately 23.1239% of supply starts in curve inventory. At baseline graduation approximately 15.8115% has been bought, 5.0000% enters the pool, and 79.1885% stays permanently locked outside the pool. There is no creator premine.
+For unchanged RWI price, calibrating the reserve uses `virtual quote USD = 2500.01 / (sqrt(8) - 1)`. Approximately 27.3460% of supply starts in curve inventory. At baseline graduation approximately 17.6777% has been bought, 6.2500% enters the pool, and 76.0722% stays permanently locked outside the pool. There is no creator premine.
 
 Rounding favors reserve solvency. Product never decreases in the tested integer trades. Token supply remains one billion. ETH reward claims cannot withdraw curve principal, the liquidity position, or locked surplus tokens.
 
@@ -57,18 +59,18 @@ Rounding favors reserve solvency. Product never decreases in the tested integer 
 
 Reference used for reproducible scenarios: RWI = $0.00002728163605. These are assumptions for sensitivity testing, not current executable prices or predictions. RWI price changes below happen **after** the token launches. Net reserves exclude trading fees and route price impact.
 
-| RWI price after launch | Net RWI at both thresholds | Graduation valuation | Pool value |
+| RWI price after launch | Illustrative net RWI funding (not a quota) | Graduation valuation | Pool value |
 | --- | ---: | ---: | ---: |
-| 0.1× | 916.37 million | $255,895 | $5,000.02 |
-| 0.5× | 183.27 million | $70,877 | $5,000.02 |
-| 1× | 91.64 million | $50,000 | $5,000.02 |
-| 2× | 52.38 million | $50,000 | $5,716.53 |
-| 10× | 9.16 million | $73,960 | $5,000.02 |
-| 100× | 916,371 | $521,857 | $5,000.02 |
+| 0.1× | 916.37 million | $185,941.56 | $5,000.02 |
+| 0.5× | 183.27 million | $54,215.73 | $5,000.02 |
+| 1× | 91.64 million | $40,000 | $5,000.02 |
+| 2× | 50.12 million | $40,000 | $5,469.2 |
+| 10× | 9.16 million | $69,955.84 | $5,000.02 |
+| 100× | 916,371 | $518,451.43 | $5,000.02 |
 
 At 0.01× the reference, the mathematical funding requirement exceeds nine billion RWI, more than total supply. The candidate refuses new deposits under that condition and retains redemption. At 0.1×, the requirement is mathematically below supply but economically implausible for most markets. No implementation can guarantee sufficient available RWI under every price scenario.
 
-A token created *after* RWI has risen receives newly calibrated $5,000 opening terms. That differs from a token already trading when RWI rises. Waiting for real liquidity, oracle smoothing, price gaps, and transaction timing mean graduation can happen above $50,000. Exact execution at $50,000 cannot be promised.
+A token created *after* RWI has risen receives newly calibrated $5,000 opening terms. That differs from a token already trading when RWI rises. Waiting for real liquidity, oracle smoothing, price gaps, and transaction timing mean graduation can happen above $40,000. Exact execution at $40,000 cannot be promised.
 
 At the reference price, each baseline pool locks approximately 9.16% of the observed RWI total supply. Multiple launches compete for the same quote asset. Future appreciation may reduce token quantities, but the design must not rely on appreciation to remain solvent.
 
@@ -76,9 +78,9 @@ At the reference price, each baseline pool locks approximately 9.16% of the obse
 
 The $5,000 is marked pool value, not $5,000 of cash available to sellers. Only approximately $2,500 is the RWI side, and RWI itself has price and execution risk.
 
-At unchanged RWI price, selling all tokens purchased on the curve into the newly graduated pool would move its full-supply valuation from $50,000 to approximately **$2,886**, before fees and other market activity. That is an extreme stress case, not a forecast. A $500 net RWI buy into a $2,500 quote reserve moves the pool's marginal token price up roughly 44%, even before the external ETH/RWI route and fees. The selected minimum gives substantial price impact.
+At unchanged RWI price, selling all tokens purchased on the curve into the newly graduated pool would move its full-supply valuation from $40,000 to approximately **$2,729**, before fees and other market activity. That is an extreme stress case, not a forecast. A $500 net RWI buy into a $2,500 quote reserve moves the pool's marginal token price up roughly 44%, even before the external ETH/RWI route and fees. The selected minimum gives substantial price impact.
 
-Permanently locking roughly 79% of supply also means a $50,000 **fully diluted valuation** is not a $50,000 circulating-supply market capitalization. Counting purchased tokens plus pool tokens gives approximately $10,406 at baseline graduation; data providers may classify circulating supply differently. LP must label this clearly before release.
+Permanently locking roughly 76% of supply also means a $40,000 **fully diluted valuation** is not a $40,000 circulating-supply market capitalization. Counting purchased tokens plus pool tokens gives approximately $9,571 at baseline graduation; data providers may classify circulating supply differently. LP must label this clearly before release.
 
 The minimum was kept at the user's selected $5,000. Increasing it would improve depth but require more RWI. Reducing it would reduce required RWI but increase fragility. A curve cannot remove this tradeoff.
 
@@ -142,7 +144,7 @@ node contracts/launch-v4/test-solidity-math.cjs
 
 The tests require a local Hardhat endpoint and check its metadata before mutations. They never use a user wallet. The public RPC did not retain the older pinned state; each test run records the actual fork block/hash. The ETH/RWI route, PoolManager, PositionManager, Permit2 and hooked swaps are real forked contracts. The RWI/USD source is explicitly mocked, so these tests do **not** validate a production price feed.
 
-Final validation passed: **57,888 randomized trades**, **41,600 fee-boundary checks**, **196 economic final-fill scenarios**, and **792 Solidity/model comparisons**. Fork tests covered all eight creator-fee/currency-order combinations plus graduation at the reference RWI price, sixteen exact-output swaps, ten oracle failure cases, malicious ETH callbacks, rejected payout rollback, donation isolation, and two concurrent launches. No real transactions were submitted.
+Final validation passed: **55,455 randomized trades**, **41,600 fee-boundary checks**, **196 economic final-fill scenarios**, and **792 Solidity/model comparisons**. Fork tests covered all eight creator-fee/currency-order combinations plus graduation at the reference RWI price, sixteen exact-output swaps, ten oracle failure cases, malicious ETH callbacks, rejected payout rollback, donation isolation, and two concurrent launches. No real transactions were submitted.
 
 Results and exact tested hashes are recorded in `validation.json`. After a full run, regenerate the record with `node contracts/launch-v4/record-validation.cjs`. The factory has an immutable oracle address: its deployed runtime hash depends on that address; the compiler's runtime template hash alone must not be used as a deployed-code match.
 

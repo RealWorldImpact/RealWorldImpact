@@ -7,7 +7,7 @@ library CurveEconomics {
     uint256 internal constant WAD = 1 ether;
     uint256 internal constant SUPPLY = 1_000_000_000 ether;
     uint256 internal constant START_USD = 5_000 ether;
-    uint256 internal constant TARGET_USD = 50_000 ether;
+    uint256 internal constant TARGET_USD = 40_000 ether;
     uint256 internal constant MIN_POOL_USD = 5_000 ether;
     // One cent of quote-side rounding headroom. Actual minted funding is checked.
     uint256 internal constant SEED_QUOTE_USD = 2_500.01 ether;
@@ -17,8 +17,8 @@ library CurveEconomics {
 
     function terms(uint256 price) internal pure returns (uint256 phantom, uint256 inventory) {
         if (price < MIN_PRICE || price > MAX_PRICE) revert InvalidEconomics();
-        uint256 sqrtTen = Math.sqrt(10 * WAD * WAD);
-        uint256 virtualUsd = Math.mulDiv(SEED_QUOTE_USD, WAD, sqrtTen - WAD);
+        uint256 sqrtGrowth = Math.sqrt(Math.mulDiv(TARGET_USD, WAD * WAD, START_USD));
+        uint256 virtualUsd = Math.mulDiv(SEED_QUOTE_USD, WAD, sqrtGrowth - WAD);
         inventory = Math.mulDiv(virtualUsd, SUPPLY, START_USD);
         // Round up by at most one RWI wei; creation cannot understate its price.
         uint256 openingRwi = Math.mulDiv(START_USD, WAD, price, Math.Rounding.Ceil);

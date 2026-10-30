@@ -1,5 +1,5 @@
 {
-  "reviewedAt": "2026-10-30T23:41:53.776Z",
+  "reviewedAt": "2026-10-30T23:53:07.665Z",
   "status": "Local candidate validated; production release blocked",
   "productionReady": false,
   "liveWebsiteChanged": false,
@@ -11,24 +11,26 @@
   ],
   "requirements": {
     "startingFdvUsd": 5000,
-    "minimumGraduationFdvUsd": 50000,
+    "minimumGraduationFdvUsd": 40000,
     "minimumActualPoolUsd": 5000,
+    "fixedRwiGraduationTarget": null,
+    "perLaunchRwiCap": null,
     "quoteRoundingHeadroomUsd": 0.01,
     "oracleMaxAgeSeconds": 300,
     "oracleMinWindowSeconds": 1800,
     "eligibilityDelaySeconds": 300
   },
   "math": {
-    "testedAt": "2026-10-30T23:40:59.870Z",
+    "testedAt": "2026-10-30T23:53:07.568Z",
     "localOnly": true,
     "termChecks": 8,
     "solidityIntegerComparisons": 792,
     "checks": "Initial and partially traded curves, exact minimal final fill, FDV and both thresholds, eight launch prices and all fees"
   },
   "economics": {
-    "testedAt": "2026-10-30T23:37:01.528Z",
+    "testedAt": "2026-10-30T23:49:38.251Z",
     "deterministicSeed": "0x431da32a",
-    "randomTradeChecks": 57888,
+    "randomTradeChecks": 55455,
     "feeBoundaryChecks": 41600,
     "minimalFinalFillCases": 196,
     "referenceScenarios": [
@@ -37,12 +39,12 @@
         "subsequentPriceMultiple": 0.01,
         "taxBps": 0,
         "requiredNetRwi": 9163709960.129023,
-        "fdvUsd": 2359395.1164333043,
+        "fdvUsd": 1689907.1465012718,
         "poolUsd": 5000.0199999999995,
-        "soldPercent": 23.01740745063149,
-        "pooledPercent": 0.105959785310536,
-        "lockedPercent": 76.87663276405797,
-        "postGraduationFdvIfAllBuyersSellNoFees": 49.54281307367343,
+        "soldPercent": 27.197270605383903,
+        "pooledPercent": 0.14793771392564012,
+        "lockedPercent": 72.65479168069047,
+        "postGraduationFdvIfAllBuyersSellNoFees": 49.46046290700618,
         "requiresMoreThanReferenceRwiTotalSupply": true
       },
       {
@@ -50,12 +52,12 @@
         "subsequentPriceMultiple": 0.1,
         "taxBps": 0,
         "requiredNetRwi": 916370996.0129023,
-        "fdvUsd": 255895.01058484588,
+        "fdvUsd": 185941.55877284287,
         "poolUsd": 5000.0199999999995,
-        "soldPercent": 22.101707885087155,
-        "pooledPercent": 0.9769670750071477,
-        "lockedPercent": 76.9213250399057,
-        "postGraduationFdvIfAllBuyersSellNoFees": 458.5639739407981,
+        "soldPercent": 25.927969669365016,
+        "pooledPercent": 1.344513844295647,
+        "lockedPercent": 72.72751648633934,
+        "postGraduationFdvIfAllBuyersSellNoFees": 451.91592799623356,
         "requiresMoreThanReferenceRwiTotalSupply": false
       },
       {
@@ -63,12 +65,12 @@
         "subsequentPriceMultiple": 0.5,
         "taxBps": 0,
         "requiredNetRwi": 183274199.20258045,
-        "fdvUsd": 70877.2233983162,
+        "fdvUsd": 54215.7287525381,
         "poolUsd": 5000.0199999999995,
-        "soldPercent": 18.78098620143087,
-        "pooledPercent": 3.5272403180220957,
-        "lockedPercent": 77.69177348054703,
-        "postGraduationFdvIfAllBuyersSellNoFees": 1771.9305849579052,
+        "soldPercent": 21.473809280352828,
+        "pooledPercent": 4.611226405184053,
+        "lockedPercent": 73.9149643144631,
+        "postGraduationFdvIfAllBuyersSellNoFees": 1694.2415235168157,
         "requiresMoreThanReferenceRwiTotalSupply": false
       },
       {
@@ -76,25 +78,25 @@
         "subsequentPriceMultiple": 1,
         "taxBps": 0,
         "requiredNetRwi": 91637099.60129023,
-        "fdvUsd": 49999.99999999999,
+        "fdvUsd": 40000,
         "poolUsd": 5000.0199999999995,
-        "soldPercent": 15.8114515463951,
-        "pooledPercent": 5.00002,
-        "lockedPercent": 79.1885284536049,
-        "postGraduationFdvIfAllBuyersSellNoFees": 2886.076962755087,
+        "soldPercent": 17.67774024034181,
+        "pooledPercent": 6.250025,
+        "lockedPercent": 76.0722347596582,
+        "postGraduationFdvIfAllBuyersSellNoFees": 2729.0985718429547,
         "requiresMoreThanReferenceRwiTotalSupply": false
       },
       {
         "launchRwiUsd": 0.00002728163605,
         "subsequentPriceMultiple": 2,
         "taxBps": 0,
-        "requiredNetRwi": 52384430.757746965,
-        "fdvUsd": 49999.99999999999,
-        "poolUsd": 5716.531898477114,
-        "soldPercent": 12.782553920540751,
-        "pooledPercent": 5.716531898477114,
-        "lockedPercent": 81.50091418098214,
-        "postGraduationFdvIfAllBuyersSellNoFees": 4774.575140626314,
+        "requiredNetRwi": 50117993.96380682,
+        "fdvUsd": 40000,
+        "poolUsd": 5469.203483506699,
+        "soldPercent": 13.673008708766746,
+        "pooledPercent": 6.836504354383373,
+        "lockedPercent": 79.49048693684989,
+        "postGraduationFdvIfAllBuyersSellNoFees": 4444.444444444444,
         "requiresMoreThanReferenceRwiTotalSupply": false
       },
       {
@@ -102,12 +104,12 @@
         "subsequentPriceMultiple": 10,
         "taxBps": 0,
         "requiredNetRwi": 9163709.960129023,
-        "fdvUsd": 73960.49894151541,
+        "fdvUsd": 69955.84412271572,
         "poolUsd": 5000.0199999999995,
-        "soldPercent": 4.11108851459224,
-        "pooledPercent": 3.3801962341775083,
-        "lockedPercent": 92.50871525123026,
-        "postGraduationFdvIfAllBuyersSellNoFees": 15058.130236662924,
+        "soldPercent": 4.227121617496789,
+        "pooledPercent": 3.573697139033176,
+        "lockedPercent": 92.19918124347004,
+        "postGraduationFdvIfAllBuyersSellNoFees": 14681.793621115881,
         "requiresMoreThanReferenceRwiTotalSupply": false
       },
       {
@@ -115,12 +117,12 @@
         "subsequentPriceMultiple": 100,
         "taxBps": 0,
         "requiredNetRwi": 916370.9960129022,
-        "fdvUsd": 521856.54883566697,
+        "fdvUsd": 518451.42853498727,
         "poolUsd": 5000.0199999999995,
-        "soldPercent": 0.4894193937836838,
-        "pooledPercent": 0.47906076978009815,
-        "lockedPercent": 99.03151983643622,
-        "postGraduationFdvIfAllBuyersSellNoFees": 127688.23798204513,
+        "soldPercent": 0.4910239842823716,
+        "pooledPercent": 0.4822071774523597,
+        "lockedPercent": 99.02676883826527,
+        "postGraduationFdvIfAllBuyersSellNoFees": 127275.08743288707,
         "requiresMoreThanReferenceRwiTotalSupply": false
       }
     ],
@@ -132,79 +134,79 @@
     "reentrantEthClaimRejected": true,
     "rejectedRecipientRollback": true,
     "implementation": {
-      "factoryRuntimeHash": "0x31a277d2fbc47bf0b9040a3667141661215c87bd6cababfd7ee3002b3b142780",
-      "factoryCreationHash": "0xdd198c4a2b3cf125f0f66b581db037b32b0807249feb8511a42defd58e93827b",
+      "factoryRuntimeHash": "0x3814e4b7b919566688f0790dfa44b541b9cd88cc93fb72777ea607f86778ccbc",
+      "factoryCreationHash": "0x8c808be9ae8aa74d8cfeb52153502dd5d0ad52673176070a743e963d19c14296",
       "hookRuntimeHash": "0x3202b062faae6928b4e8e26b212cbf2ceb7df9b6db41369b80a5fc546ec615ab",
-      "routerRuntimeHash": "0x63234bc7225d6913588a8826daf14ab8e0f5f75cff16a240305b15059514efcc"
+      "routerRuntimeHash": "0x8f2dc05c4d350ce9c1f37fc8f1c1f53af1e55f24b90a2b6735e41cb6119a162e"
     },
     "referencePriceGraduation": {
       "rwiUsd": "27281636050000",
-      "netRwi": "91637099601290223984010794"
+      "netRwi": "91637099601290223971857620"
     },
-    "testedAt": "2026-10-30T23:39:35.181Z",
+    "testedAt": "2026-10-30T23:52:18.184Z",
     "localOnly": true,
     "fork": {
       "chainId": 4663,
-      "forkBlockNumber": 102116970,
-      "forkBlockHash": "0x3e5775ed5f52604079865e9ac62014aa08fd9356cc4f1524afed712c4471d577"
+      "forkBlockNumber": 102124326,
+      "forkBlockHash": "0x2554394a0e96d79b7dfefb0f737163cbbd612582e7b51914947c40d185c2399c"
     },
     "oracle": "Mutable test double; not a production feed",
     "cases": [
       {
         "tax": 0,
         "token0": false,
-        "actualPoolUsd": "5000020000000000000395",
-        "readyReserve": "250001000000000000115478",
-        "position": "4107376"
+        "actualPoolUsd": "5000019999999999999504",
+        "readyReserve": "250001000000000000082322",
+        "position": "4107517"
       },
       {
         "tax": 0,
         "token0": true,
-        "actualPoolUsd": "5000020000000000000395",
-        "readyReserve": "250001000000000000115477",
-        "position": "4107376"
+        "actualPoolUsd": "5000019999999999999504",
+        "readyReserve": "250001000000000000082321",
+        "position": "4107517"
       },
       {
         "tax": 100,
         "token0": false,
-        "actualPoolUsd": "5000020000000000000395",
-        "readyReserve": "250001000000000000115478",
-        "position": "4107376"
+        "actualPoolUsd": "5000019999999999999504",
+        "readyReserve": "250001000000000000082321",
+        "position": "4107517"
       },
       {
         "tax": 100,
         "token0": true,
-        "actualPoolUsd": "5000020000000000000395",
-        "readyReserve": "250001000000000000115478",
-        "position": "4107376"
+        "actualPoolUsd": "5000019999999999999504",
+        "readyReserve": "250001000000000000082321",
+        "position": "4107517"
       },
       {
         "tax": 200,
         "token0": false,
-        "actualPoolUsd": "5000020000000000000395",
-        "readyReserve": "250001000000000000115477",
-        "position": "4107376"
+        "actualPoolUsd": "5000019999999999999504",
+        "readyReserve": "250001000000000000082321",
+        "position": "4107517"
       },
       {
         "tax": 200,
         "token0": true,
-        "actualPoolUsd": "5000020000000000000395",
-        "readyReserve": "250001000000000000115477",
-        "position": "4107376"
+        "actualPoolUsd": "5000019999999999999504",
+        "readyReserve": "250001000000000000082321",
+        "position": "4107517"
       },
       {
         "tax": 300,
         "token0": false,
-        "actualPoolUsd": "5000020000000000000395",
-        "readyReserve": "250001000000000000115477",
-        "position": "4107376"
+        "actualPoolUsd": "5000019999999999999504",
+        "readyReserve": "250001000000000000082322",
+        "position": "4107517"
       },
       {
         "tax": 300,
         "token0": true,
-        "actualPoolUsd": "5000020000000000000395",
-        "readyReserve": "250001000000000000115477",
-        "position": "4107376"
+        "actualPoolUsd": "5000019999999999999504",
+        "readyReserve": "250001000000000000082322",
+        "position": "4107517"
       }
     ],
     "oracleFailureCases": 10,
@@ -221,21 +223,21 @@
     "optimizerRuns": 200,
     "viaIR": true,
     "evmVersion": "cancun",
-    "factoryRuntimeBytes": 22117,
-    "factoryCreationBytes": 34963,
-    "factoryRuntimeTemplateHash": "0x6342856e509e40dbd8b8d85c31eaeb2405318b4da7694e8c473e750df31fd305",
+    "factoryRuntimeBytes": 21925,
+    "factoryCreationBytes": 34771,
+    "factoryRuntimeTemplateHash": "0x031eda825f1d0c9d6003eadfc84ab1f13d45c12b816a4bca021a14b6027af8b8",
     "immutableNote": "Factory deployed runtime includes the oracle address; template hash alone is not a deployed-code check."
   },
   "sourceSha256": {
-    "CurveEconomics.sol": "476098237c9c9a0416be22df6e01981651dd11372d647a4b296ad00e86a8a68d",
+    "CurveEconomics.sol": "01535b9aaba7ea26a9c9e745f7e0b827cfa4124a6fbe34032016b48704ceffe4",
     "IRwiUsdOracle.sol": "3c30966260e93f071354639dcb62d870bd8d75a94ce7c2177831f722c41490f2",
     "RWILaunchV4.sol": "f567e3e3a68631639c0ce989e5f1cd8ff8e35f4d33791f28dbe3d3e8ac418fcd",
     "RWICreatorHookV4.sol": "1514e85767890d6b0594749f75bd6105c79e11288491b682e88b1318f1a0d36c",
     "TestSupport.sol": "9f3b68370917625e26ad9fb9857785448f0da372bce61bd2786d08256166af04",
     "compile.cjs": "69a6217c11a4b8ae13b4f5e585a393a655cf61985f4f823aabef353e6b6615f3",
-    "test-fork.cjs": "d4b789c75444c794d0d8a87b7d44e0baae77c4363de2531a93ac18afaeaa1c6f",
+    "test-fork.cjs": "02c49856587cede24e329a55daf7ecdec149173a92c1ca4cf2c376e37ad68e3e",
     "test-economics.cjs": "f95b0edc1591b2fcc180e20f4a8b916da7e51202f2959bffbe054d19e8fb3061",
     "test-solidity-math.cjs": "b9a947bc426a1153ccc9029182993b56f6f29bc29e20502ed67459d7456e57ed",
-    "economics-model.cjs": "f5778d45064dbc6540966d480f2fc167c314913b0fb213ce853898c9653761bd"
+    "economics-model.cjs": "f4068992a69c8d71dd399aac4662c1c5f337c60f1fbc5231bd0ab5f05a944388"
   }
 }

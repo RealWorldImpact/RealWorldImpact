@@ -1,6 +1,6 @@
 # RWI launches — bounded-reserve curve (V3)
 
-**SUPERSEDED — DO NOT DEPLOY.** The economic review found this build does not meet the revised requirement: live USD valuation of at least $50,000 **and** at least $5,000 total pool liquidity. Its setup page blocks deployment. See [the economic review](ECONOMIC-REVIEW.md). Previous implementation tests below remain historical evidence, not approval of the revised economics.
+**SUPERSEDED — DO NOT DEPLOY.** The economic review found this build does not meet the revised requirement: live USD valuation of at least $40,000 **and** at least $5,000 total pool liquidity. Its setup page blocks deployment. See [the economic review](ECONOMIC-REVIEW.md). Previous implementation tests below remain historical evidence, not approval of the revised economics.
 
 A separate [V4 local candidate and comprehensive review](../launch-v4/README.md) now implements the revised mechanics. It is not activated and still requires a reviewed production RWI/USD oracle and application integration.
 
