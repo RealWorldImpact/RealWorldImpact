@@ -1,5 +1,8 @@
 import { safeTokenLogo } from './wallet-tokens.js';
 const RWI='robinhood_0xda2598c976e62e7e15dcca75169b404712e48b04';
+// This Pons ETH/RWI market has a fixed 0% LP fee; its hook fees do not pay LPs.
+const NO_LP_FEES_POOL='0xa72a9de2c6e3db34308a8ae61e927ceffea630218ca1e712b70b61341c3e99a1';
+export function isFeaturedPoolAllowed(address){return typeof address==='string'&&/^0x(?:[0-9a-f]{40}|[0-9a-f]{64})$/i.test(address)&&address.toLowerCase()!==NO_LP_FEES_POOL;}
 
 export function rankFeaturedPools(pages){
   const pools=new Map();
@@ -9,7 +12,7 @@ export function rankFeaturedPools(pages){
       const a=p.attributes||{},base=p.relationships?.base_token?.data?.id,quote=p.relationships?.quote_token?.data?.id;
       if(base!==RWI&&quote!==RWI)continue;
       const volume=Number(a.volume_usd?.h24),liquidity=Number(a.reserve_in_usd),address=String(a.address||'').toLowerCase();
-      if(!/^0x(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(address)||!Number.isFinite(volume)||volume<=0||!Number.isFinite(liquidity)||liquidity<=0)continue;
+      if(!isFeaturedPoolAllowed(address)||!Number.isFinite(volume)||volume<=0||!Number.isFinite(liquidity)||liquidity<=0)continue;
       const other={...(included.get(base===RWI?quote:base)?.attributes||{})},dex=p.relationships?.dex?.data?.id;
       const native=String(other.address||'').toLowerCase()==='0x0000000000000000000000000000000000000000';
       if(native){other.symbol='ETH';other.name='Ether';}
