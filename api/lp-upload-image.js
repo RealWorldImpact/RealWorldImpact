@@ -1,8 +1,8 @@
-import { head, list, put } from '@vercel/blob';
+import { head, list, put, BlobNotFoundError } from '@vercel/blob';
 import { createHash } from 'node:crypto';
 import { createImageUploadHandler } from '../scripts/lp/server/launch-image-upload.js';
 import { createBlobImageStorage } from '../scripts/lp/server/blob-image-storage.js';
-const storage=createBlobImageStorage({head,list,put});
+const storage=createBlobImageStorage({head,list,put,BlobNotFoundError});
 export default createImageUploadHandler({storage,
   // Operational diagnostics contain no wallet, image, signature, or credentials.
   onError(stage,error){console.error('Token image hosting failure',stage,error.constructor?.name,/No blob credentials/.test(error.message)?'missing-auth':/environment/.test(error.message)?'environment-access':/storeId/.test(error.message)?'missing-store':'provider-error');},

@@ -1,5 +1,6 @@
-import { BlobNotFoundError } from '@vercel/blob';
-export function createBlobImageStorage({head,list,put}){
+// Receive the class from the same SDK import as head. Serverless builds can load
+// both ESM and CJS SDK copies, whose otherwise identical Error classes differ.
+export function createBlobImageStorage({head,list,put,BlobNotFoundError}){
   return {
     async find(pathname){try{return await head(pathname);}catch(e){if(e instanceof BlobNotFoundError)return null;throw e;}},
     async list(prefix,limit){return (await list({prefix,limit})).blobs;},
