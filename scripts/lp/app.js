@@ -43,7 +43,7 @@ async function metadata(address){
   const c=new Contract(address,P.ERC20,rpc);
   const [symbol,decimals,name]=await Promise.all([c.symbol(),c.decimals(),c.name().catch(()=>null)]);
   if(Number(decimals)>36)throw Error('This token has unsupported decimals.');
-  return P.token(address,Number(decimals),String(symbol).slice(0,24),String(name||symbol).slice(0,80));
+  return P.token(address,Number(decimals),String(symbol).slice(0,24),address.toLowerCase()===P.WETH?'Wrapped Ether':String(name||symbol).slice(0,80));
 }
 async function snapshot(k,tokens,initial){
   const block=await rpc.getBlockNumber(),id=P.poolId(k);
@@ -52,6 +52,7 @@ async function snapshot(k,tokens,initial){
 }
 async function loadPool(){
   const seq=++loadSeq,epoch=session;loaded=null;if(currentView==='add')notice('Reading pool state from Robinhood Chain…');
+  $('poolStatus').textContent='Loading';$('poolPrice').textContent='—';$('poolId').textContent='—';$('poolLink').hidden=true;$('poolBlock').textContent='Reading Robinhood Chain';$('pairName').textContent='Token / RWI';
   try{
     const address=getAddress($('tokenAddress').value.trim()).toLowerCase();
     const hint=walletTokens.find(t=>t.address===address)||tokenIdentityCache.get(address)||{address,symbol:'Token',name:'Loading token details…'};
@@ -69,7 +70,7 @@ async function loadPool(){
     $('poolBlock').textContent='Read at block '+data.block.toLocaleString();
     if(currentView==='add')notice(data.exists?'Pool loaded. Deposits use the live pool price.':'No pool exists for this token and fee tier. Your first deposit will initialize it.');
     if(account)await balances(data);
-  }catch(e){if(seq===loadSeq)notice(failure(e),true);}
+  }catch(e){if(seq===loadSeq&&epoch===session){$('poolStatus').textContent='Could not load';$('poolBlock').textContent='Check the token address and try Load again.';notice(failure(e),true);}}
 }
 async function balances(data){
   const epoch=session,who=account;if(!who)return;
@@ -370,13 +371,13 @@ async function execute(){
     loadWalletTokens();
   }catch(e){clearProposal();notice(failure(e),true);}finally{locked(false);}
 }
-function view(name){currentView=name;notice(name==='positions'?'Connect your wallet, then refresh or import a position.':name==='activity'?'Transactions are filtered by your connected wallet.':'Load a token pair to read its current pool state.');document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));document.querySelectorAll('main>.view').forEach(v=>v.hidden=v.id!==name+'View');$('breadcrumb').textContent=name==='add'?'LP':name==='positions'?'My positions':'Transactions';}
+function view(name){currentView=name;notice(name==='positions'?(account?'Refresh your positions or import a position ID below.':'Connect your wallet, then refresh or import a position.'):name==='activity'?'Transactions are filtered by your connected wallet.':'Load a token pair to read its current pool state.');document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===name);b.setAttribute('aria-pressed',String(b.dataset.view===name));});document.querySelectorAll('main>.view').forEach(v=>v.hidden=v.id!==name+'View');$('breadcrumb').textContent=name==='add'?'LP':name==='positions'?'My positions':'Transactions';}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>view(b.dataset.view));
 $('walletButton').onclick=()=>chooseWallet().catch(e=>notice(failure(e),true));
 $('disconnect').onclick=()=>{if(injected?.removeListener){injected.removeListener('accountsChanged',oldAccountListener);injected.removeListener('chainChanged',oldChainListener);injected.removeListener('disconnect',oldDisconnectListener);}injected=null;resetWallet();notice('Disconnected from this page. Existing token approvals remain onchain.');};
 $('closeWallet').onclick=()=>$('walletDialog').close();$('cancelReview').onclick=clearProposal;$('submitAction').onclick=execute;
 $('reviewDialog').addEventListener('cancel',e=>{if(busy)e.preventDefault();else clearProposal();});
-$('poolForm').onsubmit=reviewDeposit;$('loadPool').onclick=loadPool;$('tokenAddress').oninput=()=>{invalidate();$('tokenAmount').value='';$('tokenAmountLabel').textContent='Token budget';showSelectedToken();};$('fee').onchange=invalidate;
+$('poolForm').onsubmit=reviewDeposit;$('loadPool').onclick=loadPool;$('tokenAddress').oninput=()=>{invalidate();$('tokenAmount').value='';$('tokenAmountLabel').textContent='Token budget';showSelectedToken();};$('fee').onchange=()=>{invalidate();loadPool();};
 ['rwiAmount','tokenAmount'].forEach(id=>$(id).addEventListener('input',clearProposal));
 $('refreshPositions').onclick=refreshPositions;$('importPosition').onclick=importPosition;
 $('positionList').onclick=e=>{const b=e.target.closest('[data-action]');if(b&&!busy)reviewPosition(b.dataset.id,b.dataset.action);};
