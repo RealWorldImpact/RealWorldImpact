@@ -4,7 +4,7 @@ Browser-only Uniswap v4 liquidity interface at `/LP`, chain 4663. Every supporte
 
 ## Build and checks
 
-From this directory run `npm ci`, `npm test`, then `npm run build`. The checked-in `assets/lp.js` bundle is served directly by Vercel. Keep JSBI at 3.2.5 so the Uniswap SDKs share one integer implementation.
+Install the repository-root dependencies with `npm ci` for the image API and its tests. From this directory run `npm ci`, `npm test`, then `npm run build`. The checked-in `assets/lp.js` bundle is served directly by Vercel. Keep JSBI at 3.2.5 so the Uniswap SDKs share one integer implementation.
 
 Addresses come from [Uniswap deployments](https://developers.uniswap.org/docs/protocols/v4/deployments). PositionManager's PoolManager and Permit2 references were checked onchain. The official v4 SDK constructs calldata. Tests decode initialization and mint calldata, verify spending limits, exercise different decimals and fee tiers, and mock wallet/receipt failures without broadcasting transactions.
 
@@ -37,6 +37,14 @@ The browser reads each candidate's current balance and decimals directly from Ro
 `test-tokens.cjs` checks holdings-value ordering, decimals, values beyond JS safe integers, dust, missing and stale prices, filtering, API validation and error paths. `test-wallet.cjs` also covers stale portfolio responses after account changes and overlapping refresh requests.
 
 ## Token logos
+
+Launch accepts optional PNG, JPEG, or still WebP uploads (3 MiB maximum, minimum 128 pixels on each side, maximum 16 megapixels). The browser checks the file and displays a preview. Reviewing a valid form asks the creator to sign a free, narrowly scoped upload message binding the wallet, file SHA-256, website, chain and timestamp. This message is not a transaction or spending approval. EIP-191 and EIP-1271 signature checks are supported; an unsupported wallet can use an existing public image URL instead.
+
+`/api/lp-upload-image` revalidates and fully decodes files with Sharp, rejects animations, reorients photographs, removes embedded metadata, preserves transparency and proportions with transparent square padding, and writes a lossless PNG up to 512 pixels per side without enlargement. Only optimized images are stored in the public `rwi-token-images` Vercel Blob store. Runtime OIDC and `BLOB_STORE_ID` authorize the server; no storage credential is sent to the browser. Paths contain the public wallet, UTC day and normalized-image digest; overwrites are prohibited. Quotas limit each wallet to eight new images per day, with bounded in-process request limits. These are abuse controls, not a complete Sybil defense.
+
+The server confirms the public PNG bytes match their digest before returning its URL. The browser loads that URL before review and checks it again before submitting a launch. Failed uploads stop the launch, preserve retryable selections, and never store a local object URL in token metadata. The URL is immutable on the deployed token. Hosting still depends on the provider's availability and plan limits; external HTTPS/IPFS URLs depend on their publishers. Store usage must be monitored. The UI uses initials if an image is unavailable instead of a broken image or an unrelated token logo.
+
+Uploaded artwork is authoritative throughout the shared logo loader, launch cards, trade dialogs and review dialogs. The onchain `logo()` resolver also supplies it to LP token selection. Cache identity includes image candidates so a newly available image can replace a stale thumbnail. Tests cover content/signature/size validation, corrupt and animated files, orientation, alpha, immutable uploads, retries, provider failure, both module formats of the storage SDK, source changes and fallback rendering. A live public-image upload was verified without broadcasting a blockchain transaction.
 
 The selected token tries wallet-provided artwork, address-specific Dexscreener and Robinhood CDN images, plus `/api/lp-token-logo` results. The resolver matches Robinhood's official `/rhj/assets` registry by chain 4663 and contract address, reads `logo()`, `getTokenInfo()`, and `tokenURI()` through read-only RPC calls, parses IPFS or inline JSON metadata, and checks GeckoTerminal's address-matched image. Image failures and timeouts advance to the next URL. IPFS images have multiple gateway candidates. The fallback remains initials if no usable artwork has been published.
 

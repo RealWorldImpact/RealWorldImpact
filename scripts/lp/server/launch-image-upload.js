@@ -23,7 +23,8 @@ export async function normalizeImage(bytes){
     checkImageDimensions(metadata.width,metadata.height);
     // Auto-orient, retain alpha and the full artwork, remove EXIF/location data,
     // and encode losslessly. No image is enlarged or stretched.
-    const output=await image.rotate().resize({width:512,height:512,fit:'inside',withoutEnlargement:true}).png({compressionLevel:9}).toBuffer({resolveWithObject:true});
+    const side=Math.min(512,Math.max(metadata.width,metadata.height));
+    const output=await image.rotate().resize({width:side,height:side,fit:'contain',withoutEnlargement:true,background:{r:0,g:0,b:0,alpha:0}}).png({compressionLevel:9}).toBuffer({resolveWithObject:true});
     if(output.data.length>IMAGE_MAX_BYTES)throw error('The optimized image is too large.');
     return {bytes:output.data,width:output.info.width,height:output.info.height};
   }catch(e){throw error(e.status?e.message:/at least|megapixels/.test(e.message)?e.message:'The image could not be read completely. Choose another file.');}

@@ -2,12 +2,15 @@ import { Contract, Interface, keccak256, randomBytes, hexlify, parseUnits, forma
 import { LAUNCH_FACTORY } from './launch-config.js';
 import { LAUNCH_ABI, LAUNCH_RUNTIME_HASH, LAUNCH_ROUTER_ABI } from './launch-contract.js';
 import { launchTerms, launchMetadata } from './launch-model.js';
-import { safeTokenLogo } from './wallet-tokens.js';
+import { createLaunchImageController, verifyLaunchImage } from './launch-image-client.js';
+import { createTokenArtwork } from './token-artwork.js';
 const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function createLaunchController({rpc,isBusy,getSession}){
+export function createLaunchController({rpc,isBusy,getSession,getSigner,onFormChange}){
   let sequence=0,next=null,rows=[],timer=null;
   let tradeToken=null,tradeSide='buy',tradeQuote=null,tradeSequence=0,quoteTimer=null,balanceSequence=0,balanceAccount=null;
   const iface=new Interface(LAUNCH_ABI);
+  const renderArtwork=createTokenArtwork();let cardArtwork=[],tradeArtwork=()=>{},reviewArtwork=()=>{};
+  const imageUI=createLaunchImageController({getSigner,getSession,onChange:onFormChange,onState:()=>updateDisabled(isBusy())});
   const routerInterface=new Interface(LAUNCH_ROUTER_ABI),RWI='0xda2598c976e62e7e15dcca75169b404712e48b04',ZERO='0x0000000000000000000000000000000000000000',HOOK='0xe5e702641ea86f4ae6cc3cdaed2b886f976be044';
   const quoter=new Contract('0x8dc178efb8111bb0973dd9d722ebeff267c98f94',['function quoteExactInput((address exactCurrency,(address intermediateCurrency,uint24 fee,int24 tickSpacing,address hooks,bytes hookData)[] path,uint128 exactAmount) params) returns(uint256 amountOut,uint256 gasEstimate)'],rpc);
   function preview(){try{const terms=launchTerms($('launchPrice').value);$('launchPriceNote').textContent='Pool starting price: '+terms.price+' RWI per token · Starting valuation: '+terms.marketCap+' RWI.';}catch(e){$('launchPriceNote').textContent=e.message;}}
@@ -16,13 +19,14 @@ export function createLaunchController({rpc,isBusy,getSession}){
     if(keccak256(await rpc.getCode(LAUNCH_FACTORY))!==LAUNCH_RUNTIME_HASH)throw Error('The launch contract could not be verified. Launching is disabled.');
     return new Contract(LAUNCH_FACTORY,LAUNCH_ABI,rpc);
   }
-  function updateDisabled(busy){$('reviewLaunch').disabled=busy||!LAUNCH_FACTORY;$('moreLaunches').disabled=busy||next===null;$('reviewTrade').disabled=busy||!tradeQuote;if($('tradeDialog').open&&getSession().who!==balanceAccount)refreshTradeBalance();}
+  function updateDisabled(busy){$('reviewLaunch').disabled=busy||!LAUNCH_FACTORY||!imageUI.canReview();$('moreLaunches').disabled=busy||next===null;$('reviewTrade').disabled=busy||!tradeQuote;if($('tradeDialog').open&&getSession().who!==balanceAccount)refreshTradeBalance();}
   function render(){
+    cardArtwork.forEach(cancel=>cancel());cardArtwork=[];
     $('launchedTokenList').innerHTML=rows.length?rows.map(t=>{
-      const logo=safeTokenLogo(t.logo),date=new Date(t.launchedAt*1000).toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'});
-      return '<article class="launched-token"><div class="launch-card-title">'+(logo?'<img src="'+esc(logo)+'" width="44" height="44" alt="" referrerpolicy="no-referrer" loading="lazy">':'<span class="launch-monogram" aria-hidden="true">'+esc(t.symbol.slice(0,2))+'</span>')+'<div><h3>'+esc(t.name)+'</h3><p>'+esc(t.symbol)+' / RWI</p></div><span class="pool-tag">UNISWAP V4</span></div><p class="launch-description">'+esc(t.description||'A community token paired with RWI.')+'</p><dl class="launch-card-details"><dt>Pool fee</dt><dd>1%</dd><dt>Liquidity</dt><dd>Permanently locked</dd><dt>Launched</dt><dd>'+esc(date)+'</dd></dl><a class="launch-address" href="https://robin.etherscan.io/token/'+t.address+'" target="_blank" rel="noopener">'+esc(t.address)+' ↗</a><div class="launch-card-actions"><button type="button" class="primary-button" data-launch-trade="'+t.address+'">Trade with ETH</button><a class="secondary-button" href="https://app.uniswap.org/explore/pools/robinhood/'+t.poolId+'" target="_blank" rel="noopener">View pool ↗</a><button type="button" class="secondary-button" data-launch-fees="'+t.address+'">Collect creator fees</button></div></article>';
+      const date=new Date(t.launchedAt*1000).toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'});
+      return '<article class="launched-token"><div class="launch-card-title">'+'<span class="token-artwork" data-launch-artwork="'+t.address+'"></span>'+'<div><h3>'+esc(t.name)+'</h3><p>'+esc(t.symbol)+' / RWI</p></div><span class="pool-tag">UNISWAP V4</span></div><p class="launch-description">'+esc(t.description||'A community token paired with RWI.')+'</p><dl class="launch-card-details"><dt>Pool fee</dt><dd>1%</dd><dt>Liquidity</dt><dd>Permanently locked</dd><dt>Launched</dt><dd>'+esc(date)+'</dd></dl><a class="launch-address" href="https://robin.etherscan.io/token/'+t.address+'" target="_blank" rel="noopener">'+esc(t.address)+' ↗</a><div class="launch-card-actions"><button type="button" class="primary-button" data-launch-trade="'+t.address+'">Trade with ETH</button><a class="secondary-button" href="https://app.uniswap.org/explore/pools/robinhood/'+t.poolId+'" target="_blank" rel="noopener">View pool ↗</a><button type="button" class="secondary-button" data-launch-fees="'+t.address+'">Collect creator fees</button></div></article>';
     }).join(''):'<div class="empty-state">No tokens have launched through RWI LP yet. Your launch could be the first.</div>';
-    $('launchedTokenList').querySelectorAll('img').forEach(img=>img.addEventListener('error',()=>{const fallback=document.createElement('span');fallback.className='launch-monogram';fallback.setAttribute('aria-hidden','true');fallback.textContent=img.closest('article').querySelector('h3').textContent.slice(0,2);img.replaceWith(fallback);},{once:true}));
+    $('launchedTokenList').querySelectorAll('[data-launch-artwork]').forEach(host=>{const token=rows.find(t=>t.address===host.dataset.launchArtwork);if(token)cardArtwork.push(renderArtwork(host,token));});
     $('moreLaunches').hidden=next===null;updateDisabled(isBusy());
   }
   async function load(append=false){
@@ -35,13 +39,15 @@ export function createLaunchController({rpc,isBusy,getSession}){
       const clean=body.launches.filter(t=>/^0x[0-9a-f]{40}$/.test(t.address)&&/^0x[0-9a-f]{64}$/.test(t.poolId)&&typeof t.name==='string'&&typeof t.symbol==='string'&&typeof t.description==='string'&&Number.isFinite(t.launchedAt));
       const cursor=typeof body.next==='string'&&/^\d{1,10}$/.test(body.next)?body.next:null;
       next=append||!rows.length?cursor:next===null||cursor===null?null:String(Math.min(Number(next),Number(cursor)));
-      rows=append?[...new Map([...rows,...clean].map(t=>[t.address,t])).values()]:[...new Map([...clean,...rows].map(t=>[t.address,t])).values()];render();
+      const fresh=new Map(clean.map(t=>[t.address,t]));
+      rows=append?[...new Map([...rows,...clean].map(t=>[t.address,t])).values()]:[...fresh.values(),...rows.filter(t=>!fresh.has(t.address))];render();
       $('launchesStatus').textContent=body.total+' token'+(body.total===1?'':'s')+' launched · Verified onchain · Newest first';
     }catch(e){if(request===sequence)$('launchesStatus').textContent=e.message;}
   }
   function watch(active){clearTimeout(timer);if(active){load();timer=setTimeout(()=>watch(true),30000);}}
   async function prepare(who,epoch){
-    await verify();const metadata=launchMetadata(Object.fromEntries(['name','symbol','logo','description','website','twitter','telegram'].map(key=>[key,$('launch'+key[0].toUpperCase()+key.slice(1)).value]))),terms=launchTerms($('launchPrice').value);
+    const metadata=launchMetadata({...Object.fromEntries(['name','symbol','description','website','twitter','telegram'].map(key=>[key,$('launch'+key[0].toUpperCase()+key.slice(1)).value])),logo:''}),terms=launchTerms($('launchPrice').value);
+    await verify();metadata.logo=await imageUI.prepare(who,epoch);
     return {kind:'launch',who,epoch,metadata,terms,salt:hexlify(randomBytes(32)),createdAt:Date.now(),label:'Launch '+metadata.symbol,rows:[['Token',metadata.name+' ('+metadata.symbol+')'],['Pair','RWI'],['Supply','1,000,000,000'],['Starting price',terms.price+' RWI per token'],['Pool fee','1%'],['Launch fee','0 ETH'],['RWI deposit','None'],['Liquidity','Permanently locked'],['Creator / fee recipient',who],['Network cost','Wallet gas estimate'],['Factory',LAUNCH_FACTORY]]};
   }
   async function feeReview(token,who,epoch){const c=await verify(),record=await c.launches(token);if(record.creator.toLowerCase()!==who.toLowerCase())throw Error('Connect the creator wallet to collect fees for this token.');return {kind:'launchfees',who,epoch,token,createdAt:Date.now(),label:'Collect launch fees',rows:[['Token',token],['Recipient',who],['Action','Collect earned pool fees'],['Locked liquidity','Unchanged']]};}
@@ -70,7 +76,7 @@ export function createLaunchController({rpc,isBusy,getSession}){
     try{const balance=side==='buy'?await rpc.getBalance(who):await new Contract(current.address,['function balanceOf(address) view returns(uint256)'],rpc).balanceOf(who);if(request===balanceSequence&&current===tradeToken&&who===getSession().who)$('tradeBalance').textContent=(side==='buy'?'ETH':current.symbol)+' available: '+formatUnits(balance,18)+(side==='buy'?' · Leave ETH for network gas.':'');}catch{if(request===balanceSequence)$('tradeBalance').textContent='Balance unavailable. It will be checked before review.';}
   }
   async function openTrade(token){
-    tradeToken=rows.find(t=>t.address===token);if(!tradeToken)throw Error('This token is not in the verified launch registry.');tradeSide='buy';$('tradeTitle').textContent='Trade '+tradeToken.symbol;$('tradeAmount').value='0.001';$('tradeDialog').showModal();refreshTrade();
+    tradeToken=rows.find(t=>t.address===token);if(!tradeToken)throw Error('This token is not in the verified launch registry.');tradeArtwork();tradeArtwork=renderArtwork($('tradeTokenArtwork'),tradeToken);tradeSide='buy';$('tradeTitle').textContent='Trade '+tradeToken.symbol;$('tradeAmount').value='0.001';$('tradeDialog').showModal();refreshTrade();
     refreshTradeBalance();
   }
   async function prepareTrade(who,epoch){
@@ -87,10 +93,13 @@ export function createLaunchController({rpc,isBusy,getSession}){
       if(Date.now()-p.quotedAt>120000)throw Error('The trade quote expired. Review a fresh quote.');if((await route()).toLowerCase()!==p.router.toLowerCase())throw Error('The routing contract changed. Review the trade again.');
       return {to:p.router,data:routerInterface.encodeFunctionData(p.kind==='launchbuy'?'buy':'sell',p.kind==='launchbuy'?[p.token,p.minimum,Math.floor(Date.now()/1000)+1100]:[p.token,p.amount,p.minimum,Math.floor(Date.now()/1000)+1100]),value:p.kind==='launchbuy'?p.amount:0n};
     }
+    if(p.kind==='launch'&&p.metadata.logo)await verifyLaunchImage(p.metadata.logo);
     return {to:LAUNCH_FACTORY,data:p.kind==='launch'?iface.encodeFunctionData('launch',[p.metadata,p.terms.tick,p.salt,Math.floor(Date.now()/1000)+1100]):iface.encodeFunctionData('claimFees',[p.token]),value:0n};
   }
+  function renderReview(p){reviewArtwork();const token=p.kind==='launch'?{...p.metadata}:rows.find(t=>t.address===p.token);$('reviewTokenArtwork').hidden=!token;if(token)reviewArtwork=renderArtwork($('reviewTokenArtwork'),token);}
+  $('reviewDialog').addEventListener('close',()=>reviewArtwork());
   $('tradeAmount').addEventListener('input',refreshTrade);document.querySelectorAll('[data-trade-side]').forEach(button=>button.onclick=()=>{tradeSide=button.dataset.tradeSide;$('tradeAmount').value=tradeSide==='buy'?'0.001':'';refreshTrade();refreshTradeBalance();});
-  $('closeTrade').onclick=()=>$('tradeDialog').close();$('cancelTrade').onclick=()=>$('tradeDialog').close();$('tradeDialog').addEventListener('close',()=>{tradeSequence++;clearTimeout(quoteTimer);tradeQuote=null;});
+  $('closeTrade').onclick=()=>$('tradeDialog').close();$('cancelTrade').onclick=()=>$('tradeDialog').close();$('tradeDialog').addEventListener('close',()=>{tradeArtwork();tradeSequence++;clearTimeout(quoteTimer);tradeQuote=null;});
   $('launchPrice').addEventListener('input',preview);preview();updateDisabled(false);
-  return {load,watch,prepare,request,feeReview,updateDisabled,openTrade,prepareTrade,tradeApprovals};
+  return {load,watch,prepare,request,renderReview,feeReview,updateDisabled,openTrade,prepareTrade,tradeApprovals};
 }

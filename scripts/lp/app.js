@@ -195,18 +195,18 @@ function showSelectedToken(token){
   const address=token.address.toLowerCase(),name=token.name||token.symbol,candidates=tokenLogoCandidates(token).join('|');
   if(label.dataset.address===address&&label.querySelector('.selected-token-logo')){
     label.querySelector('.selected-token-copy strong').textContent=token.symbol;label.querySelector('.selected-token-name').textContent=name;
-    const image=label.querySelector('img');
-    if((image.complete&&image.naturalWidth>=128)||label.dataset.candidates===candidates)return;
+    if(label.dataset.candidates===candidates)return;
   }else{
     label.innerHTML='<span class="selected-token-avatar"><span class="token-monogram">'+esc(token.symbol.slice(0,2))+'</span><img class="selected-token-logo" alt="" referrerpolicy="no-referrer" hidden></span><span class="selected-token-copy"><strong>'+esc(token.symbol)+'</strong><span class="selected-token-name">'+esc(name)+'</span></span>';
   }
   label.dataset.address=address;label.dataset.candidates=candidates;cancelSelectedLogo?.();
   const image=label.querySelector('img');
+  const missing=()=>{if(label.contains(image)&&label.dataset.address===address){image.hidden=true;label.querySelector('.token-monogram').hidden=false;}};
   cancelSelectedLogo=logoLoader.load(token,result=>{
     if(!label.contains(image)||label.dataset.address!==address)return;
     const display=()=>{if(label.contains(image)&&image.naturalWidth){image.hidden=false;label.querySelector('.token-monogram').hidden=true;}};
-    image.onload=display;image.src=result.src;if(image.complete)display();
-  });
+    image.onload=display;image.onerror=()=>{if(label.contains(image)){image.hidden=true;label.querySelector('.token-monogram').hidden=false;}};image.src=result.src;if(image.complete)display();
+  },missing);
 }
 async function tokenLogoMetadata(token){
   const address=token.address.toLowerCase();if(address===P.WETH||address===P.RWI)return null;
@@ -239,13 +239,15 @@ function observeTokenRowLogos(rows){
     const display=result=>{
       if(!current())return;
       const show=()=>{if(current()&&image.naturalWidth){image.hidden=false;monogram.hidden=true;}};
-      image.onload=show;image.src=result.src;if(image.complete)show();
+      image.onload=show;image.onerror=()=>{if(current()){image.hidden=true;monogram.hidden=false;}};image.src=result.src;if(image.complete)show();
     };
-    cancel=logoLoader.load({...token,logos:logoMetadataCache.get(token.address)?.logos},display,async()=>{
-      const body=await tokenLogoMetadata(token);
-      if(current()&&body?.logos.length)cancel=logoLoader.load({...token,logos:body.logos},display);
-    });
-    cancellations.push(()=>{cancel();image.onload=null;});
+    const missing=()=>{if(current()){image.hidden=true;monogram.hidden=false;}};
+    const initial={...token,logos:logoMetadataCache.get(token.address)?.logos},candidates=tokenLogoCandidates(initial).join('|');
+    cancel=logoLoader.load(initial,display,missing);
+    // Resolve onchain artwork even when an indexer already supplied a thumbnail.
+    // Initial candidates remain fast; the canonical upload can replace them later.
+    tokenLogoMetadata(token).then(body=>{const updated={...token,logos:body?.logos};if(current()&&body?.logos.length&&tokenLogoCandidates(updated).join('|')!==candidates){cancel();cancel=logoLoader.load(updated,display,missing);}});
+    cancellations.push(()=>{cancel();image.onload=image.onerror=null;});
   };
   const buttons=[...root.querySelectorAll('[data-wallet-token]')];
   const checkVisible=()=>{if(stopped||!$('tokenDialog').open)return;const r=root.getBoundingClientRect();for(const button of buttons){const b=button.getBoundingClientRect();if(b.bottom>=r.top-50&&b.top<=r.bottom+50)start(button);}};
@@ -386,7 +388,7 @@ async function approvals(p,signer){
   for(const {label,...request} of await approvalCalls(p))await send(signer,request,label,p.who,p.epoch);
 }
 function showReview(p,rows){
-  proposal=p;$('reviewTitle').textContent=p.label;$('reviewRows').innerHTML=rows.map(([a,b])=>'<dt>'+esc(a)+'</dt><dd>'+esc(b)+'</dd>').join('');
+  proposal=p;launchesUI.renderReview(p);$('reviewTitle').textContent=p.label;$('reviewRows').innerHTML=rows.map(([a,b])=>'<dt>'+esc(a)+'</dt><dd>'+esc(b)+'</dd>').join('');
   $('approvalNote').hidden=p.kind!=='deposit';$('submitAction').textContent=p.kind==='deposit'?'Confirm deposit':'Confirm in wallet';$('submitAction').disabled=false;$('reviewDialog').showModal();
 }
 async function reviewDeposit(event){
@@ -571,7 +573,7 @@ async function execute(){
   }catch(e){clearProposal();notice(failure(e),true);}finally{locked(false);if(account)loadPositions();}
 }
 function view(name){currentView=name;launchesUI.watch(name==='launch');$('featuredPools').hidden=name!=='add';notice(name==='positions'||name==='launch'?'':'Load a token pair to read its current pool state.');document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===name);b.setAttribute('aria-pressed',String(b.dataset.view===name));});document.querySelectorAll('main>.view').forEach(v=>v.hidden=v.id!==name+'View');$('breadcrumb').textContent=name==='add'?'LP':name==='positions'?'My positions':'Launch';clearTimeout(positionsTimer);if(name==='positions')loadPositions();}
-const launchesUI=createLaunchController({rpc,isBusy:()=>busy,getSession:()=>({who:account,epoch:session})});
+const launchesUI=createLaunchController({rpc,isBusy:()=>busy,getSession:()=>({who:account,epoch:session}),getSigner:signerFor,onFormChange:clearProposal});
 $('launchForm').onsubmit=async event=>{event.preventDefault();if(!account){await chooseWallet();return;}locked(true);try{const p=await launchesUI.prepare(account,session);await signerFor(p.who,p.epoch);showReview(p,p.rows);}catch(e){notice(failure(e),true);}finally{locked(false);}};
 $('launchForm').addEventListener('input',clearProposal);
 $('moreLaunches').onclick=()=>launchesUI.load(true);

@@ -8,8 +8,11 @@ const assert=require('node:assert/strict'),sharp=require('../../node_modules/sha
  const cjsSdk=require('../../node_modules/@vercel/blob');assert.equal(await createBlobImageStorage({...cjsSdk,head:async()=>{throw new cjsSdk.BlobNotFoundError()}}).find('missing.png'),null);
  const {imageUploadMessage,uploadedImageUrl,IMAGE_STORE_ORIGIN}=await import('./launch-image-policy.js');
  const png=await sharp({create:{width:1024,height:512,channels:4,background:{r:180,g:220,b:0,alpha:.5}}}).png().toBuffer();
- const normalized=await normalizeImage(png),m=await sharp(normalized.bytes).metadata();assert.equal(m.width,512);assert.equal(m.height,256);assert.equal(m.hasAlpha,true);assert.equal(m.exif,undefined);
- const jpeg=await sharp({create:{width:600,height:300,channels:3,background:'#98ff00'}}).withMetadata({orientation:6}).jpeg().toBuffer();const oriented=await normalizeImage(jpeg);assert.equal(oriented.width,256);assert.equal(oriented.height,512);assert.equal((await sharp(oriented.bytes).metadata()).exif,undefined);
+ const normalized=await normalizeImage(png),m=await sharp(normalized.bytes).metadata();assert.equal(m.width,512);assert.equal(m.height,512);assert.equal(m.hasAlpha,true);assert.equal(m.exif,undefined);
+ const pixels=await sharp(normalized.bytes).raw().toBuffer();assert.equal(pixels[3],0,'landscape artwork gets transparent padding');assert.ok(pixels[(256*512+256)*4+3]>100,'artwork keeps its original alpha');
+ const jpeg=await sharp({create:{width:600,height:300,channels:3,background:'#98ff00'}}).withMetadata({orientation:6}).jpeg().toBuffer();const oriented=await normalizeImage(jpeg);assert.equal(oriented.width,512);assert.equal(oriented.height,512);assert.equal((await sharp(oriented.bytes).metadata()).exif,undefined);
+ const rotated=await sharp(oriented.bytes).raw().toBuffer();assert.equal(rotated[(256*512+10)*4+3],0,'rotated portrait has side padding');assert.equal(rotated[(10*512+256)*4+3],255,'rotated portrait fills the vertical canvas');
+ for(const [width,height] of [[128,128],[128,8192]]){const source=await sharp({create:{width,height,channels:4,background:'red'}}).png().toBuffer(),result=await normalizeImage(source);assert.equal(result.width,width===height?128:512);assert.equal(result.width,result.height);}
  const webp=await sharp(png).webp({lossless:true}).toBuffer();assert.equal((await normalizeImage(webp)).width,512);
  const tiny=await sharp({create:{width:16,height:16,channels:3,background:'red'}}).png().toBuffer();
  for(const bytes of [Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"></svg>'),Buffer.from('GIF89a0000000000'),png.subarray(0,70),tiny,Buffer.alloc(24)])await assert.rejects(normalizeImage(bytes));

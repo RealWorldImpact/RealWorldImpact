@@ -1,6 +1,6 @@
 # Real World Impact website
 
-This repository publishes [rwihood.org](https://www.rwihood.org/), a public informational site for $RWI. It uses static HTML with a few read-only data proxies and a wallet-controlled Uniswap v4 liquidity interface at `/LP`. The site does not accept agent tasks or HTTP transaction requests.
+This repository publishes [rwihood.org](https://www.rwihood.org/), a public informational site for $RWI. It uses static HTML, read-only data proxies, wallet-authorized token-image hosting, and a wallet-controlled Uniswap v4 liquidity interface at `/LP`. The site does not accept agent tasks or HTTP transaction requests.
 
 ## Public machine-readable files
 
