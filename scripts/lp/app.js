@@ -16,6 +16,7 @@ const fmt=(n,d)=>{const s=formatUnits(n,d);return s.length>24?s.slice(0,24)+'…
 const txLink=hash=>'https://robin.etherscan.io/tx/'+hash;
 let injected=null,wallet=null,account=null,session=0,busy=false,loaded=null,proposal=null,verified=false,positions=new Map(),loadSeq=0;
 let currentView='add';
+let featuredRequest=0;
 const logoLoader=createLogoLoader();
 const tokenIdentityCache=new Map([[P.WETH,{address:P.WETH,symbol:'WETH',name:'Wrapped Ether'}]]);
 const logoMetadataCache=new Map();
@@ -43,6 +44,27 @@ function selectedAmount(side){
   const amount=percentageAmount(held.balance,Number($(side+'Percent').value));
   if(amount<=0n||amount>=(1n<<128n))throw Error('Choose a positive amount for each token.');
   return amount;
+}
+async function loadFeaturedPools(){
+  const request=++featuredRequest;$('refreshFeatured').disabled=true;
+  try{
+    const response=await fetch('/api/lp-featured-pools',{signal:AbortSignal.timeout(12000)}),body=await response.json();
+    if(request!==featuredRequest)return;
+    if(!response.ok||!Array.isArray(body.pools))throw Error('Pool data unavailable');
+    const pools=body.pools.filter(p=>/^0x(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(p.address));
+    const money=value=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2}).format(value);
+    $('featuredPoolList').innerHTML=pools.length?pools.map(p=>'<article class="featured-pool"><div class="featured-pair"><div class="featured-icons"><img src="/assets/rwi-logo.webp" alt="RWI" width="32" height="32"><img data-featured-logo="'+p.address+'" alt="" width="32" height="32" hidden></div><div><h3>'+esc(p.name)+'</h3><p>'+esc(p.dex)+'</p></div></div><div class="featured-metrics"><div><span>24H VOLUME</span><strong>'+esc(money(p.volume24h))+'</strong></div><div><span>LIQUIDITY</span><strong>'+esc(money(p.liquidityUsd))+'</strong></div></div><a href="https://www.geckoterminal.com/robinhood/pools/'+p.address+'" target="_blank" rel="noopener">View pool ↗</a></article>').join(''):'<p class="help">No RWI pools have reported trading volume and liquidity in the last 24 hours.</p>';
+    for(const image of document.querySelectorAll('[data-featured-logo]')){
+      const other=pools.find(p=>p.address===image.dataset.featuredLogo)?.other;if(!other)continue;
+      const token={...other,address:[P.ZERO,'0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'].includes(other.address)?P.WETH:other.address};
+      if(!/^0x[0-9a-f]{40}$/.test(token.address))continue;
+      logoLoader.load(token,result=>{if(request!==featuredRequest||!image.isConnected)return;image.src=result.src;image.hidden=false;});
+    }
+    const updated=new Date(body.updatedAt);
+    $('featuredPoolNote').textContent='GeckoTerminal market data · '+(body.stale?'Last available data':'Updated')+' '+(Number.isNaN(updated.getTime())?'recently':updated.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}))+(body.partial?' · Indexed pools shown.':' · Active pools only.');
+  }catch{
+    if(request===featuredRequest){$('featuredPoolList').innerHTML='<p class="help">Featured pools are temporarily unavailable. Use Refresh to try again.</p>';$('featuredPoolNote').textContent='';}
+  }finally{if(request===featuredRequest)$('refreshFeatured').disabled=false;}
 }
 let pending=readStore('rwi-lp-transactions',[]);
 const discovered=new Map();
@@ -392,7 +414,7 @@ async function execute(){
     loadWalletTokens();
   }catch(e){clearProposal();notice(failure(e),true);}finally{locked(false);}
 }
-function view(name){currentView=name;notice(name==='positions'?(account?'Refresh your positions or import a position ID below.':'Connect your wallet, then refresh or import a position.'):name==='activity'?'Transactions are filtered by your connected wallet.':'Load a token pair to read its current pool state.');document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===name);b.setAttribute('aria-pressed',String(b.dataset.view===name));});document.querySelectorAll('main>.view').forEach(v=>v.hidden=v.id!==name+'View');$('breadcrumb').textContent=name==='add'?'LP':name==='positions'?'My positions':'Transactions';}
+function view(name){currentView=name;$('featuredPools').hidden=name!=='add';notice(name==='positions'?(account?'Refresh your positions or import a position ID below.':'Connect your wallet, then refresh or import a position.'):name==='activity'?'Transactions are filtered by your connected wallet.':'Load a token pair to read its current pool state.');document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===name);b.setAttribute('aria-pressed',String(b.dataset.view===name));});document.querySelectorAll('main>.view').forEach(v=>v.hidden=v.id!==name+'View');$('breadcrumb').textContent=name==='add'?'LP':name==='positions'?'My positions':'Transactions';}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>view(b.dataset.view));
 $('walletButton').onclick=()=>chooseWallet().catch(e=>notice(failure(e),true));
 $('disconnect').onclick=()=>{if(injected?.removeListener){injected.removeListener('accountsChanged',oldAccountListener);injected.removeListener('chainChanged',oldChainListener);injected.removeListener('disconnect',oldDisconnectListener);}injected=null;resetWallet();notice('Disconnected from this page. Existing token approvals remain onchain.');};
@@ -406,4 +428,5 @@ $('copyRwi').onclick=async()=>{try{await navigator.clipboard.writeText(getAddres
 $('openTokens').onclick=()=>{if(!account){chooseWallet().catch(e=>notice(failure(e),true));return;}$('tokenSearch').value='';renderWalletTokens();$('tokenDialog').showModal();};
 $('closeTokens').onclick=()=>$('tokenDialog').close();$('tokenDialog').addEventListener('close',()=>stopTokenRowLogos());$('refreshTokens').onclick=()=>loadWalletTokens();$('tokenSearch').oninput=renderWalletTokens;
 $('walletTokenList').onclick=e=>{const button=e.target.closest('[data-wallet-token]');if(!button||busy)return;const row=walletTokens.find(t=>t.address===button.dataset.walletToken);if(!row)return;invalidate();$('tokenAddress').value=row.address;$('tokenPercent').value='0';renderAmountControls();$('tokenAmountLabel').textContent=row.symbol+' amount (USD)';showSelectedToken(row);$('tokenDialog').close();loadPool();};
-renderAmountControls();renderActivity();loadPool();
+$('refreshFeatured').onclick=loadFeaturedPools;
+loadFeaturedPools();renderAmountControls();renderActivity();loadPool();
