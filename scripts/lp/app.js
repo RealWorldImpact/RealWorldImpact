@@ -16,6 +16,8 @@ import { valuePositions, positionFeeValue } from './position-values.js';
 import { atomicSupport, checkPendingBatch, sendAtomicBatch } from './wallet-batch.js';
 import { cleanTransactions } from './transaction-history.js';
 import { createLaunchController } from './launch-client.js';
+import { createProfileController } from './profile-client.js';
+import { profileAddress, ownsProfile } from './profile-model.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -81,6 +83,15 @@ function updateWithdrawal(){
   $('reviewWithdrawal').disabled=busy||!Number.isInteger(percentage)||percentage<=0||percentage>100;
 }
 let currentView='add';
+let publicProfile=profileAddress(new URL(location.href).searchParams.get('profile'));
+const profileSubject=()=>publicProfile||account;
+let positionsComplete=false;
+function navigateProfile(address){
+  publicProfile=address;positionsRequest++;positionsComplete=false;positions.clear();closeWithdrawal();clearProposal();
+  const url=new URL(location.href);if(address)url.searchParams.set('profile',address);else url.searchParams.delete('profile');history.pushState({},'',url);
+  $('positionList').innerHTML='<div class="empty-state">'+(profileSubject()?'Loading liquidity positions…':'Connect a wallet to see your positions.')+'</div>';
+  profileUI.sync();view('positions');renderActivity();
+}
 let featuredRequest=0;
 const logoLoader=createLogoLoader();
 const tokenIdentityCache=new Map([[P.WETH,{address:P.WETH,symbol:'WETH',name:'Wrapped Ether'}]]);
@@ -145,8 +156,8 @@ let connectionAttempt=0;
 const restoredProviders=new WeakSet();
 function readStore(k,fallback){try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(v)?v:fallback;}catch{return fallback;}}
 function saveStore(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
-function idsKey(){return 'rwi-lp-positions-'+account?.toLowerCase();}
-function remember(id){const ids=readStore(idsKey(),[]);if(!ids.includes(id))saveStore(idsKey(),[id,...ids].slice(0,100));}
+function idsKey(who=account){return 'rwi-lp-positions-'+who?.toLowerCase();}
+function remember(id,who=account){const ids=readStore(idsKey(who),[]);if(!ids.includes(id))saveStore(idsKey(who),[id,...ids].slice(0,100));}
 function positionCheckpoint(who){
   const key=who.toLowerCase(),stored=readStore('rwi-lp-position-scan-'+key,[])[0];
   return positionScans.get(key)||(stored&&Number.isSafeInteger(stored.block)&&stored.block>=0&&Array.isArray(stored.ids)&&stored.ids.length<=10000&&stored.ids.every(id=>typeof id==='string'&&/^\d+$/.test(id))?stored:undefined);
@@ -158,10 +169,10 @@ function cachePositionScan(who,scan){
 }
 function notice(msg,error=false){$('notice').hidden=!msg;$('notice').textContent=msg;$('notice').className=error?'notice error':'notice';}
 function failure(e){if(e.code===4001||e.code==='ACTION_REJECTED')return 'Request cancelled in your wallet.';return e.shortMessage||e.reason||e.message||'The request failed. Try refreshing the chain data.';}
-function locked(v){busy=v;document.querySelectorAll('main input,main select,main textarea,main button,#walletButton,#disconnect,#tradeDialog input,#tradeDialog button').forEach(el=>el.disabled=v);$('submitAction').disabled=v||!proposal;$('cancelReview').disabled=v;document.querySelectorAll('#positionList [data-action="remove"]').forEach(b=>{b.disabled=v||positions.get(b.dataset.id)?.liquidity===0n;});renderAmountControls();renderDepositContext();launchesUI.updateDisabled(v);}
+function locked(v){busy=v;document.querySelectorAll('main input,main select,main textarea,main button,#walletButton,#disconnect,#tradeDialog input,#tradeDialog button').forEach(el=>el.disabled=v);$('submitAction').disabled=v||!proposal;$('cancelReview').disabled=v;document.querySelectorAll('#positionList [data-action="remove"]').forEach(b=>{b.disabled=v||positions.get(b.dataset.id)?.liquidity===0n;});renderAmountControls();renderDepositContext();launchesUI.updateDisabled(v);profileUI.updateDisabled();}
 function clearProposal(){proposal=null;$('reviewDialog').close();}
 function invalidate(){loadSeq++;loaded=null;clearProposal();$('poolStatus').textContent='Refresh pool data';$('poolPrice').textContent='—';$('poolId').textContent='—';$('poolLink').hidden=true;$('pairName').textContent='Token / RWI';$('poolBlock').textContent='Load to refresh chain data';$('poolLpFee').textContent='—';$('poolHooks').textContent='—';}
-function resetWallet(){clearDepositTarget(true);closeWithdrawal();connectionAttempt++;forgetConnector(localStorage);session++;positionsRequest++;clearTimeout(positionsTimer);resetTokens();account=null;wallet=null;renderAmountControls();positions.clear();$('walletButton').textContent='Connect wallet';$('disconnect').hidden=true;$('walletStatus').textContent='Connect to see balances and your positions.';$('positionList').innerHTML='<div class="empty-state">Connect your wallet to load your liquidity positions.</div>';$('positionsStatus').textContent='Connect your wallet to find positions automatically.';clearProposal();renderActivity();}
+function resetWallet(){clearDepositTarget(true);closeWithdrawal();connectionAttempt++;forgetConnector(localStorage);session++;positionsRequest++;clearTimeout(positionsTimer);resetTokens();account=null;wallet=null;renderAmountControls();positions.clear();$('walletButton').textContent='Connect wallet';$('disconnect').hidden=true;$('walletStatus').textContent='Connect to see balances and your positions.';$('positionList').innerHTML='<div class="empty-state">Connect your wallet to load your liquidity positions.</div>';$('positionsStatus').textContent='Connect your wallet to find positions automatically.';clearProposal();renderActivity();positionsComplete=false;profileUI.sync();if(publicProfile)loadPositions();}
 async function verifyContracts(){
   if(verified)return;
   if(!verifiedPending)verifiedPending=(async()=>{
@@ -379,7 +390,8 @@ async function syncWallet(){
   $('walletButton').textContent=Number(chain)===P.CHAIN?short(account):'Switch network';$('disconnect').hidden=false;
   $('walletStatus').textContent=Number(chain)===P.CHAIN?'Connected on Robinhood Chain.':'Switch to Robinhood Chain to manage liquidity.';
   $('positionList').innerHTML='<div class="empty-state">Loading your positions automatically…</div>';$('positionsStatus').textContent='Checking your position history…';
-  renderActivity();
+  positionsComplete=false;profileUI.sync();renderActivity();
+  if(publicProfile)loadPositions();
   if(Number(chain)!==P.CHAIN){tokenListMessage='Switch to Robinhood Chain to load your holdings.';$('walletTokenStatus').textContent=tokenListMessage;}
   if(Number(chain)===P.CHAIN){loadPositions();loadWalletTokens();if(featuredTarget)await loadPool();else if(loaded)await balances(loaded);else loadPool();}
 }
@@ -408,6 +420,7 @@ function updateActivity(hash,status){const entry=pending.find(x=>x.hash===hash);
 function renderActivity(){
   const rows=pending.filter(x=>x.account===account?.toLowerCase());
   $('activityList').innerHTML=rows.length?rows.map(x=>'<div class="activity-row"><div><strong>'+esc(x.label)+'</strong><small>'+esc(x.status)+' · '+esc(new Date(x.time).toLocaleString())+'</small></div><a target="_blank" rel="noopener" href="'+esc(txLink(x.hash))+'">'+short(x.hash)+'</a></div>').join(''):'<div class="empty-state">Your submitted transactions will appear here. No sample activity.</div>';
+  $('profileActivity').innerHTML=ownsProfile(profileSubject(),account)?$('activityList').innerHTML:'';
 }
 async function send(signer,request,label,who,epoch){
   await signerFor(who,epoch);notice(label+': checking transaction…');
@@ -481,28 +494,28 @@ async function readPosition(id,includeExternal=false){
 }
 const positionVolumes=new Map(),positionVolumeTimes=new Map();
 function loadPositionVolumes(){
-  const who=account,epoch=session;if(!who)return;
+  const who=profileSubject(),epoch=session;if(!who)return;
   const ids=[...new Set([...positions.values()].filter(p=>p.liquidity>0n).map(p=>p.live.id))].filter(id=>/^0x[0-9a-fA-F]{64}$/.test(id)&&Date.now()-(positionVolumeTimes.get(id)||0)>60000);
   for(let i=0;i<ids.length;i+=20){
     const batch=ids.slice(i,i+20);batch.forEach(id=>positionVolumeTimes.set(id,Date.now()));
     fetch('/api/lp-pool-volume?pools='+batch.join(','),{signal:AbortSignal.timeout(25000)}).then(async response=>{
       if(!response.ok)throw Error('Volume unavailable');const body=await response.json();
       for(const id of batch){const row=body.pools?.[id];positionVolumes.set(id,row&&/^\d+$/.test(row.amount0)&&/^\d+$/.test(row.amount1)?row:null);}
-      if(who===account&&epoch===session)renderPositions(false);
-    }).catch(()=>{batch.forEach(id=>positionVolumes.set(id,null));if(who===account&&epoch===session)renderPositions(false);});
+      if(who===profileSubject()&&epoch===session)renderPositions(false);
+    }).catch(()=>{batch.forEach(id=>positionVolumes.set(id,null));if(who===profileSubject()&&epoch===session)renderPositions(false);});
   }
 }
 const positionPriceTimes=new Map();
 let cancelPositionLogos=()=>{};
 function loadPositionPrices(){
-  const who=account,epoch=session;if(!who)return;
+  const who=profileSubject(),epoch=session;if(!who)return;
   const addresses=[...new Set([...positions.values()].filter(p=>p.liquidity>0n).flatMap(p=>p.live.tokens.map(t=>t.address?.toLowerCase()).map(a=>a===P.ZERO?P.WETH:a)))].filter(a=>/^0x[0-9a-f]{40}$/.test(a)&&Date.now()-(positionPriceTimes.get(a)||0)>60000);
   for(let i=0;i<addresses.length;i+=2){
     const batch=addresses.slice(i,i+2);batch.forEach(a=>positionPriceTimes.set(a,Date.now()));
     fetch('/api/lp-token-prices?addresses='+batch.join(','),{signal:AbortSignal.timeout(8000)}).then(async response=>{
       if(!response.ok)return;const body=await response.json();
       for(const a of batch){const price=body.prices?.[a];if(typeof price==='string'&&/^\d{1,60}(?:\.\d{1,60})?$/.test(price))amountPrices.set(a,price);}
-      if(who===account&&epoch===session){renderAmountControls();renderPositions(false);}
+      if(who===profileSubject()&&epoch===session){renderAmountControls();renderPositions(false);}
     }).catch(()=>{});
   }
 }
@@ -529,19 +542,21 @@ function renderPositions(requestPrices=true){
     cancels.push(logoLoader.load({...token,address:address===P.ZERO?P.WETH:address,logo:walletTokens.find(t=>t.address===address)?.logo},result=>{if(image.isConnected){image.src=result.src;image.hidden=false;}}));
   }
   cancelPositionLogos=()=>cancels.forEach(cancel=>cancel());
+  profileUI.positionsSummary(rows,rows.map(({position:p})=>positionFeeValue(p,prices)),positionsComplete);
+  if(!ownsProfile(profileSubject(),account))document.querySelectorAll('#positionList .position-actions').forEach(el=>el.hidden=true);
   if(requestPrices){loadPositionPrices();loadPositionVolumes();}
 }
 async function importPosition(){locked(true);try{const id=$('positionId').value.trim(),p=await readPosition(id,true);positions.set(id,p);remember(id);renderPositions();notice('Position '+id+' loaded from chain.');}catch(e){notice(failure(e),true);}finally{locked(false);}}
 async function loadPositions(){
-  if(!account)return;
+  if(!profileSubject())return;
   if(busy){if(currentView==='positions'){clearTimeout(positionsTimer);positionsTimer=setTimeout(loadPositions,5000);}return;}
-  const who=account,epoch=session;if(positionsLoading?.who===who&&positionsLoading.epoch===epoch)return positionsLoading.promise;
-  const request=++positionsRequest,active=()=>request===positionsRequest&&epoch===session&&who===account;
+  const who=profileSubject(),epoch=session;if(positionsLoading?.who===who&&positionsLoading.epoch===epoch&&positionsLoading.request===positionsRequest)return positionsLoading.promise;
+  const request=++positionsRequest,active=()=>request===positionsRequest&&epoch===session&&who===profileSubject();
   clearTimeout(positionsTimer);$('positionsStatus').textContent=positions.size?'Updating positions…':'Finding your positions…';
+  if(!positions.size)$('positionList').innerHTML='<div class="empty-state">Loading this wallet’s liquidity positions…</div>';
   const promise=(async()=>{
     try{
-      if(Number(await injected.request({method:'eth_chainId'}))!==P.CHAIN){if(active())$('positionsStatus').textContent='Switch to Robinhood Chain to see positions.';return;}
-      const knownIds=readStore(idsKey(),[]).filter(id=>typeof id==='string'&&/^\d+$/.test(id));
+      const knownIds=readStore(idsKey(who),[]).filter(id=>typeof id==='string'&&/^\d+$/.test(id));
       const early=knownIds.length?(async()=>{await verifyContracts();if(!active())return null;const result=await readPositionsFast(rpc,knownIds,who,epoch,P,tokenIdentityCache);if(active()&&result.items.length){positions=new Map(result.items.map(p=>[p.id,p]));renderPositions();$('positionsStatus').textContent='Positions loaded · Checking for new activity…';}return result;})().catch(()=>null):Promise.resolve(null);
       const scan=await discoverPositionIds(rpc,P.CONTRACTS.manager,who,positionCheckpoint(who));if(!active())return;
       cachePositionScan(who,scan);
@@ -552,16 +567,16 @@ async function loadPositions(){
       const extra=await readPositionsFast(rpc,remaining,who,epoch,P,tokenIdentityCache);if(!active())return;
       const result={items:[...(initial?.items||[]),...extra.items],failed:(initial?.failed||0)+extra.failed};
       const next=new Map(result.items.map(p=>[p.id,p])),failed=result.failed;
-      for(const item of result.items)remember(item.id);
+      for(const item of result.items)remember(item.id,who);
       if(failed){for(const [id,p] of positions)if(!next.has(id))next.set(id,p);}
-      positions=next;renderPositions();
+      positions=next;positionsComplete=!scan.partial&&!failed;renderPositions();
       const funded=[...positions.values()].filter(p=>p.liquidity>0n),count=funded.length,poolCount=new Set(funded.map(p=>p.live.id)).size;
       $('positionsStatus').textContent=count+' RWI position'+(count===1?'':'s')+' across '+poolCount+' pool'+(poolCount===1?'':'s')+' · Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+(scan.partial||failed?' · Some data is still syncing; retrying automatically.':' · Updates automatically.');
       if((scan.partial||failed)&&!positions.size)$('positionList').innerHTML='<div class="empty-state">Position history is temporarily incomplete. Checking again automatically…</div>';
       for(const tx of pending.filter(x=>x.account===who.toLowerCase()&&x.status.startsWith('Pending')).slice(0,20))rpc.getTransactionReceipt(tx.hash).then(receipt=>{if(active()&&receipt)updateActivity(tx.hash,receipt.status===1?'Confirmed':'Reverted');}).catch(()=>{});
     }catch{if(active()){$('positionsStatus').textContent='Position data is temporarily unavailable. Retrying automatically.';if(!positions.size)$('positionList').innerHTML='<div class="empty-state">Your positions will appear here when chain data is available.</div>';}}
     finally{if(active()){positionsLoading=null;if(currentView==='positions')positionsTimer=setTimeout(loadPositions,30000);}}
-  })();positionsLoading={who,epoch,promise};return promise;
+  })();positionsLoading={who,epoch,request,promise};return promise;
 }
 async function reviewPosition(id,kind,percentage=100){
   locked(true);try{
@@ -586,7 +601,7 @@ async function execute(){
     if(p.kind==='launch'||p.kind==='launchgraduate'||p.kind==='launchfees'||p.kind==='launchbuy'||p.kind==='launchsell'){
       for(const request of await launchesUI.tradeApprovals(p))await send(signer,request,'Approve '+p.symbol+' for sale',p.who,p.epoch);
       const request=await launchesUI.request(p),receipt=await send(signer,request,p.label,p.who,p.epoch);
-      clearProposal();view('launch');await launchesUI.load();notice(p.label+' confirmed. The receipt is in Transaction history under Launch.');loadWalletTokens();return;
+      clearProposal();if(p.kind==='launchfees'){view('positions');await profileUI.load();}else{view('launch');await launchesUI.load();}notice(p.label+' confirmed. The receipt is in Transaction history.');loadWalletTokens();return;
     }
     let deadline=Math.floor(Date.now()/1000)+1200;
     let call,receipt;
@@ -626,10 +641,12 @@ async function execute(){
     if(p.id){const next=await readPosition(p.id,true);positions.set(p.id,next);renderPositions();}
     if(loaded)await loadPool();
     loadWalletTokens();
-  }catch(e){clearProposal();notice(failure(e),true);}finally{locked(false);if(account)loadPositions();}
+  }catch(e){clearProposal();notice(failure(e),true);}finally{locked(false);if(profileSubject())loadPositions();if(currentView==='positions')profileUI.load();}
 }
-function view(name){currentView=name;launchesUI.watch(name==='launch');$('featuredPools').hidden=name!=='add';notice(name==='positions'||name==='launch'?'':'Load a token pair to read its current pool state.');document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===name);b.setAttribute('aria-pressed',String(b.dataset.view===name));});document.querySelectorAll('main>.view').forEach(v=>v.hidden=v.id!==name+'View');$('breadcrumb').textContent=name==='add'?'LP':name==='positions'?'Profile':'Launch';clearTimeout(positionsTimer);if(name==='positions')loadPositions();}
+function view(name){currentView=name;launchesUI.watch(name==='launch');profileUI.watch(name==='positions');$('lpIntro').hidden=name==='positions';$('featuredPools').hidden=name!=='add';notice(name==='positions'||name==='launch'?'':'Load a token pair to read its current pool state.');document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===name);b.setAttribute('aria-pressed',String(b.dataset.view===name));});document.querySelectorAll('main>.view').forEach(v=>v.hidden=v.id!==name+'View');$('breadcrumb').textContent=name==='add'?'LP':name==='positions'?'Profile':'Launch';clearTimeout(positionsTimer);if(name==='positions')loadPositions();}
 const launchesUI=createLaunchController({rpc,isBusy:()=>busy,getSession:()=>({who:account,epoch:session}),getSigner:signerFor,onFormChange:clearProposal});
+const profileUI=createProfileController({rpc,getSubject:profileSubject,getAccount:()=>account,isBusy:()=>busy,onNavigate:navigateProfile,onConnect:()=>chooseWallet().catch(e=>notice(failure(e),true)),onLaunch:()=>view('launch'),onClaim:async (token,displayToken)=>{if(busy||!ownsProfile(profileSubject(),account))return;locked(true);try{const p=await launchesUI.feeReview(token,account,session);p.displayToken=displayToken;p.rows.unshift(['Launch',displayToken.name+' ('+displayToken.symbol+')']);await signerFor(p.who,p.epoch);showReview(p,p.rows);}catch(e){notice(failure(e),true);}finally{locked(false);}}});
+window.addEventListener('popstate',()=>{publicProfile=profileAddress(new URL(location.href).searchParams.get('profile'));positionsRequest++;positionsComplete=false;positions.clear();closeWithdrawal();clearProposal();$('positionList').innerHTML='<div class="empty-state">Loading liquidity positions…</div>';profileUI.sync();view('positions');renderActivity();});
 $('launchForm').onsubmit=async event=>{event.preventDefault();if(!account){await chooseWallet();return;}locked(true);try{const p=await launchesUI.prepare(account,session);await signerFor(p.who,p.epoch);showReview(p,p.rows);}catch(e){notice(failure(e),true);}finally{locked(false);}};
 $('launchForm').addEventListener('input',clearProposal);
 $('moreLaunches').onclick=()=>launchesUI.load(true);
@@ -646,8 +663,8 @@ $('poolForm').onsubmit=reviewDeposit;$('loadPool').onclick=loadPool;$('tokenAddr
 $('importPosition').onclick=importPosition;
 $('cancelPositionDeposit').onclick=()=>{clearProposal();clearDepositTarget();if($('tokenAddress').value.toLowerCase()===P.ZERO)$('tokenAddress').value=P.WETH;invalidate();loadPool();};
 $('featuredPoolList').onclick=e=>{const button=e.target.closest('[data-featured-deposit]');if(button&&!busy)addToFeaturedPool(button.dataset.featuredDeposit);};
-window.addEventListener('focus',()=>{if(currentView==='positions'&&account&&!busy)loadPositions();});
-$('positionList').onclick=e=>{const b=e.target.closest('[data-action]');if(b&&!busy){if(b.dataset.action==='add')addToPosition(b.dataset.id);else if(b.dataset.action==='remove')openWithdrawal(b.dataset.id);else reviewPosition(b.dataset.id,b.dataset.action);}};
+window.addEventListener('focus',()=>{if(currentView==='positions'&&!busy){loadPositions();profileUI.load();}});
+$('positionList').onclick=e=>{const b=e.target.closest('[data-action]');if(b&&!busy&&ownsProfile(profileSubject(),account)){if(b.dataset.action==='add')addToPosition(b.dataset.id);else if(b.dataset.action==='remove')openWithdrawal(b.dataset.id);else reviewPosition(b.dataset.id,b.dataset.action);}};
 $('withdrawPercent').addEventListener('input',updateWithdrawal);
 $('closeWithdrawal').onclick=closeWithdrawal;$('cancelWithdrawal').onclick=closeWithdrawal;
 $('withdrawDialog').addEventListener('cancel',closeWithdrawal);
@@ -657,4 +674,4 @@ $('openTokens').onclick=()=>{if(!account){chooseWallet().catch(e=>notice(failure
 $('closeTokens').onclick=()=>$('tokenDialog').close();$('tokenDialog').addEventListener('close',()=>stopTokenRowLogos());$('refreshTokens').onclick=()=>loadWalletTokens();$('tokenSearch').oninput=renderWalletTokens;
 $('walletTokenList').onclick=e=>{const button=e.target.closest('[data-wallet-token]');if(!button||busy)return;const row=walletTokens.find(t=>t.address===button.dataset.walletToken);if(!row)return;clearDepositTarget();invalidate();$('tokenAddress').value=row.address;amountDriver={side:'rwi',percent:0};renderAmountControls();$('tokenAmountLabel').textContent=row.symbol+' amount (USD)';showSelectedToken(row);$('tokenDialog').close();loadPool();};
 $('refreshFeatured').onclick=loadFeaturedPools;
-loadFeaturedPools();renderAmountControls();renderActivity();loadPool();Promise.resolve().then(restoreWallet);
+loadFeaturedPools();renderAmountControls();renderActivity();loadPool();profileUI.sync();if(publicProfile)view('positions');Promise.resolve().then(restoreWallet);
