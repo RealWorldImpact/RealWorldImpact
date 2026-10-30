@@ -1,8 +1,9 @@
 import { Interface } from 'ethers';
+import { uncollectedFees } from './position-fees.js';
 const multi=new Interface(['function aggregate3((address target,bool allowFailure,bytes callData)[] calls) view returns ((bool success,bytes returnData)[])']);
 const managerAbi=new Interface(['function ownerOf(uint256) view returns(address)','function getPoolAndPositionInfo(uint256) view returns((address currency0,address currency1,uint24 fee,int24 tickSpacing,address hooks),uint256)','function getPositionLiquidity(uint256) view returns(uint128)']);
 const tokenAbi=new Interface(['function decimals() view returns(uint8)','function symbol() view returns(string)','function name() view returns(string)']);
-const stateAbi=new Interface(['function getSlot0(bytes32) view returns(uint160,int24,uint24,uint24)','function getLiquidity(bytes32) view returns(uint128)']);
+const stateAbi=new Interface(['function getSlot0(bytes32) view returns(uint160,int24,uint24,uint24)','function getLiquidity(bytes32) view returns(uint128)','function getPositionInfo(bytes32,address,int24,int24,bytes32) view returns(uint128,uint256,uint256)','function getFeeGrowthInside(bytes32,int24,int24) view returns(uint256,uint256)']);
 async function batch(rpc,calls){
   const rows=[];
   for(let i=0;i<calls.length;i+=120){
@@ -36,7 +37,10 @@ export async function readPositionsFast(rpc,ids,who,epoch,P,cache=new Map()){
     const item={id:h.id,who,epoch,liquidity:h.liquidity,external,live:{key:h.key,tokens,id},info:h.info};
     if(external||h.liquidity===0n)items.push(item);else{if(!pools.has(id))pools.set(id,[]);pools.get(id).push(item);}
   }
-  const poolIds=[...pools.keys()],states=await batch(rpc,poolIds.flatMap(id=>['getSlot0','getLiquidity'].map(method=>({to:P.CONTRACTS.state,abi:stateAbi,method,args:[id]}))));
+  const poolIds=[...pools.keys()],funded=[...items,...[...pools.values()].flat()].filter(p=>p.liquidity>0n);
+  const feeCalls=funded.flatMap(item=>{const [lower,upper]=P.unpackTicks(item.info);return [{to:P.CONTRACTS.state,abi:stateAbi,method:'getPositionInfo',args:[item.live.id,P.CONTRACTS.manager,lower,upper,'0x'+BigInt(item.id).toString(16).padStart(64,'0')]},{to:P.CONTRACTS.state,abi:stateAbi,method:'getFeeGrowthInside',args:[item.live.id,lower,upper]}];});
+  const states=await batch(rpc,[...poolIds.flatMap(id=>['getSlot0','getLiquidity'].map(method=>({to:P.CONTRACTS.state,abi:stateAbi,method,args:[id]}))),...feeCalls]);
+  funded.forEach((item,i)=>{item.fees=uncollectedFees(states[poolIds.length*2+i*2],states[poolIds.length*2+i*2+1]);});
   poolIds.forEach((id,i)=>{
     const [slot,liq]=states.slice(i*2,i*2+2),group=pools.get(id);
     if(!slot||!liq){failed+=group.length;return;}

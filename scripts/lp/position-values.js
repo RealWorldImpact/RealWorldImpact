@@ -24,3 +24,7 @@ export function valuePositions(positions,prices){
     return BigInt(a.position.id)>BigInt(b.position.id)?-1:1;
   });
 }
+export function positionFeeValue(position,prices){
+  if(!position.fees)return {valueUsd:null,estimated:false};
+  return positionValue({...position,liquidity:1n,position:{amount0:{quotient:position.fees[0]},amount1:{quotient:position.fees[1]}}},prices);
+}
