@@ -1,0 +1,22 @@
+const fs=require('fs'),path=require('path'),os=require('os'),assert=require('assert/strict'),{AbiCoder,Interface}=require('ethers'),esbuild=require('esbuild');
+function load(name){const file=path.join(os.tmpdir(),'rwi-featured-'+name+'-'+process.pid+'.cjs');esbuild.buildSync({entryPoints:[path.join(__dirname,name+'.js')],outfile:file,bundle:true,platform:'node',format:'cjs'});const value=require(file);fs.unlinkSync(file);return value;}
+const P=load('protocol'),F=load('featured-pool-target');
+const key={currency0:P.ZERO,currency1:P.RWI,fee:0,tickSpacing:200,hooks:F.PONS_HOOK},id=P.poolId(key),who='0x'+'1'.repeat(40);
+assert.equal(id,'0xa72a9de2c6e3db34308a8ae61e927ceffea630218ca1e712b70b61341c3e99a1');
+assert.equal(F.validateFeaturedKey(id,key).fee,0);
+for(const patch of [{fee:10000},{currency0:P.WETH},{hooks:P.ZERO},{tickSpacing:0},{currency1:P.WETH}])assert.throws(()=>F.validateFeaturedKey(id,{...key,...patch}));
+assert.throws(()=>F.validateFeaturedKey('0x'+'1'.repeat(40),key));
+for(const flag of [0x800,0x400,0x200,0x100,2,1])assert.equal(F.supportsLiquidity({...key,hooks:'0x'+flag.toString(16).padStart(40,'0')}),false);
+assert.equal(F.supportsLiquidity(key),true);assert.equal(F.lpFeeLabel(key),'0%');assert.equal(F.hookLabel(key),'Pons trading hook');
+const native=P.native();assert.equal(native.isNative,true);assert.equal(native.address,P.ZERO);assert.equal(native.wrapped.address.toLowerCase(),P.WETH);
+const pool=P.buildPool(key,[native,P.token(P.RWI,18,'RWI')],[0n,0],0n,[10n**15n,10n**24n]);
+const {position,caps}=P.makeDeposit(pool,[10n**15n,10n**24n],50),mint=P.addCall(position,who,50,2000000000);
+assert.equal(BigInt(mint.value),caps[0]);
+const modify=new Interface(['function modifyLiquidities(bytes,uint256)']);
+const [actions,params]=AbiCoder.defaultAbiCoder().decode(['bytes','bytes[]'],modify.decodeFunctionData('modifyLiquidities',mint.calldata)[0]);
+assert.equal(actions,'0x020d14','mint, settle both currencies, refund native ETH');
+const decoded=AbiCoder.defaultAbiCoder().decode(['tuple(address,address,uint24,int24,address)','int24','int24','uint256','uint128','uint128','address','bytes'],params[0]);
+assert.equal(P.poolId({currency0:decoded[0][0],currency1:decoded[0][1],fee:decoded[0][2],tickSpacing:decoded[0][3],hooks:decoded[0][4]}),id);assert.equal(decoded[6],who);
+const topup=P.addCall(position,who,50,2000000000,false,'42');assert.equal(BigInt(topup.value),caps[0]);
+assert.equal(P.nativeGasReserve(100n),75000000n);
+(async()=>{let prefix;await F.readFeaturedKey({poolKeys:async p=>{prefix=p;return key;}},id);assert.equal(prefix,id.slice(0,52));await assert.rejects(F.readFeaturedKey({poolKeys:async()=>({...key,fee:10000})},id));console.log('PASS: exact featured pool verification, hook callback gates, native ETH encoding, capped deposits, refunds, receiver and gas reserve.');})().catch(e=>{console.error(e);process.exitCode=1});

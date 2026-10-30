@@ -8,7 +8,7 @@ export function positionValue(position,prices){
   for(let i=0;i<2;i++){
     const token=position.live.tokens[i],raw=BigInt(position.position['amount'+i].quotient.toString());
     if(raw===0n)continue;
-    let value=holdingValue(raw,token.decimals,prices.get(token.address.toLowerCase()));
+    let value=holdingValue(raw,token.decimals,prices.get(token.isNative?'0x0bd7d308f8e1639fab988df18a8011f41eacad73':token.address.toLowerCase()));
     if(value===null&&rwi&&token.address.toLowerCase()!==RWI){
       try{const price=position.live.pool.priceOf(token),inRwi=raw*BigInt(price.numerator.toString())/BigInt(price.denominator.toString());value=holdingValue(inRwi,rwi.decimals,prices.get(RWI));if(value!==null)estimated=true;}catch{}
     }

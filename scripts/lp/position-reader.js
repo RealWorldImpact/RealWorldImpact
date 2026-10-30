@@ -1,5 +1,6 @@
 import { Interface } from 'ethers';
 import { uncollectedFees } from './position-fees.js';
+import { supportsLiquidity } from './featured-pool-target.js';
 const multi=new Interface(['function aggregate3((address target,bool allowFailure,bytes callData)[] calls) view returns ((bool success,bytes returnData)[])']);
 const managerAbi=new Interface(['function ownerOf(uint256) view returns(address)','function getPoolAndPositionInfo(uint256) view returns((address currency0,address currency1,uint24 fee,int24 tickSpacing,address hooks),uint256)','function getPositionLiquidity(uint256) view returns(uint128)']);
 const tokenAbi=new Interface(['function decimals() view returns(uint8)','function symbol() view returns(string)','function name() view returns(string)']);
@@ -31,9 +32,9 @@ export async function readPositionsFast(rpc,ids,who,epoch,P,cache=new Map()){
   missing.forEach((address,i)=>{const [d,s,n]=metadata.slice(i*3,i*3+3);if(d&&s&&Number(d[0])<=36)cache.set(address,P.token(address,Number(d[0]),String(s[0]).slice(0,24),address===P.WETH?'Wrapped Ether':String(n?.[0]||s[0]).slice(0,80)));});
   const pools=new Map(),items=[];
   for(const h of headers){
-    const tokens=[h.key.currency0,h.key.currency1].map(a=>a.toLowerCase()===P.ZERO?{address:P.ZERO,decimals:18,symbol:'ETH'}:cache.get(a.toLowerCase()));
+    const tokens=[h.key.currency0,h.key.currency1].map(a=>a.toLowerCase()===P.ZERO?P.native():cache.get(a.toLowerCase()));
     if(tokens.some(t=>!t)){failed++;continue;}
-    const external=h.key.hooks.toLowerCase()!==P.ZERO||tokens.some(t=>t.address.toLowerCase()===P.ZERO),id=P.poolId(h.key);
+    const external=!supportsLiquidity(h.key),id=P.poolId(h.key);
     const item={id:h.id,who,epoch,liquidity:h.liquidity,external,live:{key:h.key,tokens,id},info:h.info};
     if(external||h.liquidity===0n)items.push(item);else{if(!pools.has(id))pools.set(id,[]);pools.get(id).push(item);}
   }

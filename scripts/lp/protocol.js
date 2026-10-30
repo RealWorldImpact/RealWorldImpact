@@ -1,4 +1,4 @@
-import { Token, Percent } from '@uniswap/sdk-core';
+import { Token, Percent, NativeCurrency } from '@uniswap/sdk-core';
 import { Pool, Position, V4PositionManager } from '@uniswap/v4-sdk';
 import { TickMath, nearestUsableTick, encodeSqrtRatioX96 } from '@uniswap/v3-sdk';
 import { getAddress, parseUnits, formatUnits, AbiCoder, keccak256 } from 'ethers';
@@ -17,10 +17,19 @@ export const CONTRACTS = Object.freeze({
 });
 export const FEES = Object.freeze({100:1,500:10,3000:60,10000:200});
 export const ERC20 = ['function name() view returns(string)','function symbol() view returns(string)','function decimals() view returns(uint8)','function balanceOf(address) view returns(uint256)','function allowance(address,address) view returns(uint256)','function approve(address,uint256) returns(bool)'];
-export const MANAGER = ['function poolManager() view returns(address)','function permit2() view returns(address)','function ownerOf(uint256) view returns(address)','function getPositionLiquidity(uint256) view returns(uint128)','function getPoolAndPositionInfo(uint256) view returns((address currency0,address currency1,uint24 fee,int24 tickSpacing,address hooks),uint256)','event Transfer(address indexed from,address indexed to,uint256 indexed tokenId)'];
+export const MANAGER = ['function poolManager() view returns(address)','function permit2() view returns(address)','function poolKeys(bytes25) view returns(address currency0,address currency1,uint24 fee,int24 tickSpacing,address hooks)','function ownerOf(uint256) view returns(address)','function getPositionLiquidity(uint256) view returns(uint128)','function getPoolAndPositionInfo(uint256) view returns((address currency0,address currency1,uint24 fee,int24 tickSpacing,address hooks),uint256)','event Transfer(address indexed from,address indexed to,uint256 indexed tokenId)'];
 export const STATE = ['function getSlot0(bytes32) view returns(uint160 sqrtPriceX96,int24 tick,uint24 protocolFee,uint24 lpFee)','function getLiquidity(bytes32) view returns(uint128)'];
 export const PERMIT = ['function allowance(address,address,address) view returns(uint160 amount,uint48 expiration,uint48 nonce)','function approve(address token,address spender,uint160 amount,uint48 expiration)'];
 export function token(address, decimals, symbol, name=symbol) { return new Token(CHAIN,getAddress(address),decimals,symbol,name); }
+class RobinhoodEther extends NativeCurrency {
+  constructor(){super(CHAIN,18,'ETH','Ether');}
+  get address(){return ZERO;}
+  get wrapped(){return token(WETH,18,'WETH','Wrapped Ether');}
+  equals(other){return other.isNative&&other.chainId===CHAIN;}
+}
+const ether=new RobinhoodEther();
+export function native(){return ether;}
+export function nativeGasReserve(gasPrice){return BigInt(gasPrice||0)*750000n;}
 export function pair(other, fee) {
   if(other.address.toLowerCase()===RWI) throw Error('Choose a different token to pair with RWI.');
   const spacing=FEES[fee]; if(!spacing)throw Error('Choose a supported fee tier.');
@@ -58,7 +67,7 @@ export function makeDeposit(pool, budgets, slippageBps, ticks) {
   return {position:p,caps};
 }
 export function addCall(position, account, slip, deadline, create=false, id) {
-  const options={slippageTolerance:new Percent(slip,10000),deadline:String(deadline)};
+  const options={slippageTolerance:new Percent(slip,10000),deadline:String(deadline),...(position.pool.currency0.isNative?{useNative:position.pool.currency0}:{})};
   return V4PositionManager.addCallParameters(position,id?{...options,tokenId:id}:{...options,recipient:account,createPool:create,sqrtPriceX96:position.pool.sqrtRatioX96});
 }
 export function removeCall(position, id, percentage, slip, deadline) {

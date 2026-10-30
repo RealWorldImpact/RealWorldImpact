@@ -27,7 +27,7 @@ export function sharperLogo(value){
 export function tokenLogoCandidates(token){
   const address=String(token.address||'').toLowerCase();
   if(address==='0xda2598c976e62e7e15dcca75169b404712e48b04')return ['/assets/rwi-logo.webp'];
-  if(address==='0x0bd7d308f8e1639fab988df18a8011f41eacad73')return ['/assets/weth-logo.png'];
+  if(address==='0x0bd7d308f8e1639fab988df18a8011f41eacad73'||address==='0x0000000000000000000000000000000000000000')return ['/assets/weth-logo.png'];
   const urls=[...(token.logos||[]).flatMap(logoUrls),...logoUrls(token.logo)];
   // Uploaded launch artwork is authoritative. Never replace it with a fast but
   // generic third-party thumbnail; retain initials if its host is unavailable.

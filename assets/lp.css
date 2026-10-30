@@ -93,3 +93,6 @@
 .launch-image-editor-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
 .launch-image-editor-actions button{min-height:44px;margin:0;flex:1;max-width:180px}
 @media(max-width:600px){.launch-image-editor{padding:16px}.launch-image-editor-heading{flex-wrap:wrap;gap:8px}.launch-image-editor-actions button{padding-left:12px;padding-right:12px}}
+
+.nav-item>span[aria-hidden=true]{display:none}.nav-item>span:last-child{display:inline;width:auto;font-size:12px}.launch-image-preview>span{font:11px var(--mono);color:var(--muted)}.position-deposit-note{scroll-margin-top:calc(var(--site-header-height,53px) + 20px)}
+.wallet-token-trigger.fixed-pool-token:disabled{opacity:1;cursor:default}.wallet-token-trigger.fixed-pool-token>span[aria-hidden=true]{display:none}
