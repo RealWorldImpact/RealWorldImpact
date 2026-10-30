@@ -30,7 +30,12 @@ async function priced(token){
     prices.set(token.address,{at:Date.now(),value});return {...token,...value};
   }catch{return {...token,priceUsd:null};}
 }
-export async function discoverMarketHoldings(wallet,exclude=[]){
+export async function priceMarketHoldings(held){
+  const tokens=[];
+  for(let i=0;i<held.length;i+=3)tokens.push(...await Promise.all(held.slice(i,i+3).map(priced)));
+  return tokens;
+}
+export async function discoverMarketHoldings(wallet,exclude=[],withPrices=true){
   const excluded=new Set(exclude),candidates=catalog.filter(t=>!excluded.has(t.address));
   const held=[];let failed=false;
   // Read balances only on Robinhood's RPC. Market data receives token addresses, never the wallet.
@@ -43,7 +48,6 @@ export async function discoverMarketHoldings(wallet,exclude=[]){
       if(balances[id]>0n)held.push({...batch[id],logo:safeTokenLogo(batch[id].logo)});
     }
   }
-  const tokens=[];
-  for(let i=0;i<held.length;i+=3)tokens.push(...await Promise.all(held.slice(i,i+3).map(priced)));
+  const tokens=withPrices?await priceMarketHoldings(held):held.map(t=>({...t,priceUsd:null}));
   return {tokens,failed};
 }

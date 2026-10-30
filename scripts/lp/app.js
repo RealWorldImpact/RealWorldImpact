@@ -3,6 +3,8 @@ import * as P from './protocol.js';
 import { sortHoldings, usdLabel } from './wallet-tokens.js';
 import { tokenLogoCandidates } from './token-logos.js';
 import { createLogoLoader } from './logo-loader.js';
+import { walletCandidates } from './wallet-providers.js';
+import { readWalletHoldings } from './wallet-balances.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -162,23 +164,14 @@ async function loadWalletTokens(){
   const who=account,epoch=session,request=++tokenRequest;if(!who)return;
   tokenAbort?.abort();const controller=new AbortController();tokenAbort=controller;
   const active=()=>request===tokenRequest&&epoch===session&&who===account&&!controller.signal.aborted;
-  walletTokens=[];tokenListMessage='Loading your wallet holdings…';$('walletTokenStatus').textContent=tokenListMessage;renderWalletTokens();
+  tokenListMessage=walletTokens.length?'Refreshing your wallet holdings…':'Loading your wallet holdings…';$('walletTokenStatus').textContent=tokenListMessage;renderWalletTokens();
   try{
     if(Number(await injected.request({method:'eth_chainId'}))!==P.CHAIN)throw Error('Switch to Robinhood Chain to load your holdings.');
     const response=await fetch('/api/lp-wallet-tokens?address='+who.toLowerCase(),{cache:'no-store',signal:controller.signal});
     const body=await response.json();if(!response.ok)throw Error(body.error||'Wallet holdings are temporarily unavailable.');
     if(!Array.isArray(body.tokens))throw Error('Wallet holdings could not be read.');
-    const rows=[];let failed=0;
-    for(let i=0;i<body.tokens.length;i+=20){
-      if(!active())return;
-      const results=await Promise.allSettled(body.tokens.slice(i,i+20).map(async t=>{
-        const c=new Contract(t.address,P.ERC20,rpc),balance=await c.balanceOf(who);
-        const decimals=balance>0n?Number(await c.decimals()):t.decimals;
-        if(!Number.isInteger(decimals)||decimals<0||decimals>36)throw Error('Unsupported token decimals.');
-        return {...t,decimals,balance:balance.toString()};
-      }));
-      for(const r of results)if(r.status==='fulfilled')rows.push(r.value);else failed++;
-    }
+    if(!active())return;
+    const {rows,failed}=await readWalletHoldings(body.tokens,who,request=>rpc.call(request));
     if(!active())return;
     walletTokens=sortHoldings(rows);const unpriced=walletTokens.filter(t=>t.valueUsd===null).length;
     tokenListMessage=(body.partial||failed?'Some holdings could not be loaded; enter a contract for a missing token. ':'')+(unpriced?unpriced+' token'+(unpriced===1?' has':'s have')+' no current USD price and '+(unpriced===1?'appears':'appear')+' last. ':'')+'USD values are estimates. Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'.';
@@ -194,8 +187,7 @@ window.addEventListener('eip6963:announceProvider',e=>walletCandidate(e.detail))
 async function chooseWallet(){
   if(account){await switchNetwork();return;}
   window.dispatchEvent(new Event('eip6963:requestProvider'));
-  const candidates=[...discovered.values()];
-  for(const provider of window.ethereum?.providers||[window.ethereum])if(provider&&!candidates.some(x=>x.provider===provider))candidates.push({name:provider.isMetaMask?'MetaMask':'Browser wallet',provider});
+  const candidates=walletCandidates([...discovered.values()],window.ethereum);
   const list=$('walletChoices');list.innerHTML='';
   if(!candidates.length){list.innerHTML='<p>No browser wallet was detected. Open this page in your wallet’s browser or install an Ethereum-compatible wallet.</p>';}
   candidates.forEach(c=>{const b=document.createElement('button');b.className='secondary-button';b.textContent=c.name;b.onclick=()=>connect(c.provider);list.append(b);});

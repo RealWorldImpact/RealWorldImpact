@@ -1,5 +1,5 @@
 import { normalizePortfolio } from '../scripts/lp/wallet-tokens.js';
-import { discoverMarketHoldings } from '../scripts/lp/market-discovery.js';
+import { discoverMarketHoldings, priceMarketHoldings } from '../scripts/lp/market-discovery.js';
 
 async function portfolio(address){
   const upstream=await fetch('https://balancesapi.ponsfamily.com/v1/portfolio/'+address+'?limit=200',{headers:{accept:'application/json'},signal:AbortSignal.timeout(10000)});
@@ -15,7 +15,7 @@ export default async function handler(req,res){
   const address=typeof req.query.address==='string'?req.query.address.toLowerCase():'';
   if(!/^0x[0-9a-f]{40}$/.test(address))return res.status(400).json({error:'Invalid wallet address'});
   try{
-    const [pons,market]=await Promise.allSettled([portfolio(address),discoverMarketHoldings(address)]);
+    const [pons,market]=await Promise.allSettled([portfolio(address),discoverMarketHoldings(address,[],false)]);
     if(pons.status==='rejected'&&market.status==='rejected')return res.status(pons.reason?.status===429?429:502).json({error:'Wallet token discovery is temporarily unavailable. You can still paste a token contract.'});
     const tokens=new Map();
     for(const token of market.status==='fulfilled'?market.value.tokens:[])tokens.set(token.address,token);
@@ -24,6 +24,10 @@ export default async function handler(req,res){
       tokens.set(token.address,{...token,priceUsd:token.priceUsd??extra?.priceUsd??null,logo:token.logo||extra?.logo||''});
     }
     tokens.delete('0xda2598c976e62e7e15dcca75169b404712e48b04');
+    // Reuse portfolio prices instead of looking up the same held tokens again.
+    const marketAddresses=new Set(market.status==='fulfilled'?market.value.tokens.map(t=>t.address):[]);
+    const missing=[...tokens.values()].filter(t=>t.priceUsd===null&&marketAddresses.has(t.address));
+    for(const token of await priceMarketHoldings(missing))tokens.set(token.address,token);
     return res.status(200).json({tokens:[...tokens.values()],partial:true,sources:{pons:pons.status==='fulfilled',uniswapMarkets:market.status==='fulfilled'},updatedAt:new Date().toISOString()});
   }catch{return res.status(502).json({error:'Wallet token discovery is temporarily unavailable. You can still paste a token contract.'});}
 }
