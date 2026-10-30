@@ -10,6 +10,7 @@ import { featuredLiquidityUrl } from './featured-pools.js';
 import { saveConnector, forgetConnector, savedConnector } from './wallet-session.js';
 import { discoverPositionIds } from './position-discovery.js';
 import { readPositionsFast } from './position-reader.js';
+import { valuePositions } from './position-values.js';
 
 const $=id=>document.getElementById(id);
 const rpc=new JsonRpcProvider('https://rpc.mainnet.chain.robinhood.com',P.CHAIN,{staticNetwork:true,cacheTimeout:-1});
@@ -393,11 +394,38 @@ async function readPosition(id,includeExternal=false){
   if(session!==epoch||account!==who)throw Error('Wallet changed. Positions will update automatically.');
   return {id,who,epoch,live,position,liquidity};
 }
-function renderPositions(){
-  $('positionList').innerHTML=positions.size?[...positions.values()].sort((a,b)=>Number(b.liquidity>0n)-Number(a.liquidity>0n)||(BigInt(a.id)>BigInt(b.id)?-1:1)).map(p=>{
+const positionPriceTimes=new Map();
+let cancelPositionLogos=()=>{};
+function loadPositionPrices(){
+  const who=account,epoch=session;if(!who)return;
+  const addresses=[...new Set([...positions.values()].flatMap(p=>p.live.tokens.map(t=>t.address?.toLowerCase()).map(a=>a===P.ZERO?P.WETH:a)))].filter(a=>/^0x[0-9a-f]{40}$/.test(a)&&Date.now()-(positionPriceTimes.get(a)||0)>60000);
+  for(let i=0;i<addresses.length;i+=2){
+    const batch=addresses.slice(i,i+2);batch.forEach(a=>positionPriceTimes.set(a,Date.now()));
+    fetch('/api/lp-token-prices?addresses='+batch.join(','),{signal:AbortSignal.timeout(8000)}).then(async response=>{
+      if(!response.ok)return;const body=await response.json();
+      for(const a of batch){const price=body.prices?.[a];if(typeof price==='string'&&/^\d{1,60}(?:\.\d{1,60})?$/.test(price))amountPrices.set(a,price);}
+      if(who===account&&epoch===session){renderAmountControls();renderPositions(false);}
+    }).catch(()=>{});
+  }
+}
+function renderPositions(requestPrices=true){
+  cancelPositionLogos();
+  const prices=new Map(walletTokens.filter(t=>t.priceUsd!==null).map(t=>[t.address,t.priceUsd]));for(const [a,price] of amountPrices)prices.set(a,price);
+  const rows=valuePositions([...positions.values()],prices);
+  $('positionList').innerHTML=rows.length?rows.map(({position:p,valueUsd,estimated})=>{
     const state=p.liquidity===0n?'Empty':p.external?'Managed externally':p.live.pool.tickCurrent>=p.position.tickLower&&p.live.pool.tickCurrent<p.position.tickUpper?'In range':'Out of range';
-    return '<article class="position-card"><div class="position-title"><div><span class="eyebrow">POSITION '+esc(p.id)+'</span><h3>'+esc(p.live.tokens.map(t=>t.symbol).join(' / '))+'</h3></div><span class="pool-tag">'+esc(state)+'</span></div>'+(p.external?'<p class="small muted">This pool uses native ETH or a custom hook. Manage liquidity and fees at its original venue.</p>':'<div class="position-amounts"><span>'+esc(p.liquidity===0n?'0':p.position.amount0.toSignificant(8))+' '+esc(p.live.tokens[0].symbol)+'</span><span>'+esc(p.liquidity===0n?'0':p.position.amount1.toSignificant(8))+' '+esc(p.live.tokens[1].symbol)+'</span></div><p class="small muted">'+(p.live.key.fee/10000)+'% pool fee · Principal at current price; accrued fees excluded.</p>')+'<div class="position-actions">'+(p.external?'':'<button class="secondary-button" data-id="'+p.id+'" data-action="remove" '+(busy||p.liquidity===0n?'disabled':'')+'>Withdraw</button><button class="secondary-button" data-id="'+p.id+'" data-action="collect" '+(busy?'disabled':'')+'>Collect fees</button>')+'<a href="https://robin.etherscan.io/nft/'+P.CONTRACTS.manager+'/'+p.id+'" target="_blank" rel="noopener">View receipt ↗</a></div></article>';
+    const other=p.live.tokens.find(t=>t.address?.toLowerCase()!==P.RWI),otherAddress=other?.address?.toLowerCase();
+    const icon=otherAddress&&/^0x[0-9a-f]{40}$/.test(otherAddress)?'<img data-position-logo="'+otherAddress+'" src="/assets/rwi-logo.webp" alt="" width="32" height="32" hidden>':'';
+    const amounts=p.external?'<p class="small muted">Manage this native-ETH or custom-hook position at its original venue.</p>':'<div class="position-breakdown">'+p.live.tokens.map((t,i)=>'<div><span>'+esc(t.symbol)+'</span><strong>'+esc(p.liquidity===0n?'0':p.position['amount'+i].toSignificant(7))+'</strong></div>').join('')+'</div>';
+    return '<article class="position-card position-value-card"><div class="position-title"><div class="position-pair"><div class="featured-icons"><img src="/assets/rwi-logo.webp" alt="RWI" width="32" height="32">'+icon+'</div><div><h3>'+esc(p.live.tokens.map(t=>t.symbol).join(' / '))+'</h3><span class="position-fee">'+(p.live.key?.fee!==undefined?esc(p.live.key.fee/10000+'% pool fee'):'RWI pool')+'</span></div></div><span class="pool-tag '+(state==='In range'?'position-active':'')+'">'+esc(state)+'</span></div><div class="position-total"><span class="eyebrow">POSITION VALUE</span><strong>'+esc(valueUsd===null?'USD unavailable':usdLabel(valueUsd))+'</strong><small>'+esc(estimated?'Pool-based estimate · Fees excluded':'Estimated principal · Fees excluded')+'</small></div>'+amounts+'<div class="position-actions">'+(p.external?'':'<button class="secondary-button position-withdraw" data-id="'+p.id+'" data-action="remove" '+(busy||p.liquidity===0n?'disabled':'')+'>Withdraw</button><button class="secondary-button" data-id="'+p.id+'" data-action="collect" '+(busy?'disabled':'')+'>Collect fees</button>')+'</div><div class="position-receipt"><span>Position #'+esc(p.id)+'</span><a href="https://robin.etherscan.io/nft/'+P.CONTRACTS.manager+'/'+p.id+'" target="_blank" rel="noopener">View receipt ↗</a></div></article>';
   }).join(''):'<div class="empty-state">No RWI liquidity positions were found for this wallet.</div>';
+  const cancels=[];
+  for(const image of document.querySelectorAll('[data-position-logo]')){
+    const address=image.dataset.positionLogo,token=[...positions.values()].flatMap(p=>p.live.tokens).find(t=>t.address?.toLowerCase()===address);if(!token)continue;
+    cancels.push(logoLoader.load({...token,address:address===P.ZERO?P.WETH:address,logo:walletTokens.find(t=>t.address===address)?.logo},result=>{if(image.isConnected){image.src=result.src;image.hidden=false;}}));
+  }
+  cancelPositionLogos=()=>cancels.forEach(cancel=>cancel());
+  if(requestPrices)loadPositionPrices();
 }
 async function importPosition(){locked(true);try{const id=$('positionId').value.trim(),p=await readPosition(id,true);positions.set(id,p);remember(id);renderPositions();notice('Position '+id+' loaded from chain.');}catch(e){notice(failure(e),true);}finally{locked(false);}}
 async function loadPositions(){

@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os'),esbuild=require('esbuild');
+const file=path.join(os.tmpdir(),'lp-position-values-'+process.pid+'.cjs');esbuild.buildSync({entryPoints:[path.join(__dirname,'position-values.js')],outfile:file,bundle:true,platform:'node',format:'cjs'});const {positionValue,valuePositions}=require(file);fs.unlinkSync(file);
+const rwi={address:'0xda2598c976e62e7e15dcca75169b404712e48b04',decimals:18},usd={address:'0x'+'1'.repeat(40),decimals:6},other={address:'0x'+'2'.repeat(40),decimals:18};
+const amount=quotient=>({quotient:BigInt(quotient)}),p=(id,token,raw,rwiRaw)=>({id,liquidity:100n,live:{tokens:[rwi,token],pool:{priceOf:()=>({numerator:2n,denominator:1n})}},position:{amount0:amount(rwiRaw),amount1:amount(raw)}});
+const prices=new Map([[rwi.address,'0.02'],[usd.address,'1']]),a=p('1',usd,10000000n,500n*10n**18n),b=p('2',usd,2000000n,100n*10n**18n),estimated=p('3',other,10n**18n,2n*10n**18n),empty={id:'4',liquidity:0n},unknown={id:'5',liquidity:1n};
+assert.equal(positionValue(a,prices).valueUsd,20n*10n**36n);assert.equal(positionValue(b,prices).valueUsd,4n*10n**36n);
+assert.equal(positionValue(estimated,prices).estimated,true);assert.equal(positionValue(estimated,prices).valueUsd,8n*10n**34n);
+assert.equal(positionValue(empty,prices).valueUsd,0n);assert.equal(positionValue(unknown,prices).valueUsd,null);
+assert.deepEqual(valuePositions([empty,b,unknown,a,estimated],prices).map(x=>x.position.id),['1','2','3','4','5']);
+assert.equal(positionValue(a,new Map()).valueUsd,null);
+console.log('PASS: exact principal USD values, decimal differences, descending value sort, labeled pool-implied estimates, empty positions and unavailable prices.');
