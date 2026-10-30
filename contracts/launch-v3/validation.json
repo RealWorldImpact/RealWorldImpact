@@ -1,0 +1,75 @@
+{
+  "checkedAt": "2026-10-30T22:25:56.157Z",
+  "status": "Prepared, not deployed or activated",
+  "localRuntimeChecks": {
+    "factory": {
+      "creationHash": "0x09fe5fb76a13a4fd536a42d432535d81381f72003af59990d4c63e5ac08763df",
+      "runtimeHash": "0x185996425435052767be825b55bd899ed62b5c4b7284426ee0de42901bf35914",
+      "runtimeBytes": 19892
+    },
+    "hook": {
+      "creationHash": "0x6f3989c7697e134dbbc632d97b0ef0a79d40ee3f3d55b8c5f7ad69bb89b244d3",
+      "runtimeHash": "0xa194017d8aebffd89e9d7dbaea6744d532b1a282a4ec2bcac0112ba9ee87f821",
+      "runtimeBytes": 3602
+    },
+    "router": {
+      "creationHash": "0xb4cf0c8ed72e84431a9a22cf0b909383527eba76389c3892b5cb16ee864e393d",
+      "runtimeHash": "0x336e81fcb8ceb58587864fec29c8b5deb931828f97bcdc70dc6b38e6a1d65dcb",
+      "runtimeBytes": 7555
+    }
+  },
+  "legacyLaunches": [
+    {
+      "version": "1",
+      "total": 0,
+      "factory": "0xdBfabE02ab31A4Ed0c8A77c375EaF597ce7619a8"
+    },
+    {
+      "version": "2",
+      "total": 0,
+      "factory": "0xDD48b107aEA9666F19078aB4103E2384c31CF983"
+    }
+  ],
+  "validation": {
+    "localForkLaunches": 8,
+    "creatorTaxBps": [
+      0,
+      100,
+      200,
+      300
+    ],
+    "bothTokenOrderings": true,
+    "cappedAndUncappedCurves": true,
+    "exactOutputSwaps": 16,
+    "failedClaimRollback": true,
+    "failedGraduationRetry": true,
+    "donationIsolation": true,
+    "solidityJavascriptComparisons": 276,
+    "frontendSuite": "passed",
+    "desktopMobile": "verified at 1280px and 390px",
+    "mainnetTransactionsSubmitted": 0
+  },
+  "example": {
+    "phantomQuote": "4624409067168031364217300",
+    "initialTokens": "25232289023359647174712274",
+    "reservedTokens": "7979150389348202637663105",
+    "graduationQuote": "9999256417417528594645772",
+    "rwiReserveCap": "9999256417417528594646058",
+    "openingCapRwi": "183273466108716013019314506",
+    "rwiTotalSupply": "999925641741752859464605861",
+    "graduationThreshold": "9999256417417528594645772",
+    "targetMarketCapUsd": "5000",
+    "graduationTargetUsd": "50000",
+    "marketCapUsd": "4999.9999999999999999999999731775413",
+    "rwiPriceUsd": "0.00002728163605",
+    "price": "0.183273466108716013",
+    "netReserveUsd": "272.7960743506118960095939303752806",
+    "poolLiquidityUsd": "545.5921487012237920191878607505612",
+    "soldTokens": "17253138634011444537049169",
+    "poolTokens": "5455921487012237920191877",
+    "lockedTokens": "977290939878976317542758954",
+    "soldPercent": "1.725313",
+    "poolPercent": "0.545592",
+    "lockedPercent": "97.729093"
+  }
+}

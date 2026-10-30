@@ -1,0 +1,3 @@
+// Generated from the reviewed build.
+export const FACTORY_CREATION_HASH="0x09fe5fb76a13a4fd536a42d432535d81381f72003af59990d4c63e5ac08763df";
+export const HOOK_CREATION_HASH="0x6f3989c7697e134dbbc632d97b0ef0a79d40ee3f3d55b8c5f7ad69bb89b244d3";
