@@ -18,5 +18,9 @@ export async function readFeaturedKey(manager,id){
   // The manager indexes keys by the first 25 bytes. Verify all 32 bytes after lookup.
   return validateFeaturedKey(id,await manager.poolKeys(id.slice(0,52)));
 }
+export function assertFeaturedDeposit(id,live,position){
+  if(!id)return;
+  if(!live.exists||live.id.toLowerCase()!==id.toLowerCase()||poolId(live.key)!==id.toLowerCase()||(position&&position.pool.poolId.toLowerCase()!==id.toLowerCase()))throw Error('The deposit no longer matches the selected featured pool. Select the pool again.');
+}
 export function hookLabel(key){return key.hooks.toLowerCase()===ZERO?'None':key.hooks.toLowerCase()===PONS_HOOK?'Pons trading hook':'Custom trading hook';}
 export function lpFeeLabel(key,slot){return key.fee===0x800000?(slot?Number(slot[3])/10000+'% (variable)':'Variable'):key.fee/10000+'%';}

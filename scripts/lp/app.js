@@ -6,7 +6,8 @@ import { createLogoLoader } from './logo-loader.js';
 import { walletCandidates } from './wallet-providers.js';
 import { readWalletHoldings } from './wallet-balances.js';
 import { matchDollarAmounts } from './deposit-amounts.js';
-import { readFeaturedKey, supportsLiquidity, hookLabel, lpFeeLabel } from './featured-pool-target.js';
+import { readFeaturedKey, supportsLiquidity, hookLabel, lpFeeLabel, assertFeaturedDeposit } from './featured-pool-target.js';
+import { findFeaturedPosition } from './featured-position.js';
 import { saveConnector, forgetConnector, savedConnector } from './wallet-session.js';
 import { discoverPositionIds } from './position-discovery.js';
 import { readPositionsFast } from './position-reader.js';
@@ -41,7 +42,7 @@ function renderDepositContext(){
   $('poolModelDescription').textContent=target?'Your deposit joins this exact pool with its existing fee and hook settings. The position belongs to your wallet.':'Each token has its own pool paired with RWI. This creates a separate market from RWI’s existing launch pool. Liquidity and fees are specific to the pool you choose.';
   $('liquidityPriceHelp').textContent=target?'Deposits use this pool’s current price. Unused funds stay in your wallet.':'A new pool uses the ratio of your initial deposits as its starting price. Existing pools use their current onchain price.';
   $('liquidityModeTag').textContent=depositTarget?'EXISTING POSITION':featuredTarget?'FEATURED POOL · FULL RANGE':'FULL RANGE · NO HOOKS';
-  if(target){const pair=target.tokens?.map(t=>t.symbol).join(' / ')||'RWI pool';$('positionDepositText').textContent=(depositTarget?'Adding to position #'+depositTarget.id+' · ': 'Adding to the featured ')+pair+(depositTarget?'. Your existing range is preserved.':'. Your new position stays in your wallet.');}
+  if(target){const pair=target.tokens?.map(t=>t.symbol).join(' / ')||'RWI pool';$('positionDepositText').textContent=(depositTarget?'Adding to your existing position #'+depositTarget.id+' · ': 'Adding to the featured ')+pair+(depositTarget?'. This increases the same position.':account?'. A new full-range position will join this existing pool.':'. Connect your wallet to check for an existing position.');}
 }
 async function addToFeaturedPool(id){
   if(busy)return;locked(true);clearProposal();clearDepositTarget();invalidate();
@@ -52,7 +53,7 @@ async function addToFeaturedPool(id){
     amountDriver={side:'rwi',percent:0};view('add');await loadPool();
     if(!loaded)throw Error('The featured pool could not be loaded. Try again.');
     $('positionDepositNote').scrollIntoView?.({behavior:'smooth',block:'start'});
-  }catch(e){clearDepositTarget();invalidate();notice(failure(e),true);}finally{locked(false);}
+  }catch(e){invalidate();renderDepositContext();notice(failure(e),true);}finally{locked(false);}
 }
 async function addToPosition(id){
   locked(true);
@@ -145,6 +146,15 @@ function readStore(k,fallback){try{const v=JSON.parse(localStorage.getItem(k));r
 function saveStore(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
 function idsKey(){return 'rwi-lp-positions-'+account?.toLowerCase();}
 function remember(id){const ids=readStore(idsKey(),[]);if(!ids.includes(id))saveStore(idsKey(),[id,...ids].slice(0,100));}
+function positionCheckpoint(who){
+  const key=who.toLowerCase(),stored=readStore('rwi-lp-position-scan-'+key,[])[0];
+  return positionScans.get(key)||(stored&&Number.isSafeInteger(stored.block)&&stored.block>=0&&Array.isArray(stored.ids)&&stored.ids.length<=10000&&stored.ids.every(id=>typeof id==='string'&&/^\d+$/.test(id))?stored:undefined);
+}
+function cachePositionScan(who,scan){
+  if(scan.partial)return;const key=who.toLowerCase();
+  if(positionScans.size>=5&&!positionScans.has(key))positionScans.delete(positionScans.keys().next().value);
+  positionScans.set(key,scan);if(scan.ids.length<=10000)saveStore('rwi-lp-position-scan-'+key,[scan]);
+}
 function notice(msg,error=false){$('notice').hidden=!msg;$('notice').textContent=msg;$('notice').className=error?'notice error':'notice';}
 function failure(e){if(e.code===4001||e.code==='ACTION_REJECTED')return 'Request cancelled in your wallet.';return e.shortMessage||e.reason||e.message||'The request failed. Try refreshing the chain data.';}
 function locked(v){busy=v;document.querySelectorAll('main input,main select,main textarea,main button,#walletButton,#disconnect,#tradeDialog input,#tradeDialog button').forEach(el=>el.disabled=v);$('submitAction').disabled=v||!proposal;$('cancelReview').disabled=v;document.querySelectorAll('#positionList [data-action="remove"]').forEach(b=>{b.disabled=v||positions.get(b.dataset.id)?.liquidity===0n;});renderAmountControls();renderDepositContext();launchesUI.updateDisabled(v);}
@@ -192,6 +202,13 @@ async function loadPool(){
       const tokens=await Promise.all([key.currency0,key.currency1].map(a=>a.toLowerCase()===P.ZERO?P.native():metadata(a)));
       data=await snapshot(key,tokens);if(!data.exists)throw Error('This featured pool is no longer initialized.');
       if(seq!==loadSeq||epoch!==session||featuredTarget!==target)return;
+      if(account){
+        const who=account;notice('Checking for your existing position in this pool…');
+        const found=await findFeaturedPosition({rpc,who,epoch,poolId:target.id,key,P,cache:tokenIdentityCache,knownIds:readStore(idsKey(),[]).filter(id=>typeof id==='string'&&/^\d+$/.test(id)),checkpoint:positionCheckpoint(who)});
+        if(seq!==loadSeq||epoch!==session||who!==account||featuredTarget!==target)return;
+        cachePositionScan(who,found.scan);
+        if(found.position){depositTarget={...found.position,live:data};positions.set(depositTarget.id,depositTarget);remember(depositTarget.id);}
+      }
       other=tokens.find(t=>t.address.toLowerCase()!==P.RWI);featuredTarget={id:target.id,key,tokens};
     }else{
       [,other]=await Promise.all([verifyContracts(),metadata(address)]);
@@ -200,6 +217,7 @@ async function loadPool(){
       data=await snapshot(key,tokens);
     }
     if(seq!==loadSeq||epoch!==session)return;
+    if(featuredTarget)assertFeaturedDeposit(featuredTarget.id,data);
     tokenIdentityCache.set(address,other);showSelectedToken(walletTokens.find(t=>t.address===address)||other);
     if(seq!==loadSeq||epoch!==session)return;
     loaded=data;renderDepositContext();$('poolHooks').textContent=hookLabel(data.key);$('poolLpFee').textContent=lpFeeLabel(data.key,data.slot);$('poolFeeNote').textContent=data.key.fee===0?'This pool has a 0% LP fee. Its hook trading fees do not accrue to your liquidity position.':'Your position earns this pool’s LP fees. Hook trading fees, if any, are separate.';$('tokenAmountLabel').textContent=other.symbol+' amount (USD)';$('pairName').textContent=other.symbol+' / RWI';
@@ -362,7 +380,7 @@ async function syncWallet(){
   $('positionList').innerHTML='<div class="empty-state">Loading your positions automatically…</div>';$('positionsStatus').textContent='Checking your position history…';
   renderActivity();
   if(Number(chain)!==P.CHAIN){tokenListMessage='Switch to Robinhood Chain to load your holdings.';$('walletTokenStatus').textContent=tokenListMessage;}
-  if(Number(chain)===P.CHAIN){loadPositions();loadWalletTokens();if(loaded)await balances(loaded);else loadPool();}
+  if(Number(chain)===P.CHAIN){loadPositions();loadWalletTokens();if(featuredTarget)await loadPool();else if(loaded)await balances(loaded);else loadPool();}
 }
 let oldAccountListener,oldChainListener,oldDisconnectListener;
 async function connect(provider,restore=false,candidate=null){
@@ -429,16 +447,17 @@ async function reviewDeposit(event){
   event?.preventDefault();if(!account){await chooseWallet();return;}locked(true);
   try{
     if(!account)throw Error('Connect your wallet first.');const who=account,epoch=session;await signerFor(who,epoch);await loadPool();
-    if(!loaded)throw Error('Pool data could not be loaded.');const data=loaded;
+    if(!loaded)throw Error('Pool data could not be loaded.');const data=loaded,featuredPoolId=featuredTarget?.id;
     const other=data.tokens.find(t=>t.address.toLowerCase()!==P.RWI),r=selectedAmount('rwi'),t=selectedAmount('token');
     const budgets=data.key.currency0.toLowerCase()===P.RWI?[r,t]:[t,r];
     const live=await snapshot(data.key,data.tokens,budgets),slip=P.DEFAULT_SLIPPAGE_BPS;
     const target=depositTarget;
     const {position,caps}=P.makeDeposit(live.pool,budgets,slip,target?[target.position.tickLower,target.position.tickUpper]:undefined);
+    assertFeaturedDeposit(featuredPoolId,live,position);
     const balances=await Promise.all(data.tokens.map(t=>t.isNative?rpc.getBalance(who):new Contract(t.address,P.ERC20,rpc).balanceOf(who)));
     if(balances.some((n,i)=>n<caps[i]))throw Error('Your wallet does not have enough tokens for this deposit.');
     await signerFor(who,epoch);
-    const p={kind:'deposit',id:target?.id,who,epoch,position,caps,live,slip,createdAt:Date.now(),label:target?'Add to position #'+target.id:live.exists?'Add liquidity':'Create pool & add liquidity'};
+    const p={kind:'deposit',id:target?.id,featuredPoolId,who,epoch,position,caps,live,slip,createdAt:Date.now(),label:target?'Add to position #'+target.id:live.exists?'Add liquidity':'Create pool & add liquidity'};
     showReview(p,[...(target?[['Position',target.id]]:[]),['Network','Robinhood Chain (4663)'],['Pair',other.symbol+' / RWI'],['LP fee',lpFeeLabel(live.key,live.slot)],['Range',target?'Existing position range':'Full range'],['Pool hooks',hookLabel(data.key)],...(data.key.fee===0?[['Fee earnings','0% LP fee; hook fees go to their designated recipients']]:[]),...(data.tokens.some(t=>t.isNative)?[['ETH','Uses native ETH; unused ETH is refunded']]:[]),['Pool ID',live.id],...caps.map((n,i)=>['Maximum '+data.tokens[i].symbol,formatUnits(n,data.tokens[i].decimals)]),['Slippage',(slip/100)+'%'],['Recipient',who],['Position Manager',P.CONTRACTS.manager],['Expiry','20 minutes from transaction preparation']]);
     notice('Review the deposit. Only your wallet can authorize it.');
   }catch(e){notice(failure(e),true);}finally{locked(false);}
@@ -489,7 +508,8 @@ function loadPositionPrices(){
 function renderPositions(requestPrices=true){
   cancelPositionLogos();
   const prices=new Map(walletTokens.filter(t=>t.priceUsd!==null).map(t=>[t.address,t.priceUsd]));for(const [a,price] of amountPrices)prices.set(a,price);if(prices.has(P.WETH))prices.set(P.ZERO,prices.get(P.WETH));
-  const rows=valuePositions([...positions.values()],prices);
+  const rows=valuePositions([...positions.values()],prices),poolCounts=new Map();
+  for(const {position:p} of rows)if(p.live.id)poolCounts.set(p.live.id,(poolCounts.get(p.live.id)||0)+1);
   $('positionList').innerHTML=rows.length?rows.map(({position:p,valueUsd,estimated})=>{
     const state=p.liquidity===0n?'Empty':p.external?'Managed externally':p.live.pool.tickCurrent>=p.position.tickLower&&p.live.pool.tickCurrent<p.position.tickUpper?'':'Out of range';
     const other=p.live.tokens.find(t=>t.address?.toLowerCase()!==P.RWI),otherAddress=other?.address?.toLowerCase();
@@ -499,7 +519,8 @@ function renderPositions(requestPrices=true){
     const feeTokens=p.fees?p.fees.map((raw,i)=>new Intl.NumberFormat('en-US',{maximumSignificantDigits:6}).format(Number(formatUnits(raw,p.live.tokens[i].decimals)))+' '+p.live.tokens[i].symbol).join(' · '):'Fee data unavailable';
     const metrics='<div class="position-metrics"><div><span>24H POOL VOLUME</span><strong>'+esc(positionVolumes.has(p.live.id)?volumeUsd===null?'Unavailable':usdLabel(volumeUsd):'Loading…')+'</strong><small>Estimated at current RWI price</small></div><div><span>UNCOLLECTED FEES</span><strong>'+esc(fees.valueUsd===null?'Unavailable':usdLabel(fees.valueUsd))+'</strong><small>'+esc(feeTokens)+'</small></div></div>';
     const amounts=p.external?'<p class="small muted">This position uses custom liquidity rules and must be managed at its original venue.</p>':'<div class="position-breakdown">'+p.live.tokens.map((t,i)=>'<div><span>'+esc(t.symbol)+'</span><strong>'+esc(p.liquidity===0n?'0':p.position['amount'+i].toSignificant(7))+'</strong></div>').join('')+'</div>';
-    return '<article class="position-card position-value-card"><div class="position-title"><div class="position-pair"><div class="featured-icons"><img src="/assets/rwi-logo.webp" alt="RWI" width="32" height="32">'+icon+'</div><div><h3>'+esc(p.live.tokens.map(t=>t.symbol).join(' / '))+'</h3><span class="position-fee">'+(p.live.key?.fee!==undefined?esc(lpFeeLabel(p.live.key,p.live.slot)+' LP fee'):'RWI pool')+'</span></div></div>'+(state?'<span class="pool-tag">'+esc(state)+'</span>':'')+'</div><div class="position-total"><span class="eyebrow">POSITION VALUE</span><strong>'+esc(valueUsd===null?'USD unavailable':usdLabel(valueUsd))+'</strong><small>'+esc(estimated?'Pool-based estimate · Fees excluded':'Estimated principal · Fees excluded')+'</small></div>'+metrics+amounts+'<div class="position-actions">'+(p.external?'<a class="secondary-button position-add" href="https://app.uniswap.org/positions/v4/robinhood/'+esc(p.id)+'" target="_blank" rel="noopener">Add liquidity</a>':'<button class="secondary-button position-add" data-id="'+p.id+'" data-action="add" '+(busy?'disabled':'')+'>Add liquidity</button>')+(p.external?'':'<button class="secondary-button position-withdraw" data-id="'+p.id+'" data-action="remove" '+(busy||p.liquidity===0n?'disabled':'')+'>Withdraw</button><button class="secondary-button" data-id="'+p.id+'" data-action="collect" '+(busy?'disabled':'')+'>Collect fees</button>')+'</div><div class="position-receipt"><span>Position #'+esc(p.id)+'</span><a href="https://robin.etherscan.io/nft/'+P.CONTRACTS.manager+'/'+p.id+'" target="_blank" rel="noopener">View receipt</a></div></article>';
+    const shared=poolCounts.get(p.live.id)||1,poolInfo=p.live.id?'<div class="position-pool"><a href="https://app.uniswap.org/explore/pools/robinhood/'+esc(p.live.id)+'" target="_blank" rel="noopener" title="'+esc(p.live.id)+'">Pool '+esc(short(p.live.id))+'</a>'+(shared>1?'<span>'+shared+' positions share this pool</span>':'')+'</div>':'';
+    return '<article class="position-card position-value-card"><div class="position-title"><div class="position-pair"><div class="featured-icons"><img src="/assets/rwi-logo.webp" alt="RWI" width="32" height="32">'+icon+'</div><div><h3>'+esc(p.live.tokens.map(t=>t.symbol).join(' / '))+'</h3><span class="position-fee">'+(p.live.key?.fee!==undefined?esc(lpFeeLabel(p.live.key,p.live.slot)+' LP fee'):'RWI pool')+'</span></div></div>'+(state?'<span class="pool-tag">'+esc(state)+'</span>':'')+'</div>'+poolInfo+'<div class="position-total"><span class="eyebrow">POSITION VALUE</span><strong>'+esc(valueUsd===null?'USD unavailable':usdLabel(valueUsd))+'</strong><small>'+esc(estimated?'Pool-based estimate · Fees excluded':'Estimated principal · Fees excluded')+'</small></div>'+metrics+amounts+'<div class="position-actions">'+(p.external?'<a class="secondary-button position-add" href="https://app.uniswap.org/positions/v4/robinhood/'+esc(p.id)+'" target="_blank" rel="noopener">Add liquidity</a>':'<button class="secondary-button position-add" data-id="'+p.id+'" data-action="add" '+(busy?'disabled':'')+'>Add liquidity</button>')+(p.external?'':'<button class="secondary-button position-withdraw" data-id="'+p.id+'" data-action="remove" '+(busy||p.liquidity===0n?'disabled':'')+'>Withdraw</button><button class="secondary-button" data-id="'+p.id+'" data-action="collect" '+(busy?'disabled':'')+'>Collect fees</button>')+'</div><div class="position-receipt"><span>Position #'+esc(p.id)+'</span><a href="https://robin.etherscan.io/nft/'+P.CONTRACTS.manager+'/'+p.id+'" target="_blank" rel="noopener">View receipt</a></div></article>';
   }).join(''):'<div class="empty-state">No funded RWI liquidity positions were found for this wallet.</div>';
   const cancels=[];
   for(const image of document.querySelectorAll('[data-position-logo]')){
@@ -521,10 +542,8 @@ async function loadPositions(){
       if(Number(await injected.request({method:'eth_chainId'}))!==P.CHAIN){if(active())$('positionsStatus').textContent='Switch to Robinhood Chain to see positions.';return;}
       const knownIds=readStore(idsKey(),[]).filter(id=>typeof id==='string'&&/^\d+$/.test(id));
       const early=knownIds.length?(async()=>{await verifyContracts();if(!active())return null;const result=await readPositionsFast(rpc,knownIds,who,epoch,P,tokenIdentityCache);if(active()&&result.items.length){positions=new Map(result.items.map(p=>[p.id,p]));renderPositions();$('positionsStatus').textContent='Positions loaded · Checking for new activity…';}return result;})().catch(()=>null):Promise.resolve(null);
-      const key=who.toLowerCase(),stored=readStore('rwi-lp-position-scan-'+key,[])[0];
-      const checkpoint=stored&&Number.isSafeInteger(stored.block)&&stored.block>=0&&Array.isArray(stored.ids)&&stored.ids.length<=10000&&stored.ids.every(id=>typeof id==='string'&&/^\d+$/.test(id))?stored:undefined;
-      const scan=await discoverPositionIds(rpc,P.CONTRACTS.manager,who,positionScans.get(key)||checkpoint);if(!active())return;
-      if(!scan.partial){if(positionScans.size>=5&&!positionScans.has(key))positionScans.delete(positionScans.keys().next().value);positionScans.set(key,scan);if(scan.ids.length<=10000)saveStore('rwi-lp-position-scan-'+key,[scan]);}
+      const scan=await discoverPositionIds(rpc,P.CONTRACTS.manager,who,positionCheckpoint(who));if(!active())return;
+      cachePositionScan(who,scan);
       const ids=[...new Set([...scan.ids,...knownIds])];
       await verifyContracts();if(!active())return;
       const initial=await early;if(!active())return;
@@ -535,8 +554,8 @@ async function loadPositions(){
       for(const item of result.items)remember(item.id);
       if(failed){for(const [id,p] of positions)if(!next.has(id))next.set(id,p);}
       positions=next;renderPositions();
-      const count=[...positions.values()].filter(p=>p.liquidity>0n).length;
-      $('positionsStatus').textContent=count+' RWI position'+(count===1?'':'s')+' · Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+(scan.partial||failed?' · Some data is still syncing; retrying automatically.':' · Updates automatically.');
+      const funded=[...positions.values()].filter(p=>p.liquidity>0n),count=funded.length,poolCount=new Set(funded.map(p=>p.live.id)).size;
+      $('positionsStatus').textContent=count+' RWI position'+(count===1?'':'s')+' across '+poolCount+' pool'+(poolCount===1?'':'s')+' · Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+(scan.partial||failed?' · Some data is still syncing; retrying automatically.':' · Updates automatically.');
       if((scan.partial||failed)&&!positions.size)$('positionList').innerHTML='<div class="empty-state">Position history is temporarily incomplete. Checking again automatically…</div>';
       for(const tx of pending.filter(x=>x.account===who.toLowerCase()&&x.status.startsWith('Pending')).slice(0,20))rpc.getTransactionReceipt(tx.hash).then(receipt=>{if(active()&&receipt)updateActivity(tx.hash,receipt.status===1?'Confirmed':'Reverted');}).catch(()=>{});
     }catch{if(active()){$('positionsStatus').textContent='Position data is temporarily unavailable. Retrying automatically.';if(!positions.size)$('positionList').innerHTML='<div class="empty-state">Your positions will appear here when chain data is available.</div>';}}
@@ -571,6 +590,7 @@ async function execute(){
     let deadline=Math.floor(Date.now()/1000)+1200;
     let call,receipt;
     if(p.kind==='deposit'){
+      if(p.featuredPoolId)assertFeaturedDeposit(p.featuredPoolId,p.live,p.position);
       const provider=injected;
       const batchOptions={onReceipt:r=>activity({hash:r.transactionHash,label:p.label,status:'Confirmed',account:p.who.toLowerCase()})};
       await checkPendingBatch(provider,localStorage,p.who,P.CHAIN,batchOptions);
@@ -578,10 +598,11 @@ async function execute(){
       await signerFor(p.who,p.epoch);
       if(!batching)await approvals(p,signer);
       const fresh=await snapshot(p.live.key,p.live.tokens);
+      if(p.featuredPoolId)assertFeaturedDeposit(p.featuredPoolId,fresh,p.position);
       if(fresh.exists!==p.live.exists)throw Error('The pool changed while approvals were pending. Review the deposit again.');
       deadline=Math.floor(Date.now()/1000)+1200;
       if(p.id){const owned=await readPosition(p.id);if(owned.live.id!==p.live.id||owned.position.tickLower!==p.position.tickLower||owned.position.tickUpper!==p.position.tickUpper)throw Error('The selected position changed. Review it again.');}
-      call=P.addCall(p.position,p.who,p.slip,deadline,!p.id&&!p.live.exists,p.id);
+      call=P.addCall(p.position,p.who,p.slip,deadline,!p.featuredPoolId&&!p.id&&!p.live.exists,p.id);
       if(batching){
         const calls=await approvalCalls(p);
         if(calls.length){
