@@ -16,7 +16,8 @@ export function drawCrop(canvas,image,crop,side){
   ctx.translate(side/2+crop.x*g.overX,side/2+crop.y*g.overY);ctx.rotate(crop.turn*Math.PI/2);ctx.scale(g.scale,g.scale);
   ctx.drawImage(image,-image.naturalWidth/2,-image.naturalHeight/2);ctx.restore();
 }
-export function createImageCropEditor({onApply,onCancel,onError}){
+export function createImageCropEditor({onApply,onCancel,onError,prefix='launchImage'}){
+  const $=id=>document.getElementById(id.replace('launchImage',prefix));
   const panel=$('launchImageEditor'),canvas=$('launchImageCanvas'),zoom=$('launchImageZoom'),apply=$('launchImageApply');
   let image=null,crop=initialCrop(),generation=0,drag=null,saving=false;
   function render(){

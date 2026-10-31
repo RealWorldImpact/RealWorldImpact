@@ -1,0 +1,15 @@
+# Public wallet profiles
+
+Profile pictures, display names (32 characters) and short bios (160 characters) are public offchain records, keyed by the Robinhood Chain wallet address. `Profile → Edit profile` uses a free personal-message signature; it does not send an onchain transaction or approve tokens. The main profile page keeps positions, launches, ETH claims and holdings.
+
+The existing `lp-upload-image` function dispatches `?kind=profile` requests to the profile handler. GET with an `address` returns public identity without requiring a wallet connection. POST binds the address, normalized name/bio, image action, original image digest, current revision and timestamp in the signed message. EOAs and EIP-1271 contract-wallet signatures use the existing authorization helper. No signing key is stored or supplied by this service.
+
+Records use the existing Vercel Blob store under `profiles/v1/{address}.json`. Origin reads bypass the CDN. ETag conditional writes and first-write overwrite protection prevent concurrent sessions or older signed requests from restoring stale data. Exact retries of the latest successful update are idempotent. Signatures expire after ten minutes, and are never stored. Updates are limited to 12 per wallet per UTC day, with additional per-instance request limits. Request limits are not a global Sybil-resistant abuse service.
+
+Profile photos are verified PNG/JPEG/WebP uploads, at most 3 MB, 128-pixel minimum side and bounded pixel dimensions. The shared editor provides circular crop, zoom, rotation and keyboard/pointer positioning. The server decodes, strips metadata, resizes without upscaling and re-encodes PNG. Content-addressed files at `profile-images/v1/{address}/{hash}.png` are verified publicly before publishing the new record. Public image URLs must use the configured store and the same wallet's namespace. Removing a photo removes it from the current profile; previously published immutable URLs can remain available.
+
+Names and bios are rendered as text. They are chosen by the wallet and do not establish real-world identity; the address remains visible. Failed reads show an availability message instead of inventing profile details. Wallet/profile changes discard unsaved edits and ignore late responses. Users are told to check the saved profile after a timeout because a write may have succeeded before its response was lost.
+
+Validation: `test-public-profile.cjs` exercises persistence, signatures, tampering, replay, concurrency, image failures, removal, limits and storage conditions. `test-profile-identity.cjs` checks public rendering, owner controls, crops, signature rejection, wallet changes and late responses. Existing LP, image upload and crop tests remain in the full test command. A local QA page uses a fixed test identity and cannot publish or sign; it is not part of this repository or production build.
+
+Deployment uses the existing GitHub/Vercel project and Blob binding; no new API function, database or credential is required. This release is independent of the pending launch-contract replacement.

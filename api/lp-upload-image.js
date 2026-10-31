@@ -1,9 +1,11 @@
-import { head, list, put, BlobNotFoundError } from '@vercel/blob';
+import { head, list, put, get, BlobNotFoundError, BlobPreconditionFailedError } from '@vercel/blob';
 import { createHash } from 'node:crypto';
 import { createImageUploadHandler } from '../scripts/lp/server/launch-image-upload.js';
 import { createBlobImageStorage } from '../scripts/lp/server/blob-image-storage.js';
+import { createProfileStorage } from '../scripts/lp/server/profile-storage.js';
+import { createProfileHandler } from '../scripts/lp/server/profile-api.js';
 const storage=createBlobImageStorage({head,list,put,BlobNotFoundError});
-export default createImageUploadHandler({storage,
+const options={storage,
   // Operational diagnostics contain no wallet, image, signature, or credentials.
   onError(stage,error){console.error('Token image hosting failure',stage,error.constructor?.name,/No blob credentials/.test(error.message)?'missing-auth':/environment/.test(error.message)?'environment-access':/storeId/.test(error.message)?'missing-store':'provider-error');},
   allowedOrigins:['https://www.rwihood.org','https://rwihood.org',...(process.env.VERCEL_URL?['https://'+process.env.VERCEL_URL]:[])],
@@ -13,4 +15,6 @@ export default createImageUploadHandler({storage,
     const length=Number(response.headers.get('content-length'));if(!length||length!==expected.length)throw Error('Image length mismatch.');
     const actual=Buffer.from(await response.arrayBuffer());if(createHash('sha256').update(actual).digest('hex')!==createHash('sha256').update(expected).digest('hex'))throw Error('Image integrity mismatch.');
   }
-});
+};
+const launchHandler=createImageUploadHandler(options),profileHandler=createProfileHandler({storage:createProfileStorage({get,put,BlobNotFoundError,BlobPreconditionFailedError}),images:storage,verifyPublic:options.verifyPublic,allowedOrigins:options.allowedOrigins,onError(){console.error('Public profile storage unavailable');}});
+export default function handler(req,res){return req.query?.kind==='profile'?profileHandler(req,res):launchHandler(req,res);}
