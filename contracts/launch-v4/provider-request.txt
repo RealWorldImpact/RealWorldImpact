@@ -5,11 +5,15 @@ Network: Robinhood Chain mainnet, chain ID 4663
 Asset: Real World Impact (RWI)
 ERC-20 address: 0xDa2598c976E62E7E15DcCa75169B404712E48B04
 Quote: USD per whole RWI; the integration uses 18 decimal fixed-point units.
+Identify the asset by this address and chain, not by the RWI ticker alone.
 
 We need an independently operated onchain price feed for launch graduation.
 Each launch starts at a $5,000 full-supply valuation and graduates only when
 both its current full-supply valuation is at least $40,000 and its deposited
 pool liquidity is at least $5,000. There is no fixed RWI fundraising quota.
+All official buys route ETH -> RWI -> launched token; sells reverse that
+route. Curve reserves and graduated quote liquidity must remain RWI.
+Direct ETH-funded curves and ETH/token pools are not authorized alternatives.
 
 Please confirm whether you can support this asset and chain, and provide:
 
@@ -27,10 +31,17 @@ Please confirm whether you can support this asset and chain, and provide:
    and an upper/lower spread of no more than 2%. Please assess those limits
    against this market, including rapid growth and sharp declines; do not
    populate a fixed window field around a periodically sampled spot price.
+   The same feed may secure many simultaneous launches. Assess aggregate
+   exposure, not just the $5,000 pool minimum for one launch. If this market
+   cannot support a defensible feed, please say so and identify the market
+   depth/history needed; independent operation alone does not cure thin liquidity.
 
 3. Outage, stale-data, confidence, low-liquidity, chain reorganization and
    sequencer-recovery behavior. Unsafe quotes must be unavailable, not zero,
    and timestamps must not be refreshed without fresh underlying observations.
+   A graduation requires a qualifying underlying observation after a five-minute
+   eligibility delay. Specify an unconditional heartbeat as well as deviation
+   updates; a deviation-only feed may stop graduation during quiet markets.
 
 4. Production contract addresses and ABI, verified source, signer/quorum and
    upgrade control disclosures, independent security review, expected heartbeat,

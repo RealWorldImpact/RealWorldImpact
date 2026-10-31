@@ -6,6 +6,8 @@ Status: **LP interface, registry, discovery feeds and release verification integ
 
 The graduation target is **$40,000**, with the previously selected **$5,000 actual pool-liquidity minimum**. There is **no fixed RWI quantity, RWI fundraising quota, or per-launch RWI cap**. The token amount in the pool varies with RWI’s verified current USD price. Funding examples below describe sensitivity only; they are not extra graduation conditions.
 
+The user reaffirmed **all official trades and launch liquidity through RWI** on 2026-10-31. The proposed direct-ETH curve and additional ETH launch pool were declined and are not implemented. The independent-provider preference remains in effect. The release must not silently substitute direct ETH reserves, a fixed launch-time RWI conversion, an RWI-operated price signer, or a volume threshold labeled as dollar market capitalization.
+
 | Requirement | Candidate behavior |
 | --- | --- |
 | Initial valuation | $5,000 price × full billion-token supply, calculated onchain from a verified RWI/USD reference |
@@ -106,6 +108,8 @@ The earlier read-only review found an ETH/USD feed but no RWI feed in the inspec
 
 The existing v4 pool's hook cannot be retrofitted with an observation hook; the hook is part of its immutable pool identity. See [Uniswap hooks](https://developers.uniswap.org/docs/protocols/v4/concepts/hooks). No production adapter, oracle operators, signer set, or keeper service was silently chosen or funded in this work.
 
+The retained design already combines independent conditions: current conservative USD valuation, real net RWI reserves, an eligibility delay, a subsequent qualifying observation, and verification of the liquidity actually minted. Gross volume and wallet counts are not substitutes for dollar valuation or net funding: buys followed by sells can generate volume while draining reserves, and one person can control many wallets. The ETH/USD feed alone cannot price RWI. Uniswap's [price-oracle documentation](https://developers.uniswap.org/docs/protocols/v3/concepts/price-oracles) explicitly distinguishes v3's observation history from v4, which has no built-in oracle. A separate observation pool would require its own funded, sufficiently deep market and security review; deploying an empty pool does not solve this dependency.
+
 ## Lifecycle, routing, and remaining risks
 
 The contract has a redeemable curve phase and a graduated phase. Qualifying buys or permissionless checkpoints record readiness. Buys pause while both conditions qualify; sells remain available and cancel readiness if they take the curve below a threshold. After the waiting period, anyone can submit graduation. The transaction rechecks current conditions and creates the pool atomically. Failure leaves funds and token reserves in the curve, with sells still available subject to the ETH/RWI route functioning.
@@ -169,14 +173,14 @@ These make integration possible; they do not force third parties to list a token
 
 ## Independent provider and deployment handoff
 
-At block 102133155, both existing V1 and V2 factories still had zero launches. The read-only catalog check on 2026-10-31 UTC found no RWI match among 58 Chainlink Robinhood feeds or Pyth Hermes's RWI query. A custom provider may still support the asset. [DIA accepts custom oracle requests](https://www.diadata.org/docs/how-to-guides/request-a-custom-oracle); its support, methodology, pricing and deployment are not assumed. `provider-request.txt` contains the prepared, unsent requirements. `oracle-release.json` records the pending state and acceptance requirements.
+At block 102133155, both existing V1 and V2 factories still had zero launches. The read-only catalog check on 2026-10-31 UTC found no RWI match among 58 Chainlink Robinhood feeds or Pyth Hermes's RWI query. A custom provider may still support the asset. [DIA accepts custom oracle inquiries](https://www.diadata.org/contact/); its support, methodology, pricing and deployment are not assumed. [RedStone also accepts new-asset requests](https://www.redstone.finance/price-feeds), but no RWI production feed has been verified from either provider. `provider-request.txt` contains the prepared, unsent requirements. `oracle-release.json` records the pending state and acceptance requirements. Contact authorization and reply details are still pending; no provider has been contacted or purchased.
 
 After a provider is agreed and its feed-specific adapter has passed review and fork tests:
 
 1. Record the independently verified address, deployed-code hash, provider and source documentation in `oracle-release.json`; do not mark it verified solely because an interface call succeeds.
 2. Rebuild the exact production artifacts with `node contracts/launch-v4/compile.cjs --export`. The generated verification input uses Solidity 0.8.26, optimizer 200, viaIR and Cancun. Obtain independent review of the final source and provider configuration.
 3. Prepare the wallet deployment with constructor arguments `(hookSalt, oracleAddress)`, mining the hook salt for the factory's predicted address. The wallet owner submits the gas-paying deployment. Do not reuse the disabled V3 deployment page.
-4. Run `node contracts/launch-v4/verify-deployment.cjs <transactionHash>`; it verifies the receipt, creation bytes, constructor address, oracle code, oracle-patched factory runtime, CREATE2 hook and both child-to-factory bindings. It reads the chain only.
+4. Run `node contracts/launch-v4/verify-deployment.cjs <transactionHash>`; it verifies the canonical receipt, creation bytes, constructor address, oracle code and RWI asset, oracle-patched factory runtime, CREATE2 hook and both child-to-factory bindings. Code and contract reads are pinned to one recent block; stale RPC snapshots, inconsistent price reads and a detected reorganization fail verification. The report records deployment and verification block hashes. This is a current-chain check, not a proof of finality or of the provider's economic security. It reads the chain only.
 5. Run the same command with `--activate` to write local site configuration after verification. This also refuses migration if legacy launches have appeared. No transaction is signed or submitted by this script.
 6. Verify factory, hook, router and token sources with the explorer/Sourcify where supported. The token constructor arguments are creator metadata plus creator address. `assets/launch-v4-sources.json` is the complete standard compiler input, not a claim of verification already completed.
 7. Rebuild and test LP, deploy the site, then verify production routes, real upload hosting, the provider's actual heartbeat, and launch/trade/graduation/claim transactions with the wallet owner. The current UI does not fabricate live oracle availability.
