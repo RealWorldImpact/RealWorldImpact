@@ -1,6 +1,13 @@
 # RWI Launch V5 — Pons-style sellout
 
-This is a replacement deployment, not an upgrade. It is prepared locally and remains inactive until a wallet-owner deployment is independently verified. No real funds were moved by the test suite. The existing live contracts are unchanged.
+This is a replacement deployment, not an upgrade. The wallet owner deployed V5 on Robinhood Chain at block **102689068**. The exact creation data, deployed code, hook permissions, child bindings and opening terms were independently checked before activation. Both older registries contained zero launches. No real funds were moved by the test suite; the older contracts remain unchanged.
+
+- Factory: `0xC62Df02C2D09431A03F9022b979cdbB77BcA58Ed`
+- Hook: `0x2571e1fF677BfFd4Bbf5287Cbe8F0eD14a48A0cc`
+- Router: `0x1b7A4A2Cf895B4EB445a2C62311869CF6820f656`
+- [Deployment verification](deployment.json), [read-only mainnet preflight](mainnet-preflight.json), and [public source verification](source-verification.json).
+
+Sourcify reports an exact runtime match for all three contracts. Its factory creation match is unavailable; the local deployment verifier independently compared the complete creation bytecode and constructor argument. All four creator-fee choices passed `eth_call` and gas estimation on the deployed factory, without creating tokens or submitting transactions.
 
 ## What changed
 

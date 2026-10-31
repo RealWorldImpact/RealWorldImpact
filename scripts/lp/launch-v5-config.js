@@ -1,4 +1,3 @@
-// Activated only after independent verification of the wallet-owner deployment.
-export const LAUNCH_V5_FACTORY='';
-export const LAUNCH_V5_RUNTIME_HASH='';
-export const LAUNCH_V5_BLOCK=0;
+export const LAUNCH_V5_FACTORY="0xC62Df02C2D09431A03F9022b979cdbB77BcA58Ed";
+export const LAUNCH_V5_RUNTIME_HASH="0x7ab2380e51bce6397cb2cec005684c8a3b1aae269da2ff54a87c4622d73485c6";
+export const LAUNCH_V5_BLOCK=102689068;

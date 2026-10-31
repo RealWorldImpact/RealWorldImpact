@@ -1,5 +1,5 @@
 {
-  "status": "locally-validated-awaiting-wallet-deployment",
+  "status": "verified-mainnet-deployment",
   "version": 5,
   "recordedAt": "2026-10-31T16:19:28.468Z",
   "mainnetTransactions": 0,
@@ -179,11 +179,11 @@
     }
   },
   "site": {
-    "testGroups": 29,
+    "testGroups": 31,
     "build": "passed",
-    "suite": "npm test --prefix scripts/lp passed",
+    "suite": "All LP test groups passed on activated configuration, run in batches",
     "mobile": "390px Launch and public token page, no horizontal overflow",
-    "deployment": "Unactivated; creation/runtime/wiring/canonical snapshot verifier tests passed"
+    "deployment": "Exact creation data, runtimes, hook permissions, bindings and live opening economics verified; V1/V2 registries empty"
   },
   "limitations": [
     "Opening RWI market spot can be manipulated; 0.5% reviewed-price bounds are not a fair-price oracle",
@@ -191,5 +191,15 @@
     "Actual USD graduation and pool values change with RWI",
     "Available RWI, route depth, demand and indexer adoption are not guaranteed",
     "Tests do not establish zero vulnerabilities or replace an independent audit"
-  ]
+  ],
+  "activationCheckedAt": "2026-10-31T21:30:24.581Z",
+  "deployment": {
+    "factory": "0xC62Df02C2D09431A03F9022b979cdbB77BcA58Ed",
+    "transaction": "0x12563d35ec03520873b89b7ce0375d177218d7a35c470de014f7a6cc55aaadaa",
+    "block": 102689068,
+    "runtimeHash": "0x7ab2380e51bce6397cb2cec005684c8a3b1aae269da2ff54a87c4622d73485c6",
+    "verifiedAtBlock": 102866820
+  },
+  "mainnetPreflight": "All four fee choices passed eth_call and gas estimation; no transactions submitted",
+  "publicSourceVerification": "Sourcify exact runtime matches for factory, hook and router"
 }

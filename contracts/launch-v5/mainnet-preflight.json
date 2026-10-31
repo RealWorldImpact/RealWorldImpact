@@ -1,0 +1,34 @@
+{
+  "version": 5,
+  "factory": "0xC62Df02C2D09431A03F9022b979cdbB77BcA58Ed",
+  "checkedAt": "2026-10-31T21:32:49.824Z",
+  "block": 102868250,
+  "launchCount": 0,
+  "mainnetTransactionsSubmitted": 0,
+  "checks": [
+    {
+      "additionalCreatorFeeBps": 0,
+      "simulatedToken": "0x5F118e65d609c324dcFa7D5C698969E154b0e636",
+      "gasEstimate": "1096178",
+      "passed": true
+    },
+    {
+      "additionalCreatorFeeBps": 100,
+      "simulatedToken": "0x77101211a544F658168F2987beb3ea54984bc8Fa",
+      "gasEstimate": "1116259",
+      "passed": true
+    },
+    {
+      "additionalCreatorFeeBps": 200,
+      "simulatedToken": "0x87075CD32E7d23D3de6a7c3002BEd35792C82329",
+      "gasEstimate": "1116262",
+      "passed": true
+    },
+    {
+      "additionalCreatorFeeBps": 300,
+      "simulatedToken": "0x97920154E1dF5D276E5B31413BC88C2CB8Eb4321",
+      "gasEstimate": "1116273",
+      "passed": true
+    }
+  ]
+}

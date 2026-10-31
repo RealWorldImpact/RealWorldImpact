@@ -1,0 +1,16 @@
+{
+  "version": 5,
+  "factory": "0xC62Df02C2D09431A03F9022b979cdbB77BcA58Ed",
+  "hook": "0x2571e1fF677BfFd4Bbf5287Cbe8F0eD14a48A0cc",
+  "router": "0x1b7A4A2Cf895B4EB445a2C62311869CF6820f656",
+  "block": 102689068,
+  "deploymentBlockHash": "0xe02b061a560122738abaa1f47d63c489d4ef95409499056e9f3251fb1c7179bd",
+  "transaction": "0x12563d35ec03520873b89b7ce0375d177218d7a35c470de014f7a6cc55aaadaa",
+  "runtimeHash": "0x7ab2380e51bce6397cb2cec005684c8a3b1aae269da2ff54a87c4622d73485c6",
+  "verifiedAtBlock": 102866820,
+  "verifiedAtBlockHash": "0x0163bc03bcbd9978f5d7e86c03446debab7a5075831afe4bcc69e6e38dd44b6d",
+  "openingReferenceUsd": "28209945068470",
+  "ethPriceUpdatedAt": 1793446968,
+  "graduationRule": "sellable-allocation-exhausted",
+  "checkedAt": "2026-10-31T21:30:24.581Z"
+}
