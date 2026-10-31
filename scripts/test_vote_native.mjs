@@ -1,0 +1,68 @@
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {Interface,BrowserProvider,ContractFactory,keccak256} from 'ethers';
+import {createRequire} from 'node:module';
+import {fileURLToPath} from 'node:url';
+import '../assets/vote-contract.js';
+import '../assets/vote-native-build.js';
+import '../assets/vote-native.js';
+const v=globalThis.RWIBallot, build=JSON.parse(readFileSync(new URL('../assets/vote-native-contract.json',import.meta.url)));
+process.env.HARDHAT_CONFIG=fileURLToPath(new URL('../contracts/vote/hardhat.config.cjs',import.meta.url));
+const hardhat=createRequire(import.meta.url)('../contracts/launch/node_modules/hardhat');
+const iface=new Interface(build.abi), rpc=new BrowserProvider(hardhat.network.provider);
+assert.equal(Number((await rpc.getNetwork()).chainId),4663);
+assert.equal((await rpc.send('web3_clientVersion',[])).includes('Hardhat'),true,'local test node only');
+await rpc.send('hardhat_metadata',[]);
+const signer=await rpc.getSigner(0), second=await rpc.getSigner(1);
+const contract=await new ContractFactory(build.abi,build.bytecode,signer).deploy();await contract.waitForDeployment();
+const creation=await contract.deploymentTransaction().wait(),address=(await contract.getAddress()).toLowerCase();
+assert.equal(keccak256(await rpc.getCode(address)),build.runtimeHash);
+const config={version:3,status:'active',chainId:4663,address,block:creation.blockNumber,transaction:creation.hash,runtimeHash:build.runtimeHash,sourceVerified:true};
+assert.equal(v.activeDeployment({...config,status:'awaiting_deployment',address:null}),null);
+assert.throws(()=>v.activeDeployment({...config,sourceVerified:false}),/Unverified/);
+assert.throws(()=>v.activeDeployment({...config,runtimeHash:'0x0'}),/Unknown/);
+assert.deepEqual(build.abi.filter(a=>a.type==='function').map(a=>a.name),['vote']);
+for(const slug of ['a','rmhc','gg-1ada1cd1-03fa-58a7-9e26-804dd32749ca','a'.repeat(96)]){
+  assert.equal(v.encodeChoice(12,slug),iface.encodeFunctionData('vote',[12,slug]));
+  assert.deepEqual(v.parseVoteInput(v.encodeChoice(12,slug)),{round:12,slug,memo:'RWIVOTE:12:'+slug});
+}
+for(const data of ['0xa9059cbb','0x',v.encodeChoice(12,'rmhc')+'00',v.encodeChoice(12,'rmhc').slice(0,-1)+'1'])assert.equal(v.parseVoteInput(data),null);
+const tx=await contract.vote(12,'rmhc'),receipt=await tx.wait();
+const raw=await rpc.send('eth_getTransactionByHash',[tx.hash]),proof=await rpc.send('eth_getTransactionReceipt',[tx.hash]);
+const row=v.verifyVote(config,raw,proof);assert.equal(row.from,(await signer.getAddress()).toLowerCase());assert.equal(row.vote_transport,'vote-method');
+const copy=x=>JSON.parse(JSON.stringify(x));
+let fake=copy(proof);fake.logs[0].address=await second.getAddress();assert.equal(v.verifyVote(config,raw,fake),null);
+fake=copy(proof);fake.logs[0].topics[1]='0x'+(await second.getAddress()).slice(2).padStart(64,'0');assert.equal(v.verifyVote(config,raw,fake),null);
+fake=copy(proof);fake.logs.push(fake.logs[0]);assert.equal(v.verifyVote(config,raw,fake),null);
+fake=copy(proof);fake.blockHash='0x'+'1'.repeat(64);assert.throws(()=>v.verifyVote(config,raw,fake),/mismatch/);
+fake=copy(proof);fake.status='0x0';assert.equal(v.verifyVote(config,raw,fake),null);
+assert.equal(v.verifyVote(config,{...raw,to:await second.getAddress()},proof),null);
+assert.equal(v.verifyVote(config,{...raw,value:'0x1'},proof),null);
+for(const [round,slug] of [[0,'rmhc'],[12,''],[12,'a'.repeat(97)],[12,'UPPER'],[12,'a:b'],[12,'a\nb'],[12,'é'],[12,'-a']])
+  await assert.rejects(rpc.call({to:address,data:iface.encodeFunctionData('vote',[round,slug])}));
+await assert.rejects(rpc.call({to:address,value:1n,data:v.encodeChoice(12,'rmhc')}));
+for(const data of ['0x','0xa9059cbb'+'0'.repeat(128),'0x095ea7b3'+'0'.repeat(128),'0x23b872dd'+'0'.repeat(192),'0xdeadbeef'])await assert.rejects(rpc.call({to:address,data}));
+const trace=await rpc.send('debug_traceTransaction',[tx.hash,{}]);
+const forbidden=new Set(['CALL','CALLCODE','DELEGATECALL','STATICCALL','CREATE','CREATE2','SELFDESTRUCT','SSTORE']);
+assert(!trace.structLogs.some(l=>forbidden.has(l.op)),'vote executes no external call, transfer, deployment or storage write');
+const next=await contract.connect(second).vote(12,'globaldisaster');await next.wait();
+const repeat=await contract.vote(12,'globaldisaster');await repeat.wait();
+let indexed=[],failed=false,logsRead=0;
+const fetcher=async url=>{
+  if(url==='/contracts/vote/deployment.json')return {ok:true,json:async()=>config};
+  assert(url.includes('/addresses/'+address+'/transactions?filter=to'));
+  return {ok:!failed,json:async()=>({items:indexed,next_page_params:null})};
+};
+const readRpc=async(m,p)=>{if(m==='eth_getLogs')logsRead++;return rpc.send(m,p);};
+const reader=v.createReader();
+let found=await reader({rpc:readRpc,fetcher});assert.equal(found.rows.length,3,'RPC finds votes before indexer');
+assert.equal(found.rows.filter(r=>r.from===row.from).length,2,'both choices retained for latest-vote tally');
+await reader({rpc:readRpc,fetcher});assert.equal(logsRead,1,'canonical window reused');
+indexed=[{hash:tx.hash,block_number:receipt.blockNumber,raw_input:raw.input}];
+found=await reader({rpc:readRpc,fetcher});assert.equal(found.rows.length,3,'index and RPC deduplicate');
+failed=true;await assert.rejects(reader({rpc:readRpc,fetcher}),/history unavailable/);
+const report={version:3,localOnly:true,mainnetTransactions:0,runtimeHash:build.runtimeHash,selector:build.selector,gasUsed:receipt.gasUsed.toString(),
+ tests:['ABI parity and canonical decoding','only vote method; no approvals or ERC20 methods','caller identity and authenticated receipt/event','fake, duplicated, reverted and mismatched events rejected','zero/native value and malformed input validation','no external call or storage write in execution trace','repeated votes and separate voters','indexer lag recovery, deduplication and canonical cache','fail-closed incomplete history'],bankrEndToEndVerified:false};
+writeFileSync(new URL('../integrations/bankr-voting-v3-verification.json',import.meta.url),JSON.stringify(report,null,2)+'\n');
+console.log('PASS: dedicated vote contract deployed and tested on local Hardhat only.',JSON.stringify(report));
+await rpc.destroy();

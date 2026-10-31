@@ -2300,7 +2300,9 @@ document.addEventListener('DOMContentLoaded', function(){
 </footer>
 
 <script src="/assets/vote-roster.js?v=20261031"></script>
-<script src="/assets/vote-contract.js?v=20261031-bankr"></script>
+<script src="/assets/vote-contract.js?v=20261031-v3"></script>
+<script src="/assets/vote-native-build.js?v=20261031-v3"></script>
+<script src="/assets/vote-native.js?v=20261031-v3"></script>
 <script>
 /* =============================================================================
    RWI COMMUNITY SIGNAL — onchain, token-weighted, serverless.
@@ -3297,15 +3299,15 @@ async function castVote(){
   const signer = wallet, sender = account, voteRound = ROUND;
   clearVoteStatus();
   const chosen = selected;                 // refreshAll clears `selected`
-  const prepared = RWIContractVotes.makeVote(voteRound, chosen);
-  const tx = { from:sender, to:prepared.to, value:'0x0', data:prepared.data };
   try{
     $('voteBtn').disabled = true;
-
-    // Call the deployed token contract. The legacy inbox is only a zero-token
-    // recipient, so raw-transaction tools do not target an undeployed address.
     voteStatus(t('vote.st.checking'));
-    if(await hasCode(RWI) !== true){ voteStatus(t('vote.st.wouldRevert'), true); return; }
+    const deployment = await RWIBallot.getDeployment({rpc,fetcher:fetchWithTimeout,force:true});
+    // The website's existing wallet path remains available until the dedicated
+    // vote contract is deployed and verified. Bankr never receives this fallback.
+    const prepared = deployment ? RWIBallot.makeVote(deployment, voteRound, chosen) : RWIContractVotes.makeVote(voteRound, chosen);
+    const tx = { from:sender, to:prepared.to, value:'0x0', data:prepared.data };
+    if(await hasCode(tx.to) !== true){ voteStatus(t('vote.st.wouldRevert'), true); return; }
     const gas = await preflightGas(tx, signer);
     if(gas === null){
       voteStatus(t('vote.st.wouldRevert'), true);
@@ -3760,6 +3762,7 @@ let tallySeq = 0;
    staying far below the pace at which the ballot actually changes. */
 let _txCache = { at:0, rows:null, inflight:null };
 const readContractVotes = RWIContractVotes.createReader();
+const readNativeVotes = RWIBallot.createReader();
 const TX_TTL = 8000;
 async function fetchVoteTxs(force){
   const fresh = !force && _txCache.rows && (Date.now() - _txCache.at < TX_TTL);
@@ -3811,9 +3814,11 @@ async function fetchVoteTxsUncached(){
   }
   // A controller may amend the same round. Preserve votes cast before that
   // amendment, just as the legacy memo reader does; loadTally filters the round.
-  const contractVotes = await readContractVotes({rpc,fetcher:fetchWithTimeout});
-  votePagesTruncated = votePagesTruncated || contractVotes.truncated;
-  return out.concat(contractVotes.rows);
+  const [contractVotes,nativeVotes] = await Promise.all([
+    readContractVotes({rpc,fetcher:fetchWithTimeout}),readNativeVotes({rpc,fetcher:fetchWithTimeout})
+  ]);
+  votePagesTruncated = votePagesTruncated || contractVotes.truncated || nativeVotes.truncated;
+  return out.concat(contractVotes.rows,nativeVotes.rows);
 }
 /* Rebuild the totals from weights we already read, and paint. Used when the
    set of voters and their choices is unchanged — there is nothing new to

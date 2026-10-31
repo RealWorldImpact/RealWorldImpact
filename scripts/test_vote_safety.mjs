@@ -64,6 +64,7 @@ const gasWait = new Promise(resolve=>{ releaseVote=resolve; });
 const voteMessages = [];
 const voteWallet = {request:async()=>{ sentVotes++; return '0xpending'; }};
 const cast = run(section('let voteBusy = false;', 'async function waitForTx('), {
+  RWIBallot:{getDeployment:async()=>null},rpc:async()=>null,fetchWithTimeout:async()=>{},
   RWI:'0xtoken', RWIContractVotes:{makeVote:(round,slug)=>({to:'0xtoken',data:'contract:'+round+':'+slug})}, hasCode:async()=>true,
   account:'0xabc', wallet:voteWallet, walletOnChain:true, ballotResolved:true,
   selected:'charity', myPower:1n, ROUND:1, BALLOT_BOX:'0xbox', ballotBoxIsContract:false,
@@ -80,6 +81,14 @@ assert.equal(sentVotes, 1, 'double-click cannot send two votes');
 assert.equal(cast.pendingVote, null, 'unconfirmed vote must not be optimistically counted');
 assert(voteMessages.includes('vote.st.txPending'));
 assert(!voteMessages.includes('vote.st.voteOk'));
+let nativeTarget;
+cast.RWIBallot={getDeployment:async()=>({address:'0xballot'}),makeVote:(d,round,slug)=>({to:d.address,data:'vote:'+round+':'+slug})};
+cast.hasCode=async address=>{nativeTarget=address;return true;};
+cast.preflightGas=async tx=>{assert.equal(tx.to,'0xballot');assert.equal(tx.data,'vote:1:charity');return '0x10000';};
+await cast.castVote();assert.equal(nativeTarget,'0xballot');assert.equal(sentVotes,2,'active contract receives a standard vote');
+cast.RWIBallot.getDeployment=async()=>{throw Error('Deployment unavailable');};
+await cast.castVote();assert.equal(sentVotes,2,'configuration failure cannot silently use a different transport');
+assert.equal(vm.runInContext('voteBusy',cast),false,'configuration failures release the busy state');
 
 let clock = 100000, reads = 0, balance = 100n;
 const elements = new Map();

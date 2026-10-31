@@ -1,5 +1,5 @@
-/* RWI contract votes: a zero-token ERC-20 transfer carrying an advisory memo.
-   No approvals, token movement, native value, or deployed voting contract. */
+/* Legacy zero-token votes and shared authenticated transaction reader.
+   Bankr rejects this legacy transfer method. New Bankr votes use vote-native.js. */
 (function(root){
   'use strict';
   const TOKEN='0xda2598c976e62e7e15dcca75169b404712e48b04';
@@ -47,28 +47,32 @@
     return {hash:tx.hash.toLowerCase(),from:tx.from.toLowerCase(),to:INBOX,value:'0',input:'0x'+Array.from(new TextEncoder().encode(p.memo),b=>b.toString(16).padStart(2,'0')).join(''),
       block_number:number(tx.blockNumber),index:number(tx.transactionIndex),status:'ok',result:'success',block_hash:tx.blockHash.toLowerCase(),vote_transport:'rwi-zero-transfer'};
   }
-  function createReader(){
+  function createReader(options={}){
+    const target=options.address||TOKEN, firstBlock=options.startBlock||START_BLOCK;
+    const topics=options.topics||[TRANSFER,null,'0x'+WORD_INBOX];
+    const historyUrl=options.historyUrl||SCAN+'/api/v2/addresses/'+INBOX+'/token-transfers?type=ERC-20&filter=to';
+    const candidate=options.candidate||function(item){return item.token?.address_hash?.toLowerCase()===TOKEN&&item.to?.hash?.toLowerCase()===INBOX&&item.total?.value==='0'?item.transaction_hash:null;};
+    const eligibleLog=options.eligibleLog||function(l){return l.data?.toLowerCase()==='0x'+ZERO;};
+    const verify=options.verify||verifyVote;
     const verified=new Map();let recent=null;
     const bounded=(k,v)=>{if(verified.size>=2048)verified.delete(verified.keys().next().value);verified.set(k,v);};
-    return async function readVotes({rpc,fetcher,fromBlock=START_BLOCK}){
-      const start=Math.max(START_BLOCK,number(fromBlock));
+    return async function readVotes({rpc,fetcher,fromBlock=firstBlock}){
+      const start=Math.max(firstBlock,number(fromBlock));
       const [head,finalized]=await Promise.all([rpc('eth_getBlockByNumber',['latest',false]),rpc('eth_getBlockByNumber',['finalized',false])]);
       if(!hash(head?.hash)||!hash(finalized?.hash))throw Error('Vote chain head unavailable');
       const end=number(head.number),finalHeight=number(finalized.number);if(start>end)return {rows:[],truncated:false};
       const ids=new Set(),cursors=new Set();let truncated=false;
-      let url=SCAN+'/api/v2/addresses/'+INBOX+'/token-transfers?type=ERC-20&filter=to';
+      let url=historyUrl;
       for(let page=0;page<20;page++){
         const r=await fetcher(url,{headers:{accept:'application/json'}});if(!r.ok)throw Error('Contract vote history unavailable');
         const j=await r.json();if(!Array.isArray(j.items))throw Error('Incomplete contract vote history');
         for(const item of j.items){if(number(item.block_number)<start||number(item.block_number)>end)continue;
-          if(item.token?.address_hash?.toLowerCase()===TOKEN&&item.to?.hash?.toLowerCase()===INBOX&&item.total?.value==='0'){
-            if(!hash(item.transaction_hash))throw Error('Invalid indexed vote');ids.add(item.transaction_hash.toLowerCase());
-          }
+          const id=candidate(item);if(id){if(!hash(id))throw Error('Invalid indexed vote');ids.add(id.toLowerCase());}
         }
         if(!j.next_page_params||j.items.length&&j.items.every(x=>number(x.block_number)<start))break;
         if(page===19){truncated=true;break;}
         const query=new URLSearchParams(j.next_page_params).toString();if(cursors.has(query))throw Error('Repeated vote cursor');cursors.add(query);
-        url=SCAN+'/api/v2/addresses/'+INBOX+'/token-transfers?type=ERC-20&filter=to&'+query;
+        url=historyUrl+'&'+query;
       }
       // Cover explorer indexing lag using a narrowly filtered recent chain read.
       // Older history comes from the paginated index, so cold reads do not grow
@@ -77,15 +81,15 @@
       if(recent&&(recent.end>end||recent.low>low||(await rpc('eth_getBlockByNumber',[hex(recent.end),false]))?.hash!==recent.hash))recent=null;
       const from=recent?Math.max(low,recent.end+1):low;
       const old=recent?recent.logs.filter(l=>number(l.blockNumber)>=low):[];
-      const logs=from<=end?await rpc('eth_getLogs',[{address:TOKEN,fromBlock:hex(from),toBlock:hex(end),topics:[TRANSFER,null,'0x'+WORD_INBOX]}]):[];
+      const logs=from<=end?await rpc('eth_getLogs',[{address:target,fromBlock:hex(from),toBlock:hex(end),topics}]):[];
       if(!Array.isArray(logs)||logs.length>=1000)throw Error('Contract vote log window is incomplete');
-      for(const l of logs){if(l.address?.toLowerCase()!==TOKEN||l.topics?.[0]?.toLowerCase()!==TRANSFER||l.topics?.[2]?.toLowerCase()!=='0x'+WORD_INBOX
+      for(const l of logs){if(l.address?.toLowerCase()!==target||topics.some((t,i)=>t!==null&&l.topics?.[i]?.toLowerCase()!==t)
         ||number(l.blockNumber)<from||number(l.blockNumber)>end||!hash(l.transactionHash)||l.removed)throw Error('Invalid vote log');}
-      const combined=[...old,...logs];for(const l of combined)if(l.data?.toLowerCase()==='0x'+ZERO)ids.add(l.transactionHash.toLowerCase());
+      const combined=[...old,...logs];for(const l of combined)if(eligibleLog(l))ids.add(l.transactionHash.toLowerCase());
       const rows=[];
       const list=[...ids];for(let n=0;n<list.length;n+=4)await Promise.all(list.slice(n,n+4).map(async id=>{
         let row=verified.get(id);if(row&&row.block_number<=finalHeight){rows.push(row);return;}
-        const [tx,receipt]=await Promise.all([rpc('eth_getTransactionByHash',[id]),rpc('eth_getTransactionReceipt',[id])]);row=verifyVote(tx,receipt);
+        const [tx,receipt]=await Promise.all([rpc('eth_getTransactionByHash',[id]),rpc('eth_getTransactionReceipt',[id])]);row=verify(tx,receipt);
         if(!row)return;const block=await rpc('eth_getBlockByNumber',[hex(row.block_number),false]);if(block?.hash?.toLowerCase()!==row.block_hash)throw Error('Vote block changed');
         if(row.block_number<start||row.block_number>end)return;if(row.block_number<=finalHeight)bounded(id,row);rows.push(row);
       }));

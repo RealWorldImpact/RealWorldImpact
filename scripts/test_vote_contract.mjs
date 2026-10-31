@@ -4,7 +4,7 @@ import vm from 'node:vm';
 const context=vm.createContext({TextEncoder,TextDecoder,Uint8Array,URLSearchParams});
 vm.runInContext(readFileSync(new URL('../assets/vote-contract.js',import.meta.url),'utf8'),context);
 const v=context.RWIContractVotes,who='0x'+'1'.repeat(40),attacker='0x'+'2'.repeat(40),H='0x'+'a'.repeat(64),BH='0x'+'b'.repeat(64),N=v.START_BLOCK+1;
-const manifest=JSON.parse(readFileSync(new URL('../integrations/bankr-voting.json',import.meta.url),'utf8'));
+const manifest=JSON.parse(readFileSync(new URL('../integrations/bankr-voting-legacy.json',import.meta.url),'utf8'));
 assert.equal(manifest.selector+manifest.recipientWord+manifest.amountWord,v.PREFIX);assert.equal(manifest.acceptedFromBlock,v.START_BLOCK);
 const built=v.makeVote(12,'gg-6677e92c-6f08-5239-860a-bc5e6ca1cff2');
 assert.equal(built.to,v.TOKEN);assert.equal(built.value,'0');assert.equal(built.chainId,4663);assert.equal(v.parseVoteInput(built.data).round,12);

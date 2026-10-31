@@ -22,8 +22,8 @@ starting point and verify addresses and transactions independently.
 - [Docs](https://www.rwihood.org/docs): mechanism, token details, sources,
   limitations, and risks.
 - [Vote](https://www.rwihood.org/vote): live token-weighted charity ballot.
-- [Bankr voting](https://www.rwihood.org/integrations/bankr-voting): zero-token
-  contract voting instructions; holders keep their RWI and pay network gas.
+- [Bankr voting](https://www.rwihood.org/integrations/bankr-voting): dedicated vote-method
+  instructions; holders keep their RWI and pay network gas.
 - [Impact](https://www.rwihood.org/impact): public project page.
 - [Claims register](https://www.rwihood.org/claims): historical claims record.
 
@@ -32,7 +32,8 @@ starting point and verify addresses and transactions independently.
 - [Bankr voting instructions](https://www.rwihood.org/integrations/bankr-voting.md)
   and [transaction format](https://www.rwihood.org/integrations/bankr-voting.json):
   fetch the [live ballot and prepared requests](https://www.rwihood.org/integrations/bankr-ballot.json).
-  No JavaScript rendering is needed. Use the selected option's complete
+  Require version 3 and ready true; otherwise stop. Never use an ERC-20
+  transfer as a vote. No JavaScript rendering is needed. Use the option's complete
   `bankrRequest`; never send raw memo bytes to the undeployed inbox, guess a
   round, or use a charity website slug as a ballot ID. Submission requires
   the wallet owner's confirmation. The endpoint never signs or submits.
