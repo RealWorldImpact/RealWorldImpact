@@ -1,5 +1,6 @@
 import v3Registry from '../scripts/lp/server/launch-registry-v3.js';
 import v4Registry from '../scripts/lp/server/launch-registry-v4.js';
+import v5Registry from '../scripts/lp/server/launch-registry-v5.js';
 import { createDiscoveryHandler } from '../scripts/lp/server/launch-discovery.js';
 const discovery=createDiscoveryHandler();
 import { LAUNCH_FACTORY } from '../scripts/lp/launch-config.js';
@@ -19,6 +20,7 @@ export default async function handler(req,res){
   if(req.query.format!==undefined)return discovery(req,res);
   if(req.method==='OPTIONS'){res.setHeader('Access-Control-Allow-Methods','GET, OPTIONS');return res.status(204).end();}
   if(req.method!=='GET')return res.status(405).json({error:'Method not allowed'});
+  if(req.query.version==='5')return v5Registry(req,res);
   if(req.query.version==='4')return v4Registry(req,res);
   if(req.query.version==='3')return v3Registry(req,res);
   if(req.query.version==='2')return curveRegistry(req,res);

@@ -1,0 +1,195 @@
+{
+  "status": "locally-validated-awaiting-wallet-deployment",
+  "version": 5,
+  "recordedAt": "2026-10-31T16:19:28.468Z",
+  "mainnetTransactions": 0,
+  "independentSecurityAudit": false,
+  "compiler": "0.8.26+commit.8a97fa7a.Emscripten.clang",
+  "graduationRule": "sellable-allocation-exhausted",
+  "usdValues": "Opening estimates only; no live $40k or $5k minimum guarantee",
+  "implementation": {
+    "factoryRuntimeHash": "0x7ab2380e51bce6397cb2cec005684c8a3b1aae269da2ff54a87c4622d73485c6",
+    "factoryCreationHash": "0xcacf5c5898eda8a8699b9e24c388f729fd1ccb23452b08dd3ccfa1772aad48a3",
+    "hookRuntimeHash": "0x64718a2d187d4ffb4275eb7af6d02b9160ef7d7524abb8ca6f08f0d2d25a9c6f",
+    "routerRuntimeHash": "0x9f3edb93840b366726ec69603695c6b3897f7c8e3da57ed17ad56f5da3f78da8"
+  },
+  "economics": {
+    "testedAt": "2026-10-31T16:00:31.902Z",
+    "randomAccountingChecks": 27238,
+    "minimalFinalFillCases": 24,
+    "referenceScenarios": [
+      {
+        "rwiPriceMultiple": 0.01,
+        "openingRwiUsd": 0.000028202504875523,
+        "netRwi": 88644962.95751952,
+        "graduationFdvUsd": 400,
+        "poolUsd": 50.0002,
+        "soldPercent": 17.67774024034181,
+        "pooledPercent": 6.250025,
+        "condition": "Sellable allocation exhausted; not a live USD threshold"
+      },
+      {
+        "rwiPriceMultiple": 0.1,
+        "openingRwiUsd": 0.000028202504875523,
+        "netRwi": 88644962.95751952,
+        "graduationFdvUsd": 4000,
+        "poolUsd": 500.002,
+        "soldPercent": 17.67774024034181,
+        "pooledPercent": 6.250025,
+        "condition": "Sellable allocation exhausted; not a live USD threshold"
+      },
+      {
+        "rwiPriceMultiple": 0.5,
+        "openingRwiUsd": 0.000028202504875523,
+        "netRwi": 88644962.95751952,
+        "graduationFdvUsd": 20000,
+        "poolUsd": 2500.0099999999998,
+        "soldPercent": 17.67774024034181,
+        "pooledPercent": 6.250025,
+        "condition": "Sellable allocation exhausted; not a live USD threshold"
+      },
+      {
+        "rwiPriceMultiple": 1,
+        "openingRwiUsd": 0.000028202504875523,
+        "netRwi": 88644962.95751952,
+        "graduationFdvUsd": 40000,
+        "poolUsd": 5000.0199999999995,
+        "soldPercent": 17.67774024034181,
+        "pooledPercent": 6.250025,
+        "condition": "Sellable allocation exhausted; not a live USD threshold"
+      },
+      {
+        "rwiPriceMultiple": 2,
+        "openingRwiUsd": 0.000028202504875523,
+        "netRwi": 88644962.95751952,
+        "graduationFdvUsd": 80000,
+        "poolUsd": 10000.039999999999,
+        "soldPercent": 17.67774024034181,
+        "pooledPercent": 6.250025,
+        "condition": "Sellable allocation exhausted; not a live USD threshold"
+      },
+      {
+        "rwiPriceMultiple": 10,
+        "openingRwiUsd": 0.000028202504875523,
+        "netRwi": 88644962.95751952,
+        "graduationFdvUsd": 399999.99999999994,
+        "poolUsd": 50000.200000000004,
+        "soldPercent": 17.67774024034181,
+        "pooledPercent": 6.250025,
+        "condition": "Sellable allocation exhausted; not a live USD threshold"
+      }
+    ],
+    "limitations": "Model only; contract, routing and graduation integration still require fork tests. USD targets are creation-time estimates."
+  },
+  "solidityMath": {
+    "testedAt": "2026-10-31T16:14:17.826Z",
+    "localOnly": true,
+    "termChecks": 8,
+    "solidityIntegerComparisons": 960,
+    "checks": "Eight opening prices, all creator fees, six partial states, dust inputs and exact minimal final fill"
+  },
+  "fork": {
+    "testedAt": "2026-10-31T16:06:36.698Z",
+    "localOnly": true,
+    "fork": {
+      "chainId": 4663,
+      "forkBlockNumber": 102677442,
+      "forkBlockHash": "0xf8cdd56c60bf5f3c09a33b258d3cdc386e213641bc84fa3d03702ad3cfc1019a"
+    },
+    "mainnetTransactions": 0,
+    "cases": [
+      {
+        "tax": 0,
+        "token0": false,
+        "openingRwiUsd": "28201443500461",
+        "poolUsdAtOpeningReference": "5000019999999999999952",
+        "netRwi": "88648299153876046596340480",
+        "position": "4115829"
+      },
+      {
+        "tax": 0,
+        "token0": true,
+        "openingRwiUsd": "28201443500461",
+        "poolUsdAtOpeningReference": "5000019999999999999952",
+        "netRwi": "88648299153876046596340476",
+        "position": "4115829"
+      },
+      {
+        "tax": 100,
+        "token0": false,
+        "openingRwiUsd": "28201443500461",
+        "poolUsdAtOpeningReference": "5000019999999999999952",
+        "netRwi": "88648299153876046596340477",
+        "position": "4115829"
+      },
+      {
+        "tax": 100,
+        "token0": true,
+        "openingRwiUsd": "28201443500461",
+        "poolUsdAtOpeningReference": "5000019999999999999952",
+        "netRwi": "88648299153876046596340477",
+        "position": "4115829"
+      },
+      {
+        "tax": 200,
+        "token0": false,
+        "openingRwiUsd": "28201443500461",
+        "poolUsdAtOpeningReference": "5000019999999999999952",
+        "netRwi": "88648299153876046596340477",
+        "position": "4115829"
+      },
+      {
+        "tax": 200,
+        "token0": true,
+        "openingRwiUsd": "28201443500461",
+        "poolUsdAtOpeningReference": "5000019999999999999952",
+        "netRwi": "88648299153876046596340477",
+        "position": "4115829"
+      },
+      {
+        "tax": 300,
+        "token0": false,
+        "openingRwiUsd": "28201443500461",
+        "poolUsdAtOpeningReference": "5000019999999999999952",
+        "netRwi": "88648299153876046596340475",
+        "position": "4115829"
+      },
+      {
+        "tax": 300,
+        "token0": true,
+        "openingRwiUsd": "28201443500461",
+        "poolUsdAtOpeningReference": "5000019999999999999952",
+        "netRwi": "88648299153876046596340475",
+        "position": "4115829"
+      }
+    ],
+    "automaticGraduation": true,
+    "failedGraduationSellsAndRetry": true,
+    "postLaunchPriceFeedIndependence": true,
+    "exactOutputSwaps": 16,
+    "concurrentLaunchIsolation": true,
+    "reentrantEthClaimRejected": true,
+    "rejectedRecipientRollback": true,
+    "donationIsolation": true,
+    "implementation": {
+      "factoryRuntimeHash": "0x7ab2380e51bce6397cb2cec005684c8a3b1aae269da2ff54a87c4622d73485c6",
+      "factoryCreationHash": "0xcacf5c5898eda8a8699b9e24c388f729fd1ccb23452b08dd3ccfa1772aad48a3",
+      "hookRuntimeHash": "0x64718a2d187d4ffb4275eb7af6d02b9160ef7d7524abb8ca6f08f0d2d25a9c6f",
+      "routerRuntimeHash": "0x9f3edb93840b366726ec69603695c6b3897f7c8e3da57ed17ad56f5da3f78da8"
+    }
+  },
+  "site": {
+    "testGroups": 29,
+    "build": "passed",
+    "suite": "npm test --prefix scripts/lp passed",
+    "mobile": "390px Launch and public token page, no horizontal overflow",
+    "deployment": "Unactivated; creation/runtime/wiring/canonical snapshot verifier tests passed"
+  },
+  "limitations": [
+    "Opening RWI market spot can be manipulated; 0.5% reviewed-price bounds are not a fair-price oracle",
+    "Fixed sellout implies fixed per-launch RWI funding, which can be substantial",
+    "Actual USD graduation and pool values change with RWI",
+    "Available RWI, route depth, demand and indexer adoption are not guaranteed",
+    "Tests do not establish zero vulnerabilities or replace an independent audit"
+  ]
+}

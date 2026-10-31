@@ -25,7 +25,7 @@ function response(){return{headers:{},setHeader(k,v){this.headers[k]=v},status(c
   r=response();await handler({method:'GET',query:{addresses:P.LAUNCH_RWI,fresh:'anything'}},r);assert.equal(r.code,400);
   global.fetch=async(url,options)=>{assert.match(url,/fresh=1/);assert.equal(options.cache,'no-store');return{ok:true,json:async()=>body}};assert.equal((await P.fetchLaunchQuote(true)).phantomQuote,q.phantomQuote);
  }finally{global.fetch=originalFetch;Date.now=originalNow;}
- const html=fs.readFileSync(path.join(__dirname,'../../LP.html'),'utf8');assert.ok(!html.includes('id="launchPrice"'));assert.ok(html.includes('Fixed target for every launch'));
+ const html=fs.readFileSync(path.join(__dirname,'../../LP.html'),'utf8');assert.ok(!html.includes('id="launchPrice"'));assert.ok(html.includes('Opening estimate'));
  for(const tax of ['0','100','200','300'])assert.equal(M.creatorTax(tax),Number(tax));for(const invalid of ['',null,undefined,'1','99','400','10000'])assert.throws(()=>M.creatorTax(invalid));
  console.log('PASS: $5,000 target, Pons reserve/graduation ratios, varied RWI prices, fresh timestamps, outage blocking, changed/expired review and allowed creator taxes.');
 })().catch(e=>{console.error(e);process.exitCode=1}).finally(()=>{for(const name of fs.readdirSync(folder))fs.unlinkSync(path.join(folder,name));fs.rmdirSync(folder)});

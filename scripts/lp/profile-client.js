@@ -1,8 +1,8 @@
-import { graduationProgress, launchStage } from './launch-v4-model.js';
+import { graduationProgress, launchStage } from './launch-v5-model.js';
 import { Contract, formatUnits } from 'ethers';
 import * as P from './protocol.js';
-import { LAUNCH_V4_FACTORY } from './launch-v4-config.js';
-import { LAUNCH_V4_ABI } from './launch-v4-contract.js';
+import { LAUNCH_V5_FACTORY } from './launch-v5-config.js';
+import { LAUNCH_V5_ABI } from './launch-v5-contract.js';
 import { createTokenArtwork } from './token-artwork.js';
 import { readWalletHoldings } from './wallet-balances.js';
 import { sortHoldings, usdLabel } from './wallet-tokens.js';
@@ -12,7 +12,7 @@ const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>(
 const short=a=>a.slice(0,6)+'…'+a.slice(-4),eth=n=>Number(formatUnits(n,18)).toLocaleString('en-US',{maximumSignificantDigits:7})+' ETH';
 export function createProfileController({rpc,getSubject,getAccount,isBusy,onNavigate,onConnect,onLaunch,onClaim}){
   let subject=null,generation=0,visible=false,timer=null,inflight=null,launches=[],launchesLoaded=false,rewards=new Map(),cancelArtwork=[],holdings=[],cancelHoldings=[];
-  const artwork=createTokenArtwork(),factory=LAUNCH_V4_FACTORY?new Contract(LAUNCH_V4_FACTORY,LAUNCH_V4_ABI,rpc):null;
+  const artwork=createTokenArtwork(),factory=LAUNCH_V5_FACTORY?new Contract(LAUNCH_V5_FACTORY,LAUNCH_V5_ABI,rpc):null;
   const current=(who,epoch)=>who===subject&&epoch===generation;
   function identity(){
     const owner=ownsProfile(subject,getAccount());
@@ -36,7 +36,7 @@ export function createProfileController({rpc,getSubject,getAccount,isBusy,onNavi
     $('profileLaunchList').innerHTML=launches.length?launches.map(t=>{
       const reward=rewards.get(t.address),pending=BigInt(t.rewardRwi)>0n,progress=graduationProgress(t);
       const amount=reward===undefined?'Checking rewards…':reward===null?'Quote available on claim':eth(reward);
-      return '<article class="launched-token profile-launch-card"><div class="launch-card-title"><span class="token-artwork" data-profile-artwork="'+t.address+'"></span><div><h3>'+esc(t.name)+'</h3><p>'+esc(t.symbol)+' / RWI</p></div><span class="pool-tag">'+launchStage(t)+'</span></div><p class="launch-description">'+esc(t.description||'A community token paired with RWI.')+'</p>'+(t.phase!==2?'<div class="launch-progress"><label>Graduation <strong>'+(progress===null?'Price unavailable':progress.toFixed(1)+'%')+'</strong></label><progress value="'+(progress??0)+'" max="100" aria-label="Graduation progress"></progress></div>':'')+'<div class="profile-reward"><span>UNCLAIMED CREATOR REWARDS</span><strong>'+esc(amount)+'</strong><small>'+(!pending?'No rewards accrued yet.':'Estimated ETH after conversion. Final amount is checked at claim.')+'</small></div><div class="profile-launch-meta"><span>'+Number(t.creatorTaxBps)/100+'% creator fee</span><span>'+esc(new Date(t.launchedAt*1000).toLocaleDateString())+'</span></div><div class="profile-launch-actions"><a class="secondary-button" href="/tokens/'+t.address+'" target="_blank" rel="noopener">View token</a>'+(owner?'<button type="button" class="primary-button" data-profile-claim="'+t.address+'" '+(isBusy()||!pending?'disabled':'')+'>'+(pending?'Claim ETH rewards':'No rewards yet')+'</button>':'<span class="help">Creator wallet required to claim</span>')+'</div></article>';
+      return '<article class="launched-token profile-launch-card"><div class="launch-card-title"><span class="token-artwork" data-profile-artwork="'+t.address+'"></span><div><h3>'+esc(t.name)+'</h3><p>'+esc(t.symbol)+' / RWI</p></div><span class="pool-tag">'+launchStage(t)+'</span></div><p class="launch-description">'+esc(t.description||'A community token paired with RWI.')+'</p>'+(t.phase!==2?'<div class="launch-progress"><label>Graduation <strong>'+(progress===null?'Progress unavailable':progress.toFixed(1)+'%')+'</strong></label><progress value="'+(progress??0)+'" max="100" aria-label="Graduation progress"></progress></div>':'')+'<div class="profile-reward"><span>UNCLAIMED CREATOR REWARDS</span><strong>'+esc(amount)+'</strong><small>'+(!pending?'No rewards accrued yet.':'Estimated ETH after conversion. Final amount is checked at claim.')+'</small></div><div class="profile-launch-meta"><span>'+Number(t.creatorTaxBps)/100+'% creator fee</span><span>'+esc(new Date(t.launchedAt*1000).toLocaleDateString())+'</span></div><div class="profile-launch-actions"><a class="secondary-button" href="/tokens/'+t.address+'" target="_blank" rel="noopener">View token</a>'+(owner?'<button type="button" class="primary-button" data-profile-claim="'+t.address+'" '+(isBusy()||!pending?'disabled':'')+'>'+(pending?'Claim ETH rewards':'No rewards yet')+'</button>':'<span class="help">Creator wallet required to claim</span>')+'</div></article>';
     }).join(''):'<div class="empty-state">'+(subject?launchesLoaded?'No launches found for this wallet.':'Loading this wallet’s launches…':'Explore a wallet to see its launches, or connect yours to get started.')+'</div>';
     $('profileLaunchList').querySelectorAll('[data-profile-artwork]').forEach(host=>{const t=launches.find(t=>t.address===host.dataset.profileArtwork);if(t)cancelArtwork.push(artwork(host,t));});
     const count=launches.filter(t=>BigInt(t.rewardRwi)>0n).length,values=launches.map(t=>rewards.get(t.address)??null),total=sumKnown(values);
@@ -69,10 +69,10 @@ export function createProfileController({rpc,getSubject,getAccount,isBusy,onNavi
     $('profileLaunchStatus').textContent=launches.length?'Updating launches and rewards…':'Finding this wallet’s launches…';
     try{
       do{
-        const response=await fetch('/api/lp-launches?version=4&creator='+who.toLowerCase()+(next?'&before='+next:''),{signal:AbortSignal.timeout(20000)}),body=await response.json();
+        const response=await fetch('/api/lp-launches?version=5&creator='+who.toLowerCase()+(next?'&before='+next:''),{signal:AbortSignal.timeout(20000)}),body=await response.json();
         if(!current(who,epoch))return;
-        if(body.active===false&&!LAUNCH_V4_FACTORY){launches=[];launchesLoaded=true;renderLaunches();$('profileLaunchStatus').textContent='New launches open after contract activation.';return;}
-        if(!response.ok||body.factory?.toLowerCase()!==LAUNCH_V4_FACTORY.toLowerCase()||!Array.isArray(body.launches))throw Error('Launch registry unavailable.');
+        if(body.active===false&&!LAUNCH_V5_FACTORY){launches=[];launchesLoaded=true;renderLaunches();$('profileLaunchStatus').textContent='New launches open after contract activation.';return;}
+        if(!response.ok||body.factory?.toLowerCase()!==LAUNCH_V5_FACTORY.toLowerCase()||!Array.isArray(body.launches))throw Error('Launch registry unavailable.');
         found.push(...creatorLaunches(body.launches,who));
         if(body.next!==null&&(typeof body.next!=='string'||!/^\d{1,10}$/.test(body.next)||seen.has(body.next)||next!==null&&Number(body.next)>=Number(next)))throw Error('Launch history is incomplete.');
         next=body.next;if(next)seen.add(next);
