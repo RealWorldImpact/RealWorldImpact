@@ -32,16 +32,21 @@ async function readDirectory() {
   throw new Error('Incomplete directory');
 }
 
-export default async function handler(req, res) {
-  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
-  try {
+export async function getDirectory() {
     if (!cached || Date.now() - cached.at > 300000) {
       if (!inflight) inflight = readDirectory().finally(() => { inflight = null; });
       const body = await inflight;
       cached = { at: Date.now(), body };
     }
+    return cached.body;
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+  try {
+    const body = await getDirectory();
     res.setHeader('Cache-Control', 'public, s-maxage=300');
-    return res.status(200).json(cached.body);
+    return res.status(200).json(body);
   } catch {
     res.setHeader('Cache-Control', 'no-store');
     return res.status(502).json({ error: 'Donate.gg claimed charities are temporarily unavailable' });

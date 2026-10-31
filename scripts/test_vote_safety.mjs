@@ -64,6 +64,7 @@ const gasWait = new Promise(resolve=>{ releaseVote=resolve; });
 const voteMessages = [];
 const voteWallet = {request:async()=>{ sentVotes++; return '0xpending'; }};
 const cast = run(section('let voteBusy = false;', 'async function waitForTx('), {
+  RWI:'0xtoken', RWIContractVotes:{makeVote:(round,slug)=>({to:'0xtoken',data:'contract:'+round+':'+slug})}, hasCode:async()=>true,
   account:'0xabc', wallet:voteWallet, walletOnChain:true, ballotResolved:true,
   selected:'charity', myPower:1n, ROUND:1, BALLOT_BOX:'0xbox', ballotBoxIsContract:false,
   clearVoteStatus(){}, votePrefix:()=> 'RWIVOTE:1:', toHexUtf8:x=>x,

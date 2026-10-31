@@ -31,8 +31,11 @@ starting point and verify addresses and transactions independently.
 
 - [Bankr voting instructions](https://www.rwihood.org/integrations/bankr-voting.md)
   and [transaction format](https://www.rwihood.org/integrations/bankr-voting.json):
-  read the current resolved ballot; never reuse a round or charity from an old
-  post. Bankr submission still requires the wallet owner's confirmation.
+  fetch the [live ballot and prepared requests](https://www.rwihood.org/integrations/bankr-ballot.json).
+  No JavaScript rendering is needed. Use the selected option's complete
+  `bankrRequest`; never send raw memo bytes to the undeployed inbox, guess a
+  round, or use a charity website slug as a ballot ID. Submission requires
+  the wallet owner's confirmation. The endpoint never signs or submits.
 - [Site facts](https://www.rwihood.org/data/site.json): canonical addresses,
   chain and token facts, allocation percentages, source links, and data scope.
 - [Donation ledger](https://www.rwihood.org/data/donations.json): published

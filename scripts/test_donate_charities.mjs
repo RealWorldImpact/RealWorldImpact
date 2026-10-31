@@ -43,6 +43,7 @@ const html = readFileSync(new URL('../vote.html', import.meta.url), 'utf8');
 for (const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)) new vm.Script(match[1]);
 const registryCode = html.slice(html.indexOf('const DONATE_GG_SEED ='), html.indexOf('// A fee quote is anchored'));
 const context = {
+  RWIVoteRoster:{donateGgSeeds:[]},
   ORG_POOL:{ incumbent:{name:'Incumbent Charity'}, givingblock:{name:'Giving Block Charity'} },
   TGB_DIRECTORY:[['givingblock','Giving Block Charity']], TGB_BY_SLUG:{givingblock:'Giving Block Charity'},
   TGB_BASE:'https://thegivingblock.com/donate/', SLATE:['incumbent'],

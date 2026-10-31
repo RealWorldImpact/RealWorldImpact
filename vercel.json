@@ -121,6 +121,10 @@
   ],
   "rewrites": [
     {
+      "source": "/integrations/bankr-ballot.json",
+      "destination": "/api/write-in-quote?ballot=1"
+    },
+    {
       "source": "/integrations/dextools/latest-block",
       "destination": "/api/lp-launches?dextools=latest-block"
     },

@@ -1,6 +1,7 @@
 {
   "name": "RWI contract voting",
-  "version": 1,
+  "version": 2,
+  "currentBallotUrl": "https://www.rwihood.org/integrations/bankr-ballot.json",
   "chainId": 4663,
   "votingPage": "https://www.rwihood.org/vote",
   "instructions": "https://www.rwihood.org/integrations/bankr-voting.md",
@@ -22,6 +23,6 @@
   "acceptedFromBlock": 102914056,
   "rwiRuntimeHashVerified": "0x7965f9b96ff80774dd618b7504adffeb3abf0fa7df8a561e73d8448387619a20",
   "weighting": "latest-valid-choice-per-wallet; live-RWI-balance",
-  "currentBallot": "Read the resolved votingPage DOM: #ballot[data-bankr-ready=true][data-round] and its [data-slug] options. data-checked-at is Unix milliseconds and must be no more than 60 seconds old. Do not reuse an old round or slate.",
+  "currentBallot": "Fetch currentBallotUrl. Require version 2, ready true, checkedAt within 60 seconds and expiresAt in the future. Use the selected option's complete bankrRequest unchanged after confirmation. If unavailable, stop: do not fall back to the legacy null-address builder, a guessed round, or a charity website slug.",
   "bankrEndToEndVerified": false
 }

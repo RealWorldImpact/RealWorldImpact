@@ -32,8 +32,22 @@ export async function quoteAt(at, fetcher = fetch) {
   return { quoteAt:at, candleAt:candle[0], priceUsd:String(candle[4]), units:unitsForPrice(candle[4]), token:TOKEN, pool:POOL, usd:5 };
 }
 
+export async function getHistoricalQuote(at) {
+  let quote = cache.get(at);
+  if (!quote) {
+    quote = await quoteAt(at);
+    if (cache.size >= 500) cache.delete(cache.keys().next().value);
+    cache.set(at, quote);
+  }
+  return quote;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({error:'Method not allowed'});
+  if (req.query.ballot === '1') {
+    const { ballotHandler } = await import('../lib/bankr-ballot.js');
+    return ballotHandler(req, res, getHistoricalQuote);
+  }
   const now = Math.floor(Date.now() / 1000);
   // Allow two minutes for price indexing before issuing a new quote.
   const at = req.query.at === undefined ? Math.floor(now / 60) * 60 - 120 : Number(req.query.at);
@@ -41,12 +55,7 @@ export default async function handler(req, res) {
     return res.status(400).json({error:'Invalid fee quote time'});
   }
   try {
-    let quote = cache.get(at);
-    if (!quote) {
-      quote = await quoteAt(at);
-      if (cache.size >= 500) cache.delete(cache.keys().next().value);
-      cache.set(at, quote);
-    }
+    const quote = await getHistoricalQuote(at);
     res.setHeader('Cache-Control', req.query.at === undefined ? 'public, s-maxage=15' : 'public, max-age=31536000, immutable');
     return res.status(200).json(quote);
   } catch {
