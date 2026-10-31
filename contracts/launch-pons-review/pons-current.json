@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-10-31T15:57:59.536Z",
+  "block": 102673253,
+  "blockHash": "0x5903b0d96c77288969a973a376977f589d081b9057d0895f394cc512d3d6a03c",
+  "chainId": 4663,
+  "factory": "0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e",
+  "runtimeHash": "0x89a27da6f703e0a7cdd4f233e7cb57604ff75b164530962d3ff7cf8483a67d84",
+  "configs": [
+    {
+      "id": 0,
+      "supply": "1000000000000000000000000000",
+      "curveFeeBps": "100",
+      "phantomQuote": "1680000000000000000",
+      "graduationThreshold": "4200000000000000000",
+      "poolFee": "0",
+      "tickSpacing": "200",
+      "enabled": true
+    }
+  ],
+  "launchFee": "500000000000000",
+  "rwiApproved": false,
+  "rwiEconomics": [
+    "0",
+    "0",
+    "0"
+  ],
+  "sourceEndpoint": "https://sourcify.dev/server/v2/contract/4663/0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e?fields=abi,metadata,sources,match",
+  "sources": [
+    {
+      "name": "contracts/src/v2/PonsV2LaunchFactory.sol",
+      "hash": "0xb867b744ad2f0d5009e6bd065a64f96399aecddc21b8739267a4735812a3fe16",
+      "matchesPriorCopy": false,
+      "matchesIgnoringTrailingWhitespace": true
+    },
+    {
+      "name": "contracts/src/v2/PonsV2BondingCurve.sol",
+      "hash": "0xcfea3887b0660242c69cfe069da819ba5e6d897d8abf5a4ec4b75fe91f78cb91",
+      "matchesPriorCopy": false,
+      "matchesIgnoringTrailingWhitespace": true
+    },
+    {
+      "name": "contracts/src/v2/PonsV2GraduationExecutor.sol",
+      "hash": "0xf391651b20f3b1cd2c999b43faaac0cd158a36343f51d0a55991706fbd14a32c",
+      "matchesPriorCopy": false,
+      "matchesIgnoringTrailingWhitespace": true
+    },
+    {
+      "name": "contracts/src/v2/PonsV2GraduationGuard.sol",
+      "hash": "0xf49feecfb2eefe031ed00c9cc154cc26e9f3b5d87cb20d7902980ee6301a1b0a",
+      "matchesPriorCopy": false,
+      "matchesIgnoringTrailingWhitespace": true
+    }
+  ],
+  "comparisonNote": "Exact comparison includes trailing newlines. All four current sources match the earlier copies after line-ending and trailing-whitespace normalization."
+}

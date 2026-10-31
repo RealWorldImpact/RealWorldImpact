@@ -1,0 +1,46 @@
+{
+  "testedAt": "2026-10-31T15:53:16.990Z",
+  "status": "Research proof, NOT production-ready",
+  "mainnetTransactions": 0,
+  "fork": {
+    "chainId": 4663,
+    "forkBlockNumber": 102670277,
+    "forkBlockHash": "0x02af255549ac0419c8701878c7a39a87a5f4cf0ab1434628ce1e13e1c40dbba4"
+  },
+  "localReferencePool": "0x5b3A12a1F05AC0Fabccca8a8A79531fD0E6a5a58",
+  "fixture": {
+    "eth": 1,
+    "rwi": 79703811.07914539,
+    "note": "Artificially allocated on local fork only; no mainnet liquidity exists at this pool."
+  },
+  "baseline": {
+    "rwiUsd": 0.000028202504875523,
+    "ethSourceUpdatedAt": 1793446968,
+    "marketWindowSeconds": 1800
+  },
+  "checks": [
+    "Reject insufficient pool history",
+    "Real v3 accumulators and independent inverse-price conversion",
+    "Preserve ETH feed timestamp",
+    "Ignore instantaneous price spike in 30-minute average",
+    "Reject 5-minute divergence",
+    "Reject withdrawn reference liquidity",
+    "Reject expired ETH/USD feed"
+  ],
+  "counterexample": {
+    "spotMultiple": 8.964036000000235,
+    "sustainedPriceMultiple": 8.964036000000235,
+    "grossManipulationEth": 2,
+    "netRoundTripCostEth": 0.008001995971911816,
+    "netRoundTripCostUsd": 17.986586670224174,
+    "excludes": "Gas and arbitrage by other market participants; isolated fork has no competing traders.",
+    "conclusion": "Time averaging and spot agreement alone are insufficient for this thin reference pool."
+  },
+  "remaining": [
+    "A real funded reference market with reviewed wide-range depth and withdrawal protections",
+    "Economic manipulation analysis against aggregate launch exposure",
+    "Sequencer outage/recovery policy and observation retention under high swap frequency",
+    "Price policy for rapid growth and reliable history; two-percent agreement can pause during volatility",
+    "Production adapter and complete launch integration/fork review"
+  ]
+}

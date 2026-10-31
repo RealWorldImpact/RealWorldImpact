@@ -1,0 +1,10 @@
+const fs=require('fs'),path=require('path'),solc=require('../launch/node_modules/solc');
+const source=fs.readFileSync(path.join(__dirname,'MarketReferenceReader.sol'),'utf8');
+const input={language:'Solidity',sources:{'MarketReferenceReader.sol':{content:source}},settings:{optimizer:{enabled:true,runs:200},viaIR:true,evmVersion:'cancun',outputSelection:{'*':{'*':['abi','evm.bytecode.object']}}}};
+const output=JSON.parse(solc.compile(JSON.stringify(input),{import:p=>{try{return {contents:fs.readFileSync(path.join(__dirname,'../launch/node_modules',p),'utf8')}}catch{return {error:'Missing '+p}}}}));
+for(const e of output.errors||[])console.log(e.formattedMessage);
+if(output.errors?.some(e=>e.severity==='error'))process.exit(1);
+const c=output.contracts['MarketReferenceReader.sol'].MarketReferenceReader;
+fs.mkdirSync(path.join(__dirname,'artifacts'),{recursive:true});
+fs.writeFileSync(path.join(__dirname,'artifacts/reader.json'),JSON.stringify({abi:c.abi,bytecode:'0x'+c.evm.bytecode.object}));
+console.log('Research reader compiled; no production export or deployment.');
