@@ -80,6 +80,10 @@ vm.runInContext(html.slice(html.indexOf('function sumRwiBySender('), html.indexO
 context.nomination = [{ from:'0xvoter', input:'RWIWRITEIN:1:gg-abc-123', timestamp:'2026-10-19T19:00:00Z', block_number:10 }];
 burns = [{ token:{address:'0xtoken'}, from:'0xvoter', block_number:11, total:{value:'500'} }];
 assert.equal((await vm.runInContext('loadWriteIns(nomination, 1)', context))[0], 'gg-abc-123');
+const readQuote = context.fetchWriteInQuote;
+context.fetchWriteInQuote = async()=>null;
+assert.equal((await vm.runInContext('loadWriteIns(nomination, 1)', context)).complete, false, 'an unavailable fee quote cannot advertise a complete Bankr ballot');
+context.fetchWriteInQuote = readQuote;
 // The timestamp is onchain; a valid fixed quote must be before it and no older than 15 minutes.
 context.nomination[0].input = 'RWIWRITEIN:1:gg-abc-123:' + (Math.floor(Date.parse(context.nomination[0].timestamp) / 60000) * 60 - 120);
 context.rwiUsdPrice = 1000000;

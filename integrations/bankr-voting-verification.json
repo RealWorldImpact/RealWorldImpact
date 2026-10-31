@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-31T22:55:44.339Z",
+  "localFork": true,
+  "mainnetTransactions": 0,
+  "fork": {
+    "chainId": 4663,
+    "forkBlockNumber": 102916046,
+    "forkBlockHash": "0xe5c39eda154a52f7a876218b69e8ee1d94c55af2f324a386410e1871d796ce0e"
+  },
+  "rwiRuntimeHash": "0x7965f9b96ff80774dd618b7504adffeb3abf0fa7df8a561e73d8448387619a20",
+  "validVote": true,
+  "tokenBalancesUnchanged": true,
+  "inboxAndContractEthUnchanged": true,
+  "approvalRequired": false,
+  "zeroTransferFromForgeryRejected": true,
+  "nonzeroEthRejected": true,
+  "gasUsed": "28628"
+}

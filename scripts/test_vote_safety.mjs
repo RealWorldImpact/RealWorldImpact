@@ -85,7 +85,7 @@ const elements = new Map();
 const tally = run(section('function paintFrom(', '/* The connected wallet'), {
   lastTally:null, ROUND:1, tallySeq:0, votePagesTruncated:false, pendingVote:null,
   Date:{now:()=>clock}, SLATE:['charity'], RWI:'0xtoken',
-  $:id=>{ if(!elements.has(id)) elements.set(id, {textContent:''}); return elements.get(id); },
+  $:id=>{ if(!elements.has(id)) elements.set(id, {textContent:'',attrs:{},setAttribute(k,v){this.attrs[k]=v;},removeAttribute(k){delete this.attrs[k];}}); return elements.get(id); },
   t:x=>x, votePrefix:()=> 'RWIVOTE:1:', fromHexUtf8:x=>x,
   erc20BalanceOf:async()=>{ reads++; return balance; }, paintTally(){}, showMyVote(){},
 });

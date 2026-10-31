@@ -49,7 +49,7 @@ const TRANSLATIONS = {
     'vote.s3.title':'Countable by anyone.',
     'vote.how1a':'Your wallet sends a 0-value transaction to the ballot box address with',
     'vote.how1b':'in the data field. You pay only gas.',
-    'vote.how2':'The page reads every transaction ever sent to that address, decodes the choices, and keeps the most recent vote per wallet.',
+    'vote.how2':'The page verifies inbox votes and zero-token contract votes, decodes the choices, and keeps the most recent vote per wallet.',
     'vote.how3':'Each wallet\'s weight is its live $RWI balance, read from the token contract. Wallets holding nothing carry no weight.',
     'vote.how4':'Totals are recomputed in your browser. No server sits in the middle, so you never have to trust this page — re-run the same reads yourself.',
     'vote.addr.box':'Ballot box:',
@@ -2225,6 +2225,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <p class="status" id="voteStatus"></p>
 
       <p class="note" data-i18n="vote.note.calldata">Every vote is a zero-value transaction carrying your choice in its calldata.</p>
+      <p class="note"><a href="/integrations/bankr-voting">Voting through Bankr</a> · Keep your RWI in your Bankr wallet. Voting costs only network gas.</p>
     </div>
   </section>
 
@@ -2297,6 +2298,7 @@ document.addEventListener('DOMContentLoaded', function(){
   </div>
 </footer>
 
+<script src="/assets/vote-contract.js?v=20261031-bankr"></script>
 <script>
 /* =============================================================================
    RWI COMMUNITY SIGNAL — onchain, token-weighted, serverless.
@@ -3116,6 +3118,7 @@ let SLATE = autoSlate(1);
    declaration arrived and replaced it. A skeleton says "not known yet", which
    is true, instead of showing a slate nobody declared. */
 let ballotResolved = false;
+let ballotWriteInsVerified = false, ballotVerifiedAt = 0;
 
 /* ---------------------------------------------------------------- utilities */
 const $ = id => document.getElementById(id);
@@ -3454,6 +3457,11 @@ function activeOrgs(){
   return filled;
 }
 function renderBallot(){
+  $('ballot').setAttribute('data-bankr-ready', String(ballotResolved && ballotWriteInsVerified && ballotVerifiedAt > 0 && !votePagesTruncated));
+  if(ballotResolved) $('ballot').setAttribute('data-round', String(ROUND));
+  else $('ballot').removeAttribute('data-round');
+  if(ballotVerifiedAt) $('ballot').setAttribute('data-checked-at', String(ballotVerifiedAt));
+  else $('ballot').removeAttribute('data-checked-at');
   if(!ballotResolved){
     // Placeholder rows sized like real ones, so nothing jumps when they land.
     $('ballot').innerHTML = Array.from({length: TOTAL_SLOTS}, function(){
@@ -3782,6 +3790,7 @@ async function loadRound(txs, expectedSeq){
     const wi = await loadWriteIns(rows, resolvedRound);
     if(expectedSeq !== undefined && expectedSeq !== refreshSeq) return;
     if(resolvedRound !== ROUND) return;
+    ballotWriteInsVerified = wi.complete !== false;
     if(wi.length){
       // Everything the round declared onchain stays on the ballot. Truncating
       // it to make room for write-ins dropped candidates people may already
@@ -3791,7 +3800,7 @@ async function loadRound(txs, expectedSeq){
       const room = Math.max(0, TOTAL_SLOTS - declared.length);
       SLATE = [...new Set([...declared, ...wi.slice(0, room)])];
     }
-  }catch(e){ /* write-ins are additive; a failure must not empty the ballot */ }
+  }catch(e){ ballotWriteInsVerified = false; /* a failed write-in read must not be advertised as a complete Bankr ballot */ }
   $('prefixEg').textContent = 'RWIVOTE:\u2039n\u203a:\u2039slug\u203a';
 }
 
@@ -3903,6 +3912,7 @@ async function refreshAll(opts){
   try{ await refreshAllUnchecked(opts); return true; }
   catch(e){
     if(requestedSeq === refreshSeq){
+      $('ballot').setAttribute('data-bankr-ready','false');
       $('tallyTotals').textContent = t('vote.st.tallyErr');
       const notice = $('voterNotice');
       if(notice){ notice.hidden = false; notice.textContent = lastTally ? 'Showing the last verified voter list. Refresh the tally to retry.' : 'The voter list is unavailable. Refresh the tally to retry.'; }
@@ -3913,6 +3923,9 @@ async function refreshAll(opts){
 }
 async function refreshAllUnchecked(opts){
   opts = opts || {};
+  ballotWriteInsVerified = false; ballotVerifiedAt = 0;
+  $('ballot').setAttribute('data-bankr-ready','false');
+  $('ballot').removeAttribute('data-checked-at');
   // Polling, manual refresh and post-vote reloads can overlap. Without a
   // sequence guard a slower earlier call can finish last and repaint stale data
   // over fresher data.
@@ -3922,6 +3935,7 @@ async function refreshAllUnchecked(opts){
   voteTxCache = txs;
   await loadRound(voteTxCache, seq);
   if(seq !== refreshSeq) return;
+  if(ballotWriteInsVerified) ballotVerifiedAt = Date.now();
   ballotResolved = true;                         // the chain has spoken
   updateSlateNotice();                           // runs whether or not votes exist
   // Keep the ballot showing what this wallet chose rather than resetting to
@@ -3985,7 +3999,10 @@ function sumRwiBySender(transfers, sinceByWallet){
 }
 async function loadWriteIns(txs, round){
   const rows = txs || [];
-  if(rows.some(tx => fromHexUtf8(tx.raw_input || tx.input || '').startsWith(WRITEIN_TAG + round + ':gg-'))) await refreshDonateGg();
+  let complete = true;
+  if(rows.some(tx => fromHexUtf8(tx.raw_input || tx.input || '').startsWith(WRITEIN_TAG + round + ':gg-'))){
+    await refreshDonateGg(); if(!donateGgVerified) complete = false;
+  }
   const nominations = [];
   rows.forEach(function(t){
     const from = ((t.from && t.from.hash) || t.from || '').toLowerCase();
@@ -4013,7 +4030,7 @@ async function loadWriteIns(txs, round){
       index: Number(t.index !== undefined ? t.index : (t.position !== undefined ? t.position : 0))
     });
   });
-  if(!nominations.length) return [];
+  if(!nominations.length) return Object.assign([],{complete});
 
   let transfers;
   try{
@@ -4028,13 +4045,14 @@ async function loadWriteIns(txs, round){
         if(!receipts.has(transfer.transaction_hash)) receipts.set(transfer.transaction_hash, rpc('eth_getTransactionReceipt', [transfer.transaction_hash]));
         const receipt = await receipts.get(transfer.transaction_hash);
         if(txSucceeded(receipt) && receipt.transactionIndex !== undefined) transfer.transaction_index = Number(BigInt(receipt.transactionIndex));
-      }catch(e){ /* Unverifiable same-block payments do not count. */ }
+        else complete = false;
+      }catch(e){ complete = false; /* Unverifiable same-block payments do not count. */ }
     }));
-  }catch(e){ return []; }
+  }catch(e){ return Object.assign([],{complete:false}); }
 
   const paid = (await Promise.all(nominations.map(async function(n){
     const quote = await fetchWriteInQuote(n.quoteAt);
-    if(!quote) return null; // Never substitute today's price for the original quote.
+    if(!quote){ complete = false; return null; } // Never substitute today's price for the original quote.
     let needBurn = BigInt(quote.units);
     // Older calldata omitted the quote; anchor its existing tolerance to nomination time.
     if(n.legacy) needBurn = (needBurn * 80n + 99n) / 100n;
@@ -4050,7 +4068,7 @@ async function loadWriteIns(txs, round){
     out.push(n.slug);
     if(out.length >= WRITEIN_SLOTS) break;
   }
-  return out;
+  return Object.assign(out,{complete});
 }
 
 /* ------------------------------------------------------------------- tally */
@@ -4061,6 +4079,7 @@ let tallySeq = 0;
    twenty pages of history. A short TTL collapses that burst into one read while
    staying far below the pace at which the ballot actually changes. */
 let _txCache = { at:0, rows:null, inflight:null };
+const readContractVotes = RWIContractVotes.createReader();
 const TX_TTL = 8000;
 async function fetchVoteTxs(force){
   const fresh = !force && _txCache.rows && (Date.now() - _txCache.at < TX_TTL);
@@ -4082,10 +4101,8 @@ function indexedTxSucceeded(tx){
 }
 async function fetchVoteTxsUncached(){
   // Blockscout v2, cursor-paginated. Only transactions *to* the ballot box matter.
-  // The ballot box shares an address with an active wallet, so vote transactions
-  // compete with unrelated traffic for the pagination window. Walk further, and
-  // flag it if we still run out of pages — silently reading a partial history
-  // would drop real votes.
+  // Preserve legacy memo votes and controller declarations. Contract-format
+  // votes are read separately and merged only after verifying the signed call.
   const out = [];
   votePagesTruncated = false;
   const MAX_PAGES = 20;
@@ -4112,7 +4129,11 @@ async function fetchVoteTxsUncached(){
     const q = new URLSearchParams(j.next_page_params).toString();
     url = SCAN + '/api/v2/addresses/' + BALLOT_BOX + '/transactions?filter=to&' + q;
   }
-  return out;
+  // A controller may amend the same round. Preserve votes cast before that
+  // amendment, just as the legacy memo reader does; loadTally filters the round.
+  const contractVotes = await readContractVotes({rpc,fetcher:fetchWithTimeout});
+  votePagesTruncated = votePagesTruncated || contractVotes.truncated;
+  return out.concat(contractVotes.rows);
 }
 /* Rebuild the totals from weights we already read, and paint. Used when the
    set of voters and their choices is unchanged — there is nothing new to

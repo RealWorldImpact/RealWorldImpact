@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080a08"><title>Voting through Bankr · RWI</title><meta name="description" content="Vote with the RWI held in your Bankr wallet. A zero-token contract call records your choice; only gas is paid."><link rel="canonical" href="https://www.rwihood.org/integrations/bankr-voting"><link rel="icon" href="/assets/rwi-favicon.png"><link rel="stylesheet" href="/assets/launch-token.css"><link rel="stylesheet" href="/assets/dextools-integration.css"><link rel="stylesheet" href="/assets/site-header.css?v=20261029"><script src="/assets/site-header.js?v=20261029" defer></script></head><body>
+<header id="siteHeader">
+  <div class="site-strip">
+    <div class="wp-left">
+      <a class="wp-brand" href="/">Real World Impact</a>
+      <span>RWI&nbsp;<span id="ticker" aria-live="polite"></span></span>
+    </div>
+    <nav class="links" aria-label="Primary navigation" data-i18n-aria-label="common.primaryNav">
+      <a href="/#ledger" data-site-label="0">Impact</a>
+      <a href="/#rewards" data-site-label="1">Rewards</a>
+      <a href="/docs" data-site-label="2">Docs</a>
+      <a href="/vote" data-site-label="3">Vote</a>
+      <details class="nav-more"><summary data-site-label="4">More</summary><div class="nav-external">
+      <a href="/LP">LP</a>
+      <a href="https://dexscreener.com/robinhood/0xDa2598c976E62E7E15DcCa75169B404712E48B04" target="_blank" rel="noopener" aria-label="Dexscreener" title="Dexscreener">Dexscreener</a>
+      <a href="https://www.coingecko.com/en/coins/real-world-impact" target="_blank" rel="noopener" aria-label="CoinGecko" title="CoinGecko">CoinGecko</a>
+      <a href="https://t.me/RWIonRobinhood" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram">Telegram</a>
+      <a href="https://x.com/RWIrobinhood" target="_blank" rel="noopener" aria-label="X" title="X">X</a>
+      </div></details>
+    </nav>
+  </div>
+</header>
+<main><a class="back" href="/vote">Back to the ballot</a><article><p class="eyebrow">RWI COMMUNITY SIGNAL</p><h1>Vote from your Bankr wallet.</h1><p class="integration-copy">Keep your RWI where it is. The website now accepts a zero-token call to the existing RWI contract, with your voting choice attached. It costs only network gas and requires no token approval.</p><div class="actions"><a class="primary" href="/integrations/bankr-voting.md">Bankr skill instructions</a><a href="/integrations/bankr-voting.json">Transaction format</a><a href="/integrations/bankr-voting-verification.json">Validation results</a></div>
+<section class="integration-section"><h2>Update your Bankr skill</h2><p>Give Bankr the skill instructions above and ask it to use the new contract vote format. It must read the current ballot, present the choices, and submit the complete vote transaction from your wallet after confirmation.</p><p>The original inbox address has no contract code. A raw call directly to it can be rejected by Bankr. The new format sends the transaction to RWI’s deployed token contract and records a transfer of exactly zero tokens to that inbox.</p></section>
+<section class="integration-section"><h2>Your vote still works the same way</h2><ul><li>Your latest valid choice counts, whether cast on the website or using the new format.</li><li>Your current RWI holdings determine your voting weight. Voting does not spend or lock those holdings.</li><li>A successful onchain receipt is required. Pending or failed submissions do not count.</li></ul></section>
+<section class="integration-section"><h2>Ready for a Bankr test</h2><p>The contract call passed a mainnet simulation and local fork tests, including checks against forged votes. The updated Bankr skill still needs a user-authorized vote to confirm its full submission flow. This version supports direct wallet transactions; relayed or batched calls need separate support.</p><p>Network: Robinhood Chain, 4663.<br>Transaction target:</p><p class="address">0xDa2598c976E62E7E15DcCa75169B404712E48B04</p><p>The complete format and validation rules are in the linked skill instructions. Round creation and paid write-in nominations are unchanged.</p></section>
+</article></main><footer><a href="/">Real World Impact</a> · Voting is an advisory community signal.</footer></body></html>

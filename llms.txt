@@ -21,11 +21,18 @@ starting point and verify addresses and transactions independently.
   receipts, burn display, holder rewards, and founder information.
 - [Docs](https://www.rwihood.org/docs): mechanism, token details, sources,
   limitations, and risks.
+- [Vote](https://www.rwihood.org/vote): live token-weighted charity ballot.
+- [Bankr voting](https://www.rwihood.org/integrations/bankr-voting): zero-token
+  contract voting instructions; holders keep their RWI and pay network gas.
 - [Impact](https://www.rwihood.org/impact): public project page.
 - [Claims register](https://www.rwihood.org/claims): historical claims record.
 
 ## Machine-readable sources
 
+- [Bankr voting instructions](https://www.rwihood.org/integrations/bankr-voting.md)
+  and [transaction format](https://www.rwihood.org/integrations/bankr-voting.json):
+  read the current resolved ballot; never reuse a round or charity from an old
+  post. Bankr submission still requires the wallet owner's confirmation.
 - [Site facts](https://www.rwihood.org/data/site.json): canonical addresses,
   chain and token facts, allocation percentages, source links, and data scope.
 - [Donation ledger](https://www.rwihood.org/data/donations.json): published

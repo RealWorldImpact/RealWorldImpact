@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const {JsonRpcProvider,JsonRpcSigner,Contract,Interface,keccak256}=require('../contracts/launch/node_modules/ethers');
+const ctx=vm.createContext({TextEncoder,TextDecoder,Uint8Array,URLSearchParams});vm.runInContext(fs.readFileSync(path.join(__dirname,'../assets/vote-contract.js'),'utf8'),ctx);
+const v=ctx.RWIContractVotes,p=new JsonRpcProvider('http://127.0.0.1:8910',4663,{staticNetwork:true,cacheTimeout:-1});p.pollingInterval=30;
+(async()=>{
+ let meta=await p.send('hardhat_metadata',[]);assert.equal(meta.chainId,4663);assert(meta.forkedNetwork,'Only a local fork may execute this test');
+ await p.send('hardhat_reset',[{forking:{jsonRpcUrl:'https://rpc.mainnet.chain.robinhood.com'}}]);meta=await p.send('hardhat_metadata',[]);await p.send('evm_mine',[]);
+ assert.equal(keccak256(await p.getCode(v.TOKEN)),'0x7965f9b96ff80774dd618b7504adffeb3abf0fa7df8a561e73d8448387619a20');
+ const holder='0x9CD7C9196A4C1836A3DF089cb210272e07e6A5e5';await p.send('hardhat_impersonateAccount',[holder]);await p.send('hardhat_setBalance',[holder,'0x56bc75e2d63100000']);
+ const signer=new JsonRpcSigner(p,holder),attacker=await p.getSigner(1),token=new Contract(v.TOKEN,['function balanceOf(address) view returns(uint256)','function allowance(address,address) view returns(uint256)'],p);
+ const before=await Promise.all([token.balanceOf(holder),token.balanceOf(v.INBOX),p.getBalance(v.TOKEN),p.getBalance(v.INBOX)]);
+ const request=v.makeVote(12,'rmhc');delete request.chainId;const sent=await signer.sendTransaction(request),receipt=await sent.wait();
+ const rawTx=await p.send('eth_getTransactionByHash',[sent.hash]),rawReceipt=await p.send('eth_getTransactionReceipt',[sent.hash]);assert(v.verifyVote(rawTx,rawReceipt));
+ const after=await Promise.all([token.balanceOf(holder),token.balanceOf(v.INBOX),p.getBalance(v.TOKEN),p.getBalance(v.INBOX)]);assert.deepEqual(after,before);
+ const iface=new Interface(['function transferFrom(address,address,uint256) returns(bool)']);assert.equal(await token.allowance(holder,await attacker.getAddress()),0n);
+ const bad=await attacker.sendTransaction({to:v.TOKEN,value:0,data:iface.encodeFunctionData('transferFrom',[holder,v.INBOX,0])+Buffer.from('RWIVOTE:12:rmhc').toString('hex')});await bad.wait();
+ assert.equal(v.verifyVote(await p.send('eth_getTransactionByHash',[bad.hash]),await p.send('eth_getTransactionReceipt',[bad.hash])),null,'Reject actual zero-transferFrom impersonation');
+ await assert.rejects(p.call({to:v.TOKEN,from:holder,data:request.data,value:1n}));
+ const report={checkedAt:new Date().toISOString(),localFork:true,mainnetTransactions:0,fork:meta.forkedNetwork,rwiRuntimeHash:keccak256(await p.getCode(v.TOKEN)),validVote:true,tokenBalancesUnchanged:true,inboxAndContractEthUnchanged:true,approvalRequired:false,zeroTransferFromForgeryRejected:true,nonzeroEthRejected:true,gasUsed:receipt.gasUsed.toString()};
+ fs.writeFileSync(path.join(__dirname,'../integrations/bankr-voting-verification.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
+})().catch(e=>{console.error(e);process.exitCode=1}).finally(()=>p.destroy());
