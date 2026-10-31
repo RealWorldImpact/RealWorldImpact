@@ -1,13 +1,13 @@
 {
-  "reviewedAt": "2026-10-30T23:53:07.665Z",
-  "status": "Local candidate validated; production release blocked",
+  "reviewedAt": "2026-10-31T00:19:21.956Z",
+  "status": "Local contracts and LP integration validated; independent production oracle pending",
   "productionReady": false,
   "liveWebsiteChanged": false,
   "mainnetTransactionsSubmitted": 0,
   "remaining": [
-    "Review and configure a manipulation-resistant production RWI/USD adapter; test source is not acceptable",
-    "Integrate and test the new API, user transaction previews, graduation lifecycle and automation",
-    "Independent review of the exact final contracts and oracle configuration before production deployment"
+    "Independent provider provisioning, documented methodology and feed-specific adapter review/fork testing",
+    "Final contract and oracle configuration review; wallet-owner deployment and source verification",
+    "Verified activation, rebuild, production publishing and live service checks"
   ],
   "requirements": {
     "startingFdvUsd": 5000,
@@ -234,7 +234,7 @@
     "RWILaunchV4.sol": "f567e3e3a68631639c0ce989e5f1cd8ff8e35f4d33791f28dbe3d3e8ac418fcd",
     "RWICreatorHookV4.sol": "1514e85767890d6b0594749f75bd6105c79e11288491b682e88b1318f1a0d36c",
     "TestSupport.sol": "9f3b68370917625e26ad9fb9857785448f0da372bce61bd2786d08256166af04",
-    "compile.cjs": "69a6217c11a4b8ae13b4f5e585a393a655cf61985f4f823aabef353e6b6615f3",
+    "compile.cjs": "0a7766fa9ca9747decbc7defbe50e99c3df4635e6018412cd8f6172898445d2a",
     "test-fork.cjs": "02c49856587cede24e329a55daf7ecdec149173a92c1ca4cf2c376e37ad68e3e",
     "test-economics.cjs": "f95b0edc1591b2fcc180e20f4a8b916da7e51202f2959bffbe054d19e8fb3061",
     "test-solidity-math.cjs": "b9a947bc426a1153ccc9029182993b56f6f29bc29e20502ed67459d7456e57ed",

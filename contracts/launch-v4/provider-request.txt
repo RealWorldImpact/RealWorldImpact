@@ -1,0 +1,49 @@
+Independent RWI/USD feed request — RWI Launch on Robinhood Chain
+
+Project: https://www.rwihood.org/
+Network: Robinhood Chain mainnet, chain ID 4663
+Asset: Real World Impact (RWI)
+ERC-20 address: 0xDa2598c976E62E7E15DcCa75169B404712E48B04
+Quote: USD per whole RWI; the integration uses 18 decimal fixed-point units.
+
+We need an independently operated onchain price feed for launch graduation.
+Each launch starts at a $5,000 full-supply valuation and graduates only when
+both its current full-supply valuation is at least $40,000 and its deposited
+pool liquidity is at least $5,000. There is no fixed RWI fundraising quota.
+
+Please confirm whether you can support this asset and chain, and provide:
+
+1. Sources for RWI prices, liquidity and market-depth measurements, the
+   computation methodology, and analysis of concentrated-market manipulation.
+   The current main pool is Uniswap v4 ETH/RWI on Robinhood Chain:
+   0xa72a9de2c6e3db34308a8ae61e927ceffea630218ca1e712b70b61341c3e99a1
+   PoolManager: 0x8366a39CC670B4001A1121B8F6A443A643e40951
+   Hook: 0xE5e702641Ea86F4ae6cC3cDaeD2B886f976Be044
+   Multiple APIs reporting this same pool are not independent markets.
+
+2. A manipulation-resistant price and conservative lower/upper bounds with
+   genuine underlying observation timestamps. The current candidate accepts
+   an observation age up to 300 seconds, coverage of at least 1,800 seconds,
+   and an upper/lower spread of no more than 2%. Please assess those limits
+   against this market, including rapid growth and sharp declines; do not
+   populate a fixed window field around a periodically sampled spot price.
+
+3. Outage, stale-data, confidence, low-liquidity, chain reorganization and
+   sequencer-recovery behavior. Unsafe quotes must be unavailable, not zero,
+   and timestamps must not be refreshed without fresh underlying observations.
+
+4. Production contract addresses and ABI, verified source, signer/quorum and
+   upgrade control disclosures, independent security review, expected heartbeat,
+   operating costs, gas funding and monitoring responsibility.
+
+The application can adapt a documented provider interface. Its internal
+IRwiUsdOracle interface returns price, lower, upper, observedAt, and window.
+An adapter must preserve the provider's data provenance and semantics.
+The factory's provider address is immutable, so configuration is reviewed
+and fork-tested before deployment. New launches, buys and graduation stop
+on unreliable prices; reserve-based curve sells do not depend on the feed.
+
+Please quote feasibility, lead time and cost. This request does not authorize
+any purchase, subscription, deployment, or use of an RWI-controlled reporter.
+
+Status: prepared locally, NOT sent to a provider.

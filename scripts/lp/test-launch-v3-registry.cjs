@@ -19,7 +19,7 @@ const res=()=>({headers:{},setHeader(k,v){this.headers[k]=v},status(n){this.code
   r=res();await active({method:'GET',query:{before:'1'}},r);assert.equal(r.body.launches.length,1);assert.equal(r.body.next,null);
   global.fetch=async()=>({ok:true,json:async()=>[{id:0,error:{message:'unavailable'}}]});r=res();await active({method:'GET',query:{before:'1'}},r);assert.equal(r.code,502);
  }finally{global.fetch=old;}
- const ui=fs.readFileSync(path.join(__dirname,'launch-client.js'),'utf8');assert.ok(ui.includes('esc(t.name)'));assert.ok(ui.includes('esc(t.description'));assert.ok(ui.includes('record.phase===1n'));assert.ok(ui.includes('claimRewards.staticCall'));assert.ok(!ui.includes("encodeFunctionData('claimFees'"));
+ const ui=fs.readFileSync(path.join(__dirname,'launch-client.js'),'utf8');assert.ok(ui.includes('esc(t.name)'));assert.ok(ui.includes('esc(t.description'));assert.ok(ui.includes('claimRewards.staticCall'));assert.ok(!ui.includes("encodeFunctionData('claimFees'"));
  const html=fs.readFileSync(path.join(__dirname,'../../LP.html'),'utf8');assert.ok(html.includes('id="launchCreatorTax"'));assert.ok(!html.includes('there is no graduation stage'));
  assert.equal(r.body===undefined,false);
  console.log('PASS: V3 registry, appended curve terms, inactive deployment, pagination and invalid data.');

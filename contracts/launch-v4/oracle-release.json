@@ -1,0 +1,28 @@
+{
+  "status": "awaiting-independent-provider",
+  "provider": null,
+  "address": null,
+  "runtimeHash": null,
+  "documentation": null,
+  "requirements": {
+    "chainId": 4663,
+    "asset": "0xDa2598c976E62E7E15DcCa75169B404712E48B04",
+    "quote": "USD",
+    "decimals": 18,
+    "maximumUnderlyingObservationAgeSeconds": 300,
+    "minimumObservationWindowSeconds": 1800,
+    "maximumUpperLowerSpreadBps": 200,
+    "independentlyOperated": true,
+    "preserveUnderlyingTimestamps": true,
+    "failClosedOnUnreliableData": true,
+    "methodologyEvidence": "Continuous swap-aware observations or a provider-reviewed manipulation-resistant methodology; periodic spot sampling is not a TWAP",
+    "requiredDisclosures": ["RWI market sources and depth", "outlier and manipulation resistance", "confidence-bound semantics", "heartbeat and observation delay", "sequencer outage recovery", "upgrade and signer authority", "ongoing cost and funding"]
+  },
+  "catalogChecks": {
+    "checkedAt": "2026-10-31T00:05:54Z",
+    "chainlinkRobinhoodFeeds": 58,
+    "chainlinkRwiMatches": 0,
+    "pythHermesRwiMatches": 0,
+    "note": "Public catalogs checked; not proof that no custom provider can support this asset."
+  }
+}

@@ -1,6 +1,6 @@
 # RWI bonding curve V4 — engineering review and local candidate
 
-Status: **local research build; not deployed, not connected to LP, not production approved.** V3 deployment remains disabled. Live V1/V2 contracts and the website are unchanged. The review fixes specific defects and adds tests; it is not an independent security audit or a claim that the system is perfect.
+Status: **LP interface, registry, discovery feeds and release verification integrated locally; not deployed or production approved.** V3 deployment remains disabled. The user selected an **independent price provider**, not an RWI-operated reporter. No production feed has been provisioned. Live V1/V2 contracts and the website are unchanged. This work is not an independent security audit or a claim that the system is perfect.
 
 ## Current requirements
 
@@ -110,7 +110,7 @@ The existing v4 pool's hook cannot be retrofitted with an observation hook; the 
 
 The contract has a redeemable curve phase and a graduated phase. Qualifying buys or permissionless checkpoints record readiness. Buys pause while both conditions qualify; sells remain available and cancel readiness if they take the curve below a threshold. After the waiting period, anyone can submit graduation. The transaction rechecks current conditions and creates the pool atomically. Failure leaves funds and token reserves in the curve, with sells still available subject to the ETH/RWI route functioning.
 
-A permissionless function does not execute itself. The application must submit/check graduation, or a funded automation service must do so. That operating mechanism and its UI are not integrated in this research build.
+A permissionless function does not execute itself. LP now offers a reviewed permissionless checkpoint when price movement alone reaches eligibility, and a graduation button after the delay and fresh observation. Qualifying buys set readiness automatically. Sells remain available through this period. A funded keeper is optional and has not been configured; the page never silently signs a transaction.
 
 The official router guarantees ETH/RWI routing and minimum output. A permissionless ERC-20 can still be transferred or traded in pools created elsewhere; hook fees apply to this official pool, not every possible transaction. Enforcing universal routing would require a materially different restricted token design. There is no guarantee that Uniswap's own UI will discover this hook pool automatically.
 
@@ -148,4 +148,37 @@ Final validation passed: **55,455 randomized trades**, **41,600 fee-boundary che
 
 Results and exact tested hashes are recorded in `validation.json`. After a full run, regenerate the record with `node contracts/launch-v4/record-validation.cjs`. The factory has an immutable oracle address: its deployed runtime hash depends on that address; the compiler's runtime template hash alone must not be used as a deployed-code match.
 
-Before release, the missing production oracle must be reviewed and configured, frontend/API integration must use these exact terms and lifecycle, transaction previews must disclose fees and fully diluted valuation, and the complete final deployment must receive independent smart-contract review. V3 must stay blocked throughout that work.
+Before release, the missing independent production oracle must be provisioned, its adapter and configuration reviewed, and the complete feed-integrated deployment tested on a fork. Contract and oracle review remains necessary; the local mock-feed tests do not validate the future provider. V3 must stay blocked.
+
+## LP integration and third-party discovery
+
+The V4 client, profile, and registry now use the live-dollar lifecycle and remove the old $50k/fixed-RWI UI. Transaction reviews disclose the USD conditions, opening-price tolerance, fixed fees, locked supply, and five-minute confirmation. Reads use one block snapshot; stale oracle reads leave metadata and creator rewards visible. Launch reviews reject expired or changed price bounds. The factory's deployed code and immutable oracle address are checked before preparing transactions.
+
+Prepared public routes (not published yet):
+
+- `/tokens/{address}`: server-rendered, crawlable token page with canonical URL, social metadata, JSON-LD, shared site navigation, and direct ETH trade link.
+- `/tokens/{address}.json`: address-keyed public metadata, logo, creator, links and economic terms.
+- `/tokenlist.json`: validated against Uniswap's official Token Lists JSON schema, including public image URLs. Includes RWI and registered V4 launches; no authentication or wallet connection required.
+- `/launchpad.json`: activation status, registry address, chain, ABI, source-verification input and event names for indexers.
+- `/tokens-sitemap.xml`: canonical launched-token pages, advertised in robots.txt.
+- `/api/lp-launches?version=4`: paginated snapshot registry with optional `creator`, `token`, and `before`. The public full token list refuses to return a misleading partial result on failure. Above 4,096 launches it requires a persistent list publisher or segmented lists; the paginated registry remains available.
+
+Discovery routes reuse the existing launch API to preserve Vercel's twelve-function limit. Metadata is escaped, external links restricted to HTTPS, and image URLs restricted to the existing immutable upload store. The token list permits cross-origin public reads and is schema-tested. Source bundles exclude test contracts and mock oracles.
+
+These make integration possible; they do not force third parties to list a token. The pre-graduation curve needs custom indexer support. Graduated pools emit standard Uniswap v4 events, but each service must support Robinhood Chain and this hook. [DEX Screener's listing documentation](https://docs.dexscreener.com/token-listing) describes pool/transaction-based indexing; its coverage and displayed metadata remain outside this project's control. No paid listing, artificial trade, external message or provider contract was submitted.
+
+## Independent provider and deployment handoff
+
+At block 102133155, both existing V1 and V2 factories still had zero launches. The read-only catalog check on 2026-10-31 UTC found no RWI match among 58 Chainlink Robinhood feeds or Pyth Hermes's RWI query. A custom provider may still support the asset. [DIA accepts custom oracle requests](https://www.diadata.org/docs/how-to-guides/request-a-custom-oracle); its support, methodology, pricing and deployment are not assumed. `provider-request.txt` contains the prepared, unsent requirements. `oracle-release.json` records the pending state and acceptance requirements.
+
+After a provider is agreed and its feed-specific adapter has passed review and fork tests:
+
+1. Record the independently verified address, deployed-code hash, provider and source documentation in `oracle-release.json`; do not mark it verified solely because an interface call succeeds.
+2. Rebuild the exact production artifacts with `node contracts/launch-v4/compile.cjs --export`. The generated verification input uses Solidity 0.8.26, optimizer 200, viaIR and Cancun. Obtain independent review of the final source and provider configuration.
+3. Prepare the wallet deployment with constructor arguments `(hookSalt, oracleAddress)`, mining the hook salt for the factory's predicted address. The wallet owner submits the gas-paying deployment. Do not reuse the disabled V3 deployment page.
+4. Run `node contracts/launch-v4/verify-deployment.cjs <transactionHash>`; it verifies the receipt, creation bytes, constructor address, oracle code, oracle-patched factory runtime, CREATE2 hook and both child-to-factory bindings. It reads the chain only.
+5. Run the same command with `--activate` to write local site configuration after verification. This also refuses migration if legacy launches have appeared. No transaction is signed or submitted by this script.
+6. Verify factory, hook, router and token sources with the explorer/Sourcify where supported. The token constructor arguments are creator metadata plus creator address. `assets/launch-v4-sources.json` is the complete standard compiler input, not a claim of verification already completed.
+7. Rebuild and test LP, deploy the site, then verify production routes, real upload hosting, the provider's actual heartbeat, and launch/trade/graduation/claim transactions with the wallet owner. The current UI does not fabricate live oracle availability.
+
+The LP suite passes the V4 integration, discovery schema, image pipeline and existing wallet/position regressions. The production server dependency audit reported zero known advisories on 2026-10-31 UTC. The SDK development tree retains upstream advisories; the high-severity development/server packages are absent from the browser bundle. Legacy elliptic code from the SDK is bundled with a low-severity advisory; the application delegates signing to the user's wallet and does not handle private keys. A clean server audit is not a guarantee of zero defects.

@@ -60,3 +60,12 @@ The public pages offer 13 language options (`en`, `es`, `zh`, `ja`, `ko`, `pt`,
 `fr`, `ru`, `tr`, `vi`, `hi`, `de`, `id`) via `?lang=`. The JSON records use
 English field names and recipient names. The token is a volatile digital
 asset; nothing on this site is investment, tax, or legal advice.
+
+## RWI launch registry
+
+- [Launch integration manifest](https://www.rwihood.org/launchpad.json): activation status, chain, factory, contract ABI and source URLs.
+- [Token list](https://www.rwihood.org/tokenlist.json): Uniswap Token Lists format, public logos and canonical pages.
+- [Registry](https://www.rwihood.org/api/lp-launches?version=4): paginated onchain launches, creator filtering, token lookup, USD eligibility and snapshot block.
+- Token pages: `https://www.rwihood.org/tokens/{address}`; JSON metadata: the same URL plus `.json`.
+- Launch graduation targets at least $40,000 fully diluted valuation and $5,000 actual pool liquidity using verified current USD prices; there is no fixed RWI fundraising quota. Starting target is $5,000.
+- Creator metadata is untrusted user content. Listing is not endorsement. A custom pre-graduation curve requires explicit indexer support. Third-party discovery is not guaranteed.

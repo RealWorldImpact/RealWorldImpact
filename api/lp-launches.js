@@ -1,4 +1,7 @@
 import v3Registry from '../scripts/lp/server/launch-registry-v3.js';
+import v4Registry from '../scripts/lp/server/launch-registry-v4.js';
+import { createDiscoveryHandler } from '../scripts/lp/server/launch-discovery.js';
+const discovery=createDiscoveryHandler();
 import { LAUNCH_FACTORY } from '../scripts/lp/launch-config.js';
 import { LAUNCH_SELECTORS } from '../scripts/lp/launch-contract.js';
 import { decodeAbiString } from '../scripts/lp/token-logos.js';
@@ -12,7 +15,11 @@ async function batch(calls){
 }
 const word=n=>BigInt(n).toString(16).padStart(64,'0');
 export default async function handler(req,res){
+  res.setHeader('Access-Control-Allow-Origin','*');
+  if(req.query.format!==undefined)return discovery(req,res);
+  if(req.method==='OPTIONS'){res.setHeader('Access-Control-Allow-Methods','GET, OPTIONS');return res.status(204).end();}
   if(req.method!=='GET')return res.status(405).json({error:'Method not allowed'});
+  if(req.query.version==='4')return v4Registry(req,res);
   if(req.query.version==='3')return v3Registry(req,res);
   if(req.query.version==='2')return curveRegistry(req,res);
   if(req.query.version!==undefined&&req.query.version!=='1')return res.status(400).json({error:'Invalid launch version'});

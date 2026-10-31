@@ -5,3 +5,5 @@ User-agent: *
 Allow: /
 
 Sitemap: https://www.rwihood.org/sitemap.xml
+
+Sitemap: https://www.rwihood.org/tokens-sitemap.xml

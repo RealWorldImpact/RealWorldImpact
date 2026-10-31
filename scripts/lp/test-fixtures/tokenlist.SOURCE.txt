@@ -1,0 +1,7 @@
+Token Lists JSON Schema
+Upstream: https://github.com/Uniswap/token-lists
+Retrieved from: https://raw.githubusercontent.com/Uniswap/token-lists/main/src/tokenlist.schema.json
+Retrieved: 2026-10-31 UTC
+SHA-256: 3c33314b868c9134646924ad13335e65a6f549008dfcb2b9f3d52b48a91ef967
+License: MIT; see tokenlist.LICENSE.
+This copy is pinned for deterministic integration tests. It is not a token-list endorsement.
