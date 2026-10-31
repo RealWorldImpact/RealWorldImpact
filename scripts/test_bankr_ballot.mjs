@@ -55,6 +55,19 @@ reset();badReceipt=true;await assert.rejects(run(),/proof mismatch/);
 reset();networkDown=true;await assert.rejects(run(),/source unavailable/);
 reset();late=true;await assert.rejects(run(),/expired/);
 reset();await assert.rejects(prepareBallot({fetcher,rpc,directory,quote:async()=>null,now:()=>now}),/quote unavailable/);
+reset();
+const previousKey=process.env.BLOCKSCOUT_PRO_API_KEY;
+process.env.BLOCKSCOUT_PRO_API_KEY='test-only-not-a-real-key';
+try {
+  const secured=await prepareBallot({rpc,directory,quote,now:()=>now,fetcher:async url=>{
+    const u=new URL(url); assert.equal(u.origin,'https://api.blockscout.com');
+    assert(u.pathname.startsWith('/4663/api/v2/')); assert.equal(u.searchParams.get('apikey'),'test-only-not-a-real-key');
+    return fetcher(url);
+  }});
+  assert(!JSON.stringify(secured).includes('test-only-not-a-real-key'),'API credentials never enter the public feed');
+} finally {
+  if(previousKey===undefined)delete process.env.BLOCKSCOUT_PRO_API_KEY;else process.env.BLOCKSCOUT_PRO_API_KEY=previousKey;
+}
 const html=readFileSync(new URL('../vote.html',import.meta.url),'utf8');
 assert(html.includes('const ORG_POOL = RWIVoteRoster.orgs;') && html.includes('const TGB_DIRECTORY = RWIVoteRoster.givingBlock;'),'page and feed share the same roster');
 assert(html.includes('RWIContractVotes.makeVote(voteRound, chosen)'),'website submission uses the same contract format');
