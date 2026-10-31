@@ -1,0 +1,53 @@
+Subject: Integrate RWI Launch bonding-curve markets on Robinhood Chain (4663)
+
+Please review RWI Launch for DEXTools discovery and charts before graduation.
+New tokens trade on our custom RWI-paired bonding curve, then graduate into
+Uniswap v4 pools. This request concerns the custom pre-graduation venue.
+
+Website: https://www.rwihood.org/launch
+Adapter documentation: https://www.rwihood.org/integrations/dextools
+HTTP adapter base: https://www.rwihood.org/integrations/dextools
+Factory: 0xC62Df02C2D09431A03F9022b979cdbB77BcA58Ed
+Deployment block: 102689068
+Chain: Robinhood Chain mainnet, EVM chain ID 4663
+Registry and ABI/source references: https://www.rwihood.org/launchpad.json
+Token list: https://www.rwihood.org/tokenlist.json
+Verification evidence: https://www.rwihood.org/integrations/dextools-verification.json
+
+Our adapter follows the official dextools-io/integration-sdk HTTP schema
+at commit a868b1aed7d31c835b351c3cb7d39cc5bc5e34b1. It provides latest-block,
+block, asset, exchange, pair and events. It exposes real creation/buy/sell
+events using block-global log indexes, transaction senders and decimal-string
+amounts. Data is bounded by the RPC's finalized block, so new activity waits
+for finalization. Inclusive event requests support up to 256 blocks.
+
+Example curve token: 0x82e2b12864e04488f6a6a2602b30b11bb53cba91 (TEST).
+The pair ID is the token address, identifying a curve inside the factory;
+it is not a standalone Uniswap pair contract. Asset0 is the token and asset1
+is RWI. ETH trades route through RWI. The TEST creation, actual buys and
+sells have been checked against receipts and current contract accounting.
+
+Please confirm these integration details before enabling ingestion:
+1. Whether your Robinhood indexer can onboard this custom venue via the
+   HTTP adapter or prefers the factory ABI and native event decoding.
+2. Pricing must use actual executions or (phantom RWI + real RWI) / curve
+   token inventory. Phantom RWI must never be counted as real liquidity.
+   Reserves exclude creator rewards, unsolicited transfers and unused supply.
+   Swap amounts are the actual RWI spent/received; fees are reported separately.
+3. Our holder-distribution endpoint explicitly returns 501. Please use your
+   EVM holder index or advise how fractional EVM balances should map to the
+   SDK's integer quantity field. No zero holder counts are fabricated.
+4. Graduation is exposed via pair lifecycle metadata and rwiMigrations.
+   No synthetic liquidity join/exit or swap events are generated. Please
+   confirm how to retire the curve chart and link its graduated v4 pool.
+5. Cold replay is bounded to 6.4 million blocks and 10,000 events per token;
+   larger histories need a persistent index. Please advise expected polling,
+   backfill and hosting requirements before production onboarding.
+6. Please advise access to the token socials/media API so token images and
+   creator-provided links can be supplied through your approved channel.
+
+Factory, hook and router have exact runtime matches on Sourcify. Local
+contract tests and mainnet read-only preflights have passed; the contracts
+have not undergone an independent security audit. The website does not
+currently claim DEXTools approval or listing. No listing fee or commercial
+commitment is authorized by this request.

@@ -121,6 +121,34 @@
   ],
   "rewrites": [
     {
+      "source": "/integrations/dextools/latest-block",
+      "destination": "/api/lp-launches?dextools=latest-block"
+    },
+    {
+      "source": "/integrations/dextools/block",
+      "destination": "/api/lp-launches?dextools=block"
+    },
+    {
+      "source": "/integrations/dextools/asset",
+      "destination": "/api/lp-launches?dextools=asset"
+    },
+    {
+      "source": "/integrations/dextools/asset/holders",
+      "destination": "/api/lp-launches?dextools=asset/holders"
+    },
+    {
+      "source": "/integrations/dextools/exchange",
+      "destination": "/api/lp-launches?dextools=exchange"
+    },
+    {
+      "source": "/integrations/dextools/pair",
+      "destination": "/api/lp-launches?dextools=pair"
+    },
+    {
+      "source": "/integrations/dextools/events",
+      "destination": "/api/lp-launches?dextools=events"
+    },
+    {
       "source": "/tokenlist.json",
       "destination": "/api/lp-launches?format=tokenlist"
     },

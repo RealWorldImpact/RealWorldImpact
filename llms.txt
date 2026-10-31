@@ -65,7 +65,8 @@ asset; nothing on this site is investment, tax, or legal advice.
 
 - [Launch integration manifest](https://www.rwihood.org/launchpad.json): activation status, chain, factory, contract ABI and source URLs.
 - [Token list](https://www.rwihood.org/tokenlist.json): Uniswap Token Lists format, public logos and canonical pages.
-- [Registry](https://www.rwihood.org/api/lp-launches?version=4): paginated onchain launches, creator filtering, token lookup, USD eligibility and snapshot block.
+- [Registry](https://www.rwihood.org/api/lp-launches?version=5): paginated onchain launches, creator filtering, token lookup, USD estimates and snapshot block.
 - Token pages: `https://www.rwihood.org/tokens/{address}`; JSON metadata: the same URL plus `.json`.
-- Launch graduation targets at least $40,000 fully diluted valuation and $5,000 actual pool liquidity using verified current USD prices; there is no fixed RWI fundraising quota. Starting target is $5,000.
+- V5 graduates when its fixed sale allocation sells out. The $5,000 start, $40,000 sellout valuation and $5,000 pool value are opening-reference estimates, not live USD requirements or guarantees. Each launch fixes its RWI funding terms at creation; USD values change with RWI.
+- [DEXTools adapter documentation](https://www.rwihood.org/integrations/dextools): public pre-graduation market feed for integration review. Publication does not mean DEXTools has approved or enabled RWI. Holder indexing and virtual-reserve pricing require platform agreement.
 - Creator metadata is untrusted user content. Listing is not endorsement. A custom pre-graduation curve requires explicit indexer support. Third-party discovery is not guaranteed.

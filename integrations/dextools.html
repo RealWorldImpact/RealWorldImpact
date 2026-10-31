@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080a08"><title>DEXTools integration · RWI Launch</title><meta name="description" content="Public market data for RWI bonding-curve launches. Candidate DEXTools integration; onboarding is pending."><link rel="canonical" href="https://www.rwihood.org/integrations/dextools"><link rel="icon" href="/assets/rwi-favicon.png" type="image/png"><link rel="stylesheet" href="/assets/launch-token.css"><link rel="stylesheet" href="/assets/dextools-integration.css"><link rel="stylesheet" href="/assets/site-header.css?v=20261029"><script src="/assets/site-header.js?v=20261029" defer></script></head><body>
+<header id="siteHeader">
+  <div class="site-strip">
+    <div class="wp-left">
+      <a class="wp-brand" href="/">Real World Impact</a>
+      <span>RWI&nbsp;<span id="ticker" aria-live="polite"></span></span>
+    </div>
+    <nav class="links" aria-label="Primary navigation" data-i18n-aria-label="common.primaryNav">
+      <a href="/#ledger" data-site-label="0">Impact</a>
+      <a href="/#rewards" data-site-label="1">Rewards</a>
+      <a href="/docs" data-site-label="2">Docs</a>
+      <a href="/vote" data-site-label="3">Vote</a>
+      <details class="nav-more"><summary data-site-label="4">More</summary><div class="nav-external">
+      <a href="/LP">LP</a>
+      <a href="https://dexscreener.com/robinhood/0xDa2598c976E62E7E15DcCa75169B404712E48B04" target="_blank" rel="noopener" aria-label="Dexscreener" title="Dexscreener">Dexscreener</a>
+      <a href="https://www.coingecko.com/en/coins/real-world-impact" target="_blank" rel="noopener" aria-label="CoinGecko" title="CoinGecko">CoinGecko</a>
+      <a href="https://t.me/RWIonRobinhood" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram">Telegram</a>
+      <a href="https://x.com/RWIrobinhood" target="_blank" rel="noopener" aria-label="X" title="X">X</a>
+      </div></details>
+    </nav>
+  </div>
+</header>
+<main><a class="back" href="/launch">Back to launches</a><article>
+<span class="integration-status">Candidate integration · DEXTools onboarding pending</span>
+<div class="integration-identity"><img src="/assets/rwi-logo.webp" width="58" height="58" alt="RWI"><div><p class="eyebrow">PUBLIC MARKET DATA · ROBINHOOD CHAIN</p><h1>Discovery before graduation.</h1></div></div>
+<p class="integration-copy">RWI Launch exposes token creations and real bonding-curve trades through a public HTTP adapter. It is built for DEXTools integration review. Publishing this feed does not automatically list tokens on DEXTools.</p>
+<div class="actions"><a class="primary" href="/integrations/dextools-request.txt">Integration request</a><a href="/integrations/dextools-verification.json">Verification evidence</a><a href="https://github.com/dextools-io/integration-sdk/tree/main/http-adapter" rel="noopener">Official DEXTools specification</a></div>
+<section class="integration-section"><h2>Try the market feed</h2><p>These examples use TEST, an existing V5 launch still on its bonding curve. Requests are read-only and require no wallet.</p>
+<div class="endpoint-list">
+<a href="/integrations/dextools/latest-block"><code>/latest-block</code><span>Latest finalized block available to the feed.</span></a>
+<a href="/integrations/dextools/block?number=102872125"><code>/block</code><span>Block header by number or timestamp.</span></a>
+<a href="/integrations/dextools/asset?id=0x82e2b12864e04488f6a6a2602b30b11bb53cba91"><code>/asset</code><span>Token name, symbol, supply and uploaded logo.</span></a>
+<a href="/integrations/dextools/exchange?id=0xC62Df02C2D09431A03F9022b979cdbB77BcA58Ed"><code>/exchange</code><span>RWI Launch Curves venue metadata.</span></a>
+<a href="/integrations/dextools/pair?id=0x82e2b12864e04488f6a6a2602b30b11bb53cba91"><code>/pair</code><span>TEST / RWI curve identity and lifecycle.</span></a>
+<a href="/integrations/dextools/events?fromBlock=102873230&amp;toBlock=102873230"><code>/events</code><span>A verified buy: actual amounts, fees and accounted reserves.</span></a>
+</div></section>
+<section class="integration-section"><h2>Integration details</h2><dl><dt>Network</dt><dd>Robinhood Chain mainnet · chain ID 4663</dd><dt>Factory</dt><dd class="address">0xC62Df02C2D09431A03F9022b979cdbB77BcA58Ed</dd><dt>Start block</dt><dd>102689068</dd><dt>Pair identifier</dt><dd>The launched token address identifies its curve inside the factory. It is not a separate Uniswap pair contract.</dd><dt>Assets</dt><dd>Asset 0: launched token. Asset 1: RWI. ETH trades route through RWI.</dd><dt>History</dt><dd>Inclusive requests of up to 256 blocks. Activity appears after RPC finalization; this may take several minutes.</dd><dt>Specification</dt><dd>DEXTools HTTP adapter 0.0.1, commit <code>a868b1aed7d31c835b351c3cb7d39cc5bc5e34b1</code>.</dd></dl></section>
+<section class="integration-section"><h2>Pricing and liquidity</h2><p>Swap amounts reflect actual RWI spent or received, with the curve fee reported separately. Display execution prices from those amounts. The marginal curve price before fees is <code>(phantom RWI + real RWI reserve) / curve token inventory</code>.</p><p>Reported reserves contain only accounted curve tokens and real RWI. Phantom RWI, fee rewards, unsolicited transfers and unused supply are excluded. The ratio of real reserves alone is not the curve price. There is no fabricated initial liquidity or trade volume.</p><p>Graduation occurs when the fixed sale allocation is bought out. The $5,000 start, $40,000 graduation valuation and $5,000 graduated pool are opening estimates, not guaranteed future dollar values.</p></section>
+<section class="integration-section"><h2>Items for DEXTools review</h2><ul>
+<li><strong>Venue onboarding:</strong> DEXTools must accept and enable this custom curve integration before its tokens can appear there.</li>
+<li><strong>Holder distribution:</strong> <code>/asset/holders</code> returns 501. DEXTools can use its EVM holder index, or agree on an exact fractional-balance format. Holder counts are not fabricated.</li>
+<li><strong>Pricing:</strong> confirm support for execution prices and virtual curve pricing without treating phantom reserves as funded liquidity.</li>
+<li><strong>Graduation:</strong> pair metadata and the <code>rwiMigrations</code> extension identify the actual graduated v4 pool. DEXTools must agree on the chart handoff; the adapter does not invent join or exit events.</li>
+<li><strong>Hosting:</strong> this adapter uses public RPC history and bounded in-memory caches. Cold replay is limited to 6.4 million blocks and 10,000 events per token. Larger histories require a persistent index. Incomplete or unverifiable responses fail instead of returning partial data.</li>
+</ul></section>
+<section class="integration-section"><h2>Public references</h2><nav class="links" aria-label="Integration references"><a href="/launchpad.json">Launch registry &amp; contracts</a><a href="/tokenlist.json">Token list</a><a href="/tokens/0x82e2b12864e04488f6a6a2602b30b11bb53cba91">TEST token</a><a href="/contracts/launch-v5/source-verification.json">Source verification</a><a href="https://github.com/dextools-io/community-requests" rel="noopener">DEXTools community requests</a></nav></section>
+</article></main><footer><a href="/">Real World Impact</a> · Public integration documentation. DEXTools approval and listing are not implied.</footer></body></html>

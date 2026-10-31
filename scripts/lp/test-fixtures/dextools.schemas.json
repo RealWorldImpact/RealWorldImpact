@@ -1,0 +1,431 @@
+{
+  "components": {
+    "schemas": {
+      "Block": {
+        "type": "object",
+        "description": "Block schema",
+        "properties": {
+          "blockNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of the block",
+            "minimum": 0,
+            "example": 327637
+          },
+          "blockTimestamp": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "Timestamp (in seconds) the block was confirmed at",
+            "example": 1722317170
+          }
+        },
+        "required": [
+          "blockNumber",
+          "blockTimestamp"
+        ]
+      },
+      "Asset": {
+        "type": "object",
+        "description": "Token schema",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Address of the token",
+            "example": "lzvjb-wyaaa-aaaam-qarua-cai"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the token",
+            "example": "BOX DIP-20"
+          },
+          "symbol": {
+            "type": "string",
+            "description": "Symbol of the token",
+            "example": "BOX"
+          },
+          "totalSupply": {
+            "type": "string",
+            "description": "Total supply of the token at current time",
+            "pattern": "^\\d+(?:\\.\\d+)$",
+            "example": "1008423.949810"
+          },
+          "circulatingSupply": {
+            "type": "string",
+            "description": "Circulating supply of the token at current time",
+            "pattern": "^\\d+(?:\\.\\d+)$",
+            "example": "1008423.949810"
+          },
+          "holdersCount": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "Total number of holders of the token",
+            "example": 1008423
+          }
+        }
+      },
+      "AssetHolders": {
+        "type": "object",
+        "description": "List of token holders schema",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Address of the token",
+            "example": "lzvjb-wyaaa-aaaam-qarua-cai"
+          },
+          "totalHoldersCount": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "Total number of holders owning the requested token",
+            "example": 255
+          },
+          "holders": {
+            "type": "array",
+            "description": "List of holders owning the token, sorted in descending order of importance.",
+            "items": {
+              "$ref": "#/components/schemas/AssetHolder"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "totalHoldersCount",
+          "holders"
+        ]
+      },
+      "AssetHolder": {
+        "type": "object",
+        "description": "Holder of tokens schema",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Address of the holder",
+            "example": "0x000000000000084e91743124a982076c59f10084"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "Number of tokens held by this address",
+            "example": 1234122
+          }
+        },
+        "required": [
+          "address",
+          "quantity"
+        ]
+      },
+      "Pair": {
+        "type": "object",
+        "description": "Pair schema",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Address of the pair",
+            "example": "qi26q-6aaaa-aaaap-qapeq-cai:utozz-siaaa-aaaam-qaaxq-cai"
+          },
+          "asset0Id": {
+            "type": "string",
+            "description": "Address of the first token of the pair",
+            "example": "qi26q-6aaaa-aaaap-qapeq-cai"
+          },
+          "asset1Id": {
+            "type": "string",
+            "description": "Address of the second token of the pair",
+            "example": "utozz-siaaa-aaaam-qaaxq-cai"
+          },
+          "createdAtBlockNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of block the pair was created at",
+            "minimum": 0,
+            "example": 255592
+          },
+          "createdAtBlockTimestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Timestamp (in seconds) of the block the pair was created at",
+            "minimum": 0,
+            "example": 16662454363
+          },
+          "createdAtTxnId": {
+            "type": "string",
+            "description": "Hash of the transaction the pair was created at",
+            "example": 255592
+          },
+          "factoryAddress": {
+            "type": "string",
+            "description": "Address of the smart contract used to create the pair",
+            "example": "3xwpq-ziaaa-aaaah-qcn4a-cai"
+          }
+        },
+        "required": [
+          "id",
+          "asset0Id",
+          "asset1Id",
+          "createdAtBlockNumber",
+          "createdAtBlockTimestamp",
+          "createdAtTxnId",
+          "factoryAddress"
+        ]
+      },
+      "Event": {
+        "type": "object",
+        "description": "Event schema",
+        "properties": {
+          "block": {
+            "$ref": "#/components/schemas/Block"
+          },
+          "txnId": {
+            "type": "string",
+            "description": "Hash of the transaction the event belongs to",
+            "example": "0x34ec7"
+          },
+          "txnIndex": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Index of the transaction the event belongs to",
+            "minimum": 0,
+            "example": 216775
+          },
+          "eventIndex": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Index of the event inside the block. This will be used to sort events and must be unique for all events inside a block.",
+            "minimum": 0,
+            "example": 216775
+          },
+          "maker": {
+            "type": "string",
+            "description": "Address of the wallet who request the transaction",
+            "example": "gforl-dm7ty-dstlf-enaa5-xd474-k4tlm-xxfoq-fgg6x-omjk4-te3mv-xqe"
+          },
+          "pairId": {
+            "type": "string",
+            "description": "Address of the pair involved in the transaction",
+            "example": "rd6wb-lyaaa-aaaaj-acvla-cai:utozz-siaaa-aaaam-qaaxq-cai"
+          },
+          "eventType": {
+            "type": "string",
+            "description": "Type of event (creation -> Pair created; swap -> Swap; join -> Add liquidity; exit -> Remove liquidity)",
+            "enum": [
+              "creation",
+              "swap",
+              "join",
+              "exit"
+            ]
+          },
+          "amount0": {
+            "type": "string",
+            "description": "Only for joins and exits: Number of tokens of asset0 added to the pool",
+            "pattern": "^\\d+(?:\\.\\d+)$",
+            "example": "1.00000000"
+          },
+          "amount1": {
+            "type": "string",
+            "description": "Only for joins and exits: Number of tokens of asset1 added to the pool",
+            "pattern": "^\\d+(?:\\.\\d+)$",
+            "example": "0.00604151"
+          },
+          "asset0In": {
+            "type": "string",
+            "description": "Only for swaps: Number of tokens of asset0 sold",
+            "pattern": "^\\d+(?:\\.\\d+)$",
+            "example": "1.00000000"
+          },
+          "asset1Out": {
+            "type": "string",
+            "description": "Only for swaps: Number of tokens of asset1 bought",
+            "pattern": "^\\d+(?:\\.\\d+)$",
+            "example": "0.00604151"
+          },
+          "asset0Out": {
+            "type": "string",
+            "description": "Only for swaps: Number of tokens of asset0 bought",
+            "pattern": "^\\d+(?:\\.\\d+)$",
+            "example": "1.00000000"
+          },
+          "asset1In": {
+            "type": "string",
+            "description": "Only for swaps: Number of tokens of asset1 sold",
+            "pattern": "^\\d+(?:\\.\\d+)$",
+            "example": "0.00604151"
+          },
+          "reserves": {
+            "type": "object",
+            "description": "Only for joins, exists and swaps: Reserves of each token remaining after the event has been executed",
+            "properties": {
+              "asset0": {
+                "type": "string",
+                "description": "Reserves of token asset0",
+                "pattern": "^\\d+(?:\\.\\d+)$",
+                "example": "10049651.98319796"
+              },
+              "asset1": {
+                "type": "string",
+                "description": "Reserves of token asset1",
+                "pattern": "^\\d+(?:\\.\\d+)$",
+                "example": "60897.81801559"
+              }
+            },
+            "required": [
+              "asset0",
+              "asset1"
+            ]
+          }
+        },
+        "required": [
+          "block",
+          "txnId",
+          "txnIndex",
+          "eventIndex",
+          "maker",
+          "pairId",
+          "eventType"
+        ]
+      },
+      "Exchange": {
+        "type": "object",
+        "description": "Exchange schema",
+        "properties": {
+          "factoryAddress": {
+            "type": "string",
+            "description": "Address of the factory contract",
+            "example": "lzvjb-wyaaa-aaaam-qarua-cai"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the exchange",
+            "example": "Uniswap V99"
+          },
+          "logoURL": {
+            "type": "string",
+            "description": "URL of exchange Logo",
+            "example": "https://mydex.com/logo.png"
+          }
+        },
+        "required": [
+          "factoryAddress",
+          "name"
+        ]
+      },
+      "ResponseOfBlock": {
+        "type": "object",
+        "description": "Response of the endpoints that return a single block",
+        "properties": {
+          "block": {
+            "$ref": "#/components/schemas/Block"
+          }
+        },
+        "required": [
+          "block"
+        ]
+      },
+      "ResponseOfAsset": {
+        "type": "object",
+        "description": "Response of the endpoints that return a single token",
+        "properties": {
+          "asset": {
+            "$ref": "#/components/schemas/Asset"
+          }
+        },
+        "required": [
+          "asset"
+        ]
+      },
+      "ResponseOfAssetHolders": {
+        "type": "object",
+        "description": "Response of the endpoint that return a list of holders of a token",
+        "properties": {
+          "asset": {
+            "$ref": "#/components/schemas/AssetHolders"
+          }
+        },
+        "required": [
+          "asset"
+        ]
+      },
+      "ResponseOfExchange": {
+        "type": "object",
+        "description": "Response of the endpoints that return a single exchange",
+        "properties": {
+          "exchange": {
+            "$ref": "#/components/schemas/Exchange"
+          }
+        },
+        "required": [
+          "exchange"
+        ]
+      },
+      "ResponseOfPair": {
+        "type": "object",
+        "description": "Response of the endpoints that return a single pair",
+        "properties": {
+          "pair": {
+            "$ref": "#/components/schemas/Pair"
+          }
+        },
+        "required": [
+          "pair"
+        ]
+      },
+      "ResponseOfEvents": {
+        "type": "object",
+        "description": "Response of the /events endpoint",
+        "properties": {
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Event"
+            }
+          }
+        },
+        "required": [
+          "events"
+        ]
+      },
+      "Issue": {
+        "type": "object",
+        "description": "Schema of error details",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "param": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ResponseOfError": {
+        "type": "object",
+        "description": "Schema of all error responses",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Issue"
+            }
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+DEXTools response schemas, extracted without semantic modification from:
+https://github.com/dextools-io/integration-sdk/blob/a868b1aed7d31c835b351c3cb7d39cc5bc5e34b1/http-adapter/http-adapter-specification.yml
+Retrieved 2026-10-31. Official specification version 0.0.1.
+The upstream specification declares Apache License 2.0 in info.license.
+See dextools.LICENSE. Only components.schemas is retained as JSON for validation.

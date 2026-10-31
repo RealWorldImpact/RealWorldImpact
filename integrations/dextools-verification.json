@@ -1,0 +1,102 @@
+{
+  "checkedAt": "2026-10-31T22:03:52.039Z",
+  "mode": "local-adapter-mainnet-rpc",
+  "chainId": 4663,
+  "factory": "0xc62df02c2d09431a03f9022b979cdbb77bca58ed",
+  "token": "0x82e2b12864e04488f6a6a2602b30b11bb53cba91",
+  "adapterBase": "https://www.rwihood.org/integrations/dextools",
+  "finalizedBlock": {
+    "blockNumber": 102877324,
+    "blockTimestamp": 1793483299
+  },
+  "finalizedBlockHash": "0x117c4846eafbe766145c6f6814804e41c6097ef55e3240c2c3668455ff786cdb",
+  "checks": {
+    "https://www.rwihood.org/integrations/dextools/latest-block?": "passed",
+    "https://www.rwihood.org/integrations/dextools/exchange?id=0xc62df02c2d09431a03f9022b979cdbb77bca58ed": "passed",
+    "https://www.rwihood.org/integrations/dextools/asset?id=0x82e2b12864e04488f6a6a2602b30b11bb53cba91": "passed",
+    "https://www.rwihood.org/integrations/dextools/pair?id=0x82e2b12864e04488f6a6a2602b30b11bb53cba91": "passed",
+    "https://www.rwihood.org/integrations/dextools/block?number=102872125": "passed",
+    "https://www.rwihood.org/integrations/dextools/block?timestamp=1793482768": "passed",
+    "https://www.rwihood.org/integrations/dextools/events?fromBlock=102872125&toBlock=102872125": "passed",
+    "https://www.rwihood.org/integrations/dextools/events?fromBlock=102873230&toBlock=102873230": "passed",
+    "https://www.rwihood.org/integrations/dextools/events?fromBlock=102874724&toBlock=102874724": "passed"
+  },
+  "samples": [
+    {
+      "kind": "creation",
+      "blockHash": "0x4e3d9ecd618163b2ceed822627d90cc098bcbbbf9e59611f91cb0c9e1866ad88",
+      "event": {
+        "block": {
+          "blockNumber": 102872125,
+          "blockTimestamp": 1793482768
+        },
+        "txnId": "0x399282480cb2a3fd89601211babe42e175591f674591af999e6cf6b8c96be2bc",
+        "txnIndex": 2,
+        "eventIndex": 3,
+        "maker": "0x9cd7c9196a4c1836a3df089cb210272e07e6a5e5",
+        "pairId": "0x82e2b12864e04488f6a6a2602b30b11bb53cba91",
+        "eventType": "creation"
+      }
+    },
+    {
+      "kind": "buy",
+      "blockHash": "0x040e03371e0192ca8387c68e1d2a14df1d3fa537e265a5dcda4c48f2a8ae1a28",
+      "event": {
+        "block": {
+          "blockNumber": 102873230,
+          "blockTimestamp": 1793482880
+        },
+        "txnId": "0x10449cff86b7a8cc8336ae283404da77fee99b92e3abff8cc2732b83c15519f5",
+        "txnIndex": 1,
+        "eventIndex": 6,
+        "maker": "0x9cd7c9196a4c1836a3df089cb210272e07e6a5e5",
+        "pairId": "0x82e2b12864e04488f6a6a2602b30b11bb53cba91",
+        "eventType": "swap",
+        "asset1In": "77672.236817498552460122",
+        "asset0Out": "420050.655778005819058854",
+        "reserves": {
+          "asset0": "273040123.519556928725541146",
+          "asset1": "74565.347344798610361718"
+        },
+        "rwiCurve": {
+          "trader": "0x9cd7c9196a4c1836a3df089cb210272e07e6a5e5",
+          "feeRwi": "3106.889472699942098404",
+          "reserveBasis": "real-accounted-reserves"
+        }
+      }
+    },
+    {
+      "kind": "sell",
+      "blockHash": "0x78c0c1feede30d7aae0f9a5dcc36f6038fb40f39e6242e1cb5926537ea702ca0",
+      "event": {
+        "block": {
+          "blockNumber": 102874724,
+          "blockTimestamp": 1793483031
+        },
+        "txnId": "0xe5ff37bf5e52893cfeeedff84f2c7d72f16b3e391c954a48393de9c9169cd2ef",
+        "txnIndex": 2,
+        "eventIndex": 13,
+        "maker": "0x9cd7c9196a4c1836a3df089cb210272e07e6a5e5",
+        "pairId": "0x82e2b12864e04488f6a6a2602b30b11bb53cba91",
+        "eventType": "swap",
+        "asset0In": "420050.655778005819058854",
+        "asset1Out": "71582.733451006665947249",
+        "reserves": {
+          "asset0": "273460174.1753349345446",
+          "asset1": "0.000000000000000001"
+        },
+        "rwiCurve": {
+          "trader": "0x9cd7c9196a4c1836a3df089cb210272e07e6a5e5",
+          "feeRwi": "2982.613893791944414468",
+          "reserveBasis": "real-accounted-reserves"
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "DEXTools onboarding is not approved by this verification.",
+    "Holder distribution requires DEXTools EVM indexing or an agreed balance format.",
+    "Virtual-reserve pricing and graduation handoff require DEXTools integration review.",
+    "RPC availability and cold replay limits apply; this is not an independent audit."
+  ]
+}
