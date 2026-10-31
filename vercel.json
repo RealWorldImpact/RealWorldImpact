@@ -4,6 +4,11 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/launch",
+      "destination": "/LP?tab=launch",
+      "permanent": true
+    },
+    {
       "source": "/whitepaper",
       "destination": "/docs",
       "permanent": true
