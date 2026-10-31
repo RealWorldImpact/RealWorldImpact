@@ -1,3 +1,4 @@
+import { createProfileIdentity } from './profile-identity.js';
 import { graduationProgress, launchStage } from './launch-v5-model.js';
 import { Contract, formatUnits } from 'ethers';
 import * as P from './protocol.js';
@@ -10,15 +11,15 @@ import { creatorLaunches, ownsProfile, profileAddress, profileLink, sumKnown } f
 
 const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const short=a=>a.slice(0,6)+'…'+a.slice(-4),eth=n=>Number(formatUnits(n,18)).toLocaleString('en-US',{maximumSignificantDigits:7})+' ETH';
-export function createProfileController({rpc,getSubject,getAccount,isBusy,onNavigate,onConnect,onLaunch,onClaim}){
+export function createProfileController({rpc,getSubject,getAccount,getSession,getSigner,isBusy,onNavigate,onConnect,onLaunch,onClaim}){
   let subject=null,generation=0,visible=false,timer=null,inflight=null,launches=[],launchesLoaded=false,rewards=new Map(),cancelArtwork=[],holdings=[],cancelHoldings=[];
   const artwork=createTokenArtwork(),factory=LAUNCH_V5_FACTORY?new Contract(LAUNCH_V5_FACTORY,LAUNCH_V5_ABI,rpc):null;
+  const publicIdentity=createProfileIdentity({getSubject:()=>subject,getAccount,getSession,getSigner,isBusy});
   const current=(who,epoch)=>who===subject&&epoch===generation;
   function identity(){
     const owner=ownsProfile(subject,getAccount());
     $('profileTitle').textContent=subject?owner?'Your profile':short(subject):'Your wallet. Your impact.';
     $('profileAddress').textContent=subject||'Connect a wallet or explore a public profile.';
-    $('profileAvatar').textContent=subject?subject.slice(2,4).toUpperCase():'RWI';
     $('profileBadge').textContent=subject?'PUBLIC PROFILE · ROBINHOOD CHAIN':'ROBINHOOD CHAIN';
     $('profileShare').hidden=!subject;$('profileCopy').hidden=!subject;$('profileExplorer').hidden=!subject;
     if(subject)$('profileExplorer').href='https://robin.etherscan.io/address/'+subject;
@@ -28,6 +29,7 @@ export function createProfileController({rpc,getSubject,getAccount,isBusy,onNavi
     $('profileImport').hidden=!owner;
     $('profileClaimHelp').textContent=owner?'Claim each launch’s accrued rewards in ETH. Your wallet reviews every claim.':subject?'Launches and rewards are public. Only the creator wallet can claim.':'Connect your creator wallet to manage launches and claim ETH rewards.';
     if(document.activeElement!==$('profileLookupAddress'))$('profileLookupAddress').value=subject||'';
+    publicIdentity.sync();
   }
   function stat(id,value,note){$(id).textContent=value;$(id+'Note').textContent=note;}
   function renderLaunches(){
@@ -97,11 +99,11 @@ export function createProfileController({rpc,getSubject,getAccount,isBusy,onNavi
     }
     identity();renderLaunches();updateDisabled();if(visible)load();
   }
-  function updateDisabled(){document.querySelectorAll('[data-profile-claim]').forEach(b=>{const t=launches.find(t=>t.address===b.dataset.profileClaim);b.disabled=isBusy()||!ownsProfile(subject,getAccount())||!t||BigInt(t.rewardRwi)===0n;});}
+  function updateDisabled(){publicIdentity.updateDisabled();document.querySelectorAll('[data-profile-claim]').forEach(b=>{const t=launches.find(t=>t.address===b.dataset.profileClaim);b.disabled=isBusy()||!ownsProfile(subject,getAccount())||!t||BigInt(t.rewardRwi)===0n;});}
   async function load(){
     if(!subject||!visible||isBusy())return;if(inflight)return inflight;
     const who=subject,epoch=generation;
-    const work=Promise.allSettled([loadHoldings(who,epoch),loadLaunches(who,epoch)]);inflight=work;await work;
+    const work=Promise.allSettled([loadHoldings(who,epoch),loadLaunches(who,epoch),publicIdentity.load()]);inflight=work;await work;
     if(current(who,epoch))inflight=null;
   }
   function watch(active){visible=active;clearTimeout(timer);if(active){sync();timer=setTimeout(()=>watch(true),45000);}}
