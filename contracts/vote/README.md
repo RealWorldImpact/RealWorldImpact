@@ -26,11 +26,19 @@ node scripts/test_vote_native.mjs
 node scripts/test_vote_contract.mjs
 node scripts/test_bankr_ballot.mjs
 node scripts/test_vote_safety.mjs
+node scripts/test_vote_setup.mjs
 ```
 
 Native tests run an in-process Hardhat chain, with no mainnet writes. Review the
 public report at `/integrations/bankr-voting-v3-verification.json`. Passing local
 tests does not establish Bankr acceptance or eliminate every possible issue.
+
+Deployment recovery uses IndexedDB, so a full localStorage cache cannot block
+the setup. Existing v3 recovery keys are migrated without clearing site data.
+An atomic durable claim must succeed before the wallet is asked to sign. Later
+storage failures do not hide transaction hashes or confirmed results. The
+browser harness `scripts/test_vote_storage_browser.js` checks real IndexedDB in
+isolated, automatically cleaned-up databases on localhost; no wallet is used.
 
 ## Deployment and activation
 
