@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 // Render at 2x before reducing so the fine orbit lines and type stay crisp.
 // Use the site's original logo, rather than recreating the RWI lettering.
-const output = new URL('../assets/share/og-lp-v1.png', import.meta.url);
+const output = new URL('../assets/share/og-lp-v2.png', import.meta.url);
 const logo = await sharp(fileURLToPath(new URL('../assets/rwi-logo.webp', import.meta.url)))
   .png().toBuffer();
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
@@ -30,12 +30,12 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.
   <path d="M64 96H126" stroke="#ccfe06" stroke-width="3"/>
 
   <text x="64" y="60" fill="#f1f2e9" font-family="Courier New,monospace" font-size="21" letter-spacing="2">REAL WORLD IMPACT</text>
-  <text x="1136" y="60" text-anchor="end" fill="#a4af98" font-family="Courier New,monospace" font-size="16" letter-spacing="1.5">LAUNCH / LIQUIDITY / PROFILE</text>
+  <text x="1136" y="60" text-anchor="end" fill="#a4af98" font-family="Courier New,monospace" font-size="16" letter-spacing="1.5">RWI LIQUIDITY POOLS</text>
 
   <text x="56" y="343" fill="#ccfe06" font-family="Georgia,serif" font-size="278" font-weight="bold" letter-spacing="-18">LP</text>
   <g fill="#f1f2e9" font-family="Arial,sans-serif" font-size="43" letter-spacing="-1.3">
-    <text x="66" y="416">Launch tokens.</text>
-    <text x="66" y="468">Build liquidity.</text>
+    <text x="66" y="416">Provide liquidity.</text>
+    <text x="66" y="468">Own your position.</text>
   </g>
 
   <g fill="none">
