@@ -86,6 +86,6 @@ Bankr submission has been confirmed by the user. Four successful vote calls
 were independently validated against canonical receipts, matching VoteCast
 events, current ballot membership, and live RWI balances. The website counts
 the latest valid choice once per wallet. This confirms the tested direct-wallet
-flow; Bankr continues to enforce each account’s security settings.
+flow; Bankr continues to enforce each accountâ€™s security settings.
 The legacy v2 report proves only its EVM behavior; Bankr rejected that transport,
 so it must not be submitted through Bankr.
