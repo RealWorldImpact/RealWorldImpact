@@ -2,8 +2,9 @@
 
 Status: deployed, source verified, and active on Robinhood Chain at
 `0x5C35a0b01ACC4f83238D9ab420e505133d92d832`, block 102960400.
-See deployment.json and the public mainnet verification report. A real
-Bankr vote still needs to confirm end-to-end acceptance.
+See deployment.json and the public mainnet verification report. The user has
+confirmed successful Bankr submission; on-chain receipts and the website reader
+independently verified the votes and latest-choice behavior.
 
 Bankr rejects the old ERC-20 transfer selector even when the amount is zero.
 RWICommunityVote replaces that operation with standard `vote(uint64,string)`.

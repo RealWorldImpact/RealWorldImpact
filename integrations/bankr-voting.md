@@ -82,7 +82,10 @@ verified the source; its source text and ABI match our published build. The
 mainnet verification report is:
 https://www.rwihood.org/integrations/bankr-voting-v3-mainnet-verification.json
 
-The Bankr submission flow still needs a user-authorized vote test. Do not claim
-Bankr acceptance until a successful receipt and counted vote are confirmed.
+Bankr submission has been confirmed by the user. Four successful vote calls
+were independently validated against canonical receipts, matching VoteCast
+events, current ballot membership, and live RWI balances. The website counts
+the latest valid choice once per wallet. This confirms the tested direct-wallet
+flow; Bankr continues to enforce each account’s security settings.
 The legacy v2 report proves only its EVM behavior; Bankr rejected that transport,
 so it must not be submitted through Bankr.

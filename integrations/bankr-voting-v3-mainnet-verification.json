@@ -18,5 +18,13 @@
   "explorerSourceMatches": true,
   "explorerAbiMatches": true,
   "mainnetValueSentWei": "0",
-  "bankrEndToEndVerified": false
+  "bankrEndToEndVerified": true,
+  "bankrVerification": {
+    "checkedAt": "2026-11-01T01:18:21.774Z",
+    "basis": "User-confirmed Bankr success, with independent on-chain receipt and website vote-reader validation.",
+    "confirmedVoteTransactions": 4,
+    "latestVerifiedVoteTransaction": "0xe421cfa30607297df34bc28c84dd22c2b37a143816cb8d2842c41ac1be73cd0d",
+    "latestChoicePerWalletVerified": true,
+    "publicTallyObserved": true
+  }
 }
