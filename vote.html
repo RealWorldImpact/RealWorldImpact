@@ -48,9 +48,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — How the tally works',
     'vote.s3.title':'Countable by anyone.',
-    'vote.how1a':"Your wallet calls the deployed RWI token contract with a zero-token transfer and",
-    'vote.how1b':'attached to the call. Your RWI stays in your wallet; you pay only gas.',
-    'vote.how2':'The page verifies inbox votes and zero-token contract votes, decodes the choices, and keeps the most recent vote per wallet.',
+    'vote.how1a':"Your wallet records your charity choice on Robinhood Chain. Your RWI stays in your wallet; you pay only network gas.",
+    'vote.how2':"The page verifies confirmed votes across supported formats and keeps each wallet’s latest valid choice.",
     'vote.how3':'Each wallet\'s weight is its live $RWI balance, read from the token contract. Wallets holding nothing carry no weight.',
     'vote.how4':'Totals are recomputed in your browser. No server sits in the middle, so you never have to trust this page — re-run the same reads yourself.',
     'vote.addr.box':'Ballot box:',
@@ -172,9 +171,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Cómo funciona el recuento',
     'vote.s3.title':'Contable por cualquiera.',
-    'vote.how1a':"Tu billetera llama al contrato del token RWI con una transferencia de cero tokens y",
-    'vote.how1b':'en el campo de datos. Solo pagas gas.',
-    'vote.how2':'La página lee todas las transacciones enviadas a esa dirección, decodifica las elecciones y conserva el voto más reciente por billetera.',
+    'vote.how1a':"Tu billetera registra la organización elegida en Robinhood Chain. Tu RWI permanece en tu billetera; solo pagas gas.",
+    'vote.how2':"La página verifica los votos confirmados en los formatos admitidos y conserva la última elección válida de cada billetera.",
     'vote.how3':'El peso de cada billetera es su saldo $RWI en vivo, leído del contrato del token. Las billeteras sin saldo no tienen peso.',
     'vote.how4':'Los totales se recalculan en tu navegador. No hay servidor en el medio, así que nunca tienes que confiar en esta página — repite las mismas lecturas tú mismo.',
     'vote.addr.box':'Urna:',
@@ -295,9 +293,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — 统计如何运作',
     'vote.s3.title':'任何人都能统计。',
-    'vote.how1a':"你的钱包调用已部署的 RWI 代币合约，转账数量为零，并附加",
-    'vote.how1b':'写在 data 字段中。你只需支付 gas。',
-    'vote.how2':'页面读取曾发送到该地址的每一笔交易,解码其中的选择,并保留每个钱包最新的一票。',
+    'vote.how1a':"你的钱包会在 Robinhood Chain 上记录你选择的慈善机构。RWI 仍留在你的钱包中；你只需支付网络 gas 费用。",
+    'vote.how2':"页面会验证所有受支持格式的已确认投票，并保留每个钱包最新的有效选择。",
     'vote.how3':'每个钱包的权重是其实时 $RWI 余额,从代币合约读取。持有为零的钱包没有权重。',
     'vote.how4':'总计在你的浏览器中重新计算。中间没有服务器,所以你无需信任本页面 — 你可以自行重跑同样的读取。',
     'vote.addr.box':'投票箱:',
@@ -418,9 +415,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — 集計の仕組み',
     'vote.s3.title':'誰でも数えられる。',
-    'vote.how1a':"ウォレットはデプロイ済みの RWI トークンコントラクトを呼び出し、送金額をゼロにして",
-    'vote.how1b':'を data フィールドに含めます。支払うのはガス代のみです。',
-    'vote.how2':'ページはそのアドレスに送られた全トランザクションを読み、選択をデコードし、ウォレットごとに最新の投票を残します。',
+    'vote.how1a':"ウォレットは選んだ慈善団体を Robinhood Chain に記録します。RWI はウォレットに残り、支払うのはネットワークのガス代のみです。",
+    'vote.how2':"ページは対応する形式の確定済み投票を検証し、各ウォレットの最新の有効な選択を集計します。",
     'vote.how3':'各ウォレットの重みは、トークンコントラクトから読み取ったライブ $RWI 残高です。残高ゼロのウォレットは重みを持ちません。',
     'vote.how4':'合計はあなたのブラウザで再計算されます。間にサーバーはないので、このページを信頼する必要はありません — 同じ読み取りを自分で再実行できます。',
     'vote.addr.box':'投票箱:',
@@ -541,9 +537,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — 집계 방식',
     'vote.s3.title':'누구나 셀 수 있습니다.',
-    'vote.how1a':"지갑은 배포된 RWI 토큰 계약에 토큰 수량이 0인 전송을 호출하고 다음 내용을 첨부합니다:",
-    'vote.how1b':'를 data 필드에 담습니다. 가스비만 지불합니다.',
-    'vote.how2':'페이지는 해당 주소로 보내진 모든 거래를 읽고 선택을 디코딩하여 지갑별 최신 투표만 남깁니다.',
+    'vote.how1a':"지갑은 선택한 자선단체를 Robinhood Chain에 기록합니다. RWI는 지갑에 그대로 남으며 네트워크 가스비만 지불합니다.",
+    'vote.how2':"페이지는 지원되는 형식의 확정된 투표를 검증하고 각 지갑의 최신 유효 선택을 집계합니다.",
     'vote.how3':'각 지갑의 가중치는 토큰 컨트랙트에서 읽은 실시간 $RWI 잔액입니다. 보유가 없는 지갑은 가중치가 없습니다.',
     'vote.how4':'합계는 브라우저에서 다시 계산됩니다. 중간에 서버가 없으므로 이 페이지를 신뢰할 필요가 없습니다 — 같은 조회를 직접 실행해 보세요.',
     'vote.addr.box':'투표함:',
@@ -664,9 +659,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Como a contagem funciona',
     'vote.s3.title':'Contável por qualquer um.',
-    'vote.how1a':"Sua carteira chama o contrato do token RWI com uma transferência de zero tokens e",
-    'vote.how1b':'no campo de dados. Você paga apenas gas.',
-    'vote.how2':'A página lê todas as transações enviadas a esse endereço, decodifica as escolhas e mantém o voto mais recente por carteira.',
+    'vote.how1a':"Sua carteira registra a instituição escolhida na Robinhood Chain. Seu RWI permanece na carteira; você paga apenas gas.",
+    'vote.how2':"A página verifica os votos confirmados nos formatos aceitos e mantém a escolha válida mais recente de cada carteira.",
     'vote.how3':'O peso de cada carteira é seu saldo $RWI ao vivo, lido do contrato do token. Carteiras sem saldo não têm peso.',
     'vote.how4':'Os totais são recalculados no seu navegador. Nenhum servidor no meio, então você nunca precisa confiar nesta página — refaça as mesmas leituras você mesmo.',
     'vote.addr.box':'Urna:',
@@ -787,9 +781,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Comment le décompte fonctionne',
     'vote.s3.title':'Comptable par quiconque.',
-    'vote.how1a':"Votre portefeuille appelle le contrat du jeton RWI avec un transfert de zéro jeton et",
-    'vote.how1b':'dans le champ de données. Vous ne payez que le gas.',
-    'vote.how2':'La page lit chaque transaction envoyée à cette adresse, décode les choix et conserve le vote le plus récent par portefeuille.',
+    'vote.how1a':"Votre portefeuille enregistre votre choix sur Robinhood Chain. Vos RWI restent dans votre portefeuille ; vous ne payez que les frais de réseau.",
+    'vote.how2':"La page vérifie les votes confirmés dans les formats acceptés et retient le dernier choix valide de chaque portefeuille.",
     'vote.how3':'Le poids de chaque portefeuille est son solde $RWI en direct, lu depuis le contrat du token. Les portefeuilles vides n\'ont aucun poids.',
     'vote.how4':'Les totaux sont recalculés dans votre navigateur. Aucun serveur au milieu, vous n\'avez donc jamais à faire confiance à cette page — refaites vous-même les mêmes lectures.',
     'vote.addr.box':'Urne :',
@@ -910,9 +903,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Как работает подсчёт',
     'vote.s3.title':'Подсчитать может любой.',
-    'vote.how1a':"Ваш кошелёк вызывает контракт токена RWI с переводом нуля токенов и добавляет",
-    'vote.how1b':'в поле данных. Вы платите только за газ.',
-    'vote.how2':'Страница читает все транзакции, отправленные на этот адрес, декодирует выбор и оставляет самый свежий голос от каждого кошелька.',
+    'vote.how1a':"Кошелёк записывает выбранную благотворительную организацию в Robinhood Chain. RWI остаются в кошельке; вы платите только комиссию сети.",
+    'vote.how2':"Страница проверяет подтверждённые голоса в поддерживаемых форматах и учитывает последний действительный выбор каждого кошелька.",
     'vote.how3':'Вес каждого кошелька — его текущий баланс $RWI, считанный из контракта токена. Пустые кошельки веса не имеют.',
     'vote.how4':'Итоги пересчитываются в вашем браузере. Посередине нет сервера, поэтому доверять этой странице не нужно — повторите те же запросы сами.',
     'vote.addr.box':'Урна:',
@@ -1033,9 +1025,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Sayım nasıl çalışır',
     'vote.s3.title':'Herkes sayabilir.',
-    'vote.how1a':"Cüzdanınız, RWI token sözleşmesini sıfır token transferiyle çağırır ve şunu ekler:",
-    'vote.how1b':'veri alanında. Yalnızca gas ödersiniz.',
-    'vote.how2':'Sayfa o adrese gönderilmiş her işlemi okur, seçimleri çözer ve cüzdan başına en son oyu tutar.',
+    'vote.how1a':"Cüzdanınız seçtiğiniz yardım kuruluşunu Robinhood Chain üzerine kaydeder. RWI cüzdanınızda kalır; yalnızca ağ gas ücretini ödersiniz.",
+    'vote.how2':"Sayfa, desteklenen biçimlerdeki onaylanmış oyları doğrular ve her cüzdanın en son geçerli seçimini tutar.",
     'vote.how3':'Her cüzdanın ağırlığı, token sözleşmesinden okunan canlı $RWI bakiyesidir. Bakiyesi olmayan cüzdanlar ağırlık taşımaz.',
     'vote.how4':'Toplamlar tarayıcınızda yeniden hesaplanır. Arada sunucu yoktur, bu yüzden bu sayfaya güvenmek zorunda değilsiniz — aynı okumaları kendiniz yapın.',
     'vote.addr.box':'Oy sandığı:',
@@ -1156,9 +1147,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Cách kiểm đếm hoạt động',
     'vote.s3.title':'Ai cũng đếm được.',
-    'vote.how1a':"Ví của bạn gọi hợp đồng token RWI với lượng chuyển bằng không và đính kèm",
-    'vote.how1b':'trong trường dữ liệu. Bạn chỉ trả gas.',
-    'vote.how2':'Trang đọc mọi giao dịch từng gửi đến địa chỉ đó, giải mã lựa chọn, và giữ phiếu mới nhất cho mỗi ví.',
+    'vote.how1a':"Ví ghi lại tổ chức từ thiện bạn chọn trên Robinhood Chain. RWI vẫn ở trong ví; bạn chỉ trả phí gas mạng.",
+    'vote.how2':"Trang xác minh các phiếu đã được xác nhận theo định dạng hỗ trợ và giữ lựa chọn hợp lệ mới nhất của mỗi ví.",
     'vote.how3':'Trọng số của mỗi ví là số dư $RWI trực tiếp, đọc từ hợp đồng token. Ví không nắm giữ gì thì không có trọng số.',
     'vote.how4':'Tổng số được tính lại trong trình duyệt của bạn. Không có máy chủ ở giữa, nên bạn không phải tin trang này — hãy tự chạy lại đúng những truy vấn đó.',
     'vote.addr.box':'Hòm phiếu:',
@@ -1279,9 +1269,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — गणना कैसे काम करती है',
     'vote.s3.title':'कोई भी गिन सकता है।',
-    'vote.how1a':"आपका वॉलेट RWI टोकन अनुबंध को शून्य टोकन ट्रांसफ़र के साथ कॉल करता है और जोड़ता है",
-    'vote.how1b':'data फ़ील्ड में। आप केवल gas चुकाते हैं।',
-    'vote.how2':'पृष्ठ उस पते पर भेजे गए हर लेनदेन को पढ़ता है, चयनों को डिकोड करता है, और प्रति वॉलेट सबसे हालिया वोट रखता है।',
+    'vote.how1a':"आपका वॉलेट चुनी हुई संस्था को Robinhood Chain पर दर्ज करता है। आपका RWI वॉलेट में रहता है; आप केवल नेटवर्क गैस शुल्क चुकाते हैं।",
+    'vote.how2':"पृष्ठ समर्थित प्रारूपों में पुष्ट वोटों की जाँच करता है और हर वॉलेट की नवीनतम मान्य पसंद को गिनता है।",
     'vote.how3':'हर वॉलेट का वजन उसका लाइव $RWI शेष है, जो टोकन अनुबंध से पढ़ा जाता है। जिन वॉलेट में कुछ नहीं है उनका कोई वजन नहीं।',
     'vote.how4':'कुल आपके ब्राउज़र में पुनः गणना किए जाते हैं। बीच में कोई सर्वर नहीं है, इसलिए आपको इस पृष्ठ पर भरोसा करने की ज़रूरत नहीं — वही पठन आप स्वयं दोहरा सकते हैं।',
     'vote.addr.box':'मतपेटी:',
@@ -1402,9 +1391,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Wie die Auszählung funktioniert',
     'vote.s3.title':'Von jedem zählbar.',
-    'vote.how1a':"Deine Wallet ruft den RWI-Token-Vertrag mit einer Übertragung von null Token auf und hängt",
-    'vote.how1b':'im Datenfeld. Du zahlst nur Gas.',
-    'vote.how2':'Die Seite liest jede jemals an diese Adresse gesendete Transaktion, dekodiert die Auswahl und behält pro Wallet die jüngste Stimme.',
+    'vote.how1a':"Deine Wallet zeichnet deine Auswahl auf der Robinhood Chain auf. Deine RWI bleiben in deiner Wallet; du zahlst nur Netzwerkgebühren.",
+    'vote.how2':"Die Seite prüft bestätigte Stimmen in den unterstützten Formaten und berücksichtigt die letzte gültige Auswahl jeder Wallet.",
     'vote.how3':'Das Gewicht jeder Wallet ist ihr aktuelles $RWI-Guthaben, gelesen aus dem Token-Vertrag. Wallets ohne Bestand haben kein Gewicht.',
     'vote.how4':'Summen werden in deinem Browser neu berechnet. Kein Server dazwischen, du musst dieser Seite also nie vertrauen — führe dieselben Abfragen selbst aus.',
     'vote.addr.box':'Wahlurne:',
@@ -1525,9 +1513,8 @@ const TRANSLATIONS = {
     'vote.founder.note':"New ballots are composed automatically from established cause areas, live crisis context, and a rotating claimed Donate.gg charity. Opening a round supersedes the previous round. Only the round controller can open it.",
     'vote.s3.eyebrow':'03 — Cara penghitungan bekerja',
     'vote.s3.title':'Dapat dihitung siapa saja.',
-    'vote.how1a':"Dompet Anda memanggil kontrak token RWI dengan transfer nol token dan melampirkan",
-    'vote.how1b':'di bidang data. Anda hanya membayar gas.',
-    'vote.how2':'Halaman membaca setiap transaksi yang pernah dikirim ke alamat itu, mendekode pilihannya, dan menyimpan suara terbaru per dompet.',
+    'vote.how1a':"Dompet Anda mencatat badan amal pilihan Anda di Robinhood Chain. RWI tetap di dompet; Anda hanya membayar gas jaringan.",
+    'vote.how2':"Halaman memverifikasi suara terkonfirmasi dalam format yang didukung dan menyimpan pilihan valid terbaru setiap dompet.",
     'vote.how3':'Bobot setiap dompet adalah saldo $RWI langsungnya, dibaca dari kontrak token. Dompet tanpa saldo tidak berbobot.',
     'vote.how4':'Total dihitung ulang di peramban Anda. Tidak ada server di tengah, jadi Anda tak perlu memercayai halaman ini — jalankan sendiri pembacaan yang sama.',
     'vote.addr.box':'Kotak suara:',
@@ -2226,7 +2213,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <p class="status" id="voteStatus"></p>
 
       <p class="note" data-i18n="vote.note.calldata">Every vote is a zero-value transaction carrying your choice in its calldata.</p>
-      <p class="note"><a href="/integrations/bankr-voting">Voting through Bankr</a> · Keep your RWI in your Bankr wallet. Voting costs only network gas. <a href="/integrations/bankr-ballot.json">Live ballot and transaction details</a></p>
+      <p class="note"><a href="/integrations/bankr-voting">Voting through Bankr</a> · Bankr upgrade awaiting deployment. Website voting remains available. <a href="/integrations/bankr-ballot.json">Bankr status and transaction details</a></p>
     </div>
   </section>
 
@@ -2271,7 +2258,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <p class="eyebrow" data-i18n="vote.s3.eyebrow">03 — How the tally works</p>
       <h2 style="font-size:clamp(1.4rem,3.4vw,2rem)" data-i18n="vote.s3.title">Countable by anyone.</h2>
       <div class="how">
-        <div class="s"><b>01</b><p><span data-i18n="vote.how1a">Your wallet sends a 0-value transaction to the ballot box address with</span> <code id="prefixEg"></code> <span data-i18n="vote.how1b">in the data field. You pay only gas.</span></p></div>
+        <div class="s"><b>01</b><p data-i18n="vote.how1a">Your wallet records your charity choice on Robinhood Chain. Your RWI stays in your wallet; you pay only network gas.</p></div>
         <div class="s"><b>02</b><p data-i18n="vote.how2">.</p></div>
         <div class="s"><b>03</b><p data-i18n="vote.how3">.</p></div>
         <div class="s"><b>04</b><p data-i18n="vote.how4">.</p></div>
@@ -3483,7 +3470,6 @@ async function loadRound(txs, expectedSeq){
       SLATE = [...new Set([...declared, ...wi.slice(0, room)])];
     }
   }catch(e){ ballotWriteInsVerified = false; /* a failed write-in read must not be advertised as a complete Bankr ballot */ }
-  $('prefixEg').textContent = 'RWIVOTE:\u2039n\u203a:\u2039slug\u203a';
 }
 
 /* ---- founder panel ---- */
@@ -4397,7 +4383,6 @@ document.addEventListener('DOMContentLoaded', () => {
   refreshDonateGg();
   $('boxAddr').textContent = BALLOT_BOX;
   $('ownerAddr').textContent = OWNER;
-  $('prefixEg').textContent = 'RWIVOTE:\u2039n\u203a:\u2039slug\u203a';
   renderBallot();
   $('connectBtn').addEventListener('click', connect);
   $('disconnectBtn').addEventListener('click', disconnect);
