@@ -1,0 +1,22 @@
+{
+  "version": 3,
+  "status": "active",
+  "chainId": 4663,
+  "address": "0x5C35a0b01ACC4f83238D9ab420e505133d92d832",
+  "block": 102960400,
+  "transaction": "0x9f0ec820f233602a7537042b3ab3c8fa1b3c9be2f30ac0d8aede140ba1ffc565",
+  "runtimeHash": "0xeb259a3cc2a22009eadb157f3d768de3f5fb20ea96668a7d300cc9674285ed84",
+  "sourceVerified": true,
+  "deploymentBlockHash": "0x47a08382e4095cb17a6fbdeeef1c5c6f70e61cb09b1ebdbeb6eea803c89ee8b2",
+  "verifiedAtBlock": 102961905,
+  "sourceVerificationUrl": "https://robinhoodchain.blockscout.com/address/0x5C35a0b01ACC4f83238D9ab420e505133d92d832?tab=contract",
+  "verifiedSourceHash": "0x326aa9f18f09f2fb2fc21abc16462225290e926dd155904ad865667c5a020ac8",
+  "verifiedCompiler": "v0.8.26+commit.8a97fa7a",
+  "checkedAt": "2026-11-01T00:15:12.552Z",
+  "creationBytecodeMatches": true,
+  "runtimeBytecodeMatches": true,
+  "explorerSourceMatches": true,
+  "explorerAbiMatches": true,
+  "mainnetValueSentWei": "0",
+  "bankrEndToEndVerified": false
+}

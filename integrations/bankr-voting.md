@@ -2,8 +2,9 @@
 
 Instructions version 3 — Robinhood Chain mainnet, chain ID 4663.
 
-**Awaiting contract deployment and source verification.** Do not submit an old
-zero-token transfer. The live feed stays unavailable until activation.
+**Deployed, source verified, and active.** Contract:
+`0x5C35a0b01ACC4f83238D9ab420e505133d92d832`. Do not submit an old zero-token
+transfer. Refresh the live feed for the current ballot before each vote.
 
 Live ballot: https://www.rwihood.org/integrations/bankr-ballot.json
 Deployment: https://www.rwihood.org/contracts/vote/deployment.json
@@ -76,7 +77,12 @@ must never be described as a verified final tally.
 Local contract and reader tests are documented at:
 https://www.rwihood.org/integrations/bankr-voting-v3-verification.json
 
-No mainnet contract deployment or successful Bankr vote is claimed yet. Source
-verification and a user-authorized end-to-end Bankr test are required after
-deployment. The legacy v2 verification report proves only its EVM behavior;
-Bankr rejected that transport, so it must not be submitted through Bankr.
+The deployed creation code and runtime match the reviewed build. The explorer
+verified the source; its source text and ABI match our published build. The
+mainnet verification report is:
+https://www.rwihood.org/integrations/bankr-voting-v3-mainnet-verification.json
+
+The Bankr submission flow still needs a user-authorized vote test. Do not claim
+Bankr acceptance until a successful receipt and counted vote are confirmed.
+The legacy v2 report proves only its EVM behavior; Bankr rejected that transport,
+so it must not be submitted through Bankr.

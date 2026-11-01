@@ -13,7 +13,10 @@ function buttons(){$('deploy').disabled=working||!ready||!!saved()||!!record?.co
 async function configuration(){
  const response=await fetch('/contracts/vote/deployment.json',{cache:'no-store'});if(!response.ok)throw Error('Deployment status unavailable.');
  const c=await response.json();if(c.version!==3||c.chainId!==4663||c.runtimeHash!==build.runtimeHash||!['active','awaiting_deployment'].includes(c.status))throw Error('Deployment status does not match this build.');
- active=c.status==='active'||!!c.address;configChecked=true;if(active)status('The voting contract is already deployed. No new deployment is needed.');return c;
+ active=c.status==='active'||!!c.address;configChecked=true;if(active){
+  $('address').textContent=c.address;$('gas').textContent='Deployment complete';$('wallet').textContent='Connection not needed';
+  status(c.sourceVerified?'The voting contract is verified and active. No new deployment is needed.':'The voting contract is already deployed. No new deployment is needed.');
+ }return c;
 }
 async function session(){const [chain,accounts]=await Promise.all([provider.request({method:'eth_chainId'}),provider.request({method:'eth_accounts'})]);if(Number(chain)!==4663||accounts[0]?.toLowerCase()!==who?.toLowerCase())throw Error('Connect the intended wallet on Robinhood Chain.');}
 async function prepare(){
@@ -76,4 +79,4 @@ $('check').onclick=async()=>{working=true;buttons();try{
  else status('No confirmed deployment found yet. Check wallet history and share any replacement transaction hash. A second deployment has not been sent.');
  }catch(e){status(e.shortMessage||e.message,true)}finally{working=false;buttons();}};
 $('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('result').textContent);$('copy').textContent='Copied';}catch{status('Select and copy the deployment details below.');}};
-buttons();Promise.all([configuration(),refreshRecord()]).then(()=>{if(!active)status(record.complete?'A completed deployment is saved. Check its status to display the details.':saved()?'A deployment attempt is saved. Check its status before continuing.':'Connect your wallet to estimate gas. Nothing is sent when you connect.');}).catch(e=>status(e.message,true)).finally(buttons);
+buttons();configuration().then(async()=>{if(active)return;await refreshRecord();status(record.complete?'A completed deployment is saved. Check its status to display the details.':saved()?'A deployment attempt is saved. Check its status before continuing.':'Connect your wallet to estimate gas. Nothing is sent when you connect.');}).catch(e=>status(e.message,true)).finally(buttons);

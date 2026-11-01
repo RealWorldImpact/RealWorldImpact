@@ -13,7 +13,7 @@ async function scenario(options={}){
  const get=id=>{if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);};
  let stored={version:1,pending:null,complete:null,...clone(options.initial||{})},sends=0,writes=0,gasEstimates=0;
  const recovery={
-  load:async()=>clone(stored),
+  load:async()=>{assert(!options.active,'active contract page does not need recovery storage');return clone(stored);},
   claim:async e=>{if(options.claimFails)throw Error('Could not save deployment recovery details');assert(!stored.pending&&!stored.complete);stored.pending=clone(e);return clone(stored);},
   submitted:async e=>{if(options.hashFails)throw Error('Storage full');stored.pending=clone(e);return clone(stored);},
   complete:async r=>{if(options.completeFails)throw Error('Storage full');stored.complete=clone(r);return clone(stored);},
@@ -37,9 +37,11 @@ async function scenario(options={}){
  }
  const context=vm.createContext({document:{getElementById:get,createElement:element},window:{addEventListener(){},dispatchEvent(){},ethereum:provider},Event:class{},
   navigator:{clipboard:{writeText:async()=>{}}},localStorage:{getItem:()=>null,setItem(){writes++;throw Error('Quota exceeded');}},
-  BrowserProvider,JsonRpcProvider,getCreateAddress,keccak256,formatEther,build,createDeploymentRecovery:()=>recovery,walletCandidates:()=>[{name:'Test wallet',provider}],fetch:async()=>({ok:true,json:async()=>({version:3,chainId:4663,runtimeHash:build.runtimeHash,status:'awaiting_deployment'})})
+  BrowserProvider,JsonRpcProvider,getCreateAddress,keccak256,formatEther,build,createDeploymentRecovery:()=>recovery,walletCandidates:()=>[{name:'Test wallet',provider}],fetch:async()=>({ok:true,json:async()=>({version:3,chainId:4663,runtimeHash:build.runtimeHash,status:options.active?'active':'awaiting_deployment',address:options.active?predicted:null,sourceVerified:!!options.active})})
  });
- vm.runInContext(source,context);await drain();assert.equal(get('connect').disabled,false);
+ vm.runInContext(source,context);await drain();
+ if(options.active)return {get,sends:()=>sends};
+ assert.equal(get('connect').disabled,false);
  await get('connect').onclick();await get('choices').children[0].onclick();
  return {get,stored:()=>stored,sends:()=>sends,legacyWrites:()=>writes,estimates:()=>gasEstimates};
 }
@@ -52,4 +54,5 @@ s=await scenario({reject:true});await s.get('deploy').onclick();assert.equal(s.s
 s=await scenario({reject:true,clearFails:true});await s.get('deploy').onclick();assert(s.stored().pending);assert.equal(s.get('deploy').disabled,true);assert.match(s.get('status').textContent,/could not be cleared/);
 s=await scenario({changeChainAfterClaim:true});await s.get('deploy').onclick();assert.equal(s.sends(),0);assert.equal(s.stored().pending,null,'session failure before signing releases its unused claim');
 let release;const waitSend=new Promise(resolve=>{release=resolve;});s=await scenario({waitSend});const first=s.get('deploy').onclick();await drain();await s.get('deploy').onclick();assert.equal(s.sends(),1);release();await first;
+s=await scenario({active:true});assert.equal(s.get('connect').disabled,true);assert.equal(s.get('deploy').disabled,true);assert.equal(s.get('address').textContent,predicted);assert.match(s.get('status').textContent,/verified and active/);assert.equal(s.sends(),0);
 console.log('PASS: no localStorage writes, durable recovery before signing, blocked failed saves, visible confirmation after later storage failures, reload recovery, rejected requests, and duplicate-click prevention. No real wallet or network used.');

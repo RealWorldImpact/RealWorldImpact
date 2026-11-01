@@ -1,6 +1,9 @@
 # Dedicated RWI voting contract
 
-Status: built and locally tested; not deployed or activated.
+Status: deployed, source verified, and active on Robinhood Chain at
+`0x5C35a0b01ACC4f83238D9ab420e505133d92d832`, block 102960400.
+See deployment.json and the public mainnet verification report. A real
+Bankr vote still needs to confirm end-to-end acceptance.
 
 Bankr rejects the old ERC-20 transfer selector even when the amount is zero.
 RWICommunityVote replaces that operation with standard `vote(uint64,string)`.
@@ -58,7 +61,8 @@ isolated, automatically cleaned-up databases on localhost; no wallet is used.
    Verify its successful receipt and appearance in the live tally before
    describing Bankr integration as end-to-end verified.
 
-Until activation the Bankr feed returns 503 with `ready:false`; it never suggests
-the rejected transfer method. Self-custody website voting continues through the
-existing path. Deployment cannot and does not change a user's Bankr security
-settings. Do not retry a rejected request by disguising a token transfer.
+The active Bankr feed prepares standard vote calls to the verified contract.
+It returns `ready:false` when it cannot verify the current ballot and never
+suggests the rejected transfer method. Old votes remain included in the tally.
+Deployment cannot change a user's Bankr security settings. Do not retry a
+rejected request by disguising a token transfer.

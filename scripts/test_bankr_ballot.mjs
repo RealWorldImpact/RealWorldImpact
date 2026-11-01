@@ -77,6 +77,6 @@ await assert.rejects(prepareBallot({deployment:{...deployment,status:'awaiting_d
 await assert.rejects(prepareBallot({deployment:{...deployment,sourceVerified:false}}),/Unverified/);
 reset();await assert.rejects(prepareBallot({deployment,fetcher,directory,quote,now:()=>now,rpc:(m,p)=>m==='eth_getCode'&&p[0]===deployment.address?'0x00':rpc(m,p)}),/contract verification/);
 let responseStatus,responseBody;
-await ballotHandler({}, {setHeader(){},status(code){responseStatus=code;return this;},json(body){responseBody=body;}},quote);
+await ballotHandler({}, {setHeader(){},status(code){responseStatus=code;return this;},json(body){responseBody=body;}},quote,()=>prepareBallot({deployment:{...deployment,status:'awaiting_deployment',address:null}}));
 assert.equal(responseStatus,503);assert.equal(responseBody.version,3);assert.equal(responseBody.reason,'awaiting_deployment');assert.equal(responseBody.ready,false);assert.equal(responseBody.options,undefined);
 console.log('PASS: live round resolution, exact Save the Bees ballot ID, prepared native vote requests, paid write-ins, spoofed controllers, spam, historical/same-block/insufficient burns, unavailable proofs, stale data, and no guessed fallback.');
