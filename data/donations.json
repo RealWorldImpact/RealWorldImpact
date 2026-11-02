@@ -1,10 +1,17 @@
 {
   "name": "Real World Impact donation ledger",
   "currency": "USD",
-  "updatedThrough": "2026-10-15",
+  "updatedThrough": "2026-11-02",
   "source": "https://www.rwihood.org/#ledger",
   "note": "Published donation records. Amounts are reported USD values; follow each transaction and announcement link to verify. This is a published ledger, not a live chain index.",
   "donations": [
+    {
+      "recipient": "Ukraine Matters",
+      "amountUsd": 68.46,
+      "date": "2026-11-02",
+      "transactionUrl": "https://robinhoodchain.blockscout.com/tx/0x4260231003c9058515f50c7601406f23af329e9fe239906d7bd3d6f8d6713dd2",
+      "announcementUrl": "https://x.com/RWIrobinhood/status/2117071137674813700"
+    },
     {
       "recipient": "World Central Kitchen",
       "amountUsd": 100.0,
