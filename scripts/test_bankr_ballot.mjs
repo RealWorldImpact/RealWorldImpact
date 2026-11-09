@@ -76,6 +76,32 @@ assert(html.includes('RWIContractVotes.makeVote(voteRound, chosen)'),'website su
 await assert.rejects(prepareBallot({deployment:{...deployment,status:'awaiting_deployment',address:null}}),e=>e.code==='AWAITING_DEPLOYMENT');
 await assert.rejects(prepareBallot({deployment:{...deployment,sourceVerified:false}}),/Unverified/);
 reset();await assert.rejects(prepareBallot({deployment,fetcher,directory,quote,now:()=>now,rpc:(m,p)=>m==='eth_getCode'&&p[0]===deployment.address?'0x00':rpc(m,p)}),/contract verification/);
+// Round 13's confirmed transactions must survive an index response that only
+// contains the round declaration and no write-in fee transfers.
+reset();
+rows=[row(1,owner,100,'RWIROUND:13:rmhc,'+bee+',globaldisaster')];
+transfers=[];
+const checkpointTxs=new Map([
+  ['0xc7f4e0ef51cec3bae8491643cd09816a0e0a8a4a37b497fce70b737c2824f88b',102],
+  ['0x5aa57b139a438f555633822c434405c48993affc9b0688b9801f82492ebfa50c',104],
+  ['0x048c114c7bb95a2c78678cbbe288f86e3e0eb32e3ea2e00a9d2ccb75327f039e',103],
+  ['0xb54f37834e237ce2950a22069e00009a6327bba05199bfcdd73a9acb087f0286',105],
+]);
+const recoveredRpc=async(method, params)=>{
+  const id=params[0], block=checkpointTxs.get(id);
+  if(!block || !['eth_getTransactionByHash','eth_getTransactionReceipt'].includes(method)) return rpc(method, params);
+  const isPayment=block%2===1;
+  const tx={hash:id,from:voter,to:isPayment?v.TOKEN:v.INBOX,value:'0x0',
+    input:isPayment?'0x':memo('RWIWRITEIN:13:no-kid-hungry:'+(stamp-120)),
+    blockNumber:hex(block),blockHash:hash(block),transactionIndex:'0x2'};
+  if(method==='eth_getTransactionByHash') return tx;
+  const logs=isPayment?[{address:v.TOKEN,topics:[v.TRANSFER,'0x'+voter.slice(2).padStart(64,'0'),'0x'+burn.slice(2).padStart(64,'0')],data:hash(payments),logIndex:'0x0'}]:[];
+  return {...tx,transactionHash:id,status:'0x1',logs};
+};
+const recover=()=>prepareBallot({deployment,fetcher,rpc:recoveredRpc,directory,quote,now:()=>now});
+assert.equal((await recover()).options.filter(o=>o.slug==='no-kid-hungry').length,1,'recover a confirmed write-in once, despite two paid attempts');
+payments=249n;
+assert.equal((await recover()).options.some(o=>o.slug==='no-kid-hungry'),false,'recovery still requires the original fee');
 let responseStatus,responseBody;
 await ballotHandler({}, {setHeader(){},status(code){responseStatus=code;return this;},json(body){responseBody=body;}},quote,()=>prepareBallot({deployment:{...deployment,status:'awaiting_deployment',address:null}}));
 assert.equal(responseStatus,503);assert.equal(responseBody.version,3);assert.equal(responseBody.reason,'awaiting_deployment');assert.equal(responseBody.ready,false);assert.equal(responseBody.options,undefined);

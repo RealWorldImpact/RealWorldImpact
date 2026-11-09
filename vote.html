@@ -115,7 +115,7 @@ const TRANSLATIONS = {
     'vote.st.writeInCost':'Costs ${usd} in $RWI (~{rwi}) — 100% burned.',
     'vote.st.writeInSearch':'Search organizations',
     'vote.st.writeInNone':'No match in the verified directory.',
-    'vote.st.writeInDup':'That organization is already a standing candidate.',
+    'vote.st.writeInDup':'That organization is already on the ballot. Select it there to vote.',
     'vote.st.writeInSubmit':'Submit write-in',
     'vote.st.writeInBy':'Written in by a holder',
     'vote.st.wiStep1':'Nominate onchain',
@@ -2302,6 +2302,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 <script src="/assets/vote-roster.js?v=20261109"></script>
 <script src="/assets/vote-contract.js?v=20261031-v3"></script>
+<script src="/assets/vote-write-in-proofs.js?v=1"></script>
 <script src="/assets/vote-native-build.js?v=20261031-v3"></script>
 <script src="/assets/vote-native.js?v=20261031-v3"></script>
 <script>
@@ -2687,7 +2688,8 @@ function directoryRows(){
 function charityName(key){ return DONATE_GG_BY_KEY[key]?.name || TGB_BY_SLUG[key]; }
 function charityUrl(key){ return DONATE_GG_BY_KEY[key]?.url || TGB_BASE + key + '/'; }
 function canNominate(key){
-  if(DONATE_GG_BY_KEY[key]) return donateGgVerified && DONATE_GG_BY_KEY[key].eligible && !SLATE.includes(key);
+  if(SLATE.includes(key)) return false;
+  if(DONATE_GG_BY_KEY[key]) return donateGgVerified && DONATE_GG_BY_KEY[key].eligible;
   return !!TGB_BY_SLUG[key] && !ORG_POOL[key];
 }
 
@@ -3407,6 +3409,7 @@ let staleSlugs = [];
 let slateRecovered = false;
 let slateTrimmed = 0;
 async function loadRound(txs, expectedSeq){
+  const previousRound = ROUND, wasResolved = ballotResolved;
   slateRecovered = false;
   slateTrimmed = 0;
   const rows = txs || await fetchVoteTxs();
@@ -3434,6 +3437,7 @@ async function loadRound(txs, expectedSeq){
     if(newer) best = {n, slugs, bn, ix};
   }
   staleSlugs = [];
+  let baseSlate;
   // A declaration we sent but the indexer has not surfaced yet still counts.
   const pr = readPendingRound();
   if(pr && (!best || pr.round > best.n)){
@@ -3456,33 +3460,26 @@ async function loadRound(txs, expectedSeq){
       // take the auto half and say so rather than silently swallowing the
       // difference.
       slateTrimmed = Math.max(0, known.length - AUTO_SLOTS);
-      SLATE = known.slice(0, AUTO_SLOTS);
+      baseSlate = known.slice(0, AUTO_SLOTS);
     } else {
       // Too little survived to be a real ballot. Fall back and say so.
-      SLATE = autoSlate(ROUND);
+      baseSlate = autoSlate(ROUND);
       slateRecovered = true;
     }
-  } else { ROUND = 1; SLATE = autoSlate(1); }
-  // Show the confirmed base slate before slower write-in verification finishes.
+  } else { ROUND = 1; baseSlate = autoSlate(1); }
+  // Keep a same-round ballot visible while its write-ins are being checked.
   ballotResolved = true;
-  renderBallot();
+  if(!wasResolved || previousRound !== ROUND){ SLATE = baseSlate; renderBallot(); }
   if(lastTally && lastTally.round !== ROUND) renderVoters();
   // Holder write-ins fill the remaining slots on top of the auto-composed half.
   try{
-    const resolvedRound = ROUND, baseSlate = SLATE.slice();
-    const wi = await loadWriteIns(rows, resolvedRound);
+    const resolvedRound = ROUND;
+    const wi = await loadWriteIns(rows, resolvedRound, baseSlate);
     if(expectedSeq !== undefined && expectedSeq !== refreshSeq) return;
     if(resolvedRound !== ROUND) return;
     ballotWriteInsVerified = wi.complete !== false;
-    if(wi.length){
-      // Everything the round declared onchain stays on the ballot. Truncating
-      // it to make room for write-ins dropped candidates people may already
-      // have voted for, and loadTally validates against SLATE — so those votes
-      // vanished without a word. Write-ins take whatever seats are left.
-      const declared = baseSlate;
-      const room = Math.max(0, TOTAL_SLOTS - declared.length);
-      SLATE = [...new Set([...declared, ...wi.slice(0, room)])];
-    }
+    const room = Math.max(0, TOTAL_SLOTS - baseSlate.length);
+    SLATE = [...new Set([...baseSlate, ...wi.slice(0, room)])];
   }catch(e){ ballotWriteInsVerified = false; /* a failed write-in read must not be advertised as a complete Bankr ballot */ }
 }
 
@@ -3641,10 +3638,11 @@ async function fetchTokenTransfersTo(addr){
   const out = [];
   let url = SCAN + '/api/v2/addresses/' + addr + '/token-transfers?type=ERC-20&filter=to&token=' + RWI;
   for(let page = 0; page < 6; page++){
-    const res = await fetchWithTimeout(url, {headers:{accept:'application/json'}});
+    const res = await fetchWithTimeout(url, {cache:'no-store',headers:{accept:'application/json'}});
     if(!res.ok) throw new Error('Burn history unavailable');
     const j = await res.json();
-    (j.items || []).forEach(function(t){ out.push(t); });
+    if(!Array.isArray(j.items)) throw new Error('Burn history incomplete');
+    j.items.forEach(function(t){ out.push(t); });
     if(!j.next_page_params) break;
     if(page === 5) throw new Error('Burn history incomplete');
     url = SCAN + '/api/v2/addresses/' + addr + '/token-transfers?type=ERC-20&filter=to&token=' + RWI + '&'
@@ -3679,9 +3677,11 @@ function sumRwiBySender(transfers, sinceByWallet){
   });
   return by;
 }
-async function loadWriteIns(txs, round){
-  const rows = txs || [];
+async function loadWriteIns(txs, round, baseSlate = SLATE){
+  let rows = txs || [];
   let complete = true;
+  try{ rows = await RWIWriteInProofs.nominations(round, rows, rpc); }
+  catch(e){ complete = false; }
   if(rows.some(tx => fromHexUtf8(tx.raw_input || tx.input || '').startsWith(WRITEIN_TAG + round + ':gg-'))){
     await refreshDonateGg(); if(!donateGgVerified) complete = false;
   }
@@ -3704,7 +3704,7 @@ async function loadWriteIns(txs, round){
     const quoteAt = legacy ? Math.floor(timestamp / 60) * 60 - 120 : Number(fields[1]);
     if(!Number.isSafeInteger(quoteAt) || quoteAt % 60 !== 0 || quoteAt > timestamp || timestamp - quoteAt > 900) return;
     if(!charityName(slug)) return;                            // recognized directory entry
-    if(SLATE.includes(slug) || (ORG_POOL[slug] && !DONATE_GG_BY_KEY[slug])) return;
+    if(baseSlate.includes(slug) || (ORG_POOL[slug] && !DONATE_GG_BY_KEY[slug])) return;
     if(DONATE_GG_BY_KEY[slug] && (!donateGgVerified || !DONATE_GG_BY_KEY[slug].eligible)) return;
     nominations.push({
       slug: slug, from: from, quoteAt:quoteAt, legacy:legacy,
@@ -3714,9 +3714,12 @@ async function loadWriteIns(txs, round){
   });
   if(!nominations.length) return Object.assign([],{complete});
 
-  let transfers;
+  let transfers = [];
+  try{ transfers = await fetchTokenTransfersTo(WRITEIN_BURN); }
+  catch(e){ complete = false; }
+  try{ transfers = await RWIWriteInProofs.payments(round, transfers, rpc); }
+  catch(e){ complete = false; }
   try{
-    transfers = await fetchTokenTransfersTo(WRITEIN_BURN);
     // Same-block payments need transaction order, not just a block number.
     const receipts = new Map();
     await Promise.all(transfers.map(async transfer => {
@@ -3791,10 +3794,11 @@ async function fetchVoteTxsUncached(){
   const MAX_PAGES = 20;
   let url = SCAN + '/api/v2/addresses/' + BALLOT_BOX + '/transactions?filter=to';
   for(let page=0; page<MAX_PAGES; page++){
-    const r = await fetchWithTimeout(url, {headers:{accept:'application/json'}});
+    const r = await fetchWithTimeout(url, {cache:'no-store',headers:{accept:'application/json'}});
     if(!r.ok) throw new Error('Vote history unavailable');
     const j = await r.json();
-    const items = (j.items || []).filter(indexedTxSucceeded);
+    if(!Array.isArray(j.items)) throw new Error('Vote history incomplete');
+    const items = j.items.filter(indexedTxSucceeded);
     items.forEach(t => out.push(t));
     // The newest controller declaration starts the current round. Older pages
     // contain superseded ballots and cannot contribute votes to this round.
@@ -3833,6 +3837,7 @@ function updateSlateNotice(){
   if(slateRecovered)         warn.textContent = t('vote.st.slateRecovered');
   else if(staleSlugs.length) warn.textContent = t('vote.st.slateStale', {n:staleSlugs.length});
   else if(slateTrimmed)      warn.textContent = t('vote.st.slateTrimmed', {n:slateTrimmed});
+  else if(!ballotWriteInsVerified) warn.textContent = 'Some write-ins could not be verified. Refresh the tally before retrying a nomination.';
   else if(lastTally && lastTally.unreadable) warn.textContent = t('vote.st.tallyPartial', {n:lastTally.unreadable});
   else if(lastTally && lastTally.truncated)  warn.textContent = t('vote.st.tallyTruncated');
   else warn.textContent = '';
@@ -4271,6 +4276,7 @@ function repaintDynamic(){
       await refreshDonateGg(true);
       if(!canNominate(chosen)){ wiStatus('This Donate.gg charity is unavailable or no longer eligible.', true); return; }
     }
+    if(!canNominate(nomination)){ wiStatus(t('vote.st.writeInDup'), true); return; }
     const quote = await fetchWriteInQuote();
     writeInQuote = quote;
     if(!quote){ wiStatus(t('vote.st.writeInNoPrice'), true); return; }
