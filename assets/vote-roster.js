@@ -228,6 +228,7 @@ const TGB_DIRECTORY = [
   ['national-multiple-sclerosis-society','National Multiple Sclerosis Society','organization_logo%2F2d4d24fb-2e4f-4b3a-9ad7-9c7a54f859f1.jpg'],
   ['near-east-foundation','Near East Foundation','organization_logo/4e90399e-ae9e-4ff4-8a17-4a39dba0486a.jpg'],
   ['nephcure-kidney-international','NephCure Kidney International','organization_logo%2F208d5dd3-e9a0-4920-bde9-31b293dfec01.jpg'],
+  ['no-kid-hungry','No Kid Hungry','NoKidHungry.jpg'],
   ['norton-childrens-hospital-foundation','Norton Children\'s Hospital Foundation','organization_logo/8c1f4b5f-552a-4c83-aa95-7dcba2f4deca.jpg'],
   ['npower','NPower','organization_logo/2f7607d9-82f9-47f9-b0ae-613ab9ca36b5.jpg'],
   ['nten','NTEN','organization_logo/a9d8ca51-e362-4f12-843b-fb2e0e118052.jpeg'],
