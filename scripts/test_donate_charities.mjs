@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import '../assets/vote-contract.js';
+import '../assets/vote-write-in-proofs.js';
 
 const source = readFileSync(new URL('../api/donate-charities.js', import.meta.url), 'utf8');
 const moduleUrl = 'data:text/javascript;base64,' + Buffer.from(source).toString('base64');
@@ -47,6 +49,7 @@ const context = {
   ORG_POOL:{ incumbent:{name:'Incumbent Charity'}, givingblock:{name:'Giving Block Charity'} },
   TGB_DIRECTORY:[['givingblock','Giving Block Charity']], TGB_BY_SLUG:{givingblock:'Giving Block Charity'},
   TGB_BASE:'https://thegivingblock.com/donate/', SLATE:['incumbent'],
+  RWIWriteInProofs:globalThis.RWIWriteInProofs, rpc:async()=>{ throw Error('Unexpected proof lookup'); },
   document:{getElementById:()=>null,dispatchEvent(){}}, Event:class {}, Date, console,
 };
 vm.createContext(context);
@@ -54,6 +57,11 @@ vm.runInContext(registryCode, context);
 context.fixture = claimed;
 vm.runInContext('installDonateGg([fixture], true)', context);
 assert.equal(vm.runInContext("canNominate('gg-abc-123')", context), true);
+context.TGB_BY_SLUG['no-kid-hungry'] = 'No Kid Hungry';
+assert.equal(vm.runInContext("canNominate('no-kid-hungry')", context), true);
+context.SLATE.push('no-kid-hungry');
+assert.equal(vm.runInContext("canNominate('no-kid-hungry')", context), false, 'do not charge for a charity already on the ballot');
+context.SLATE.pop();
 assert.equal(vm.runInContext("charityUrl('gg-abc-123')", context), 'https://www.donate.gg/charities/claimed-charity');
 assert.equal(vm.runInContext("withDonateGg(['incumbent','givingblock'], 1)[1]", context), 'gg-abc-123');
 assert.equal(vm.runInContext("directoryRows().some(r=>r[0]==='gg-abc-123')", context), true);
@@ -116,6 +124,7 @@ burns[0].total.value = '500';
 assert.equal((await vm.runInContext('loadWriteIns(nomination, 1)', context)).length, 0, 'unclaimed or removed profiles cannot enter as write-ins');
 Object.assign(context, {
   OWNER_LC:'0xowner', ROUND_TAG:'RWIROUND:', AUTO_SLOTS:3, TOTAL_SLOTS:6, lastTally:null,
+  ROUND:1, ballotResolved:false,
   readPendingRound:()=>null, renderBallot(){}, $:()=>({textContent:''}),
   autoSlate:()=>['incumbent','givingblock','acute'],
   existingRound:[{ from:'0xowner', input:'RWIROUND:7:incumbent,givingblock,acute', block_number:20 }],
