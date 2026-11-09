@@ -31,4 +31,10 @@ assert.deepEqual(await api.quoteAt(at, history), original, 'later price collapse
 laterPrice = 1000000;
 assert.deepEqual(await api.quoteAt(at, history), original, 'later price increase must not change an earlier quote');
 await assert.rejects(api.quoteAt(at, async()=>({ok:false})), /unavailable/);
+for (const quoteAt of [1794238320, 1794238380]) {
+  const archived = await api.getHistoricalQuote(quoteAt);
+  assert.equal(archived.quoteAt, quoteAt);
+  assert.equal(archived.candleAt, 1794205440);
+  assert.equal(archived.units, '287067775618277377685106', 'recover the original fee without calling the price provider');
+}
 console.log('PASS: exact fixed fee, completed candles only, and unchanged eligibility after large later price increases or decreases.');
