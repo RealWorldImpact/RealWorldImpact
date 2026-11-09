@@ -2,6 +2,12 @@ const TOKEN = '0xda2598c976e62e7e15dcca75169b404712e48b04';
 const POOL = '0xa72a9de2c6e3db34308a8ae61e927ceffea630218ca1e712b70b61341c3e99a1';
 const BASE = `https://api.geckoterminal.com/api/v2/networks/robinhood/pools/${POOL}/ohlcv/minute`;
 const cache = new Map();
+// Keep the original production quotes for the recovered Round 13 write-ins.
+// Both requests returned the same completed candle before the price API failed.
+const archivedCandles = new Map([
+  [1794238320, [1794205440, '0.0000174174896127967']],
+  [1794238380, [1794205440, '0.0000174174896127967']],
+]);
 
 // Round up the fixed $5 quote to whole base units without floating-point loss.
 export function unitsForPrice(price) {
@@ -14,6 +20,10 @@ export function unitsForPrice(price) {
   if (exponent < 0) numerator *= 10n ** BigInt(-exponent);
   else denominator *= 10n ** BigInt(exponent);
   return ((numerator + denominator - 1n) / denominator).toString();
+}
+
+function makeQuote(at, candleAt, priceUsd) {
+  return { quoteAt:at, candleAt, priceUsd, units:unitsForPrice(priceUsd), token:TOKEN, pool:POOL, usd:5 };
 }
 
 export async function quoteAt(at, fetcher = fetch) {
@@ -29,10 +39,12 @@ export async function quoteAt(at, fetcher = fetch) {
   const candle = candles.filter(c => Number.isInteger(c[0]) && c[0] + 60 <= at && Number(c[4]) > 0)
     .sort((a,b) => b[0] - a[0])[0];
   if (!candle) throw new Error('No completed historical candle');
-  return { quoteAt:at, candleAt:candle[0], priceUsd:String(candle[4]), units:unitsForPrice(candle[4]), token:TOKEN, pool:POOL, usd:5 };
+  return makeQuote(at, candle[0], String(candle[4]));
 }
 
 export async function getHistoricalQuote(at) {
+  const archived = archivedCandles.get(at);
+  if (archived) return makeQuote(at, ...archived);
   let quote = cache.get(at);
   if (!quote) {
     quote = await quoteAt(at);
